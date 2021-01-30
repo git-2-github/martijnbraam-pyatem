@@ -24,3 +24,9 @@ Protocol fields
 
 .. autoclass:: pyatem.field.PreviewBusInputField
    :members:
+
+.. autoclass:: pyatem.field.TransitionPreviewField
+   :members:
+
+.. autoclass:: pyatem.field.TransitionPositionField
+   :members:

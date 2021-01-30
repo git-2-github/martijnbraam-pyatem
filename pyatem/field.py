@@ -352,3 +352,67 @@ class PreviewBusInputField(FieldBase):
         if self.in_program:
             in_program = ' in-program'
         return '<preview-bus-input: me={} source={}{}>'.format(self.index, self.source, in_program)
+
+
+class TransitionPreviewField(FieldBase):
+    """
+    Data from the `TsPr` field. This represents the state of the "PREV TRANS" button on the mixer.
+
+    The mixer will send a field for every M/E unit in the mixer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    bool   Enabled
+    2      2    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar enabled: True if the transition preview is enabled
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.enabled = struct.unpack('>B ? 2x', raw)
+
+    def __repr__(self):
+        return '<transition-preview: me={} enabled={}>'.format(self.index, self.enabled)
+
+
+class TransitionPositionField(FieldBase):
+    """
+    Data from the `TrPs` field. This represents the state of the transition T-handle position
+
+    The mixer will send a field for every M/E unit in the mixer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    bool   In transition
+    2      1    u8     Frames remaining
+    3      1    ?      unknown
+    4      2    u16    Position
+    6      1    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar in_transition: True if the transition is active
+    :ivar frames_remaining: Number of frames left to complete the transition on auto
+    :ivar position: Position of the transition, 0.0 - 1.0
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.in_transition, self.frames_remaining, position = struct.unpack('>B ? B x H 2x', raw)
+        self.position = position / 9999.0
+
+    def __repr__(self):
+        return '<transition-position: me={} frames-remaining={} position={:02f}>'.format(self.index,
+                                                                                         self.frames_remaining,
+                                                                                         self.position)
