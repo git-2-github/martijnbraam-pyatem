@@ -81,7 +81,8 @@ class AtemProtocol:
             '_TlC': 'tally-config',
             'TlIn': 'tally-index',
             'TlSr': 'tally-source',
-            'MPrp': 'macro-properties'
+            'MPrp': 'macro-properties',
+            'AiVM': 'auto-input-video-mode',
         }
 
         fieldname_to_unique = {
