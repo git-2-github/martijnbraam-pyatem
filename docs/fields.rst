@@ -9,3 +9,12 @@ Protocol fields
 
 .. autoclass:: pyatem.field.MixerEffectConfigField
    :members:
+
+.. autoclass:: pyatem.field.MediaplayerSlotsField
+   :members:
+
+.. autoclass:: pyatem.field.VideoModeField
+   :members:
+
+.. autoclass:: pyatem.field.InputPropertiesField
+   :members:
