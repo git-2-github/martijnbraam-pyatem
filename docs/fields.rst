@@ -18,3 +18,9 @@ Protocol fields
 
 .. autoclass:: pyatem.field.InputPropertiesField
    :members:
+
+.. autoclass:: pyatem.field.ProgramBusInputField
+   :members:
+
+.. autoclass:: pyatem.field.PreviewBusInputField
+   :members:

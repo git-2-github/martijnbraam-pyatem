@@ -289,3 +289,66 @@ class InputPropertiesField(FieldBase):
 
     def __repr__(self):
         return '<input-properties: index={} name={} button={}>'.format(self.index, self.name, self.short_name)
+
+
+class ProgramBusInputField(FieldBase):
+    """
+    Data from the `PrgI` field. This represents the active channel on the program bus of the specific M/E unit.
+
+    The mixer will send a field for every M/E unit in the mixer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    ?      unknown
+    2      2    u16    Source index
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar source: Input source index, refers to an InputPropertiesField index
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.source = struct.unpack('>BxH', raw)
+
+    def __repr__(self):
+        return '<program-bus-input: me={} source={}>'.format(self.index, self.source)
+
+
+class PreviewBusInputField(FieldBase):
+    """
+    Data from the `PrvI` field. This represents the active channel on the preview bus of the specific M/E unit.
+
+    The mixer will send a field for every M/E unit in the mixer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    ?      unknown
+    2      2    u16    Source index
+    4      1    u8     1 if preview is mixed in program during a transition
+    5      3    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar source: Input source index, refers to an InputPropertiesField index
+    :ivar in_program: Preview source is mixed into progam
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.source, in_program = struct.unpack('>B x H B 3x', raw)
+        self.in_program = in_program == 1
+
+    def __repr__(self):
+        in_program = ''
+        if self.in_program:
+            in_program = ' in-program'
+        return '<preview-bus-input: me={} source={}{}>'.format(self.index, self.source, in_program)
