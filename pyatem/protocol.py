@@ -1,7 +1,7 @@
 import logging
 import struct
 
-from pyatem.transport import UdpProtocol
+from pyatem.transport import UdpProtocol, Packet
 import pyatem.field as fieldmodule
 
 
@@ -81,6 +81,7 @@ class AtemProtocol:
             '_TlC': 'tally-config',
             'TlIn': 'tally-index',
             'TlSr': 'tally-source',
+            'FMTl': 'fairlight-tally',
             'MPrp': 'macro-properties',
             'AiVM': 'auto-input-video-mode',
         }
@@ -123,15 +124,48 @@ class AtemProtocol:
             self._raise('change:' + key, contents)
         self._raise('change', key, contents)
 
+    def send_commands(self, commands):
+        data = b''
+        for command in commands:
+            data += command.get_command()
+
+        if len(data) > 1300:
+            raise ValueError("Command list too long for UDP packet")
+
+        packet = Packet()
+        packet.flags = UdpProtocol.FLAG_RELIABLE
+        packet.data = data
+        self.transport.send_packet(packet)
+
 
 if __name__ == '__main__':
+    from pyatem.command import CutCommand
 
     logging.basicConfig(level=logging.INFO)
 
     testmixer = AtemProtocol('192.168.2.17')
 
+    waiter = 5
+    waiting = False
+    done = False
+
 
     def changed(key, contents):
+        global waiter
+        global waiting
+        global done
+
+        if waiting and not done:
+            waiter -= 1
+            if waiter == 0:
+                logging.debug('SENDING CUT')
+                done = True
+                cmd = CutCommand(index=0)
+                testmixer.send_commands([cmd])
+
+        if key == 'InCm':
+            waiting = True
+
         if key == 'time':
             return
         if isinstance(contents, fieldmodule.FieldBase):

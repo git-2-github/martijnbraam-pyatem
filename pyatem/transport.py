@@ -16,12 +16,13 @@ class Packet:
         self.data = None
         self.debug = False
         self.original = None
+        self.label = None
 
     @classmethod
     def from_bytes(cls, packet):
         res = cls()
         res.original = packet
-        fields = struct.unpack('>HHH 4x H', packet[0:12])
+        fields = struct.unpack('>HHH 2x HH', packet[0:12])
         res.length = fields[0] & ~(0x1f << 11)
         res.flags = (fields[0] & (0x1f << 11)) >> 11
 
@@ -31,7 +32,9 @@ class Packet:
                     res.length, len(packet)))
 
         res.session = fields[1]
-        res.sequence_number = fields[3]
+        res.acknowledgement_number = fields[2]
+        res.remote_sequence_number = fields[3]
+        res.sequence_number = fields[4]
 
         res.data = packet[12:]
         return res
@@ -61,14 +64,18 @@ class Packet:
             flags += ' SYN'
         if self.flags & UdpProtocol.FLAG_RETRANSMISSION:
             flags += ' RETRANSMISSION'
-        if self.flags & UdpProtocol.FLAG_RESPONSE:
-            flags += ' RESPONSE'
+        if self.flags & UdpProtocol.FLAG_REQUEST_RETRANSMISSION:
+            flags += ' REQ-RETRANSMISSION'
+            extra = ' req={}'.format(self.remote_sequence_number)
         if self.flags & UdpProtocol.FLAG_ACK:
             flags += ' ACK'
             extra = ' ack={}'.format(self.acknowledgement_number)
         flags = flags.strip()
         data_len = len(self.data) if self.data is not None else 0
-        return '<Packet flags={} data={} sequence={}{}>'.format(flags, data_len, self.sequence_number, extra)
+        label = ''
+        if self.label:
+            label = ' ' + self.label
+        return '<Packet flags={} data={} sequence={}{}{}>'.format(flags, data_len, self.sequence_number, extra, label)
 
 
 class UdpProtocol:
@@ -80,7 +87,7 @@ class UdpProtocol:
     FLAG_RELIABLE = 1
     FLAG_SYN = 2
     FLAG_RETRANSMISSION = 4
-    FLAG_RESPONSE = 8
+    FLAG_REQUEST_RETRANSMISSION = 8
     FLAG_ACK = 16
 
     def __init__(self, ip, port=9910):
@@ -97,21 +104,27 @@ class UdpProtocol:
         self.state = UdpProtocol.STATE_CLOSED
         self.session_id = 0x1337
 
+        self.enable_ack = False
+
     def _send_packet(self, packet):
         packet.session = self.session_id
-        packet.sequence_number = self.local_sequence_number
+        if not packet.flags & UdpProtocol.FLAG_ACK:
+            packet.sequence_number = self.local_sequence_number + 1
         raw = packet.to_bytes()
         self.sock.sendto(raw, (self.ip, self.port))
         logging.debug('> {}'.format(packet))
         if packet.debug:
             hexdump(raw)
-        if packet.flags & UdpProtocol.FLAG_SYN == 0:
+        if packet.flags & (UdpProtocol.FLAG_SYN | UdpProtocol.FLAG_ACK) == 0:
             self.local_sequence_number += 1
 
     def _receive_packet(self):
         data, address = self.sock.recvfrom(2048)
         packet = Packet.from_bytes(data)
         logging.debug('< {}'.format(packet))
+
+        if packet.flags & UdpProtocol.FLAG_REQUEST_RETRANSMISSION:
+            hexdump(data)
 
         new_sequence_number = packet.sequence_number
         if new_sequence_number > self.remote_sequence_number + 1:
@@ -121,11 +134,12 @@ class UdpProtocol:
         if self.session_id is None:
             self.session_id = packet.session
 
-        if packet.flags & UdpProtocol.FLAG_RELIABLE:
+        if packet.flags & UdpProtocol.FLAG_RELIABLE and self.enable_ack:
             # This packet needs an ACK
             ack = Packet()
             ack.flags = UdpProtocol.FLAG_ACK
             ack.acknowledgement_number = self.remote_sequence_number
+            ack.remote_sequence_number = 0x61
             self._send_packet(ack)
 
         return packet
@@ -177,7 +191,17 @@ class UdpProtocol:
             elif self.state == UdpProtocol.STATE_ESTABLISHED:
                 if packet.length == 12:
                     # This is a control packet, deal with it in the transport layer
-                    pass
+                    if not self.enable_ack:
+                        # This is the first ACK from the mixer, after this we should send ACKs bac
+                        self.enable_ack = True
+                        ack = Packet()
+                        ack.flags = UdpProtocol.FLAG_ACK
+                        ack.acknowledgement_number = self.remote_sequence_number
+                        ack.remote_sequence_number = 0x61
+                        ack.label = 'initial ack after connection'
+                        self._send_packet(ack)
+
+                    # TODO: Implement other control packets, like request for retransmission
                 else:
                     # Data packet for the upper layer
                     return packet

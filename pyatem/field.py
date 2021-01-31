@@ -416,3 +416,68 @@ class TransitionPositionField(FieldBase):
         return '<transition-position: me={} frames-remaining={} position={:02f}>'.format(self.index,
                                                                                          self.frames_remaining,
                                                                                          self.position)
+
+
+class TallyIndexField(FieldBase):
+    """
+    Data from the `TlIn`. This is the status of the tally light for every input in order of index number.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Total of tally lights
+    n      1    u8     Bitfield, bit0=PROGRAM, bit1=PREVIEW, repeated for every tally light
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar num: number of tally lights
+    :ivar tally: List of tally values, every tally light is represented as a tuple with 2 booleans for PROGRAM and PREVIEW
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        offset = 0
+        self.num, = struct.unpack_from('>H', raw, offset)
+        self.tally = []
+        offset += 2
+        for i in range(0, self.num):
+            tally, = struct.unpack_from('>B', raw, offset)
+            self.tally.append((tally & 1 != 0, tally & 2 != 0))
+            offset += 1
+
+    def __repr__(self):
+        return '<tally-index: num={}, val={}>'.format(self.num, self.tally)
+
+
+class TallySourceField(FieldBase):
+    """
+    Data from the `TlSr`. This is the status of the tally light for every input, but indexed on source index
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Total of tally lights
+    n      2    u16    Source index for this tally light
+    n+2    1    u8     Bitfield, bit0=PROGRAM, bit1=PREVIEW
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar num: number of tally lights
+    :ivar tally: Dict of tally lights, every tally light is represented as a tuple with 2 booleans for PROGRAM and PREVIEW
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        offset = 0
+        self.num, = struct.unpack_from('>H', raw, offset)
+        self.tally = {}
+        offset += 2
+        for i in range(0, self.num):
+            source, tally, = struct.unpack_from('>HB', raw, offset)
+            self.tally[source] = (tally & 1 != 0, tally & 2 != 0)
+            offset += 3
+
+    def __repr__(self):
+        return '<tally-index: num={}, val={}>'.format(self.num, self.tally)

@@ -30,3 +30,9 @@ Protocol fields
 
 .. autoclass:: pyatem.field.TransitionPositionField
    :members:
+
+.. autoclass:: pyatem.field.TallyIndexField
+   :members:
+
+.. autoclass:: pyatem.field.TallySourceField
+   :members:
