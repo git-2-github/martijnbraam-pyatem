@@ -11,6 +11,7 @@ Welcome to PyATEM's documentation!
    :caption: Contents:
 
    fields
+   commands
 
 Indices and tables
 ==================

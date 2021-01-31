@@ -11,7 +11,22 @@ class Command:
 
 
 class CutCommand(Command):
+    """
+    Implementation of the `DCut` command. This is equivalent to pressing the CUT button in the UI
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      3    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
     def __init__(self, index):
+        """
+        :param index: 0-indexed M/E number to send the CUT to
+        """
         self.index = index
 
     def get_command(self):
