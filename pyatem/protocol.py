@@ -53,6 +53,7 @@ class AtemProtocol:
             'InPr': 'input-properties',
             'PrgI': 'program-bus-input',
             'PrvI': 'preview-bus-input',
+            'TrSS': 'transition-settings',
             'TrPr': 'transition-preview',
             'TrPs': 'transition-position',
             'TMxP': 'transition-mix',

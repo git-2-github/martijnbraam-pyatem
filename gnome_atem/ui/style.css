@@ -1,0 +1,34 @@
+button.bmdbtn {
+    padding: 0;
+    margin: 0;
+}
+
+button.bmdbtn label {
+    font-size: 9pt;
+    font-weight: bold;
+}
+
+button.bmdbtn.preview {
+    background: #4F4;
+    color: black;
+}
+
+button.bmdbtn.program {
+    background: #F44;
+    color: black;
+}
+
+button.bmdbtn.active {
+    background: #ffc144;
+    color: black;
+}
+
+entry.rate {
+    padding: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+expander.bmdgroup arrow{
+    opacity: 0;
+}

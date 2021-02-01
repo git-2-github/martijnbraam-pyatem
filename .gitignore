@@ -141,3 +141,5 @@ cython_debug/
 
 /docs/_build
 /.idea
+
+*.glade~

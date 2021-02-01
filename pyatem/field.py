@@ -1,3 +1,4 @@
+import colorsys
 import struct
 
 
@@ -260,6 +261,7 @@ class InputPropertiesField(FieldBase):
     :ivar index: Source index
     :ivar name: Long name
     :ivar short_name: Short name for button
+    :ivar port_type: Integer describing the port type
     :ivar available_aux: Source can be routed to AUX
     :ivar available_multiview: Source can be routed to multiview
     :ivar available_supersource_art: Source can be routed to supersource
@@ -269,6 +271,17 @@ class InputPropertiesField(FieldBase):
     :ivar available_me2: Source can be routed to M/E 2
     """
 
+    PORT_EXTERNAL = 0
+    PORT_BLACK = 1
+    PORT_BARS = 2
+    PORT_COLOR = 3
+    PORT_MEDIAPLAYER = 4
+    PORT_MEDIAPLAYER_KEY = 5
+    PORT_SUPERSOURCE = 6
+    PORT_PASSTHROUGH = 7
+    PORT_ME_OUTPUT = 128
+    PORT_AUX_OUTPUT = 129
+
     def __init__(self, raw):
         self.raw = raw
         fields = struct.unpack('>H 20s 4s 10B', raw)
@@ -276,6 +289,7 @@ class InputPropertiesField(FieldBase):
         self.name = self._get_string(fields[1])
         self.short_name = self._get_string(fields[2])
         self.source_category = fields[3]
+        self.port_type = fields[9]
         self.source_ports = fields[6]
 
         self.available_aux = fields[11] & (1 << 0) != 0
@@ -352,6 +366,72 @@ class PreviewBusInputField(FieldBase):
         if self.in_program:
             in_program = ' in-program'
         return '<preview-bus-input: me={} source={}{}>'.format(self.index, self.source, in_program)
+
+
+class TransitionSettingsField(FieldBase):
+    """
+    Data from the `TrSS` field. This stores the config of the "Next transition" and "Transition style" blocks on the
+    control panels.
+
+    The mixer will send a field for every M/E unit in the mixer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    u8     Transition style
+    2      1    u8     Next transition layers
+    3      1    u8     Next transition style
+    4      1    u8     Next transition next transition layers
+    ====== ==== ====== ===========
+
+    There are two sets of style/layer settings. The first set is the active transition settings. The second one
+    will store the transitions settings if you change any of them while a transition is active. These settings will be
+    applied as soon as the transition ends. This is signified by blinking transition settings buttons in the official
+    control panels.
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar style: Active transition style
+    :ivar style_next: Transition style for next transition
+    :ivar next_transition_bkgd: Next transition will affect the background layer
+    :ivar next_transition_key1: Next transition will affect the upstream key 1 layer
+    :ivar next_transition_key2: Next transition will affect the upstream key 2 layer
+    :ivar next_transition_key3: Next transition will affect the upstream key 3 layer
+    :ivar next_transition_key4: Next transition will affect the upstream key 4 layer
+    :ivar next_transition_bkgd_next: Next transition (after current) will affect the background layer
+    :ivar next_transition_key1_next: Next transition (after current) will affect the upstream key 1 layer
+    :ivar next_transition_key2_next: Next transition (after current) will affect the upstream key 2 layer
+    :ivar next_transition_key3_next: Next transition (after current) will affect the upstream key 3 layer
+    :ivar next_transition_key4_next: Next transition (after current) will affect the upstream key 4 layer
+
+    """
+
+    STYLE_MIX = 0
+    STYLE_DIP = 1
+    STYLE_WIPE = 2
+    STYLE_DVE = 3
+    STYLE_STING = 4
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.style, nt, self.style_next, ntn = struct.unpack('>B 2B 2B 3x', raw)
+
+        self.next_transition_bkgd = nt & (1 << 0) != 0
+        self.next_transition_key1 = nt & (1 << 1) != 0
+        self.next_transition_key2 = nt & (1 << 2) != 0
+        self.next_transition_key3 = nt & (1 << 3) != 0
+        self.next_transition_key4 = nt & (1 << 4) != 0
+
+        self.next_transition_bkgd_next = ntn & (1 << 0) != 0
+        self.next_transition_key1_next = ntn & (1 << 1) != 0
+        self.next_transition_key2_next = ntn & (1 << 2) != 0
+        self.next_transition_key3_next = ntn & (1 << 3) != 0
+        self.next_transition_key4_next = ntn & (1 << 4) != 0
+
+    def __repr__(self):
+        return '<transition-settings: me={} style={}>'.format(self.index, self.style)
 
 
 class TransitionPreviewField(FieldBase):
@@ -481,3 +561,99 @@ class TallySourceField(FieldBase):
 
     def __repr__(self):
         return '<tally-index: num={}, val={}>'.format(self.num, self.tally)
+
+
+class KeyOnAirField(FieldBase):
+    """
+    Data from the `KeOn`. This is the on-air state of the upstream keyers
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    u8     Keyer index
+    2      1    bool   On-air
+    3      1    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar keyer: Upstream keyer number
+    :ivar enabled: Wether the keyer is on-air
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.keyer, self.enabled = struct.unpack('>BB?x', raw)
+
+    def __repr__(self):
+        return '<key-on-air: me={}, keyer={}, enabled={}>'.format(self.index, self.keyer, self.enabled)
+
+
+class ColorGeneratorField(FieldBase):
+    """
+    Data from the `ColV`. This is color set in the color generators of the mixer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Color generator index
+    1      1    ?      unknown
+    2      2    u16    Hue [0-3599]
+    4      2    u16    Saturation [0-1000]
+    6      2    u16    Luma [0-1000]
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar keyer: Upstream keyer number
+    :ivar enabled: Wether the keyer is on-air
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.hue, self.saturation, self.luma = struct.unpack('>Bx 3H', raw)
+        self.hue = self.hue / 10.0
+        self.saturation = self.saturation / 1000.0
+        self.luma = self.luma / 1000.0
+
+    def get_rgb(self):
+        return colorsys.hls_to_rgb(self.hue / 360.0, self.luma, self.saturation)
+
+    def __repr__(self):
+        return '<color-generator: index={}, hue={} saturation={} luma={}>'.format(self.index, self.hue, self.saturation,
+                                                                                  self.luma)
+
+
+class FadeToBlackStateField(FieldBase):
+    """
+    Data from the `FtbS`. This contains the information about the fade-to-black transition.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    bool   Fade to black done
+    2      1    bool   Fade to black is in transition
+    3      1    u8     Frames remaining in transition
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar done: Fade to black is completely done (blinking button state in the control panel)
+    :ivar transitioning: Fade to black is fading, (Solid red in control panel)
+    :ivar frames_remaining: Frames remaining in the transition
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.done, self.transitioning, self.frames_remaining = struct.unpack('>B??B', raw)
+
+    def __repr__(self):
+        return '<fade-to-black-state: me={}, done={}, transitioning={}, frames-remaining={}>'.format(self.index,
+                                                                                                     self.done,
+                                                                                                     self.transitioning,
+                                                                                                     self.frames_remaining)
