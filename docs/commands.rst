@@ -16,3 +16,19 @@ Protocol commands
 .. autoclass:: pyatem.command.PreviewInputCommand
    :members:
    :special-members:
+
+.. autoclass:: pyatem.command.TransitionPreviewCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.ColorGeneratorCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.FadeToBlackCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.CaptureStillCommand
+   :members:
+   :special-members:

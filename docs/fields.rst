@@ -39,3 +39,6 @@ Protocol fields
 
 .. autoclass:: pyatem.field.TallySourceField
    :members:
+
+.. autoclass:: pyatem.field.MediaplayerFileInfoField
+   :members:

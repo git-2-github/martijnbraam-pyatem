@@ -657,3 +657,39 @@ class FadeToBlackStateField(FieldBase):
                                                                                                      self.done,
                                                                                                      self.transitioning,
                                                                                                      self.frames_remaining)
+
+
+class MediaplayerFileInfoField(FieldBase):
+    """
+    Data from the `MPfe`. This is the metadata about a single frame slot in the mediaplayer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     type
+    1      1    ?      unknown
+    2      2    u16    index
+    4      1    bool   is used
+    5      16   char[] hash
+    21     2    ?      unknown
+    23     ?    string name of the slot, first byte is number of characters
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: Slot index
+    :ivar type: Slot type, 0=still
+    :ivar is_used: Slot contains data
+    :ivar hash: 16-byte md5 hash of the slot data
+    :ivar name: Name of the content in the slot
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        namelen = len(raw) - 23
+        self.type, self.index, self.is_used, self.hash, self.name = struct.unpack('>Bx H ? 16s 2x {}p'.format(namelen),
+                                                                                  raw)
+
+    def __repr__(self):
+        return '<mediaplayer-file-info: type={} index={} used={} name={}>'.format(self.type, self.index, self.is_used,
+                                                                                  self.name)

@@ -266,3 +266,19 @@ class FadeToBlackCommand(Command):
     def get_command(self):
         data = struct.pack('>B 3x', self.index)
         return self._make_command('FtbA', data)
+
+
+class CaptureStillCommand(Command):
+    """
+    Implementation of the `Capt` command. This saves the current frame of the program output into the media slots
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+                       this command has no data
+    ====== ==== ====== ===========
+
+    """
+
+    def get_command(self):
+        return self._make_command('Capt', b'')
