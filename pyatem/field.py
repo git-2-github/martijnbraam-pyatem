@@ -184,16 +184,22 @@ class VideoModeField(FieldBase):
             27: (1080, False, 60),
         }
 
-        self.resolution = modes[self.mode][0]
-        self.interlaced = modes[self.mode][1]
-        self.rate = modes[self.mode][2]
+        if self.mode in modes:
+            self.resolution = modes[self.mode][0]
+            self.interlaced = modes[self.mode][1]
+            self.rate = modes[self.mode][2]
 
-    def __repr__(self):
+    def get_label(self):
+        if self.resolution is None:
+            return 'unknown [{}]'.format(self.mode)
+
         pi = 'p'
         if self.interlaced:
             pi = 'i'
+        return '{}{}{}'.format(self.resolution, pi, self.rate)
 
-        return '<video-mode: mode={}: {}{}{}>'.format(self.mode, self.resolution, pi, self.rate)
+    def __repr__(self):
+        return '<video-mode: mode={}: {}>'.format(self.mode, self.get_label())
 
 
 class InputPropertiesField(FieldBase):

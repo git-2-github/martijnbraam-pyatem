@@ -82,6 +82,9 @@ class AtemWindow:
 
         self.ftb = builder.get_object('ftb')
 
+        self.status_model = builder.get_object('status_model')
+        self.status_mode = builder.get_object('status_mode')
+
         self.apply_css(window, self.provider)
 
         window.show_all()
@@ -207,6 +210,10 @@ class AtemWindow:
             print("Got topology field:")
             hexdump(data)
             print('---------------------------------')
+        elif field == 'product-name':
+            self.status_model.set_text(data.name)
+        elif field == 'video-mode':
+            self.status_mode.set_text(data.get_label())
         else:
             print(field)
 
