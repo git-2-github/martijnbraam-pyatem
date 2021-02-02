@@ -699,3 +699,60 @@ class MediaplayerFileInfoField(FieldBase):
     def __repr__(self):
         return '<mediaplayer-file-info: type={} index={} used={} name={}>'.format(self.type, self.index, self.is_used,
                                                                                   self.name)
+
+
+class TopologyField(FieldBase):
+    """
+    Data from the `_top` field. This describes the internal video routing topology.
+
+    ====== ==== ====== ========= ======= ====== ===========
+    Offset Size Type   Atem Mini 1M/E 4k TVS HD Description
+    ====== ==== ====== ========= ======= ====== ===========
+    0      1    u8     1         1       1      Number of M/E units
+    1      1    u8     14        31      24     Sources
+    2      1    u8     1         2       2      DSKs? Media players?
+    3      1    u8     1         3       1      AUX busses
+    4      1    u8     0         0       4      ?
+    5      1    u8     1         2       2      DSKs? Media players?
+    6      1    u8     0         1       1      ?
+    7      1    u8     0         1       1      ?
+    8      1    u8     4         4       4      ?
+    9      1    u8     1         1       1      ?
+    10     1    u8     0         1       0      ?
+    11     1    u8     0         0       0      ?
+    12     1    u8     0         1       1      ?
+    13     1    u8     0         0       1      Headphone outs?
+    14     1    u8     0         0       4      ?
+    15     1    u8     1         0       0      ?
+    16     1    u8     0         0       0      ?
+    17     1    u8     0         1       0      Stingers?
+    18     1    u8     1         1       1      ?
+    19     1    u8     0         1       1      ?
+    20     1    u8     0         1       1      ?
+    21     1    u8     0         1       1      ?
+    22     1    u8     1         0       0      ?
+    23     1    u8     1         0       0      ?
+    24     1    u8     1         0       0      ?
+    25     1    u8     0x20      0x20    0x10   ?
+    26     1    u8     3         0       0      ?
+    27     1    u8     0xe8      0x00    0x0    ?
+    ====== ==== ====== ========= ======= ====== ===========
+
+
+    After parsing:
+
+    :ivar me_units: Number of M/E units in the mixer
+    :ivar sources: Number of internal and external sources
+    :ivar aux_outputs: Number of routable AUX outputs
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>28B', raw)
+
+        self.me_units = field[0]
+        self.sources = field[1]
+        self.aux_outputs = field[3]
+
+    def __repr__(self):
+        return '<topology, me={} sources={} aux={}>'.format(self.me_units, self.sources, self.aux_outputs)

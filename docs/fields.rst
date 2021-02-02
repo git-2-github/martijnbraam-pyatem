@@ -42,3 +42,7 @@ Protocol fields
 
 .. autoclass:: pyatem.field.MediaplayerFileInfoField
    :members:
+
+.. autoclass:: pyatem.field.TopologyField
+   :members:
+
