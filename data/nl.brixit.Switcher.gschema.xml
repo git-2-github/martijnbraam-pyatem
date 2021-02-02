@@ -2,7 +2,7 @@
 <schemalist>
     <schema id="nl.brixit.Switcher" path="/nl/brixit/Switcher/">
         <key type="s" name="switcher-ip">
-            <default>0.0.0.0</default>
+            <default>"0.0.0.0"</default>
             <summary>Switcher ip address</summary>
             <description>Ip address of the BMD switcher</description>
         </key>

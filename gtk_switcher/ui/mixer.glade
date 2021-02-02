@@ -32,6 +32,16 @@
                 <property name="title">Mixer control</property>
               </object>
             </child>
+            <child>
+              <object class="GtkButton" id="preferences_button">
+                <property name="label">gtk-preferences</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+                <signal name="clicked" handler="on_preferences_button_clicked" swapped="no"/>
+              </object>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>

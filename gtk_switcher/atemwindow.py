@@ -1,9 +1,11 @@
+import ctypes
 import threading
 import time
 
 import gi
 from hexdump import hexdump
 
+from gtk_switcher.preferenceswindow import PreferencesWindow
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, CutCommand, AutoCommand, TransitionSettingsCommand, \
     TransitionPreviewCommand, ColorGeneratorCommand, FadeToBlackCommand
 from pyatem.field import InputPropertiesField, TransitionSettingsField
@@ -21,16 +23,39 @@ class AtemConnection(threading.Thread):
         threading.Thread.__init__(self)
         self.callback = callback
         self.atem = None
+        self.ip = None
+        self.stop = False
 
     def run(self):
-        self.mixer = AtemProtocol('192.168.2.17')
+        # Don't run if the ip isn't set yet
+        if self.ip is None or self.ip == '0.0.0.0':
+            return
+
+        self.mixer = AtemProtocol(self.ip)
         self.mixer.on('change', self.do_callback)
         self.mixer.connect()
-        while True:
+        while not self.stop:
             self.mixer.loop()
 
     def do_callback(self, *args, **kwargs):
         GLib.idle_add(self.callback, *args, **kwargs)
+
+    def get_id(self):
+
+        # returns id of the respective thread
+        if hasattr(self, '_thread_id'):
+            return self._thread_id
+        for id, thread in threading._active.items():
+            if thread is self:
+                return id
+
+    def die(self):
+        thread_id = self.get_id()
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id,
+                                                         ctypes.py_object(SystemExit))
+        if res > 1:
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
+            print('Exception raise failure')
 
 
 class AtemWindow:
@@ -39,16 +64,19 @@ class AtemWindow:
 
         Handy.init()
 
+        self.settings = Gio.Settings.new('nl.brixit.Switcher')
+        self.settings.connect('changed::switcher-ip', self.on_switcher_ip_changed)
+
         builder = Gtk.Builder()
-        builder.add_from_resource('/nl/brixit/atem/ui/mixer.glade')
+        builder.add_from_resource('/nl/brixit/switcher/ui/mixer.glade')
         builder.connect_signals(self)
-        css = Gio.resources_lookup_data("/nl/brixit/atem/ui/style.css", 0)
+        css = Gio.resources_lookup_data("/nl/brixit/switcher/ui/style.css", 0)
 
         self.provider = Gtk.CssProvider()
         self.provider.load_from_data(css.get_data())
 
-        window = builder.get_object("main_window")
-        window.set_application(self.application)
+        self.window = builder.get_object("main_window")
+        self.window.set_application(self.application)
 
         self.program_bus = builder.get_object('program')
         self.preview_bus = builder.get_object('preview')
@@ -85,13 +113,18 @@ class AtemWindow:
         self.status_model = builder.get_object('status_model')
         self.status_mode = builder.get_object('status_mode')
 
-        self.apply_css(window, self.provider)
+        self.apply_css(self.window, self.provider)
 
-        window.show_all()
+        self.window.show_all()
 
         self.firmware_version = None
 
         self.connection = AtemConnection(self.on_change)
+
+        if self.connection.ip == "0.0.0.0":
+            PreferencesWindow(self.window)
+
+        self.connection.ip = self.settings.get_string('switcher-ip')
         self.connection.daemon = True
         self.connection.start()
 
@@ -105,6 +138,17 @@ class AtemWindow:
         if isinstance(widget, Gtk.Container):
             widget.forall(self.apply_css, provider)
 
+    def on_switcher_ip_changed(self, *args):
+        print("Settings changed!")
+
+        self.connection.die()
+        self.connection.join(timeout=1)
+
+        self.connection = AtemConnection(self.on_change)
+        self.connection.daemon = True
+        self.connection.ip = self.settings.get_string('switcher-ip')
+        self.connection.start()
+
     def set_class(self, widget, classname, state):
         if state:
             widget.get_style_context().add_class(classname)
@@ -113,6 +157,9 @@ class AtemWindow:
 
     def on_main_window_destroy(self, widget):
         Gtk.main_quit()
+
+    def on_preferences_button_clicked(self, widget):
+        PreferencesWindow(self.window)
 
     def on_cut_clicked(self, widget):
         cmd = CutCommand(index=0)

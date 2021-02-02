@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/nl/brixit/atem">
+  <gresource prefix="/nl/brixit/switcher">
     <file>ui/mixer.glade</file>
+    <file>ui/connection.glade</file>
     <file>ui/style.css</file>
   </gresource>
 </gresources>
