@@ -117,7 +117,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="row-spacing">30</property>
-                                    <property name="column-spacing">10</property>
+                                    <property name="column-spacing">8</property>
                                     <child>
                                       <object class="GtkButton">
                                         <property name="label" translatable="yes">CAM1</property>
@@ -215,7 +215,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="row-spacing">30</property>
-                                    <property name="column-spacing">10</property>
+                                    <property name="column-spacing">8</property>
                                     <child>
                                       <object class="GtkButton">
                                         <property name="label" translatable="yes">CAM1</property>
@@ -313,7 +313,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="row-spacing">30</property>
-                                    <property name="column-spacing">10</property>
+                                    <property name="column-spacing">8</property>
                                     <child>
                                       <object class="GtkButton" id="next_bkgd">
                                         <property name="label" translatable="yes">BKGD</property>
@@ -544,7 +544,7 @@ AIR</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="row-spacing">30</property>
-                                    <property name="column-spacing">10</property>
+                                    <property name="column-spacing">8</property>
                                     <child>
                                       <object class="GtkButton" id="style_mix">
                                         <property name="label" translatable="yes">MIX</property>
@@ -894,10 +894,15 @@ TRANS</property>
                                 <property name="left-padding">12</property>
                                 <property name="right-padding">12</property>
                                 <child>
-                                  <object class="GtkBox">
+                                  <!-- n-columns=1 n-rows=4 -->
+                                  <object class="GtkGrid" id="dsks">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="orientation">vertical</property>
+                                    <property name="row-spacing">8</property>
+                                    <property name="column-spacing">8</property>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
                                     <child>
                                       <placeholder/>
                                     </child>
@@ -973,7 +978,7 @@ TRANS</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="row-spacing">30</property>
-                                    <property name="column-spacing">10</property>
+                                    <property name="column-spacing">8</property>
                                     <child>
                                       <object class="GtkButton" id="ftb">
                                         <property name="label" translatable="yes">FTB</property>

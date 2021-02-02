@@ -7,7 +7,8 @@ from hexdump import hexdump
 
 from gtk_switcher.preferenceswindow import PreferencesWindow
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, CutCommand, AutoCommand, TransitionSettingsCommand, \
-    TransitionPreviewCommand, ColorGeneratorCommand, FadeToBlackCommand
+    TransitionPreviewCommand, ColorGeneratorCommand, FadeToBlackCommand, DkeyOnairCommand, DkeyAutoCommand, \
+    DkeyTieCommand
 from pyatem.field import InputPropertiesField, TransitionSettingsField
 from pyatem.protocol import AtemProtocol
 
@@ -80,6 +81,7 @@ class AtemWindow:
 
         self.program_bus = builder.get_object('program')
         self.preview_bus = builder.get_object('preview')
+        self.dsks = builder.get_object('dsks')
         self.tbar_flip = False
         self.tbar = builder.get_object('tbar')
         self.tbar_adj = builder.get_object('tbar_adj')
@@ -255,14 +257,82 @@ class AtemWindow:
         elif field == 'topology':
             print('---------------------------------')
             print("Got topology field:")
-            hexdump(data)
+            hexdump(data.raw)
             print('---------------------------------')
+            self.on_topology_change(data)
         elif field == 'product-name':
             self.status_model.set_text(data.name)
         elif field == 'video-mode':
             self.status_mode.set_text(data.get_label())
+        elif field == 'dkey-properties':
+            self.on_dsk_change(data)
+        elif field == 'dkey-state':
+            self.on_dsk_state_change(data)
         else:
             print(field)
+
+    def on_dsk_change(self, data):
+        for child in self.dsks:
+            if hasattr(child, 'dsk_tie') and child.dsk_tie == data.index:
+                self.set_class(child, 'active', data.tie)
+
+    def on_dsk_state_change(self, data):
+        for child in self.dsks:
+            if hasattr(child, 'dsk_onair') and child.dsk_onair == data.index:
+                self.set_class(child, 'program', data.on_air)
+            if hasattr(child, 'dsk_auto') and child.dsk_auto == data.index:
+                self.set_class(child, 'active', data.is_autotransitioning)
+
+    def on_topology_change(self, data):
+        for child in self.dsks:
+            child.destroy()
+
+        for i in range(0, data.downstream_keyers):
+            tie_label = Gtk.Label(label="TIE")
+            tie = Gtk.Button()
+            tie.add(tie_label)
+            tie.dsk_tie = i
+            tie.set_size_request(48, 48)
+            tie.get_style_context().add_class('bmdbtn')
+            tie.connect('clicked', self.do_dsk_tie_clicked)
+            self.dsks.attach(tie, i, 0, 1, 1)
+
+            rate_label = Gtk.Label(label="1:00")
+            self.dsks.attach(rate_label, i, 1, 1, 1)
+
+            air_label = Gtk.Label(label="ON\nAIR")
+            air = Gtk.Button()
+            air.add(air_label)
+            air.dsk_onair = i
+            air.set_size_request(48, 48)
+            air.get_style_context().add_class('bmdbtn')
+            air.connect('clicked', self.do_dsk_onair_clicked)
+            self.dsks.attach(air, i, 2, 1, 1)
+
+            auto_label = Gtk.Label(label="AUTO")
+            auto = Gtk.Button()
+            auto.add(auto_label)
+            auto.dsk_auto = i
+            auto.set_size_request(48, 48)
+            auto.get_style_context().add_class('bmdbtn')
+            auto.connect('clicked', self.do_dsk_auto_clicked)
+            self.dsks.attach(auto, i, 3, 1, 1)
+        self.apply_css(self.dsks, self.provider)
+        self.dsks.show_all()
+
+    def do_dsk_tie_clicked(self, widget):
+        state = widget.get_style_context().has_class('active')
+        cmd = DkeyTieCommand(index=widget.dsk_tie, tie=not state)
+        self.connection.mixer.send_commands([cmd])
+
+    def do_dsk_onair_clicked(self, widget):
+        state = widget.get_style_context().has_class('program')
+        cmd = DkeyOnairCommand(index=widget.dsk_onair, on_air=not state)
+        self.connection.mixer.send_commands([cmd])
+
+    def do_dsk_auto_clicked(self, widget):
+        cmd = DkeyAutoCommand(index=widget.dsk_auto)
+        self.connection.mixer.send_commands([cmd])
 
     def on_mixer_effect_config_change(self, data):
         # Only M/E 1 is supported

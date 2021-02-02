@@ -282,3 +282,84 @@ class CaptureStillCommand(Command):
 
     def get_command(self):
         return self._make_command('Capt', b'')
+
+
+class DkeyOnairCommand(Command):
+    """
+    Implementation of the `CDsL` command. This setting the "on-air" state of the downstream keyer on or off
+    panel.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Keyer index, 0-indexed
+    1      1    ?      On air
+    2      2    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, on_air):
+        """
+        :param index: 0-indexed DSK number to control
+        :param on_air: The new on-air state for the keyer
+        """
+        self.index = index
+        self.on_air = on_air
+
+    def get_command(self):
+        data = struct.pack('>B?xx', self.index, self.on_air)
+        return self._make_command('CDsL', data)
+
+
+class DkeyTieCommand(Command):
+    """
+    Implementation of the `CDsT` command. This setting the "tie" state of the downstream keyer on or off
+    panel.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Keyer index, 0-indexed
+    1      1    ?      Tie
+    2      2    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, tie):
+        """
+        :param index: 0-indexed DSK number to control
+        :param tie: The new tie state for the keyer
+        """
+        self.index = index
+        self.tie = tie
+
+    def get_command(self):
+        data = struct.pack('>B?xx', self.index, self.tie)
+        return self._make_command('CDsT', data)
+
+
+class DkeyAutoCommand(Command):
+    """
+    Implementation of the `DDsA` command. This triggers the auto transition of a downstream keyer
+    panel.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Keyer index, 0-indexed
+    1      3    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index):
+        """
+        :param index: 0-indexed DSK number to trigger
+        """
+        self.index = index
+
+    def get_command(self):
+        data = struct.pack('>Bxxx', self.index)
+        return self._make_command('DDsA', data)

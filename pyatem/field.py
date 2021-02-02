@@ -756,6 +756,7 @@ class TopologyField(FieldBase):
 
     :ivar me_units: Number of M/E units in the mixer
     :ivar sources: Number of internal and external sources
+    :ivar downstream_keyers: Number of downstream keyers
     :ivar aux_outputs: Number of routable AUX outputs
     """
 
@@ -765,7 +766,100 @@ class TopologyField(FieldBase):
 
         self.me_units = field[0]
         self.sources = field[1]
+        self.downstream_keyers = field[2]
         self.aux_outputs = field[3]
 
     def __repr__(self):
         return '<topology, me={} sources={} aux={}>'.format(self.me_units, self.sources, self.aux_outputs)
+
+
+class DkeyPropertiesField(FieldBase):
+    """
+    Data from the `DskP`. Downstream keyer info.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     Downstream keyer index, 0-indexed
+    1      1    bool   Tie enabled
+    2      1    u8     Transition rate in frames
+    3      1    bool   Mask is pre-multiplied alpha
+    4      2    u16    Clip [0-1000]
+    6      2    u16    Gain [0-1000]
+    8      1    bool   Invert key
+    9      1    bool   Enable mask
+    10     2    i16    Top [-9000 - 9000]
+    12     2    i16    Bottom [-9000 - 9000]
+    14     2    i16    Left [-9000 - 9000]
+    16     2    i16    Right [-9000 - 9000]
+    18     2    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar done: Fade to black is completely done (blinking button state in the control panel)
+    :ivar transitioning: Fade to black is fading, (Solid red in control panel)
+    :ivar frames_remaining: Frames remaining in the transition
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>B?B ?HH? ?4h 2B', raw)
+        self.index = field[0]
+        self.tie = field[1]
+        self.rate = field[2]
+        self.premultiplied = field[3]
+        self.clip = field[4]
+        self.gain = field[5]
+        self.invert_key = field[6]
+        self.masked = field[7]
+        self.top = field[8]
+        self.bottom = field[9]
+        self.left = field[10]
+        self.right = field[11]
+
+    def __repr__(self):
+        return '<downstream-keyer-mask: dsk={}, tie={}, rate={}, masked={}>'.format(self.index, self.tie, self.rate,
+                                                                                    self.masked)
+
+
+class DkeyStateField(FieldBase):
+    """
+    Data from the `DskS`. Downstream keyer state.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     Downstream keyer index, 0-indexed
+    1      1    bool   On air
+    2      1    bool   Is transitioning
+    3      1    bool   Is autotransitioning
+    4      1    u8     Frames remaining
+    5      3    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: Downstream keyer index
+    :ivar on_air: Keyer is on air
+    :ivar is_transitioning: Is transitioning
+    :ivar is_autotransitioning: Is transitioning due to auto button
+    :ivar frames_remaining: Frames remaining in transition
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>B 3? B 3x', raw)
+        self.index = field[0]
+        self.on_air = field[1]
+        self.is_transitioning = field[2]
+        self.is_autotransitioning = field[3]
+        self.frames_remaining = field[4]
+
+    def __repr__(self):
+        return '<downstream-keyer-state: dsk={}, onair={}, transitioning={} autotrans={} frames={}>'.format(self.index,
+                                                                                                            self.on_air,
+                                                                                                            self.is_transitioning,
+                                                                                                            self.is_autotransitioning,
+                                                                                                            self.frames_remaining)
