@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Switcher control
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Exec=switcher-control
+GenericName=Video switcher
+Icon=nl.brixit.Switcher
+Categories=GTK;GNOME;Utility
+X-DBUS-ServiceName=nl.brixit.Switcher
