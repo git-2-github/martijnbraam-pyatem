@@ -705,6 +705,19 @@ class TopologyField(FieldBase):
     """
     Data from the `_top` field. This describes the internal video routing topology.
 
+    =================== ========= ======= ======
+    spec                Atem Mini 1M/E 4k TVS HD
+    =================== ========= ======= ======
+    M/E units           1         1       1
+    upstream keyers     1         1       1
+    downstream keyers   1         2       2
+    dve                 1         ?       1
+    stinger             0         ?       ?
+    supersources        0         0       0
+    multiview           0         1       1
+    rs485               0         1       1
+    =================== ========= ======= ======
+
     ====== ==== ====== ========= ======= ====== ===========
     Offset Size Type   Atem Mini 1M/E 4k TVS HD Description
     ====== ==== ====== ========= ======= ====== ===========
