@@ -2,6 +2,7 @@ import threading
 import time
 
 import gi
+from hexdump import hexdump
 
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, CutCommand, AutoCommand, TransitionSettingsCommand, \
     TransitionPreviewCommand, ColorGeneratorCommand, FadeToBlackCommand
@@ -201,6 +202,11 @@ class AtemWindow:
             self.on_ftb_state_change(data)
         elif field == 'mixer-effect-config':
             self.on_mixer_effect_config_change(data)
+        elif field == 'topology':
+            print('---------------------------------')
+            print("Got topology field:")
+            hexdump(data)
+            print('---------------------------------')
         else:
             print(field)
 
