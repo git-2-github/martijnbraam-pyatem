@@ -60,8 +60,9 @@ class AtemConnection(threading.Thread):
 
 
 class AtemWindow:
-    def __init__(self, application):
+    def __init__(self, application, args):
         self.application = application
+        self.args = args
 
         Handy.init()
 
@@ -124,10 +125,15 @@ class AtemWindow:
 
         self.connection = AtemConnection(self.on_change)
 
-        if self.connection.ip == "0.0.0.0":
-            PreferencesWindow(self.window)
+        if args.ip:
+            self.connection.ip = args.ip
+            if args.persist:
+                self.settings.set_string('switcher-ip', args.ip)
+        else:
+            if self.connection.ip == "0.0.0.0":
+                PreferencesWindow(self.window)
 
-        self.connection.ip = self.settings.get_string('switcher-ip')
+            self.connection.ip = self.settings.get_string('switcher-ip')
         self.connection.daemon = True
         self.connection.start()
 
