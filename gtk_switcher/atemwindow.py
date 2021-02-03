@@ -8,7 +8,7 @@ from hexdump import hexdump
 from gtk_switcher.preferenceswindow import PreferencesWindow
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, CutCommand, AutoCommand, TransitionSettingsCommand, \
     TransitionPreviewCommand, ColorGeneratorCommand, FadeToBlackCommand, DkeyOnairCommand, DkeyAutoCommand, \
-    DkeyTieCommand
+    DkeyTieCommand, TransitionPositionCommand
 from pyatem.field import InputPropertiesField, TransitionSettingsField
 from pyatem.protocol import AtemProtocol
 
@@ -200,6 +200,14 @@ class AtemWindow:
 
     def on_style_dve_clicked(self, widget):
         cmd = TransitionSettingsCommand(index=0, style=TransitionSettingsField.STYLE_DVE)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_tbar_adj_value_changed(self, widget):
+        val = widget.get_value() / 100.0
+        if val == 1.0:
+            cmd = TransitionPositionCommand(index=0, position=0)
+        else:
+            cmd = TransitionPositionCommand(index=0, position=val)
         self.connection.mixer.send_commands([cmd])
 
     def on_next_clicked(self, widget):

@@ -45,3 +45,22 @@ box.mp-slot {
     min-width: 100px;
     min-height: 100px;
 }
+
+
+scale.tbar {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+scale.tbar slider {
+    background: linear-gradient(#ccc, #eee, #cba);
+    border-radius: 12px;
+    min-height: 24px;
+    min-width: 48px;
+    margin-top: -12px;
+    margin-bottom: -12px;
+    margin-left: -22px;
+    margin-right: -22px;
+
+    box-shadow: 2px 3px 4px 0 rgba(0, 0, 0, 0.5);
+}
