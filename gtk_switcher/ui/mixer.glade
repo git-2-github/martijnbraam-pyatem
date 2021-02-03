@@ -721,6 +721,8 @@ TRANS</property>
                                             <property name="max-width-chars">4</property>
                                             <property name="text" translatable="yes">1:00</property>
                                             <property name="xalign">0.5</property>
+                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
                                             <style>
                                               <class name="rate"/>
                                             </style>
@@ -1031,6 +1033,8 @@ TRANS</property>
                                             <property name="max-width-chars">4</property>
                                             <property name="text" translatable="yes">1:00</property>
                                             <property name="xalign">0.5</property>
+                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
                                             <style>
                                               <class name="rate"/>
                                             </style>
@@ -1587,6 +1591,7 @@ TRANS</property>
                                                       <object class="GtkStack" id="transitions_stack">
                                                         <property name="visible">True</property>
                                                         <property name="can-focus">False</property>
+                                                        <property name="vhomogeneous">False</property>
                                                         <child>
                                                           <!-- n-columns=2 n-rows=1 -->
                                                           <object class="GtkGrid">
@@ -1613,6 +1618,8 @@ TRANS</property>
                                                             <object class="GtkEntry" id="mix_rate">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
+                                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
                                                             </object>
                                                             <packing>
                                                             <property name="left-attach">1</property>
@@ -1666,6 +1673,8 @@ TRANS</property>
                                                             <object class="GtkEntry" id="dip_rate">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
+                                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
                                                             </object>
                                                             <packing>
                                                             <property name="left-attach">1</property>

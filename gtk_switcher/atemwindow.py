@@ -120,6 +120,7 @@ class AtemWindow:
 
         self.status_model = builder.get_object('status_model')
         self.status_mode = builder.get_object('status_mode')
+        self.disable_shortcuts = False
 
         self.apply_css(self.window, self.provider)
 
@@ -167,16 +168,25 @@ class AtemWindow:
         Gtk.main()
 
     def on_preview_keyboard_change(self, widget, window, key, modifier):
+        if self.disable_shortcuts:
+            return
+
         index = key - 49
         cmd = PreviewInputCommand(index=0, source=index + 1)
         self.connection.mixer.send_commands([cmd])
 
     def on_program_keyboard_change(self, widget, window, key, modifier):
+        if self.disable_shortcuts:
+            return
+
         index = key - 49
         cmd = ProgramInputCommand(index=0, source=index + 1)
         self.connection.mixer.send_commands([cmd])
 
     def on_cutbus_keyboard_change(self, widget, window, key, modifier):
+        if self.disable_shortcuts:
+            return
+
         index = key - 49
         cmd = PreviewInputCommand(index=0, source=index + 1)
         auto = AutoCommand(index=0)
@@ -302,6 +312,12 @@ class AtemWindow:
         color = widget.get_rgba()
         cmd = ColorGeneratorCommand.from_rgb(index=1, red=color.red, green=color.green, blue=color.blue)
         self.connection.mixer.send_commands([cmd])
+
+    def on_rate_focus(self, *args):
+        self.disable_shortcuts = True
+
+    def on_rate_unfocus(self, *args):
+        self.disable_shortcuts = False
 
     def frames_to_time(self, frames):
         # WTF BMD
