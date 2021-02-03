@@ -84,7 +84,6 @@ class AtemWindow:
         self.preview_bus = builder.get_object('preview')
         self.dsks = builder.get_object('dsks')
         self.media_flow = builder.get_object('media_flow')
-        self.tbar_flip = True
         self.tbar = builder.get_object('tbar')
         self.tbar_adj = builder.get_object('tbar_adj')
         self.tbar_held = False
@@ -250,6 +249,7 @@ class AtemWindow:
             # Transition done
             widget.set_value(0.0)
             self.tbar.set_inverted(not self.tbar.get_inverted())
+            self.transition_progress.set_inverted(self.tbar.get_inverted())
             cmd = TransitionPositionCommand(index=0, position=0)
         else:
             cmd = TransitionPositionCommand(index=0, position=val)
@@ -493,11 +493,10 @@ class AtemWindow:
             self.last_transition_state = data.in_transition
             if not data.in_transition:
                 # Transition just ended, perform the flip
-                self.tbar_flip = not self.tbar_flip
                 self.tbar.set_inverted(not self.tbar.get_inverted())
+                self.transition_progress.set_inverted(self.tbar.get_inverted())
                 self.tbar_adj.set_value(0.0)
 
-        self.transition_progress.set_inverted(self.tbar_flip)
         self.transition_progress.set_fraction(data.position)
         if not self.tbar_held:
             self.tbar_adj.set_value(data.position * 100.0)
