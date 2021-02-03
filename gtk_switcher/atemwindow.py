@@ -87,6 +87,7 @@ class AtemWindow:
         self.tbar_flip = True
         self.tbar = builder.get_object('tbar')
         self.tbar_adj = builder.get_object('tbar_adj')
+        self.tbar_held = False
         self.transition_progress = builder.get_object('transition_progress')
         self.last_transition_state = False
         self.auto = builder.get_object('auto')
@@ -192,6 +193,12 @@ class AtemWindow:
     def on_preferences_button_clicked(self, widget):
         PreferencesWindow(self.window)
 
+    def on_tbar_button_press_event(self, widget, *args):
+        self.tbar_held = True
+
+    def on_tbar_button_release_event(self, widget, *args):
+        self.tbar_held = False
+
     def on_cut_clicked(self, widget, *args):
         cmd = CutCommand(index=0)
         self.connection.mixer.send_commands([cmd])
@@ -225,6 +232,10 @@ class AtemWindow:
         self.connection.mixer.send_commands([cmd])
 
     def on_tbar_adj_value_changed(self, widget):
+        # Ignore value changes if it's not from the user
+        if not self.tbar_held:
+            return
+
         val = widget.get_value() / 100.0
         if val == 1.0:
             # Transition done
@@ -475,9 +486,12 @@ class AtemWindow:
                 # Transition just ended, perform the flip
                 self.tbar_flip = not self.tbar_flip
                 self.tbar.set_inverted(not self.tbar.get_inverted())
+                self.tbar_adj.set_value(0.0)
 
         self.transition_progress.set_inverted(self.tbar_flip)
         self.transition_progress.set_fraction(data.position)
+        if not self.tbar_held:
+            self.tbar_adj.set_value(data.position * 100.0)
 
     def on_program_input_change(self, data):
         # support only M/E 1
