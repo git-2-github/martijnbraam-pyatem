@@ -452,6 +452,7 @@ class AtemWindow:
             if not data.in_transition:
                 # Transition just ended, perform the flip
                 self.tbar_flip = not self.tbar_flip
+                self.tbar.set_inverted(not self.tbar.get_inverted())
 
         self.transition_progress.set_inverted(self.tbar_flip)
         self.transition_progress.set_fraction(data.position)
