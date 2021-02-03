@@ -9,7 +9,7 @@ setup(
     author='Martijn Braam',
     author_email='martijn@brixit.nl',
     description='Library implementing the Blackmagic Design Atem switcher protocol',
-    long_description=open("README.rst").read(),
+    long_description=open("README").read(),
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
