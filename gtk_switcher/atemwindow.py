@@ -148,6 +148,9 @@ class AtemWindow:
             accel.connect(Gdk.keyval_from_name(str(i)), 0, 0, self.on_preview_keyboard_change)
             accel.connect(Gdk.keyval_from_name(str(i)), Gdk.ModifierType.CONTROL_MASK, 0,
                           self.on_program_keyboard_change)
+            accel.connect(Gdk.keyval_from_name(str(i)), Gdk.ModifierType.MOD1_MASK, 0,
+                          self.on_cutbus_keyboard_change)
+
         self.window.add_accel_group(accel)
 
         Gtk.main()
@@ -161,6 +164,12 @@ class AtemWindow:
         index = key - 49
         cmd = ProgramInputCommand(index=0, source=index + 1)
         self.connection.mixer.send_commands([cmd])
+
+    def on_cutbus_keyboard_change(self, widget, window, key, modifier):
+        index = key - 49
+        cmd = PreviewInputCommand(index=0, source=index + 1)
+        auto = AutoCommand(index=0)
+        self.connection.mixer.send_commands([cmd, auto])
 
     def apply_css(self, widget, provider):
         Gtk.StyleContext.add_provider(widget.get_style_context(),
