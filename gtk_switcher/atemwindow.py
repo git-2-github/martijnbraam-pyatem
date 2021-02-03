@@ -205,6 +205,9 @@ class AtemWindow:
     def on_tbar_adj_value_changed(self, widget):
         val = widget.get_value() / 100.0
         if val == 1.0:
+            # Transition done
+            widget.set_value(0.0)
+            self.tbar.set_inverted(not self.tbar.get_inverted())
             cmd = TransitionPositionCommand(index=0, position=0)
         else:
             cmd = TransitionPositionCommand(index=0, position=val)
