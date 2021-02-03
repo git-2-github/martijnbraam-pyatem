@@ -84,7 +84,7 @@ class AtemWindow:
         self.preview_bus = builder.get_object('preview')
         self.dsks = builder.get_object('dsks')
         self.media_flow = builder.get_object('media_flow')
-        self.tbar_flip = False
+        self.tbar_flip = True
         self.tbar = builder.get_object('tbar')
         self.tbar_adj = builder.get_object('tbar_adj')
         self.transition_progress = builder.get_object('transition_progress')
