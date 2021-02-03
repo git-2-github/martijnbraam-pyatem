@@ -915,3 +915,30 @@ class FadeToBlackField(FieldBase):
 
     def __repr__(self):
         return '<fade-to-black: me={}, rate={}>'.format(self.index, self.rate)
+
+
+class TransitionDipField(FieldBase):
+    """
+    Data from the `TDpP`. Settings for the dip transition.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    u8     rate in frames
+    2      2    u16    Source index for the DIP source
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar rate: Number of frames in transition
+    :ivar source: Source index for the dip
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.rate, self.source = struct.unpack('>BBH', raw)
+
+    def __repr__(self):
+        return '<transition-dip: me={}, rate={} source={}>'.format(self.index, self.rate, self.source)

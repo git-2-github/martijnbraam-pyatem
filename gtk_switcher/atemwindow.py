@@ -92,6 +92,7 @@ class AtemWindow:
         self.auto = builder.get_object('auto')
         self.auto_rate = builder.get_object('auto_rate')
         self.mix_rate = builder.get_object('mix_rate')
+        self.dip_rate = builder.get_object('dip_rate')
         self.ftb_rate = builder.get_object('ftb_rate')
 
         self.style_mix = builder.get_object('style_mix')
@@ -364,6 +365,8 @@ class AtemWindow:
             self.on_mediaplayer_slots_change(data)
         elif field == 'transition-mix':
             self.on_transition_mix_change(data)
+        elif field == 'transition-dip':
+            self.on_transition_dip_change(data)
         else:
             if isinstance(data, bytes):
                 print(field)
@@ -379,6 +382,13 @@ class AtemWindow:
         self.mix_rate.set_text(label)
         self.rate['mix'] = label
         if self.style_mix.get_style_context().has_class('active'):
+            self.auto_rate.set_text(label)
+
+    def on_transition_dip_change(self, data):
+        label = self.frames_to_time(data.rate)
+        self.dip_rate.set_text(label)
+        self.rate['dip'] = label
+        if self.style_dip.get_style_context().has_class('active'):
             self.auto_rate.set_text(label)
 
     def on_mediaplayer_slots_change(self, data):
