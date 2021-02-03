@@ -37,7 +37,7 @@
               <object class="GtkButton" id="preferences_button">
                 <property name="label">gtk-preferences</property>
                 <property name="visible">True</property>
-                <property name="can-focus">True</property>
+                <property name="can-focus">False</property>
                 <property name="receives-default">True</property>
                 <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_preferences_button_clicked" swapped="no"/>
@@ -321,7 +321,7 @@
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_next_clicked" swapped="no"/>
                                         <style>
@@ -339,7 +339,7 @@
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_next_clicked" swapped="no"/>
                                         <style>
@@ -357,7 +357,7 @@
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_next_clicked" swapped="no"/>
                                         <style>
@@ -375,7 +375,7 @@
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_next_clicked" swapped="no"/>
                                         <style>
@@ -393,7 +393,7 @@
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_next_clicked" swapped="no"/>
                                         <style>
@@ -412,7 +412,7 @@ AIR</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <style>
                                           <class name="bmdbtn"/>
@@ -430,7 +430,7 @@ AIR</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <style>
                                           <class name="bmdbtn"/>
@@ -448,7 +448,7 @@ AIR</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <style>
                                           <class name="bmdbtn"/>
@@ -466,7 +466,7 @@ AIR</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <style>
                                           <class name="bmdbtn"/>
@@ -552,7 +552,7 @@ AIR</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_style_mix_clicked" swapped="no"/>
                                         <style>
@@ -571,7 +571,7 @@ AIR</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_style_dip_clicked" swapped="no"/>
                                         <style>
@@ -589,7 +589,7 @@ AIR</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_style_wipe_clicked" swapped="no"/>
                                         <style>
@@ -607,7 +607,7 @@ AIR</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_style_sting_clicked" swapped="no"/>
                                         <style>
@@ -625,7 +625,7 @@ AIR</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_style_dve_clicked" swapped="no"/>
                                         <style>
@@ -644,7 +644,7 @@ TRANS</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_prev_trans_clicked" swapped="no"/>
                                         <style>
@@ -662,7 +662,7 @@ TRANS</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_cut_clicked" swapped="no"/>
                                         <style>
@@ -680,7 +680,7 @@ TRANS</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_auto_clicked" swapped="no"/>
                                         <style>
@@ -988,7 +988,7 @@ TRANS</property>
                                         <property name="width-request">48</property>
                                         <property name="height-request">48</property>
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
+                                        <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="clicked" handler="on_ftb_clicked" swapped="no"/>
                                         <style>

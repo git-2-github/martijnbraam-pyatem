@@ -137,7 +137,29 @@ class AtemWindow:
         self.connection.daemon = True
         self.connection.start()
 
+        accel = Gtk.AccelGroup()
+        accel.connect(Gdk.keyval_from_name('space'), 0, 0, self.on_cut_clicked)
+        accel.connect(Gdk.keyval_from_name('ISO_Enter'), 0, 0, self.on_auto_clicked)
+        accel.connect(Gdk.keyval_from_name('Return'), 0, 0, self.on_auto_clicked)
+        accel.connect(Gdk.keyval_from_name('KP_Enter'), 0, 0, self.on_auto_clicked)
+
+        for i in range(0, 9):
+            accel.connect(Gdk.keyval_from_name(str(i)), 0, 0, self.on_preview_keyboard_change)
+            accel.connect(Gdk.keyval_from_name(str(i)), Gdk.ModifierType.CONTROL_MASK, 0,
+                          self.on_program_keyboard_change)
+        self.window.add_accel_group(accel)
+
         Gtk.main()
+
+    def on_preview_keyboard_change(self, widget, window, key, modifier):
+        index = key - 49
+        cmd = PreviewInputCommand(index=0, source=index + 1)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_program_keyboard_change(self, widget, window, key, modifier):
+        index = key - 49
+        cmd = ProgramInputCommand(index=0, source=index + 1)
+        self.connection.mixer.send_commands([cmd])
 
     def apply_css(self, widget, provider):
         Gtk.StyleContext.add_provider(widget.get_style_context(),
@@ -170,11 +192,11 @@ class AtemWindow:
     def on_preferences_button_clicked(self, widget):
         PreferencesWindow(self.window)
 
-    def on_cut_clicked(self, widget):
+    def on_cut_clicked(self, widget, *args):
         cmd = CutCommand(index=0)
         self.connection.mixer.send_commands([cmd])
 
-    def on_auto_clicked(self, widget):
+    def on_auto_clicked(self, widget, *args):
         cmd = AutoCommand(index=0)
         self.connection.mixer.send_commands([cmd])
 
