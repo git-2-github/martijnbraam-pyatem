@@ -38,3 +38,10 @@ stackswitcher.less-padding button {
     margin: 0;
     min-width: 45px;
 }
+
+box.mp-slot {
+    background: #000;
+    border: 1px solid black;
+    min-width: 100px;
+    min-height: 100px;
+}

@@ -82,6 +82,7 @@ class AtemWindow:
         self.program_bus = builder.get_object('program')
         self.preview_bus = builder.get_object('preview')
         self.dsks = builder.get_object('dsks')
+        self.media_flow = builder.get_object('media_flow')
         self.tbar_flip = False
         self.tbar = builder.get_object('tbar')
         self.tbar_adj = builder.get_object('tbar_adj')
@@ -268,8 +269,31 @@ class AtemWindow:
             self.on_dsk_change(data)
         elif field == 'dkey-state':
             self.on_dsk_state_change(data)
+        elif field == 'mediaplayer-slots':
+            self.on_mediaplayer_slots_change(data)
         else:
-            print(field)
+            if isinstance(data, bytes):
+                print(field)
+            else:
+                print(data)
+
+    def on_mediaplayer_slots_change(self, data):
+        for child in self.media_flow:
+            child.destroy()
+
+        for i in range(0, data.stills):
+            slot = Gtk.Box()
+            slot_label = Gtk.Label(label=str(i + 1))
+            slot_label.get_style_context().add_class('dim-label')
+            slot.pack_start(slot_label, False, False, False)
+
+            slot_img = Gtk.Box()
+            slot_img.get_style_context().add_class('mp-slot')
+            slot_img.set_size_request(160, 120)
+            slot.pack_start(slot_img, False, False, False)
+
+            self.media_flow.add(slot)
+        self.media_flow.show_all()
 
     def on_dsk_change(self, data):
         for child in self.dsks:
