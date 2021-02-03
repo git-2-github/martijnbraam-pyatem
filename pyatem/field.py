@@ -863,3 +863,55 @@ class DkeyStateField(FieldBase):
                                                                                                             self.is_transitioning,
                                                                                                             self.is_autotransitioning,
                                                                                                             self.frames_remaining)
+
+
+class TransitionMixField(FieldBase):
+    """
+    Data from the `TMxP`. Settings for the mix transition.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    u8     rate in frames
+    2      2    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar rate: Number of frames in the transition
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.rate = struct.unpack('>BBxx', raw)
+
+    def __repr__(self):
+        return '<transition-mix: me={}, rate={}>'.format(self.index, self.rate)
+
+
+class FadeToBlackField(FieldBase):
+    """
+    Data from the `FtbP`. Settings for the fade-to-black transition.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    u8     rate in frames
+    2      2    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar rate: Number of frames in transition
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.rate = struct.unpack('>BBxx', raw)
+
+    def __repr__(self):
+        return '<fade-to-black: me={}, rate={}>'.format(self.index, self.rate)

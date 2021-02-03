@@ -90,6 +90,9 @@ class AtemWindow:
         self.transition_progress = builder.get_object('transition_progress')
         self.last_transition_state = False
         self.auto = builder.get_object('auto')
+        self.auto_rate = builder.get_object('auto_rate')
+        self.mix_rate = builder.get_object('mix_rate')
+        self.ftb_rate = builder.get_object('ftb_rate')
 
         self.style_mix = builder.get_object('style_mix')
         self.style_dip = builder.get_object('style_dip')
@@ -122,6 +125,14 @@ class AtemWindow:
         self.window.show_all()
 
         self.firmware_version = None
+        self.mode = None
+        self.rate = {
+            'mix': '0:00',
+            'dip': '0:00',
+            'wipe': '0:00',
+            'sting': '0:00',
+            'dve': '0:00'
+        }
 
         self.connection = AtemConnection(self.on_change)
 
@@ -291,6 +302,24 @@ class AtemWindow:
         cmd = ColorGeneratorCommand.from_rgb(index=1, red=color.red, green=color.green, blue=color.blue)
         self.connection.mixer.send_commands([cmd])
 
+    def frames_to_time(self, frames):
+        # WTF BMD
+        if self.mode.rate < 29:
+            transition_rate = 25
+        elif self.mode.rate < 49:
+            transition_rate = 30
+        elif self.mode.rate < 59:
+            transition_rate = 25
+        else:
+            transition_rate = 30
+
+        if self.mode is None:
+            return '00:00'
+
+        seconds = frames // transition_rate
+        frames = frames % transition_rate
+        return '{:02d}:{:02d}'.format(int(seconds), int(frames))
+
     def on_change(self, field, data):
         if field == 'firmware-version':
             self.firmware_version = data
@@ -310,6 +339,8 @@ class AtemWindow:
             self.on_key_on_air_change(data)
         elif field == 'color-generator':
             self.on_color_change(data)
+        elif field == 'fade-to-black':
+            self.on_ftb_change(data)
         elif field == 'fade-to-black-state':
             self.on_ftb_state_change(data)
         elif field == 'mixer-effect-config':
@@ -323,6 +354,7 @@ class AtemWindow:
         elif field == 'product-name':
             self.status_model.set_text(data.name)
         elif field == 'video-mode':
+            self.mode = data
             self.status_mode.set_text(data.get_label())
         elif field == 'dkey-properties':
             self.on_dsk_change(data)
@@ -330,11 +362,24 @@ class AtemWindow:
             self.on_dsk_state_change(data)
         elif field == 'mediaplayer-slots':
             self.on_mediaplayer_slots_change(data)
+        elif field == 'transition-mix':
+            self.on_transition_mix_change(data)
         else:
             if isinstance(data, bytes):
                 print(field)
             else:
                 print(data)
+
+    def on_ftb_change(self, data):
+        label = self.frames_to_time(data.rate)
+        self.ftb_rate.set_text(label)
+
+    def on_transition_mix_change(self, data):
+        label = self.frames_to_time(data.rate)
+        self.mix_rate.set_text(label)
+        self.rate['mix'] = label
+        if self.style_mix.get_style_context().has_class('active'):
+            self.auto_rate.set_text(label)
 
     def on_mediaplayer_slots_change(self, data):
         for child in self.media_flow:
@@ -482,6 +527,17 @@ class AtemWindow:
         self.set_class(self.next_key2, 'active', data.next_transition_key2)
         self.set_class(self.next_key3, 'active', data.next_transition_key3)
         self.set_class(self.next_key4, 'active', data.next_transition_key4)
+
+        if data.style == TransitionSettingsField.STYLE_MIX:
+            self.auto_rate.set_text(self.rate['mix'])
+        elif data.style == TransitionSettingsField.STYLE_DIP:
+            self.auto_rate.set_text(self.rate['dip'])
+        elif data.style == TransitionSettingsField.STYLE_WIPE:
+            self.auto_rate.set_text(self.rate['wipe'])
+        elif data.style == TransitionSettingsField.STYLE_STING:
+            self.auto_rate.set_text(self.rate['sting'])
+        elif data.style == TransitionSettingsField.STYLE_DVE:
+            self.auto_rate.set_text(self.rate['dve'])
 
     def on_transition_position_change(self, data):
         if data.in_transition:
