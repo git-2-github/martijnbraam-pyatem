@@ -67,7 +67,7 @@
                   <!-- n-columns=9 n-rows=5 -->
                   <object class="GtkGrid">
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
+                    <property name="can-focus">True</property>
                     <property name="margin-start">12</property>
                     <property name="margin-end">12</property>
                     <property name="margin-top">12</property>
@@ -721,6 +721,7 @@ TRANS</property>
                                             <property name="max-width-chars">4</property>
                                             <property name="text" translatable="yes">1:00</property>
                                             <property name="xalign">0.5</property>
+                                            <signal name="activate" handler="on_auto_rate_activate" swapped="no"/>
                                             <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
                                             <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
                                             <style>
@@ -1315,7 +1316,17 @@ TRANS</property>
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkEventBox" id="focus_dummy">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left-attach">3</property>
+                        <property name="top-attach">2</property>
+                      </packing>
                     </child>
                     <child>
                       <placeholder/>

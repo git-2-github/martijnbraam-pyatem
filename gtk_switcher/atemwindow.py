@@ -8,7 +8,7 @@ from hexdump import hexdump
 from gtk_switcher.preferenceswindow import PreferencesWindow
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, CutCommand, AutoCommand, TransitionSettingsCommand, \
     TransitionPreviewCommand, ColorGeneratorCommand, FadeToBlackCommand, DkeyOnairCommand, DkeyAutoCommand, \
-    DkeyTieCommand, TransitionPositionCommand
+    DkeyTieCommand, TransitionPositionCommand, MixSettingsCommand, DipSettingsCommand
 from pyatem.field import InputPropertiesField, TransitionSettingsField
 from pyatem.protocol import AtemProtocol
 
@@ -110,6 +110,8 @@ class AtemWindow:
         self.onair_key2 = builder.get_object('onair_key2')
         self.onair_key3 = builder.get_object('onair_key3')
         self.onair_key4 = builder.get_object('onair_key4')
+
+        self.focus_dummy = builder.get_object('focus_dummy')
 
         self.prev_trans = builder.get_object('prev_trans')
 
@@ -234,6 +236,8 @@ class AtemWindow:
         self.connection.mixer.send_commands([cmd])
 
     def on_auto_clicked(self, widget, *args):
+        if len(args) > 0 and self.disable_shortcuts:
+            return
         cmd = AutoCommand(index=0)
         self.connection.mixer.send_commands([cmd])
 
@@ -313,6 +317,42 @@ class AtemWindow:
         cmd = ColorGeneratorCommand.from_rgb(index=1, red=color.red, green=color.green, blue=color.blue)
         self.connection.mixer.send_commands([cmd])
 
+    def on_auto_rate_activate(self, widget, *args):
+        cmd = None
+        style = None
+
+        # Get current transition style
+        if self.style_mix.get_style_context().has_class('active'):
+            style = 'mix'
+        elif self.style_dip.get_style_context().has_class('active'):
+            style = 'dip'
+        elif self.style_wipe.get_style_context().has_class('active'):
+            style = 'wipe'
+        elif self.style_sting.get_style_context().has_class('active'):
+            style = 'sting'
+        elif self.style_dve.get_style_context().has_class('active'):
+            style = 'dve'
+
+        # Try to parse the new rate, on failure restore last rate
+        try:
+            frames = self.time_to_frames(self.auto_rate.get_text())
+        except Exception as e:
+            if style is not None:
+                self.auto_rate.set_text(self.rate[style])
+            print(e)
+            return
+
+        # Send new rate to the mixer
+        if style == 'mix':
+            cmd = MixSettingsCommand(index=0, rate=frames)
+        elif style == 'dip':
+            cmd = DipSettingsCommand(index=0, rate=frames)
+        if cmd is not None:
+            self.connection.mixer.send_commands([cmd])
+
+        # Remove focus from the entry so the keyboard shortcuts start working again
+        self.focus_dummy.grab_focus()
+
     def on_rate_focus(self, *args):
         self.disable_shortcuts = True
 
@@ -336,6 +376,25 @@ class AtemWindow:
         seconds = frames // transition_rate
         frames = frames % transition_rate
         return '{:02d}:{:02d}'.format(int(seconds), int(frames))
+
+    def time_to_frames(self, timestr):
+        if self.mode.rate < 29:
+            transition_rate = 25
+        elif self.mode.rate < 49:
+            transition_rate = 30
+        elif self.mode.rate < 59:
+            transition_rate = 25
+        else:
+            transition_rate = 30
+
+        if self.mode is None:
+            return 0
+
+        part = timestr.split(':')
+        if len(part) == 1:
+            return int(part[0]) * transition_rate
+        elif len(part) == 2:
+            return (int(part[0]) * transition_rate) + int(part[1])
 
     def on_change(self, field, data):
         if field == 'firmware-version':

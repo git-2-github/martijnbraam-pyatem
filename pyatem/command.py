@@ -363,3 +363,73 @@ class DkeyAutoCommand(Command):
     def get_command(self):
         data = struct.pack('>Bxxx', self.index)
         return self._make_command('DDsA', data)
+
+
+class MixSettingsCommand(Command):
+    """
+    Implementation of the `CTMx` command. This sets the transition duration for the mix transition
+    panel.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index, 0-indexed
+    1      1    u8     Rate in frames
+    2      2    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, rate):
+        """
+        :param index: 0-indexed DSK number to trigger
+        :param rate: Transition length in frames
+        """
+        self.index = index
+        self.rate = rate
+
+    def get_command(self):
+        data = struct.pack('>BBxx', self.index, self.rate)
+        return self._make_command('CTMx', data)
+
+
+class DipSettingsCommand(Command):
+    """
+    Implementation of the `CTDp` command. This sets the settings for the dip transition
+    panel.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask, bit0=set rate, bit1=set source
+    1      1    u8     M/E index
+    2      1    u8     Rate in frames
+    3      1    ?      unknown
+    4      2    u16    Source index
+    6      2    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, rate=None, source=None):
+        """
+        :param index: 0-indexed M/E number to control the preview bus of
+        :param rate: Set new transition rate, or None
+        :param source: Set the dip source, or None
+        """
+
+        self.index = index
+        self.rate = rate
+        self.source = source
+
+    def get_command(self):
+        mask = 0
+        if self.rate is not None:
+            mask |= 0x01
+        if self.source is not None:
+            mask |= 0x02
+
+        rate = 0 if self.rate is None else self.rate
+        source = 0 if self.source is None else self.source
+        data = struct.pack('>BBBx H 2x', mask, self.index, rate, source)
+        return self._make_command('CTDp', data)
