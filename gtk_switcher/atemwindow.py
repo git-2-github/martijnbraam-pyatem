@@ -119,6 +119,30 @@ class AtemWindow:
         self.focus_dummy = builder.get_object('focus_dummy')
 
         self.prev_trans = builder.get_object('prev_trans')
+        self.wipe_style = [
+            builder.get_object('wipestyle_h'),
+            builder.get_object('wipestyle_v'),
+            builder.get_object('wipestyle_mh'),
+            builder.get_object('wipestyle_mv'),
+            builder.get_object('wipestyle_cross'),
+            builder.get_object('wipestyle_box'),
+            builder.get_object('wipestyle_diamond'),
+            builder.get_object('wipestyle_iris'),
+            builder.get_object('wipestyle_box_tl'),
+            builder.get_object('wipestyle_box_tr'),
+            builder.get_object('wipestyle_box_br'),
+            builder.get_object('wipestyle_box_bl'),
+            builder.get_object('wipestyle_box_top'),
+            builder.get_object('wipestyle_box_right'),
+            builder.get_object('wipestyle_box_bottom'),
+            builder.get_object('wipestyle_box_left'),
+            builder.get_object('wipestyle_diag1'),
+            builder.get_object('wipestyle_diag2'),
+        ]
+
+        for style, button in enumerate(self.wipe_style):
+            button.pattern = style
+            button.connect('pressed', self.on_wipe_pattern_clicked)
 
         self.color1 = builder.get_object('color1')
         self.color2 = builder.get_object('color2')
@@ -272,6 +296,10 @@ class AtemWindow:
 
     def on_style_dve_clicked(self, widget):
         cmd = TransitionSettingsCommand(index=0, style=TransitionSettingsField.STYLE_DVE)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_wipe_pattern_clicked(self, widget):
+        cmd = WipeSettingsCommand(index=0, pattern=widget.pattern)
         self.connection.mixer.send_commands([cmd])
 
     def on_tbar_adj_value_changed(self, widget):
@@ -498,6 +526,10 @@ class AtemWindow:
         self.rate['wipe'] = label
         if self.style_wipe.get_style_context().has_class('active'):
             self.auto_rate.set_text(label)
+
+        for style, button in enumerate(self.wipe_style):
+            self.set_class(button, 'stylebtn', True)
+            self.set_class(button, 'active', style == data.pattern)
 
     def on_transition_dve_change(self, data):
         label = self.frames_to_time(data.rate)

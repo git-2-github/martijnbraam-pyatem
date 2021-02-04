@@ -23,6 +23,10 @@ button.bmdbtn.active {
     color: black;
 }
 
+button.stylebtn.active {
+    background: #ffc144;
+}
+
 entry.rate {
     padding: 0;
     margin: 0;

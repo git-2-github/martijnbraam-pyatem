@@ -4,5 +4,24 @@
     <file>ui/mixer.glade</file>
     <file>ui/connection.glade</file>
     <file>ui/style.css</file>
+
+    <file>icons/wipe-h.svg</file>
+    <file>icons/wipe-v.svg</file>
+    <file>icons/wipe-mh.svg</file>
+    <file>icons/wipe-mv.svg</file>
+    <file>icons/wipe-cross.svg</file>
+    <file>icons/wipe-box.svg</file>
+    <file>icons/wipe-diamond.svg</file>
+    <file>icons/wipe-iris.svg</file>
+    <file>icons/wipe-box-tl.svg</file>
+    <file>icons/wipe-box-tr.svg</file>
+    <file>icons/wipe-box-bl.svg</file>
+    <file>icons/wipe-box-br.svg</file>
+    <file>icons/wipe-box-top.svg</file>
+    <file>icons/wipe-box-bottom.svg</file>
+    <file>icons/wipe-box-left.svg</file>
+    <file>icons/wipe-box-right.svg</file>
+    <file>icons/wipe-diag1.svg</file>
+    <file>icons/wipe-diag2.svg</file>
   </gresource>
 </gresources>
