@@ -98,6 +98,8 @@ class AtemWindow:
         self.dve_rate = builder.get_object('dve_rate')
         self.ftb_rate = builder.get_object('ftb_rate')
 
+        self.dip_source = builder.get_object('dip_source')
+
         self.style_mix = builder.get_object('style_mix')
         self.style_dip = builder.get_object('style_dip')
         self.style_wipe = builder.get_object('style_wipe')
@@ -123,9 +125,13 @@ class AtemWindow:
 
         self.ftb = builder.get_object('ftb')
 
+        self.model_me1_fill = builder.get_object('model_me1_fill')
+        self.model_key = builder.get_object('model_key')
+
         self.status_model = builder.get_object('status_model')
         self.status_mode = builder.get_object('status_mode')
         self.disable_shortcuts = False
+        self.model_changing = False
 
         self.apply_css(self.window, self.provider)
 
@@ -360,6 +366,12 @@ class AtemWindow:
         # Remove focus from the entry so the keyboard shortcuts start working again
         self.focus_dummy.grab_focus()
 
+    def on_dip_source_changed(self, widget):
+        if hasattr(widget, 'ignore_change') and widget.ignore_change or self.model_changing:
+            return
+        cmd = DipSettingsCommand(index=0, source=int(self.dip_source.get_active_id()))
+        self.connection.mixer.send_commands([cmd])
+
     def on_rate_focus(self, *args):
         self.disable_shortcuts = True
 
@@ -473,6 +485,9 @@ class AtemWindow:
     def on_transition_dip_change(self, data):
         label = self.frames_to_time(data.rate)
         self.dip_rate.set_text(label)
+        self.dip_source.ignore_change = True
+        self.dip_source.set_active_id(str(data.source))
+        self.dip_source.ignore_change = False
         self.rate['dip'] = label
         if self.style_dip.get_style_context().has_class('active'):
             self.auto_rate.set_text(label)
@@ -709,6 +724,11 @@ class AtemWindow:
         black = None
         bars = None
 
+        # Clear the combobox models
+        self.model_changing = True
+        self.model_me1_fill.clear()
+        self.model_key.clear()
+
         for i in inputs.values():
             if i.port_type == InputPropertiesField.PORT_EXTERNAL:
                 external.append(i)
@@ -720,6 +740,11 @@ class AtemWindow:
                 black = i
             if i.port_type == InputPropertiesField.PORT_BARS:
                 bars = i
+
+            if i.available_me1:
+                self.model_me1_fill.append([str(i.index), i.name])
+            if i.available_key_source:
+                self.model_key.append([str(i.index), i.name])
 
         row1_ext = external
         row2_ext = [None] * len(external)
@@ -779,3 +804,5 @@ class AtemWindow:
 
         self.program_bus.show_all()
         self.preview_bus.show_all()
+
+        self.model_changing = False
