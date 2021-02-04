@@ -942,3 +942,108 @@ class TransitionDipField(FieldBase):
 
     def __repr__(self):
         return '<transition-dip: me={}, rate={} source={}>'.format(self.index, self.rate, self.source)
+
+
+class TransitionWipeField(FieldBase):
+    """
+    Data from the `TWpP`. Settings for the wipe transition.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    u8     Rate in frames
+    2      1    u8     Pattern id
+    3      1    ?      unknown
+    4      2    u16    Border width
+    6      2    u16    Border fill source index
+    8      2    u16    Symmetry
+    10     2    u16    Softness
+    12     2    u16    Origin position X
+    14     2    u16    Origin position Y
+    16     1    bool   Reverse
+    16     1    bool   Flip flop
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar rate: Number of frames in transition
+    :ivar source: Source index for the dip
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>BBBx 6H 2? 2x', raw)
+        self.index = field[0]
+        self.rate = field[1]
+        self.pattern = field[2]
+        self.width = field[3]
+        self.source = field[4]
+        self.symmetry = field[5]
+        self.softness = field[6]
+        self.positionx = field[7]
+        self.positiony = field[8]
+        self.reverse = field[9]
+        self.flipflop = field[10]
+
+    def __repr__(self):
+        return '<transition-wipe: me={}, rate={} pattern={}>'.format(self.index, self.rate, self.pattern)
+
+
+class TransitionDveField(FieldBase):
+    """
+    Data from the `TDvP`. Settings for the DVE transition.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    u8     Rate in frames
+    2      1    ?      unknown
+    3      1    u8     DVE style
+    4      2    u16    Fill source index
+    6      2    u16    Key source index
+    8      1    bool   Enable key
+    9      1    bool   Key is premultiplied
+    10     2    u16    Key clip [0-1000]
+    12     2    u16    Key gain [0-1000]
+    14     1    bool   Key invert
+    15     1    bool   Reverse
+    16     1    bool   Flip flop
+    17     3    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar rate: Number of frames in transition
+    :ivar style: Style or effect index for the DVE
+    :ivar fill_source: Fill source index
+    :ivar key_source: Key source index
+    :ivar key_premultiplied: Key is premultiplied alpha
+    :ivar key_clip: Key clipping point
+    :ivar key_gain: Key Gain
+    :ivar key_invert: Invert key source
+    :ivar reverse: Reverse transition
+    :ivar flipflop: Flip flop transition
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>BBx B 2H 2? 2H 3? 3x', raw)
+        self.index = field[0]
+        self.rate = field[1]
+        self.style = field[2]
+        self.fill_source = field[3]
+        self.key_source = field[4]
+        self.key_enable = field[5]
+        self.key_premultiplied = field[6]
+        self.key_clip = field[7]
+        self.key_gain = field[8]
+        self.key_invert = field[9]
+        self.reverse = field[10]
+        self.flipflop = field[11]
+
+    def __repr__(self):
+        return '<transition-dve: me={}, rate={} style={}>'.format(self.index, self.rate, self.style)

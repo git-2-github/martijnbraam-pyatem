@@ -8,7 +8,8 @@ from hexdump import hexdump
 from gtk_switcher.preferenceswindow import PreferencesWindow
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, CutCommand, AutoCommand, TransitionSettingsCommand, \
     TransitionPreviewCommand, ColorGeneratorCommand, FadeToBlackCommand, DkeyOnairCommand, DkeyAutoCommand, \
-    DkeyTieCommand, TransitionPositionCommand, MixSettingsCommand, DipSettingsCommand
+    DkeyTieCommand, TransitionPositionCommand, MixSettingsCommand, DipSettingsCommand, WipeSettingsCommand, \
+    DveSettingsCommand
 from pyatem.field import InputPropertiesField, TransitionSettingsField
 from pyatem.protocol import AtemProtocol
 
@@ -93,6 +94,8 @@ class AtemWindow:
         self.auto_rate = builder.get_object('auto_rate')
         self.mix_rate = builder.get_object('mix_rate')
         self.dip_rate = builder.get_object('dip_rate')
+        self.wipe_rate = builder.get_object('wipe_rate')
+        self.dve_rate = builder.get_object('dve_rate')
         self.ftb_rate = builder.get_object('ftb_rate')
 
         self.style_mix = builder.get_object('style_mix')
@@ -347,6 +350,10 @@ class AtemWindow:
             cmd = MixSettingsCommand(index=0, rate=frames)
         elif style == 'dip':
             cmd = DipSettingsCommand(index=0, rate=frames)
+        elif style == 'wipe':
+            cmd = WipeSettingsCommand(index=0, rate=frames)
+        elif style == 'dve':
+            cmd = DveSettingsCommand(index=0, rate=frames)
         if cmd is not None:
             self.connection.mixer.send_commands([cmd])
 
@@ -442,6 +449,10 @@ class AtemWindow:
             self.on_transition_mix_change(data)
         elif field == 'transition-dip':
             self.on_transition_dip_change(data)
+        elif field == 'transition-wipe':
+            self.on_transition_wipe_change(data)
+        elif field == 'transition-dve':
+            self.on_transition_dve_change(data)
         else:
             if isinstance(data, bytes):
                 print(field)
@@ -464,6 +475,20 @@ class AtemWindow:
         self.dip_rate.set_text(label)
         self.rate['dip'] = label
         if self.style_dip.get_style_context().has_class('active'):
+            self.auto_rate.set_text(label)
+
+    def on_transition_wipe_change(self, data):
+        label = self.frames_to_time(data.rate)
+        self.wipe_rate.set_text(label)
+        self.rate['wipe'] = label
+        if self.style_wipe.get_style_context().has_class('active'):
+            self.auto_rate.set_text(label)
+
+    def on_transition_dve_change(self, data):
+        label = self.frames_to_time(data.rate)
+        self.dve_rate.set_text(label)
+        self.rate['dve'] = label
+        if self.style_dve.get_style_context().has_class('active'):
             self.auto_rate.set_text(label)
 
     def on_mediaplayer_slots_change(self, data):
