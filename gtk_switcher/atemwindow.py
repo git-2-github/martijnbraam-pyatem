@@ -1,9 +1,7 @@
 import ctypes
 import threading
-import time
 
 import gi
-from hexdump import hexdump
 
 from gtk_switcher.preferenceswindow import PreferencesWindow
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, CutCommand, AutoCommand, TransitionSettingsCommand, \
@@ -64,6 +62,8 @@ class AtemWindow:
     def __init__(self, application, args):
         self.application = application
         self.args = args
+
+        self.debug = args.debug
 
         Handy.init()
 
@@ -521,10 +521,12 @@ class AtemWindow:
         elif field == 'mixer-effect-config':
             self.on_mixer_effect_config_change(data)
         elif field == 'topology':
-            print('---------------------------------')
-            print("Got topology field:")
-            hexdump(data.raw)
-            print('---------------------------------')
+            if self.debug:
+                from hexdump import hexdump
+                print('---------------------------------')
+                print("Got topology field:")
+                hexdump(data.raw)
+                print('---------------------------------')
             self.on_topology_change(data)
         elif field == 'product-name':
             self.status_model.set_text(data.name)

@@ -1,0 +1,59 @@
+{
+  "app-id": "nl.brixit.Switcher",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "3.36",
+  "sdk": "org.gnome.Sdk",
+  "command": "switcher-control",
+  "finish-args": [
+    "--share=ipc",
+    "--share=network",
+    "--socket=fallback-x11",
+    "--socket=wayland",
+    "--device=dri"
+  ],
+  "modules": [
+    {
+      "name": "pyatem",
+      "buildsystem": "simple",
+      "build-commands": [
+        "pip3 install --prefix=/app --no-deps ."
+      ],
+      "sources": [
+        {
+          "type": "dir",
+          "path": "../"
+        }
+      ]
+    },
+    {
+      "name": "libhandy",
+      "buildsystem": "meson",
+      "config-opts": [
+        "-Dprofiling=false",
+        "-Dintrospection=enabled",
+        "-Dgtk_doc=false",
+        "-Dtests=false",
+        "-Dexamples=false",
+        "-Dvapi=false",
+        "-Dglade_catalog=disabled"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://gitlab.gnome.org/GNOME/libhandy",
+          "tag": "1.0.2"
+        }
+      ]
+    },
+    {
+      "name": "nl.brixit.Switcher",
+      "buildsystem": "meson",
+      "sources": [
+        {
+          "type": "dir",
+          "path": "../"
+        }
+      ]
+    }
+  ]
+}

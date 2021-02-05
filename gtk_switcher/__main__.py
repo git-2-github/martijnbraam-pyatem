@@ -27,6 +27,7 @@ def main(version):
     parser = argparse.ArgumentParser(description="ATEM Control panel")
     parser.add_argument('ip', help='ip-address of the switcher to connect to', nargs='?')
     parser.add_argument('--persist', action='store_true', help='save the new ip address')
+    parser.add_argument('--debug', action='store_true', help='output extra debugging info')
     args = parser.parse_args()
 
     if os.path.isfile('atem.gresource'):
@@ -34,7 +35,7 @@ def main(version):
         resource = Gio.resource_load("atem.gresource")
         Gio.Resource._register(resource)
 
-    app = AtemApplication("nl.brixit.Atem", Gio.ApplicationFlags.FLAGS_NONE, args=args)
+    app = AtemApplication("nl.brixit.Switcher", Gio.ApplicationFlags.FLAGS_NONE, args=args)
     app.run()
 
 

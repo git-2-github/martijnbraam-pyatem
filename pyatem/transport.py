@@ -2,8 +2,6 @@ import socket
 import struct
 import logging
 
-from hexdump import hexdump
-
 
 class Packet:
     def __init__(self):
@@ -114,7 +112,8 @@ class UdpProtocol:
         self.sock.sendto(raw, (self.ip, self.port))
         logging.debug('> {}'.format(packet))
         if packet.debug:
-            hexdump(raw)
+            # hexdump(raw)
+            pass
         if packet.flags & (UdpProtocol.FLAG_SYN | UdpProtocol.FLAG_ACK) == 0:
             self.local_sequence_number += 1
 
@@ -124,7 +123,8 @@ class UdpProtocol:
         logging.debug('< {}'.format(packet))
 
         if packet.flags & UdpProtocol.FLAG_REQUEST_RETRANSMISSION:
-            hexdump(data)
+            pass
+            # hexdump(data)
 
         new_sequence_number = packet.sequence_number
         if new_sequence_number > self.remote_sequence_number + 1:
