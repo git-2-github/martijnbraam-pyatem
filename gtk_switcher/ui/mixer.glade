@@ -212,8 +212,8 @@
                     <property name="margin-bottom">12</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
-                    <property name="row-spacing">10</property>
-                    <property name="column-spacing">10</property>
+                    <property name="row-spacing">5</property>
+                    <property name="column-spacing">5</property>
                     <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
@@ -256,7 +256,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="row-spacing">30</property>
-                                    <property name="column-spacing">8</property>
+                                    <property name="column-spacing">4</property>
                                     <child>
                                       <object class="GtkButton">
                                         <property name="label" translatable="yes">CAM1</property>
@@ -354,7 +354,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="row-spacing">30</property>
-                                    <property name="column-spacing">8</property>
+                                    <property name="column-spacing">4</property>
                                     <child>
                                       <object class="GtkButton">
                                         <property name="label" translatable="yes">CAM1</property>
@@ -452,7 +452,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="row-spacing">30</property>
-                                    <property name="column-spacing">8</property>
+                                    <property name="column-spacing">4</property>
                                     <child>
                                       <object class="GtkButton" id="next_bkgd">
                                         <property name="label" translatable="yes">BKGD</property>
@@ -683,7 +683,7 @@ AIR</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="row-spacing">30</property>
-                                    <property name="column-spacing">8</property>
+                                    <property name="column-spacing">4</property>
                                     <child>
                                       <object class="GtkButton" id="style_mix">
                                         <property name="label" translatable="yes">MIX</property>
@@ -1124,7 +1124,7 @@ TRANS</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="row-spacing">30</property>
-                                    <property name="column-spacing">8</property>
+                                    <property name="column-spacing">4</property>
                                     <child>
                                       <object class="GtkButton" id="ftb">
                                         <property name="label" translatable="yes">FTB</property>
@@ -1540,7 +1540,7 @@ TRANS</property>
                 </child>
                 <child>
                   <object class="GtkBox">
-                    <property name="width-request">310</property>
+                    <property name="width-request">100</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
@@ -1552,7 +1552,11 @@ TRANS</property>
                         <property name="margin-end">12</property>
                         <property name="margin-top">12</property>
                         <property name="margin-bottom">12</property>
+                        <property name="homogeneous">True</property>
                         <property name="stack">inspector_stack</property>
+                        <style>
+                          <class name="less-padding"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -2171,23 +2175,9 @@ TRANS</property>
                                                             </child>
                                                             </object>
                                                             <packing>
-                                                            <property name="left-attach">1</property>
-                                                            <property name="top-attach">1</property>
-                                                            </packing>
-                                                            </child>
-                                                            <child>
-                                                            <object class="GtkLabel">
-                                                            <property name="visible">True</property>
-                                                            <property name="can-focus">False</property>
-                                                            <property name="halign">end</property>
-                                                            <property name="label" translatable="yes">Style</property>
-                                                            <style>
-                                                            <class name="dim-label"/>
-                                                            </style>
-                                                            </object>
-                                                            <packing>
                                                             <property name="left-attach">0</property>
                                                             <property name="top-attach">1</property>
+                                                            <property name="width">2</property>
                                                             </packing>
                                                             </child>
                                                             <child>
@@ -2494,7 +2484,7 @@ TRANS</property>
                                                           </object>
                                                           <packing>
                                                             <property name="name">stinger</property>
-                                                            <property name="title" translatable="yes">Stinger</property>
+                                                            <property name="title" translatable="yes">Sting</property>
                                                             <property name="position">3</property>
                                                           </packing>
                                                         </child>
@@ -2946,15 +2936,9 @@ TRANS</property>
                         <property name="can-focus">False</property>
                         <property name="shadow-type">none</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkBox" id="audio_channels">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
                             <child>
                               <placeholder/>
                             </child>
@@ -2964,13 +2948,25 @@ TRANS</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
+                  <object class="GtkBox" id="audio_masters">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
                 </child>
               </object>
               <packing>

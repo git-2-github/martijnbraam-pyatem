@@ -42,7 +42,8 @@ expander.bmdgroup arrow {
 }
 
 stackswitcher.less-padding button {
-    padding: 3px 8px;
+    padding-left: 8px;
+    padding-right: 8px;
     margin: 0;
     min-width: 45px;
 }

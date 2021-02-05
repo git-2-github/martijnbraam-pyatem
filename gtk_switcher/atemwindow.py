@@ -866,10 +866,10 @@ class AtemWindow:
             for left, button in enumerate(row):
                 if button is None:
                     spacer = Gtk.Box()
-                    spacer.set_size_request(24, 24)
+                    spacer.set_size_request(4, 4)
                     spacer.source_index = -1
                     pspacer = Gtk.Box()
-                    pspacer.set_size_request(24, 24)
+                    pspacer.set_size_request(4, 4)
                     pspacer.source_index = -1
 
                     self.program_bus.attach(spacer, left, top, 1, 1)
