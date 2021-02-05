@@ -9,22 +9,26 @@ button.bmdbtn label {
 }
 
 button.bmdbtn.preview {
-    background: #4F4;
+    background: linear-gradient(#4F4, #30e530);
     color: black;
+    text-shadow: none;
 }
 
 button.bmdbtn.program {
-    background: #F44;
+    background: linear-gradient(#F44, #f52727);
     color: black;
+    text-shadow: none;
 }
 
 button.bmdbtn.active {
-    background: #ffc144;
+    background: linear-gradient(#ffc144, #e7af40);
     color: black;
+    text-shadow: none;
 }
 
 button.stylebtn.active {
-    background: #ffc144;
+    background: linear-gradient(#ffc144, #e7af40);
+    text-shadow: none;
 }
 
 entry.rate {
