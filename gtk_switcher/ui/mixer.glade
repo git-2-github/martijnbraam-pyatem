@@ -74,8 +74,8 @@
     <property name="resource">/nl/brixit/switcher/icons/wipe-cross.svg</property>
   </object>
   <object class="GtkImage" id="image6">
-    <property name="width-request">32</property>
-    <property name="height-request">32</property>
+    <property name="width-request">28</property>
+    <property name="height-request">28</property>
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="resource">/nl/brixit/switcher/icons/wipe-box.svg</property>
@@ -116,6 +116,36 @@
     <property name="step-increment">0.001</property>
     <property name="page-increment">0.01</property>
     <signal name="value-changed" handler="on_tbar_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="wipe_softness_adj">
+    <property name="upper">10000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_wipe_softness_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="wipe_symmetry_adj">
+    <property name="upper">10000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_wipe_symmetry_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="wipe_width_adj">
+    <property name="upper">10000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_wipe_width_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="wipe_x_adj">
+    <property name="upper">10000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_wipe_x_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="wipe_y_adj">
+    <property name="upper">10000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_wipe_y_adj_value_changed" swapped="no"/>
   </object>
   <object class="HdyWindow" id="main_window">
     <property name="can-focus">False</property>
@@ -1510,7 +1540,7 @@ TRANS</property>
                 </child>
                 <child>
                   <object class="GtkBox">
-                    <property name="width-request">300</property>
+                    <property name="width-request">310</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
@@ -1538,6 +1568,7 @@ TRANS</property>
                           <object class="GtkScrolledWindow">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
+                            <property name="hscrollbar-policy">never</property>
                             <child>
                               <object class="GtkViewport">
                                 <property name="visible">True</property>
@@ -1828,7 +1859,7 @@ TRANS</property>
                                                           </packing>
                                                         </child>
                                                         <child>
-                                                          <!-- n-columns=2 n-rows=3 -->
+                                                          <!-- n-columns=2 n-rows=12 -->
                                                           <object class="GtkGrid">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
@@ -1872,8 +1903,8 @@ TRANS</property>
                                                             <property name="column-homogeneous">True</property>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_h">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -1887,8 +1918,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_v">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -1902,8 +1933,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_mh">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -1917,8 +1948,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_mv">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -1932,8 +1963,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_cross">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -1960,8 +1991,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_diamond">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -1975,8 +2006,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_iris">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -1990,8 +2021,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_box_tl">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2005,8 +2036,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_box_tr">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2020,8 +2051,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_box_bl">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2035,8 +2066,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_box_br">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2050,8 +2081,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_box_top">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2065,8 +2096,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_box_right">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2080,8 +2111,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_box_bottom">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2095,8 +2126,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_box_left">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2110,8 +2141,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_diag1">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2125,8 +2156,8 @@ TRANS</property>
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="wipestyle_diag2">
-                                                            <property name="width-request">32</property>
-                                                            <property name="height-request">32</property>
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2158,6 +2189,262 @@ TRANS</property>
                                                             <property name="left-attach">0</property>
                                                             <property name="top-attach">1</property>
                                                             </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkLabel">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="halign">end</property>
+                                                            <property name="label" translatable="yes">Symmetry</property>
+                                                            <style>
+                                                            <class name="dim-label"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">2</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkScale" id="wipe_symmetry">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="adjustment">wipe_symmetry_adj</property>
+                                                            <property name="round-digits">1</property>
+                                                            <property name="draw-value">False</property>
+                                                            <signal name="button-press-event" handler="on_slider_held" swapped="no"/>
+                                                            <signal name="button-release-event" handler="on_slider_released" swapped="no"/>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">2</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkLabel">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="halign">end</property>
+                                                            <property name="label" translatable="yes">X</property>
+                                                            <style>
+                                                            <class name="dim-label"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">3</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkLabel">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="halign">end</property>
+                                                            <property name="label" translatable="yes">Y</property>
+                                                            <style>
+                                                            <class name="dim-label"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">4</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkScale" id="wipe_x">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="adjustment">wipe_x_adj</property>
+                                                            <property name="draw-value">False</property>
+                                                            <signal name="button-press-event" handler="on_slider_held" swapped="no"/>
+                                                            <signal name="button-release-event" handler="on_slider_released" swapped="no"/>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">3</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkScale" id="wipe_y">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="adjustment">wipe_y_adj</property>
+                                                            <property name="draw-value">False</property>
+                                                            <signal name="button-press-event" handler="on_slider_held" swapped="no"/>
+                                                            <signal name="button-release-event" handler="on_slider_released" swapped="no"/>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">4</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkSeparator">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">5</property>
+                                                            <property name="width">2</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkLabel">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="halign">end</property>
+                                                            <property name="label" translatable="yes">Softness</property>
+                                                            <style>
+                                                            <class name="dim-label"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">6</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkLabel">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="halign">end</property>
+                                                            <property name="label" translatable="yes">Width</property>
+                                                            <style>
+                                                            <class name="dim-label"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">7</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkScale" id="wipe_softness">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="adjustment">wipe_softness_adj</property>
+                                                            <property name="draw-value">False</property>
+                                                            <signal name="button-press-event" handler="on_slider_held" swapped="no"/>
+                                                            <signal name="button-release-event" handler="on_slider_released" swapped="no"/>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">6</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkScale" id="wipe_width">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="adjustment">wipe_width_adj</property>
+                                                            <property name="draw-value">False</property>
+                                                            <signal name="button-press-event" handler="on_slider_held" swapped="no"/>
+                                                            <signal name="button-release-event" handler="on_slider_released" swapped="no"/>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">7</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkLabel">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="halign">end</property>
+                                                            <property name="label" translatable="yes">Fill</property>
+                                                            <style>
+                                                            <class name="dim-label"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">8</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkComboBox" id="wipe_fill">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="model">model_me1_fill</property>
+                                                            <property name="entry-text-column">1</property>
+                                                            <property name="id-column">0</property>
+                                                            <signal name="changed" handler="on_wipe_fill_changed" swapped="no"/>
+                                                            <child>
+                                                            <object class="GtkCellRendererText"/>
+                                                            <attributes>
+                                                            <attribute name="text">1</attribute>
+                                                            </attributes>
+                                                            </child>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">8</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkSeparator">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">9</property>
+                                                            <property name="width">2</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="spacing">32</property>
+                                                            <property name="homogeneous">True</property>
+                                                            <child>
+                                                            <object class="GtkButton" id="wipe_reverse">
+                                                            <property name="label" translatable="yes">Reverse</property>
+                                                            <property name="width-request">48</property>
+                                                            <property name="height-request">48</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <signal name="clicked" handler="on_wipe_reverse_clicked" swapped="no"/>
+                                                            <style>
+                                                            <class name="bmdbtn"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">0</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="wipe_flipflop">
+                                                            <property name="label" translatable="yes">Flip flop</property>
+                                                            <property name="width-request">48</property>
+                                                            <property name="height-request">48</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <signal name="clicked" handler="on_wipe_flipflop_clicked" swapped="no"/>
+                                                            <style>
+                                                            <class name="bmdbtn"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">10</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
                                                             </child>
                                                             <child>
                                                             <placeholder/>

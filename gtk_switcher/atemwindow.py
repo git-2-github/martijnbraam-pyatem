@@ -99,6 +99,14 @@ class AtemWindow:
         self.ftb_rate = builder.get_object('ftb_rate')
 
         self.dip_source = builder.get_object('dip_source')
+        self.wipe_symmetry_adj = builder.get_object('wipe_symmetry_adj')
+        self.wipe_x_adj = builder.get_object('wipe_x_adj')
+        self.wipe_y_adj = builder.get_object('wipe_y_adj')
+        self.wipe_width_adj = builder.get_object('wipe_width_adj')
+        self.wipe_softness_adj = builder.get_object('wipe_softness_adj')
+        self.wipe_fill = builder.get_object('wipe_fill')
+        self.wipe_reverse = builder.get_object('wipe_reverse')
+        self.wipe_flipflop = builder.get_object('wipe_flipflop')
 
         self.style_mix = builder.get_object('style_mix')
         self.style_dip = builder.get_object('style_dip')
@@ -156,6 +164,7 @@ class AtemWindow:
         self.status_mode = builder.get_object('status_mode')
         self.disable_shortcuts = False
         self.model_changing = False
+        self.slider_held = False
 
         self.apply_css(self.window, self.provider)
 
@@ -400,11 +409,54 @@ class AtemWindow:
         cmd = DipSettingsCommand(index=0, source=int(self.dip_source.get_active_id()))
         self.connection.mixer.send_commands([cmd])
 
+    def on_wipe_symmetry_adj_value_changed(self, widget, *args):
+        cmd = WipeSettingsCommand(index=0, symmetry=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    def on_wipe_x_adj_value_changed(self, widget, *args):
+        cmd = WipeSettingsCommand(index=0, positionx=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    def on_wipe_y_adj_value_changed(self, widget, *args):
+        cmd = WipeSettingsCommand(index=0, positiony=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    def on_wipe_width_adj_value_changed(self, widget, *args):
+        cmd = WipeSettingsCommand(index=0, width=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    def on_wipe_softness_adj_value_changed(self, widget, *args):
+        cmd = WipeSettingsCommand(index=0, softness=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    def on_wipe_fill_changed(self, widget, *args):
+        if hasattr(widget, 'ignore_change') and widget.ignore_change or self.model_changing:
+            return
+        cmd = WipeSettingsCommand(index=0, source=int(widget.get_active_id()))
+        self.connection.mixer.send_commands([cmd])
+        self.focus_dummy.grab_focus()
+
+    def on_wipe_flipflop_clicked(self, widget, *args):
+        state = widget.get_style_context().has_class('active')
+        cmd = WipeSettingsCommand(index=0, flipflop=not state)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_wipe_reverse_clicked(self, widget, *args):
+        state = widget.get_style_context().has_class('active')
+        cmd = WipeSettingsCommand(index=0, reverse=not state)
+        self.connection.mixer.send_commands([cmd])
+
     def on_rate_focus(self, *args):
         self.disable_shortcuts = True
 
     def on_rate_unfocus(self, *args):
         self.disable_shortcuts = False
+
+    def on_slider_held(self, *args):
+        self.slider_held = True
+
+    def on_slider_released(self, *args):
+        self.slider_held = False
 
     def frames_to_time(self, frames):
         # WTF BMD
@@ -530,6 +582,21 @@ class AtemWindow:
         for style, button in enumerate(self.wipe_style):
             self.set_class(button, 'stylebtn', True)
             self.set_class(button, 'active', style == data.pattern)
+
+        if not self.slider_held:
+            self.wipe_symmetry_adj.set_value(data.symmetry)
+            self.wipe_x_adj.set_value(data.positionx)
+            self.wipe_y_adj.set_value(data.positiony)
+            self.wipe_width_adj.set_value(data.width)
+            self.wipe_softness_adj.set_value(data.softness)
+
+        self.model_changing = True
+        self.wipe_fill.set_active_id(str(data.source))
+        self.model_changing = False
+
+        self.wipe_fill.set_sensitive(data.width > 0)
+        self.set_class(self.wipe_reverse, 'active', data.reverse)
+        self.set_class(self.wipe_flipflop, 'active', data.flipflop)
 
     def on_transition_dve_change(self, data):
         label = self.frames_to_time(data.rate)
