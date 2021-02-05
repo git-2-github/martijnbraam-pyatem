@@ -847,9 +847,10 @@ class AtemWindow:
 
         row1_ext = external
         row2_ext = [None] * len(external)
-        if len(external) > 8:
-            row1_ext = external[0:8]
-            row2_ext = external[8:] + [None] * (16 - len(external))
+        if len(external) > 4:
+            num = len(external) // 2
+            row1_ext = external[0:num]
+            row2_ext = external[num:] + [None] * ((2 * num) - len(external))
 
         row1 = row1_ext + [None, black, None] + colors
         row2 = row2_ext + [None, bars, None] + mp
