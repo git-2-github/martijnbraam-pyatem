@@ -365,6 +365,34 @@ class DkeyAutoCommand(Command):
         return self._make_command('DDsA', data)
 
 
+class DkeyRateCommand(Command):
+    """
+    Implementation of the `CDsR` command. This sets the transition rate for the downstream keyer
+    panel.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Keyer index, 0-indexed
+    1      1    u8     Rate in frames
+    2      2    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, rate):
+        """
+        :param index: 0-indexed DSK number to change
+        :param rate: New rate for the keyer
+        """
+        self.index = index
+        self.rate = rate
+
+    def get_command(self):
+        data = struct.pack('>BBxx', self.index, self.rate)
+        return self._make_command('CDsR', data)
+
+
 class MixSettingsCommand(Command):
     """
     Implementation of the `CTMx` command. This sets the transition duration for the mix transition

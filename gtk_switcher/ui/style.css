@@ -31,6 +31,10 @@ button.stylebtn.active {
     text-shadow: none;
 }
 
+label.rate {
+    font-size: 0.9em;
+}
+
 entry.rate {
     padding: 0;
     margin: 0;

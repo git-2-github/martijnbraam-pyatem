@@ -9,7 +9,7 @@ from gtk_switcher.preferenceswindow import PreferencesWindow
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, CutCommand, AutoCommand, TransitionSettingsCommand, \
     TransitionPreviewCommand, ColorGeneratorCommand, FadeToBlackCommand, DkeyOnairCommand, DkeyAutoCommand, \
     DkeyTieCommand, TransitionPositionCommand, MixSettingsCommand, DipSettingsCommand, WipeSettingsCommand, \
-    DveSettingsCommand
+    DveSettingsCommand, DkeyRateCommand
 from pyatem.field import InputPropertiesField, TransitionSettingsField
 from pyatem.protocol import AtemProtocol
 
@@ -627,6 +627,11 @@ class AtemWindow:
         for child in self.dsks:
             if hasattr(child, 'dsk_tie') and child.dsk_tie == data.index:
                 self.set_class(child, 'active', data.tie)
+            if hasattr(child, 'dsk_rate_box') and child.dsk_rate_box == data.index:
+                for bc in child:
+                    if hasattr(bc, 'dsk_rate'):
+                        label = self.frames_to_time(data.rate)
+                        bc.set_text(label)
 
     def on_dsk_state_change(self, data):
         for child in self.dsks:
@@ -649,8 +654,24 @@ class AtemWindow:
             tie.connect('clicked', self.do_dsk_tie_clicked)
             self.dsks.attach(tie, i, 0, 1, 1)
 
-            rate_label = Gtk.Label(label="1:00")
-            self.dsks.attach(rate_label, i, 1, 1, 1)
+            rate_label = Gtk.Label(label="rate")
+            rate_label.get_style_context().add_class('dim-label')
+            rate_label.get_style_context().add_class('rate')
+            rate_entry = Gtk.Entry()
+            rate_entry.get_style_context().add_class('rate')
+            rate_entry.set_size_request(48, 0)
+            rate_entry.set_width_chars(5)
+            rate_entry.set_max_width_chars(5)
+            rate_entry.set_alignment(0.5)
+            rate_entry.connect('focus-in-event', self.on_rate_focus)
+            rate_entry.connect('focus-out-event', self.on_rate_unfocus)
+            rate_entry.connect('activate', self.do_dsk_rate_activate)
+            rate_entry.dsk_rate = i
+            rate_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+            rate_box.pack_start(rate_label, 1, 1, 1)
+            rate_box.dsk_rate_box = i
+            rate_box.pack_start(rate_entry, 1, 1, 1)
+            self.dsks.attach(rate_box, i, 1, 1, 1)
 
             air_label = Gtk.Label(label="ON\nAIR")
             air = Gtk.Button()
@@ -681,6 +702,18 @@ class AtemWindow:
         state = widget.get_style_context().has_class('program')
         cmd = DkeyOnairCommand(index=widget.dsk_onair, on_air=not state)
         self.connection.mixer.send_commands([cmd])
+
+    def do_dsk_rate_activate(self, widget):
+        # Try to parse the new rate
+        try:
+            frames = self.time_to_frames(widget.get_text())
+        except Exception as e:
+            print(e)
+            return
+
+        cmd = DkeyRateCommand(index=widget.dsk_rate, rate=frames)
+        self.connection.mixer.send_commands([cmd])
+        self.focus_dummy.grab_focus()
 
     def do_dsk_auto_clicked(self, widget):
         cmd = DkeyAutoCommand(index=widget.dsk_auto)

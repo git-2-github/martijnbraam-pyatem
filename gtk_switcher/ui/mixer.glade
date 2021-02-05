@@ -842,6 +842,7 @@ TRANS</property>
                                             <property name="label" translatable="yes">rate</property>
                                             <style>
                                               <class name="dim-label"/>
+                                              <class name="rate"/>
                                             </style>
                                           </object>
                                           <packing>
@@ -1155,6 +1156,7 @@ TRANS</property>
                                             <property name="label" translatable="yes">rate</property>
                                             <style>
                                               <class name="dim-label"/>
+                                              <class name="rate"/>
                                             </style>
                                           </object>
                                           <packing>
