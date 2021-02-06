@@ -1087,3 +1087,63 @@ class FairlightMasterPropertiesField(FieldBase):
     def __repr__(self):
         return '<fairlight-master-properties: volume={} make-up={} eq={}>'.format(self.volume, self.dynamics_gain,
                                                                                   self.eq_gain)
+
+
+class FairlightStripPropertiesField(FieldBase):
+    """
+    Data from the `FASP`. Settings for a channel strip on fairlight audio units.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Audio source index
+    14     1    u8     Split indicator? [01 for normal, FF for split]
+    15     1    u8     Subchannel index
+    18     1    u8     Delay in frames
+    22     2    i16    Gain [-10000 - 600]
+    29     1    bool   Enable EQ
+    34     2    i16    EQ Gain
+    38     2    u16    Dynamics gain
+    40     2    i16    Pan [-10000 - 10000]
+    46     2    i16    Volume [-10000 - 1000]
+    49     1    u8     AFV bitfield? 1=off 2=on 4=afv
+    ====== ==== ====== ===========
+
+    The way byte 14 and 15 work is unclear at the moment, this need verification on a mixer with an video input that has
+    more than 2 embedded channels, of of these bytes might be a channel count.
+
+    After parsing:
+    :ivar volume: Master volume for the mixer, signed int which maps [-10000 - 1000] to +10dB - -100dB (inf)
+    :ivar eq_enable: Enabled/disabled state for the master EQ
+    :ivar eq_gain: Gain applied after EQ, [-2000 - 2000] maps to -20dB - +20dB
+    :ivar dynamics_gain: Make-up gain for the dynamics section, [0 - 2000] maps to 0dB - +20dB
+    :ivar afv: Enable/disabled state for master audio-follow-video (for fade-to-black)
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>H 12xBBxB 4x h 5x ? 4x h 2x Hh 4x h B 3x', raw)
+        self.index = field[0]
+        self.is_split = field[1]
+        self.subchannel = field[2]
+        self.delay = field[3]
+        self.gain = field[4]
+        self.eq_enable = field[5]
+        self.eq_gain = field[6]
+        self.dynamics_gain = field[7]
+        self.pan = field[8]
+        self.volume = field[9]
+        self.state = field[10]
+
+    def __repr__(self):
+        extra = ''
+        if self.eq_enable:
+            extra += ' EQ {}'.format(self.eq_gain)
+
+        index = self.index
+        if self.is_split == 0xff:
+            index = str(index) + '.' + str(self.subchannel)
+        return '<fairlight-strip-properties: index={} gain={} volume={} pan={} dgn={} {}>'.format(index, self.gain,
+                                                                                                  self.volume, self.pan,
+                                                                                                  self.dynamics_gain,
+                                                                                                  extra)
