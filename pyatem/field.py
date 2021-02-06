@@ -1047,3 +1047,43 @@ class TransitionDveField(FieldBase):
 
     def __repr__(self):
         return '<transition-dve: me={}, rate={} style={}>'.format(self.index, self.rate, self.style)
+
+
+class FairlightMasterPropertiesField(FieldBase):
+    """
+    Data from the `FAMP`. Settings for the master bus on fairlight audio units.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    ?      unknown
+    1      1    bool   Enable master EQ
+    2      4    ?      unknown
+    6      2    i16    EQ gain [-2000 - 2000]
+    8      2    ?      unknown
+    10     2    u16    Dynamics make-up gain [0 - 2000]
+    12     4    i32    Master volume [-10000 - 1000]
+    16     1    bool   Audio follow video
+    17     3    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+    :ivar volume: Master volume for the mixer, signed int which maps [-10000 - 1000] to +10dB - -100dB (inf)
+    :ivar eq_enable: Enabled/disabled state for the master EQ
+    :ivar eq_gain: Gain applied after EQ, [-2000 - 2000] maps to -20dB - +20dB
+    :ivar dynamics_gain: Make-up gain for the dynamics section, [0 - 2000] maps to 0dB - +20dB
+    :ivar afv: Enable/disabled state for master audio-follow-video (for fade-to-black)
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>x ? 4x h 2x H i ? 3x', raw)
+        self.eq_enable = field[0]
+        self.eq_gain = field[1]
+        self.dynamics_gain = field[2]
+        self.volume = field[3]
+        self.afv = field[4]
+
+    def __repr__(self):
+        return '<fairlight-master-properties: volume={} make-up={} eq={}>'.format(self.volume, self.dynamics_gain,
+                                                                                  self.eq_gain)

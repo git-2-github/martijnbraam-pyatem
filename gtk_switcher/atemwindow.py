@@ -7,7 +7,7 @@ from gtk_switcher.preferenceswindow import PreferencesWindow
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, CutCommand, AutoCommand, TransitionSettingsCommand, \
     TransitionPreviewCommand, ColorGeneratorCommand, FadeToBlackCommand, DkeyOnairCommand, DkeyAutoCommand, \
     DkeyTieCommand, TransitionPositionCommand, MixSettingsCommand, DipSettingsCommand, WipeSettingsCommand, \
-    DveSettingsCommand, DkeyRateCommand
+    DveSettingsCommand, DkeyRateCommand, FairlightMasterPropertiesCommand
 from pyatem.field import InputPropertiesField, TransitionSettingsField
 from pyatem.protocol import AtemProtocol
 
@@ -118,6 +118,8 @@ class AtemWindow:
         self.next_key2 = builder.get_object('next_key2')
         self.next_key3 = builder.get_object('next_key3')
         self.next_key4 = builder.get_object('next_key4')
+
+        self.ftb_afv = builder.get_object('ftb_afv')
 
         self.onair_key1 = builder.get_object('onair_key1')
         self.onair_key2 = builder.get_object('onair_key2')
@@ -446,6 +448,10 @@ class AtemWindow:
         cmd = WipeSettingsCommand(index=0, reverse=not state)
         self.connection.mixer.send_commands([cmd])
 
+    def on_ftb_afv_clicked(self, widget, *args):
+        cmd = FairlightMasterPropertiesCommand(afv=not widget.get_style_context().has_class('active'))
+        self.connection.mixer.send_commands([cmd])
+
     def on_rate_focus(self, *args):
         self.disable_shortcuts = True
 
@@ -547,11 +553,18 @@ class AtemWindow:
             self.on_transition_wipe_change(data)
         elif field == 'transition-dve':
             self.on_transition_dve_change(data)
+        elif field == 'fairlight-master-properties':
+            self.on_fairlight_master_properties_change(data)
         else:
+            if field == 'time':
+                return
             if isinstance(data, bytes):
                 print(field)
             else:
                 print(data)
+
+    def on_fairlight_master_properties_change(self, data):
+        self.set_class(self.ftb_afv, 'active', data.afv)
 
     def on_ftb_change(self, data):
         label = self.frames_to_time(data.rate)

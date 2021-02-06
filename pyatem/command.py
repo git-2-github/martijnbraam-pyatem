@@ -676,3 +676,69 @@ class DveSettingsCommand(Command):
         data = struct.pack('>HBBx BHH ??HH? ?? x', mask, self.index, rate, style, fill_source, key_source, key_enable,
                            key_premultiplied, key_clip, key_gain, key_invert, reverse, flipflop)
         return self._make_command('CTDv', data)
+
+
+class FairlightMasterPropertiesCommand(Command):
+    """
+    Implementation of the `CFMP` command. This sets the settings the master channel of fairlight audio.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask, see table below
+    6      2    i16    EQ gain [-2000 - 2000]
+    10     2    u16    Dynamics make-up gain [0 - 2000]
+    12     4    i32    Master volume [-10000 - 1000]
+    16     1    bool   Audio follow video
+    17     1    bool   Enable master EQ
+    18     2    ?      unknown
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   EQ Enable
+    1   EQ Gain
+    2   Dynamics gain
+    3   Master volume
+    4   AFV
+    5   ?
+    6   ?
+    7   ?
+    === ==========
+
+
+    """
+
+    def __init__(self, eq_gain=None, dynamics_gain=None, volume=None, afv=None, eq_enable=None):
+        """
+        :param index: 0-indexed M/E number to control the preview bus of
+        """
+
+        self.eq_gain = eq_gain
+        self.dynamics_gain = dynamics_gain
+        self.volume = volume
+        self.afv = afv
+        self.eq_enable = eq_enable
+
+    def get_command(self):
+        mask = 0
+        if self.eq_enable is not None:
+            mask |= 1 << 0
+        if self.eq_gain is not None:
+            mask |= 1 << 1
+        if self.dynamics_gain is not None:
+            mask |= 1 << 2
+        if self.volume is not None:
+            mask |= 1 << 3
+        if self.afv is not None:
+            mask |= 1 << 4
+
+        eq_enable = False if self.eq_enable is None else self.eq_enable
+        eq_gain = 0 if self.eq_gain is None else self.eq_gain
+        dynamics_gain = 0 if self.dynamics_gain is None else self.dynamics_gain
+        volume = 0 if self.volume is None else self.volume
+        afv = False if self.afv is None else self.afv
+
+        data = struct.pack('>B 5x h 2x Hi?? 2x', mask, eq_gain, dynamics_gain, volume, afv, eq_enable)
+        return self._make_command('CFMP', data)
