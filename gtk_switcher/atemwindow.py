@@ -216,6 +216,16 @@ class AtemWindow:
 
         self.window.add_accel_group(accel)
 
+        self.volume_level = {}
+        self.input_gain = {}
+        self.pan = {}
+        self.delay = {}
+        self.audio_tally = {}
+        self.audio_strip = {}
+        self.audio_on = {}
+        self.audio_afv = {}
+        self.audio_monitor = {}
+
         Gtk.main()
 
     def on_preview_keyboard_change(self, widget, window, key, modifier):
@@ -562,6 +572,10 @@ class AtemWindow:
             self.on_fairlight_master_properties_change(data)
         elif field == 'fairlight-audio-input':
             self.on_fairlight_audio_input_change(data)
+        elif field == 'fairlight-strip-properties':
+            self.on_fairlight_strip_properties_change(data)
+        elif field == 'fairlight-tally':
+            self.on_fairlight_tally_change(data)
         else:
             if field == 'time':
                 return
@@ -569,6 +583,34 @@ class AtemWindow:
                 print(field)
             else:
                 print(data)
+
+    def on_fairlight_tally_change(self, data):
+        for strip_id in data.tally:
+            if strip_id in self.audio_tally:
+                self.set_class(self.audio_tally[strip_id], 'program', data.tally[strip_id])
+
+    def on_fairlight_strip_properties_change(self, data):
+        """
+        :type data: FairlightStripPropertiesField
+        :return:
+        """
+        self.audio_strip[data.strip_id] = data
+        if data.strip_id not in self.volume_level:
+            self.volume_level[data.strip_id] = Gtk.Adjustment(0, -10000, 1000, 10, 10, 100)
+            self.pan[data.strip_id] = Gtk.Adjustment(0, -10000, 10000, 10, 10, 100)
+            self.input_gain[data.strip_id] = Gtk.Adjustment(0, -10000, 600, 10, 10, 100)
+            self.delay[data.strip_id] = Gtk.Adjustment(0, 0, 8, 1, 1, 1)
+
+        self.volume_level[data.strip_id].set_value(data.volume)
+        self.pan[data.strip_id].set_value(data.pan)
+        self.input_gain[data.strip_id].set_value(data.gain)
+        self.delay[data.strip_id].set_value(data.delay)
+        if data.strip_id in self.audio_tally:
+            tally = self.audio_tally[data.strip_id]
+            self.set_class(tally, 'afv', data.state == 4)
+        if data.strip_id in self.audio_on:
+            self.set_class(self.audio_on[data.strip_id], 'program', data.state & 2)
+            self.set_class(self.audio_afv[data.strip_id], 'active', data.state & 4)
 
     def on_fairlight_audio_input_change(self, data):
         inputs = self.connection.mixer.mixerstate['fairlight-audio-input']
@@ -580,45 +622,191 @@ class AtemWindow:
         # Create row of labels again
         label = Gtk.Label(label="Input")
         label.get_style_context().add_class('dim-label')
+        label.set_halign(Gtk.Align.END)
+        label.set_valign(Gtk.Align.START)
         self.audio_channels.attach(label, 0, 2, 1, 1)
         label = Gtk.Label(label="Equalizer")
         label.get_style_context().add_class('dim-label')
+        label.set_halign(Gtk.Align.END)
+        label.set_valign(Gtk.Align.START)
         self.audio_channels.attach(label, 0, 3, 1, 1)
         label = Gtk.Label(label="Dynamics")
         label.get_style_context().add_class('dim-label')
+        label.set_halign(Gtk.Align.END)
+        label.set_valign(Gtk.Align.START)
         self.audio_channels.attach(label, 0, 4, 1, 1)
         label = Gtk.Label(label="dB")
         label.get_style_context().add_class('dim-label')
+        label.set_halign(Gtk.Align.END)
+        label.set_valign(Gtk.Align.START)
         self.audio_channels.attach(label, 0, 5, 1, 1)
         label = Gtk.Label(label="Pan")
         label.get_style_context().add_class('dim-label')
+        label.set_halign(Gtk.Align.END)
+        label.set_valign(Gtk.Align.START)
         self.audio_channels.attach(label, 0, 6, 1, 1)
 
         left = 1
+        last_type = 0
         for input in inputs.values():
             num_subchannels = 1
             if input.split == 4:
                 num_subchannels = 2
 
+            if last_type != input.type:
+                last_type = input.type
+                type_sep = Gtk.Separator(orientation=Gtk.Orientation.VERTICAL)
+                type_sep.get_style_context().add_class('dark')
+                type_sep.set_margin_left(8)
+                type_sep.set_margin_right(8)
+                self.audio_channels.attach(type_sep, left, 0, 1, 8)
+                left += 1
+
             if input.type == 0:
-                label = self.connection.mixer.mixerstate['input-properties'][input.index].name
+                label = self.connection.mixer.mixerstate['input-properties'][input.index].short_name
             elif input.type == 1:
                 label = 'Mediaplayer {}'.format(input.number)
             else:
-                label = 'Analog {}'.format(input.number)
+                label = 'Analog {}'.format(input.number + 1)
             label = Gtk.Label(label=label)
             self.audio_channels.attach(label, left, 0, num_subchannels, 1)
 
             for c in range(0, num_subchannels):
+                strip_id = str(input.index) + '.' + str(c)
+
+                if strip_id not in self.volume_level:
+                    self.volume_level[strip_id] = Gtk.Adjustment(0, -10000, 1000, 10, 10, 100)
+                    self.pan[strip_id] = Gtk.Adjustment(0, -10000, 10000, 10, 10, 100)
+                    self.input_gain[strip_id] = Gtk.Adjustment(0, -10000, 600, 10, 10, 100)
+                    self.delay[strip_id] = Gtk.Adjustment(0, 0, 8, 1, 1, 1)
+
                 tally = Gtk.Box()
                 tally.get_style_context().add_class('tally')
+                if strip_id in self.audio_strip:
+                    self.set_class(tally, 'afv', self.audio_strip[strip_id].state & 4)
+
+                self.audio_tally[strip_id] = tally
                 self.audio_channels.attach(tally, left + c, 1, 1, 1)
 
                 input_frame = Gtk.Frame()
                 input_frame.get_style_context().add_class('view')
                 self.audio_channels.attach(input_frame, left + c, 2, 1, 1)
 
+                eq_frame = Gtk.Frame()
+                eq_frame.get_style_context().add_class('view')
+                eq_frame.set_size_request(0, 64)
+                self.audio_channels.attach(eq_frame, left + c, 3, 1, 1)
+
+                dynamics_frame = Gtk.Frame()
+                dynamics_frame.get_style_context().add_class('view')
+                dynamics_frame.set_size_request(0, 64)
+                self.audio_channels.attach(dynamics_frame, left + c, 4, 1, 1)
+
+                volume_frame = Gtk.Frame()
+                volume_frame.get_style_context().add_class('view')
+                volume_frame.set_size_request(76, 0)
+                volume_frame.set_vexpand(True)
+                volume_box = Gtk.Box()
+                volume_frame.add(volume_box)
+                volume_slider = Gtk.Scale(orientation=Gtk.Orientation.VERTICAL, adjustment=self.volume_level[strip_id])
+                volume_slider.set_inverted(True)
+                volume_slider.set_draw_value(False)
+                volume_slider.get_style_context().add_class('volume')
+                volume_box.pack_start(volume_slider, True, True, 0)
+                volume_box.set_margin_left(8)
+                volume_box.set_margin_right(8)
+                volume_box.set_margin_top(24)
+                volume_box.set_margin_bottom(8)
+                vu_left = Gtk.ProgressBar()
+                vu_right = Gtk.ProgressBar()
+                vu_left.set_orientation(Gtk.Orientation.VERTICAL)
+                vu_right.set_orientation(Gtk.Orientation.VERTICAL)
+                volume_box.pack_start(vu_left, False, True, 0)
+                volume_box.pack_start(vu_right, False, True, 0)
+                self.audio_channels.attach(volume_frame, left + c, 5, 1, 1)
+
+                pan_frame = Gtk.Frame()
+                pan_frame.get_style_context().add_class('view')
+                pan_slider = Gtk.Scale(adjustment=self.pan[strip_id])
+                pan_slider.set_draw_value(False)
+                pan_slider.get_style_context().add_class('mini')
+                pan_slider.get_style_context().add_class('pan')
+                pan_frame.add(pan_slider)
+                self.audio_channels.attach(pan_frame, left + c, 6, 1, 1)
+
+                routing_grid = Gtk.Grid()
+                routing_grid.set_row_homogeneous(True)
+                routing_grid.set_column_homogeneous(True)
+                routing_grid.set_row_spacing(8)
+                routing_grid.set_column_spacing(8)
+                on = Gtk.Button(label="ON")
+                on.get_style_context().add_class('bmdbtn')
+                routing_grid.attach(on, 0, 0, 1, 1)
+                afv = Gtk.Button(label="AFV")
+                afv.get_style_context().add_class('bmdbtn')
+                routing_grid.attach(afv, 1, 0, 1, 1)
+                mon = Gtk.Button(label="Monitor")
+                mon.get_style_context().add_class('bmdbtn')
+                routing_grid.attach(mon, 0, 1, 2, 1)
+                self.audio_channels.attach(routing_grid, left + c, 7, 1, 1)
+                self.audio_on[strip_id] = on
+                self.audio_afv[strip_id] = afv
+                self.audio_monitor[strip_id] = mon
+                if strip_id in self.audio_strip:
+                    self.set_class(afv, 'active', self.audio_strip[strip_id].state & 4)
+                    self.set_class(on, 'program', self.audio_strip[strip_id].state & 2)
+
             left += num_subchannels
+
+        master_sep = Gtk.Separator(orientation=Gtk.Orientation.VERTICAL)
+        master_sep.get_style_context().add_class('dark')
+        master_sep.set_margin_left(8)
+        master_sep.set_margin_right(8)
+        self.audio_channels.attach(master_sep, left, 0, 1, 8)
+        left += 1
+
+        # Add master channel last
+        for c in range(0, 1):
+            label = Gtk.Label(label="Master")
+            self.audio_channels.attach(label, left + c, 0, 1, 1)
+            tally = Gtk.Box()
+            tally.get_style_context().add_class('tally')
+            tally.get_style_context().add_class('program')
+            self.audio_channels.attach(tally, left + c, 1, 1, 1)
+
+            eq_frame = Gtk.Frame()
+            eq_frame.get_style_context().add_class('view')
+            eq_frame.set_size_request(0, 64)
+            self.audio_channels.attach(eq_frame, left + c, 3, 1, 1)
+
+            dynamics_frame = Gtk.Frame()
+            dynamics_frame.get_style_context().add_class('view')
+            dynamics_frame.set_size_request(0, 64)
+            self.audio_channels.attach(dynamics_frame, left + c, 4, 1, 1)
+
+            volume_frame = Gtk.Frame()
+            volume_frame.set_size_request(76, 0)
+            volume_frame.get_style_context().add_class('view')
+            volume_frame.set_vexpand(True)
+            volume_box = Gtk.Box()
+            volume_frame.add(volume_box)
+            volume_slider = Gtk.Scale(orientation=Gtk.Orientation.VERTICAL)
+            volume_box.pack_start(volume_slider, True, True, 0)
+            volume_box.set_margin_left(8)
+            volume_box.set_margin_right(8)
+            volume_box.set_margin_top(8)
+            volume_box.set_margin_bottom(8)
+            vu_left = Gtk.ProgressBar()
+            vu_right = Gtk.ProgressBar()
+            vu_left.set_orientation(Gtk.Orientation.VERTICAL)
+            vu_right.set_orientation(Gtk.Orientation.VERTICAL)
+            volume_box.pack_start(vu_left, False, True, 0)
+            volume_box.pack_start(vu_right, False, True, 0)
+            self.audio_channels.attach(volume_frame, left + c, 5, 1, 1)
+
+            pan_frame = Gtk.Frame()
+            pan_frame.get_style_context().add_class('view')
+            self.audio_channels.attach(pan_frame, left + c, 6, 1, 1)
 
         self.apply_css(self.audio_channels, self.provider)
         self.audio_channels.show_all()

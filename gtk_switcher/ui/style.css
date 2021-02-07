@@ -78,6 +78,40 @@ scale.tbar slider {
     box-shadow: 2px 3px 4px 0 rgba(0, 0, 0, 0.5);
 }
 
+scale.volume {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+scale.volume slider {
+    background: linear-gradient(#c5c5c5 0%, #989898 10%, #575757 11%, #adadad 49%, #515151 50%, #ccc 53%, #cbcbcb 85%, #494949 86%, #474747);
+    border-radius: 4px;
+    min-height: 42px;
+    min-width: 24px;
+    margin-top: -21px;
+    margin-bottom: -21px;
+    margin-left: -12px;
+    margin-right: -12px;
+
+    box-shadow: 2px 3px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+scale.volume highlight,
+scale.pan highlight {
+    background: none;
+}
+
+scale.mini slider {
+    background: #aaa;
+    border-radius: 2px;
+    min-width: 8px;
+    min-height: 16px;
+    margin-top: -8px;
+    margin-bottom: -8px;
+    margin-left: -4px;
+    margin-right: -4px;
+}
+
 box.tally {
     min-height: 8px;
     background: @content_view_bg;
@@ -94,4 +128,12 @@ box.tally.program {
 
 box.tally.afv {
     background: linear-gradient(#ffc144, #e7af40);
+}
+
+box.tally.program.afv {
+    background: linear-gradient(#ff3b3b, #f52727);
+}
+
+separator.dark {
+    background: @borders;
 }

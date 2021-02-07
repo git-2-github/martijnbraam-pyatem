@@ -1124,7 +1124,7 @@ class FairlightStripPropertiesField(FieldBase):
 
     def __init__(self, raw):
         self.raw = raw
-        field = struct.unpack('>H 12xBBxB 4x h 5x ? 4x h 2x Hh 4x h B 3x', raw)
+        field = struct.unpack('>H 12xBBxB 4x h 5x ? 4x h 2x Hh 4x h x B 2x', raw)
         self.index = field[0]
         self.is_split = field[1]
         self.subchannel = field[2]
@@ -1137,16 +1137,21 @@ class FairlightStripPropertiesField(FieldBase):
         self.volume = field[9]
         self.state = field[10]
 
+        self.strip_id = str(self.index)
+        if self.is_split == 0xff:
+            self.strip_id += '.' + str(self.subchannel)
+        else:
+            self.strip_id += '.0'
+
     def __repr__(self):
         extra = ''
         if self.eq_enable:
             extra += ' EQ {}'.format(self.eq_gain)
 
-        index = self.index
-        if self.is_split == 0xff:
-            index = str(index) + '.' + str(self.subchannel)
-        return '<fairlight-strip-properties: index={} gain={} volume={} pan={} dgn={} {}>'.format(index, self.gain,
-                                                                                                  self.volume, self.pan,
+        return '<fairlight-strip-properties: index={} gain={} volume={} pan={} dgn={} {}>'.format(self.strip_id,
+                                                                                                  self.gain,
+                                                                                                  self.volume,
+                                                                                                  self.pan,
                                                                                                   self.dynamics_gain,
                                                                                                   extra)
 
@@ -1198,3 +1203,46 @@ class FairlightAudioInputField(FieldBase):
 
     def __repr__(self):
         return '<fairlight-input index={} type={}>'.format(self.index, self.type)
+
+
+class FairlightTallyField(FieldBase):
+    """
+    Data from the `FMTl`. Encodes the state of tally lights on the audio mixer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Number of tally lights
+    2      1    u8     Input type
+    3      2    ?      unknown
+    5      1    u8     Index in group
+    10     1    u8     Changes when stereo is split into dual mono
+    12     1    u8     Analog audio input level [1=mic, 2=line]
+    ====== ==== ====== ===========
+
+    === ==========
+    Val Input type
+    === ==========
+    0   External video input
+    1   Media player audio
+    2   External audio input
+    === ==========
+
+    After parsing:
+    :ivar volume: Master volume for the mixer, signed int which maps [-10000 - 1000] to +10dB - -100dB (inf)
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        offset = 0
+        self.num, = struct.unpack_from('>H', raw, offset)
+        self.tally = {}
+        offset += 15
+        for i in range(0, self.num):
+            subchan, source, tally, = struct.unpack_from('>BH?', raw, offset)
+            strip_id = '{}.{}'.format(source, subchan)
+            self.tally[strip_id] = tally
+            offset += 11
+
+    def __repr__(self):
+        return '<fairlight-tally {}>'.format(self.tally)
