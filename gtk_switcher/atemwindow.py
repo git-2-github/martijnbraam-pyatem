@@ -81,6 +81,10 @@ class AtemWindow:
         self.window = builder.get_object("main_window")
         self.window.set_application(self.application)
 
+        # Load requested view
+        self.mainstack = builder.get_object("mainstack")
+        self.mainstack.set_visible_child_name(args.view)
+
         self.program_bus = builder.get_object('program')
         self.preview_bus = builder.get_object('preview')
         self.audio_channels = builder.get_object('audio_channels')
@@ -615,7 +619,7 @@ class AtemWindow:
                 self.audio_channels.attach(input_frame, left + c, 2, 1, 1)
 
             left += num_subchannels
-            
+
         self.apply_css(self.audio_channels, self.provider)
         self.audio_channels.show_all()
 
