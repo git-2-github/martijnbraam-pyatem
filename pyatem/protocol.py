@@ -103,6 +103,7 @@ class AtemProtocol:
             'transition-stinger': '>B',
             'fairlight-strip-properties': '>H',
             'macro-properties': '>H',
+            'fairlight-audio-input': '>H',
         }
 
         if fieldname == b'InCm':

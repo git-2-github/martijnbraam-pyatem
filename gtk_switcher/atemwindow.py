@@ -83,6 +83,7 @@ class AtemWindow:
 
         self.program_bus = builder.get_object('program')
         self.preview_bus = builder.get_object('preview')
+        self.audio_channels = builder.get_object('audio_channels')
         self.dsks = builder.get_object('dsks')
         self.media_flow = builder.get_object('media_flow')
         self.tbar = builder.get_object('tbar')
@@ -555,6 +556,8 @@ class AtemWindow:
             self.on_transition_dve_change(data)
         elif field == 'fairlight-master-properties':
             self.on_fairlight_master_properties_change(data)
+        elif field == 'fairlight-audio-input':
+            self.on_fairlight_audio_input_change(data)
         else:
             if field == 'time':
                 return
@@ -562,6 +565,57 @@ class AtemWindow:
                 print(field)
             else:
                 print(data)
+
+    def on_fairlight_audio_input_change(self, data):
+        inputs = self.connection.mixer.mixerstate['fairlight-audio-input']
+
+        # Clear the existing channels
+        for child in self.audio_channels:
+            child.destroy()
+
+        # Create row of labels again
+        label = Gtk.Label(label="Input")
+        label.get_style_context().add_class('dim-label')
+        self.audio_channels.attach(label, 0, 2, 1, 1)
+        label = Gtk.Label(label="Equalizer")
+        label.get_style_context().add_class('dim-label')
+        self.audio_channels.attach(label, 0, 3, 1, 1)
+        label = Gtk.Label(label="Dynamics")
+        label.get_style_context().add_class('dim-label')
+        self.audio_channels.attach(label, 0, 4, 1, 1)
+        label = Gtk.Label(label="dB")
+        label.get_style_context().add_class('dim-label')
+        self.audio_channels.attach(label, 0, 5, 1, 1)
+        label = Gtk.Label(label="Pan")
+        label.get_style_context().add_class('dim-label')
+        self.audio_channels.attach(label, 0, 6, 1, 1)
+
+        left = 1
+        for input in inputs.values():
+            num_subchannels = 1
+            if input.split == 4:
+                num_subchannels = 2
+
+            if input.type == 0:
+                label = self.connection.mixer.mixerstate['input-properties'][input.index].name
+            elif input.type == 1:
+                label = 'Mediaplayer {}'.format(input.number)
+            else:
+                label = 'Analog {}'.format(input.number)
+            label = Gtk.Label(label=label)
+            self.audio_channels.attach(label, left, 0, num_subchannels, 1)
+
+            for c in range(0, num_subchannels):
+                tally = Gtk.Box()
+                self.audio_channels.attach(tally, left + c, 1, 1, 1)
+
+                input_frame = Gtk.Frame()
+                input_frame.get_style_context().add_class('view')
+                self.audio_channels.attach(input_frame, left + c, 2, 1, 1)
+
+            left += num_subchannels
+
+        self.audio_channels.show_all()
 
     def on_fairlight_master_properties_change(self, data):
         self.set_class(self.ftb_afv, 'active', data.afv)
