@@ -742,3 +742,89 @@ class FairlightMasterPropertiesCommand(Command):
 
         data = struct.pack('>B 5x h 2x Hi?? 2x', mask, eq_gain, dynamics_gain, volume, afv, eq_enable)
         return self._make_command('CFMP', data)
+
+
+class FairlightStripPropertiesCommand(Command):
+    """
+    Implementation of the `CFSP` command. This sets the settings of a channel strip in fairlight audio.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Mask, see table below
+    2      2    u16    Source index
+    15     1    u8     Channel number
+    16     1    u8     Delay in frames
+    22     2    i16    Gain [-10000 - 600]
+    30     2    i16    EQ Gain
+    34     2    u16    Dynamics Gain
+    36     2    i16    Pan [-10000 - 10000]
+    40     4    i32    volume [-10000 - 1000]
+    44     1    u8     State
+    45     3    ?      unknown
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Delay
+    1   Gain
+    2   ?
+    3   EQ Enable
+    4   EQ Gain
+    5   Dynamics gain
+    6   Balance
+    7   Volume
+    8   State
+    === ==========
+
+
+    """
+
+    def __init__(self, source, channel, delay=None, gain=None, eq_gain=None, dynamics_gain=None, balance=None,
+                 volume=None, state=None):
+        """
+        :param index: 0-indexed M/E number to control the preview bus of
+        """
+        self.source = source
+        self.channel = channel
+        self.delay = delay
+        self.gain = gain
+        self.eq_gain = eq_gain
+        self.dynamics_gain = dynamics_gain
+        self.balance = balance
+        self.volume = volume
+        self.state = state
+
+    def get_command(self):
+        mask = 0
+        if self.delay is not None:
+            mask |= 1 << 0
+        if self.gain is not None:
+            mask |= 1 << 1
+        if self.eq_gain is not None:
+            mask |= 1 << 4
+        if self.dynamics_gain is not None:
+            mask |= 1 << 5
+        if self.balance is not None:
+            mask |= 1 << 6
+        if self.volume is not None:
+            mask |= 1 << 7
+        if self.state is not None:
+            mask |= 1 << 8
+
+        delay = 0 if self.delay is None else self.delay
+        gain = 0 if self.gain is None else self.gain
+        eq_gain = 0 if self.eq_gain is None else self.eq_gain
+        dynamics_gain = 0 if self.dynamics_gain is None else self.dynamics_gain
+        balance = 0 if self.balance is None else self.balance
+        volume = 0 if self.volume is None else self.volume
+        state = 0 if self.state is None else self.state
+
+        split = 0xff if self.channel > -1 else 0x01
+        self.channel = 0x00 if self.channel == -1 else self.channel
+        pad = b'\xff\xff\xff\xff\xff\xff\xff'
+        data = struct.pack('>H H4x6sBb B 5x h 6x h 2x Hh 2x iB 3x', mask, self.source, pad, split, self.channel, delay,
+                           gain, eq_gain,
+                           dynamics_gain, balance, volume, state)
+        return self._make_command('CFSP', data)

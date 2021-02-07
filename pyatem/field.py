@@ -1,8 +1,6 @@
 import colorsys
 import struct
 
-from hexdump import hexdump
-
 
 class FieldBase:
     def _get_string(self, raw):
@@ -1197,7 +1195,6 @@ class FairlightAudioInputField(FieldBase):
     """
 
     def __init__(self, raw):
-        hexdump(raw)
         self.raw = raw
         self.index, self.type, self.number, self.split, self.level = struct.unpack('>HB 2x B xxxx B x B 3x', raw)
 

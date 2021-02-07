@@ -7,7 +7,7 @@ from gtk_switcher.preferenceswindow import PreferencesWindow
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, CutCommand, AutoCommand, TransitionSettingsCommand, \
     TransitionPreviewCommand, ColorGeneratorCommand, FadeToBlackCommand, DkeyOnairCommand, DkeyAutoCommand, \
     DkeyTieCommand, TransitionPositionCommand, MixSettingsCommand, DipSettingsCommand, WipeSettingsCommand, \
-    DveSettingsCommand, DkeyRateCommand, FairlightMasterPropertiesCommand
+    DveSettingsCommand, DkeyRateCommand, FairlightMasterPropertiesCommand, FairlightStripPropertiesCommand
 from pyatem.field import InputPropertiesField, TransitionSettingsField
 from pyatem.protocol import AtemProtocol
 
@@ -600,6 +600,7 @@ class AtemWindow:
             self.pan[data.strip_id] = Gtk.Adjustment(0, -10000, 10000, 10, 10, 100)
             self.input_gain[data.strip_id] = Gtk.Adjustment(0, -10000, 600, 10, 10, 100)
             self.delay[data.strip_id] = Gtk.Adjustment(0, 0, 8, 1, 1, 1)
+            self.volume_level[data.strip_id].connect('value-changed', self.on_volume_changed)
 
         self.volume_level[data.strip_id].set_value(data.volume)
         self.pan[data.strip_id].set_value(data.pan)
@@ -611,6 +612,10 @@ class AtemWindow:
         if data.strip_id in self.audio_on:
             self.set_class(self.audio_on[data.strip_id], 'program', data.state & 2)
             self.set_class(self.audio_afv[data.strip_id], 'active', data.state & 4)
+
+    def on_volume_changed(self, widget, *args):
+        cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel, volume=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
 
     def on_fairlight_audio_input_change(self, data):
         inputs = self.connection.mixer.mixerstate['fairlight-audio-input']
@@ -679,6 +684,10 @@ class AtemWindow:
                     self.pan[strip_id] = Gtk.Adjustment(0, -10000, 10000, 10, 10, 100)
                     self.input_gain[strip_id] = Gtk.Adjustment(0, -10000, 600, 10, 10, 100)
                     self.delay[strip_id] = Gtk.Adjustment(0, 0, 8, 1, 1, 1)
+                    self.volume_level[strip_id].connect('value-changed', self.on_volume_changed)
+
+                self.volume_level[strip_id].source = input.index
+                self.volume_level[strip_id].channel = c if num_subchannels > 1 else -1
 
                 tally = Gtk.Box()
                 tally.get_style_context().add_class('tally')
@@ -712,6 +721,8 @@ class AtemWindow:
                 volume_slider.set_inverted(True)
                 volume_slider.set_draw_value(False)
                 volume_slider.get_style_context().add_class('volume')
+                volume_slider.connect('button-press-event', self.on_slider_held)
+                volume_slider.connect('button-release-event', self.on_slider_released)
                 volume_box.pack_start(volume_slider, True, True, 0)
                 volume_box.set_margin_left(8)
                 volume_box.set_margin_right(8)
@@ -740,10 +751,18 @@ class AtemWindow:
                 routing_grid.set_row_spacing(8)
                 routing_grid.set_column_spacing(8)
                 on = Gtk.Button(label="ON")
+                on.source = input.index
+                on.channel = c if num_subchannels > 1 else -1
+                on.connect('clicked', self.do_fairlight_channel_on)
                 on.get_style_context().add_class('bmdbtn')
                 routing_grid.attach(on, 0, 0, 1, 1)
                 afv = Gtk.Button(label="AFV")
+                afv.connect('clicked', self.do_fairlight_channel_afv)
                 afv.get_style_context().add_class('bmdbtn')
+                afv.source = input.index
+                afv.channel = c if num_subchannels > 1 else -1
+                if input.type == 2:
+                    afv.set_sensitive(False)
                 routing_grid.attach(afv, 1, 0, 1, 1)
                 mon = Gtk.Button(label="Monitor")
                 mon.get_style_context().add_class('bmdbtn')
@@ -810,6 +829,22 @@ class AtemWindow:
 
         self.apply_css(self.audio_channels, self.provider)
         self.audio_channels.show_all()
+
+    def do_fairlight_channel_on(self, widget, *args):
+        if widget.get_style_context().has_class('program'):
+            state = 1
+        else:
+            state = 2
+        cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel, state=state)
+        self.connection.mixer.send_commands([cmd])
+
+    def do_fairlight_channel_afv(self, widget, *args):
+        if widget.get_style_context().has_class('active'):
+            state = 1
+        else:
+            state = 4
+        cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel, state=state)
+        self.connection.mixer.send_commands([cmd])
 
     def on_fairlight_master_properties_change(self, data):
         self.set_class(self.ftb_afv, 'active', data.afv)
