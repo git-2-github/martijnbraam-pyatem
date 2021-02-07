@@ -1,6 +1,8 @@
 import colorsys
 import struct
 
+from hexdump import hexdump
+
 
 class FieldBase:
     def _get_string(self, raw):
@@ -1147,3 +1149,52 @@ class FairlightStripPropertiesField(FieldBase):
                                                                                                   self.volume, self.pan,
                                                                                                   self.dynamics_gain,
                                                                                                   extra)
+
+
+class FairlightStripDField(FieldBase):
+    """
+    Data from the `FASD`. No clue what this does, only gets sent on audio channel routing changes, but not on connection.
+
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+
+    def __repr__(self):
+        return '<fairlight-strip-d {}>'.format(self.raw)
+
+
+class FairlightAudioInputField(FieldBase):
+    """
+    Data from the `FAIP`. Describes the inputs to the fairlight mixer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Audio source index
+    2      1    u8     Input type
+    3      2    ?      unknown
+    5      1    u8     Index in group
+    10     1    u8     Changes when stereo is split into dual mono
+    12     1    u8     Analog audio input level [1=mic, 2=line]
+    ====== ==== ====== ===========
+
+    === ==========
+    Val Input type
+    === ==========
+    0   External video input
+    1   Media player audio
+    2   External audio input
+    === ==========
+
+    After parsing:
+    :ivar volume: Master volume for the mixer, signed int which maps [-10000 - 1000] to +10dB - -100dB (inf)
+    """
+
+    def __init__(self, raw):
+        hexdump(raw)
+        self.raw = raw
+        self.index, self.type = struct.unpack('>HB 13x', raw)
+
+    def __repr__(self):
+        return '<fairlight-input index={} type={}>'.format(self.index, self.type)
