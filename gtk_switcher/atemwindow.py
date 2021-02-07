@@ -607,6 +607,7 @@ class AtemWindow:
 
             for c in range(0, num_subchannels):
                 tally = Gtk.Box()
+                tally.get_style_context().add_class('tally')
                 self.audio_channels.attach(tally, left + c, 1, 1, 1)
 
                 input_frame = Gtk.Frame()
@@ -614,7 +615,8 @@ class AtemWindow:
                 self.audio_channels.attach(input_frame, left + c, 2, 1, 1)
 
             left += num_subchannels
-
+            
+        self.apply_css(self.audio_channels, self.provider)
         self.audio_channels.show_all()
 
     def on_fairlight_master_properties_change(self, data):
