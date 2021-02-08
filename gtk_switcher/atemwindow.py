@@ -677,7 +677,11 @@ class AtemWindow:
             elif input.type == 1:
                 label = 'MP {}'.format(input.number + 1)
             else:
-                label = 'Analog {}'.format(input.number + 1)
+                alabel = 'Analog'
+                if input.index > 1300 and input.index < 1400:
+                    alabel = 'Mic'
+
+                label = '{} {}'.format(alabel, input.number + 1)
             label = Gtk.Label(label=label)
             self.audio_channels.attach(label, left, 0, 1, 1)
             strip_id = input.strip_id
@@ -851,7 +855,11 @@ class AtemWindow:
             elif input.type == 1:
                 label = 'MP {}'.format(input.number + 1)
             else:
-                label = 'Analog {}'.format(input.number + 1)
+                alabel = 'Analog'
+                if input.index > 1300 and input.index < 1400:
+                    alabel = 'Mic'
+
+                label = '{} {}'.format(alabel, input.number + 1)
             label = Gtk.Label(label=label)
             self.audio_channels.attach(label, left, 0, num_subchannels, 1)
 
