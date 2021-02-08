@@ -2,6 +2,7 @@ import ctypes
 import threading
 
 import gi
+from hexdump import hexdump
 
 from gtk_switcher.preferenceswindow import PreferencesWindow
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, CutCommand, AutoCommand, TransitionSettingsCommand, \
@@ -517,8 +518,19 @@ class AtemWindow:
             return (int(part[0]) * transition_rate) + int(part[1])
 
     def on_change(self, field, data):
+
+        if self.args.dump is not None and field in self.args.dump:
+            if isinstance(data, bytes):
+                print('== {} ({} bytes)=='.format(field, len(data)))
+                hexdump(data)
+            else:
+                print('== {} ({} bytes)=='.format(field, len(data.raw)))
+                hexdump(data.raw)
+                print(data)
+
         if field == 'firmware-version':
             self.firmware_version = data
+            print("Firmware: {}".format(data.version))
         elif field == 'input-properties':
             self.on_input_layout_change(data)
         elif field == 'program-bus-input':
@@ -542,15 +554,10 @@ class AtemWindow:
         elif field == 'mixer-effect-config':
             self.on_mixer_effect_config_change(data)
         elif field == 'topology':
-            if self.debug:
-                from hexdump import hexdump
-                print('---------------------------------')
-                print("Got topology field:")
-                hexdump(data.raw)
-                print('---------------------------------')
             self.on_topology_change(data)
         elif field == 'product-name':
             self.status_model.set_text(data.name)
+            print("Mixer model: {}".format(data.name))
         elif field == 'video-mode':
             self.mode = data
             self.status_mode.set_text(data.get_label())
@@ -578,6 +585,8 @@ class AtemWindow:
             self.on_fairlight_tally_change(data)
         else:
             if field == 'time':
+                return
+            if not self.debug and self.args.dump is not None and len(self.args.dump) > 0:
                 return
             if isinstance(data, bytes):
                 print(field)
@@ -614,7 +623,8 @@ class AtemWindow:
             self.set_class(self.audio_afv[data.strip_id], 'active', data.state & 4)
 
     def on_volume_changed(self, widget, *args):
-        cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel, volume=int(widget.get_value()))
+        cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel,
+                                              volume=int(widget.get_value()))
         self.connection.mixer.send_commands([cmd])
 
     def on_fairlight_audio_input_change(self, data):

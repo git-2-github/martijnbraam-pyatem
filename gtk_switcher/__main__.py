@@ -28,6 +28,7 @@ def main(version):
     parser.add_argument('ip', help='ip-address of the switcher to connect to', nargs='?')
     parser.add_argument('--persist', action='store_true', help='save the new ip address')
     parser.add_argument('--debug', action='store_true', help='output extra debugging info')
+    parser.add_argument('--dump', help='dump data for specific packets', nargs='*')
     parser.add_argument('--view', choices=['switcher', 'media', 'audio', 'camera'], default='switcher',
                         help='default view to open when launching')
     args = parser.parse_args()
