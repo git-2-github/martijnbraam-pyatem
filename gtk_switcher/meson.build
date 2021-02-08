@@ -30,6 +30,8 @@ switcher_sources = [
     '__main__.py',
     'atemwindow.py',
     'preferenceswindow.py',
+    'switcher.py',
+    'audio.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)
