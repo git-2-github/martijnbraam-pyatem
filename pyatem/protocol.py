@@ -86,7 +86,8 @@ class AtemProtocol:
             'MPrp': 'macro-properties',
             'AiVM': 'auto-input-video-mode',
             'FASD': 'fairlight-strip-ding',
-            'FAIP': 'fairlight-audio-input'
+            'FAIP': 'fairlight-audio-input',
+            'AMIP': 'audio-input',
         }
 
         fieldname_to_unique = {

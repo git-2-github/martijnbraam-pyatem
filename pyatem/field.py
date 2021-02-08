@@ -1243,3 +1243,57 @@ class FairlightTallyField(FieldBase):
 
     def __repr__(self):
         return '<fairlight-tally {}>'.format(self.tally)
+
+
+class AudioInputField(FieldBase):
+    """
+    Data from the `AMIP`. Describes the inputs to the atem audio mixer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Audio source index
+    2      1    u8     Input type
+    3      2    ?      unknown
+    5      1    u8     Index in group
+    6      1    ?      ?
+    7      1    u8     Input plug
+    8      1    u8     State [0=off, 1=on, 2=afv]
+    10     2    u16    Channel volume
+    12     2    i16    Channel balance [-10000 - 10000]
+    ====== ==== ====== ===========
+
+    === ==========
+    Val Input type
+    === ==========
+    0   External video input
+    1   Media player audio
+    2   External audio input
+    === ==========
+
+    === =========
+    Val Plug type
+    === =========
+    0   Internal
+    1   SDI
+    2   HDMI
+    3   Component
+    4   Composite
+    5   SVideo
+    32  XLR
+    64  AES/EBU
+    128 RCA
+    === =========
+
+    After parsing:
+    :ivar volume: Master volume for the mixer, signed int which maps [-10000 - 1000] to +10dB - -100dB (inf)
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.type, self.number, self.plug, self.state, self.volume, self.balance = struct.unpack(
+            '>HB 2x B x BB x Hh 2x', raw)
+        self.strip_id = str(self.index) + '.0'
+
+    def __repr__(self):
+        return '<audio-input index={} type={} plug={}>'.format(self.index, self.type, self.plug)
