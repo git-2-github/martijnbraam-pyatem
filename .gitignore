@@ -149,3 +149,4 @@ gtk_switcher/atem.gresource
 
 /.flatpak-builder
 /repo
+/test.py

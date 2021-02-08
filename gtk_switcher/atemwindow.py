@@ -675,7 +675,7 @@ class AtemWindow:
             if input.type == 0:
                 label = self.connection.mixer.mixerstate['input-properties'][input.index].short_name
             elif input.type == 1:
-                label = 'Mediaplayer {}'.format(input.number)
+                label = 'MP {}'.format(input.number + 1)
             else:
                 label = 'Analog {}'.format(input.number + 1)
             label = Gtk.Label(label=label)
@@ -792,10 +792,6 @@ class AtemWindow:
             volume_box.pack_start(vu_right, False, True, 0)
             self.audio_channels.attach(volume_frame, left + c, 2, 1, 1)
 
-            pan_frame = Gtk.Frame()
-            pan_frame.get_style_context().add_class('view')
-            self.audio_channels.attach(pan_frame, left + c, 6, 3, 1)
-
         self.apply_css(self.audio_channels, self.provider)
         self.audio_channels.show_all()
 
@@ -853,7 +849,7 @@ class AtemWindow:
             if input.type == 0:
                 label = self.connection.mixer.mixerstate['input-properties'][input.index].short_name
             elif input.type == 1:
-                label = 'Mediaplayer {}'.format(input.number)
+                label = 'MP {}'.format(input.number + 1)
             else:
                 label = 'Analog {}'.format(input.number + 1)
             label = Gtk.Label(label=label)
