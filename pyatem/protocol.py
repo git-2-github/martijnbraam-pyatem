@@ -105,6 +105,7 @@ class AtemProtocol:
             'fairlight-strip-properties': '>H',
             'macro-properties': '>H',
             'fairlight-audio-input': '>H',
+            'audio-input': '>H',
         }
 
         if fieldname == b'InCm':
