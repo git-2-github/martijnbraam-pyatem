@@ -652,12 +652,12 @@ class AtemWindow:
         label.get_style_context().add_class('dim-label')
         label.set_halign(Gtk.Align.END)
         label.set_valign(Gtk.Align.START)
-        self.audio_channels.attach(label, 0, 5, 1, 1)
+        self.audio_channels.attach(label, 0, 2, 1, 1)
         label = Gtk.Label(label="Pan")
         label.get_style_context().add_class('dim-label')
         label.set_halign(Gtk.Align.END)
         label.set_valign(Gtk.Align.START)
-        self.audio_channels.attach(label, 0, 6, 1, 1)
+        self.audio_channels.attach(label, 0, 3, 1, 1)
 
         left = 1
         last_type = 0
