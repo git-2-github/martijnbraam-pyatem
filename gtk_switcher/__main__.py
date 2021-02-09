@@ -17,6 +17,9 @@ class AtemApplication(Gtk.Application):
         self.connect("activate", self.new_window)
         self.args = args
 
+        settings = Gtk.Settings.get_default()
+        settings.set_property("gtk-application-prefer-dark-theme", True)
+
     def new_window(self, *args):
         AtemWindow(self, self.args)
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2021 Martijn Braam -->
+<component type="desktop-application">
+	<id>nl.brixit.Switcher</id>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>GPL-3.0</project_license>
+	<name>Switcher control</name>
+	<summary>Control application for Blackmagic Design ATEM video switchers</summary>
+	<description>
+		<p>
+			Switcher is a re-implementation of the Switcher Control application
+			from Blackmagic Design for controlling the ATEM video mixers/switchers
+			like the popular Atem Mini.
+		</p>
+	</description>
+	<launchable type="desktop-id">nl.brixit.Switcher.desktop</launchable>
+	<provides>
+		<binary>switcher-control</binary>
+	</provides>
+	<screenshots>
+		<screenshot type="default">
+			<image>https://brixit.nl/openatem.png</image>
+		</screenshot>
+	</screenshots>
+	<url type="homepage">https://sr.ht/~martijnbraam/pyatem</url>
+	<url type="bugtracker">https://todo.sr.ht/~martijnbraam/OpenAtem</url>
+	<content_rating type="oars-1.1" />
+	<releases>
+		<release version="0.1.0" date="2021-02-09">
+			<description>
+				<p>
+					First release
+				</p>
+ 				<ul>
+					<li>Basic video switching and configuration implemented</li>
+					<li>Volume and mute/afv control for switchers with fairlight audio</li>
+				</ul>
+			</description>
+		</release>
+	</releases>
+</component>

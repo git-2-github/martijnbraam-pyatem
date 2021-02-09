@@ -1,7 +1,8 @@
 {
   "app-id": "nl.brixit.Switcher",
+  "name": "Switcher control",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "3.36",
+  "runtime-version": "3.38",
   "sdk": "org.gnome.Sdk",
   "command": "switcher-control",
   "finish-args": [
@@ -12,6 +13,18 @@
     "--device=dri"
   ],
   "modules": [
+    {
+      "name": "hexdump",
+      "buildsystem": "simple",
+      "build-commands": [
+        "pip3 install --prefix=/app hexdump"
+      ],
+      "build-options": {
+	"build-args": [
+	  "--share=network"
+	]
+      }
+    },
     {
       "name": "pyatem",
       "buildsystem": "simple",
