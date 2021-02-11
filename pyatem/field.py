@@ -711,8 +711,8 @@ class TopologyField(FieldBase):
     M/E units           1         1       1
     upstream keyers     1         1       1
     downstream keyers   1         2       2
-    dve                 1         ?       1
-    stinger             0         ?       ?
+    dve                 1         1       1
+    stinger             0         1       0
     supersources        0         0       0
     multiview           0         1       1
     rs485               0         1       1
@@ -723,28 +723,28 @@ class TopologyField(FieldBase):
     ====== ==== ====== ========= ======= ====== ===========
     0      1    u8     1         1       1      Number of M/E units
     1      1    u8     14        31      24     Sources
-    2      1    u8     1         2       2      DSKs? Media players?
+    2      1    u8     1         2       2      Downstream keyers
     3      1    u8     1         3       1      AUX busses
-    4      1    u8     0         0       4      ?
-    5      1    u8     1         2       2      DSKs? Media players?
-    6      1    u8     0         1       1      ?
-    7      1    u8     0         1       1      ?
-    8      1    u8     4         4       4      ?
-    9      1    u8     1         1       1      ?
-    10     1    u8     0         1       0      ?
-    11     1    u8     0         0       0      ?
+    4      1    u8     0         0       4      MixMinus Outputs
+    5      1    u8     1         2       2      Media players
+    6      1    u8     0         1       1      Multiviewers
+    7      1    u8     0         1       1      rs485
+    8      1    u8     4         4       4      Hyperdecks
+    9      1    u8     1         1       1      DVE
+    10     1    u8     0         1       0      Stingers
+    11     1    u8     0         0       0      supersources
     12     1    u8     0         1       1      ?
-    13     1    u8     0         0       1      Headphone outs?
+    13     1    u8     0         0       1      Talkback channels
     14     1    u8     0         0       4      ?
     15     1    u8     1         0       0      ?
     16     1    u8     0         0       0      ?
-    17     1    u8     0         1       0      Stingers?
-    18     1    u8     1         1       1      ?
+    17     1    u8     0         1       0      ?
+    18     1    u8     1         1       1      Camera Control
     19     1    u8     0         1       1      ?
     20     1    u8     0         1       1      ?
     21     1    u8     0         1       1      ?
-    22     1    u8     1         0       0      ?
-    23     1    u8     1         0       0      ?
+    22     1    u8     1         0       0      Advanced chroma keyers
+    23     1    u8     1         0       0      Only configurable outputs
     24     1    u8     1         0       0      ?
     25     1    u8     0x20      0x20    0x10   ?
     26     1    u8     3         0       0      ?
@@ -758,6 +758,14 @@ class TopologyField(FieldBase):
     :ivar sources: Number of internal and external sources
     :ivar downstream_keyers: Number of downstream keyers
     :ivar aux_outputs: Number of routable AUX outputs
+    :ivar mixminus_outputs: Number of ouputs with MixMinus
+    :ivar mediaplayers: Number of mediaplayers
+    :ivar multiviewers: Number of multiview ouputs
+    :ivar rs485: Number of RS-485 outputs
+    :ivar hyperdecks: Number of hyperdeck slots
+    :ivar dve: Number of DVE blocks
+    :ivar stingers: Number of stinger blocks
+    :ivar supersources: Number of supersources
     """
 
     def __init__(self, raw):
@@ -768,6 +776,14 @@ class TopologyField(FieldBase):
         self.sources = field[1]
         self.downstream_keyers = field[2]
         self.aux_outputs = field[3]
+        self.mixminus_outputs = field[4]
+        self.mediaplayers = field[5]
+        self.multiviewers = field[6]
+        self.rs485 = field[7]
+        self.hyperdecks = field[8]
+        self.dve = field[9]
+        self.stingers = field[10]
+        self.supersources = field[11]
 
     def __repr__(self):
         return '<topology, me={} sources={} aux={}>'.format(self.me_units, self.sources, self.aux_outputs)
