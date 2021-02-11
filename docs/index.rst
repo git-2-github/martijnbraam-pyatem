@@ -1,7 +1,7 @@
 Welcome to the Open Switcher documentation
 ==========================================
 
-This is a new protocol documentation for the revers-engineered UDP protocol
+This is a new protocol documentation for the reverse-engineered UDP protocol
 of Blackmagic Design ATEM video switchers. The protocol has changed quite a bit in
 a few parts since the skaarhoj documentation has been last updated.
 
