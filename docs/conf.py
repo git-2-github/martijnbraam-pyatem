@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'PyATEM'
+project = 'OpenSwitcher'
 copyright = '2021, Martijn Braam'
 author = 'Martijn Braam'
 

@@ -1,15 +1,15 @@
-.. PyATEM documentation master file, created by
-sphinx-quickstart on Sat Jan 30 02:14:18 2021.
-You can adapt this file completely to your liking, but it should at least
-contain the root `toctree` directive.
+Welcome to the Open Switcher documentation
+==========================================
 
-Welcome to PyATEM's documentation!
-==================================
+This is a new protocol documentation for the revers-engineered UDP protocol
+of Blackmagic Design ATEM video switchers. The protocol has changed quite a bit in
+a few parts since the skaarhoj documentation has been last updated.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   udptransport
    fields
    commands
 
