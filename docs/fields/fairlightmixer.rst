@@ -13,7 +13,7 @@ mixers of the previous models. These mostly use new datastructures to represent 
 .. autoclass:: pyatem.field.FairlightStripPropertiesField
    :members:
 
-.. autoclass:: pyatem.field.FairlightStripDField
+.. autoclass:: pyatem.field.FairlightStripDeleteField
    :members:
 
 .. autoclass:: pyatem.field.FairlightTallyField
