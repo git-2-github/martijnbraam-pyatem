@@ -12,6 +12,7 @@ a few parts since the skaarhoj documentation has been last updated.
    udptransport
    fields
    commands
+   python
 
 Indices and tables
 ==================
