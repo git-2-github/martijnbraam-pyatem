@@ -1,0 +1,22 @@
+Fairlight audio mixer
+=====================
+
+Some of the newer models of the ATEM switchers have Fairlight audio mixers in them instead of the more basic ATEM audio
+mixers of the previous models. These mostly use new datastructures to represent the mixer.
+
+.. autoclass:: pyatem.field.FairlightAudioInputField
+   :members:
+
+.. autoclass:: pyatem.field.FairlightMasterPropertiesField
+   :members:
+
+.. autoclass:: pyatem.field.FairlightStripPropertiesField
+   :members:
+
+.. autoclass:: pyatem.field.FairlightStripDField
+   :members:
+
+.. autoclass:: pyatem.field.FairlightTallyField
+   :members:
+
+

@@ -1,34 +1,11 @@
 Protocol commands
 =================
 
-.. autoclass:: pyatem.command.CutCommand
-   :members:
-   :special-members:
+These decribe the packets sent from the client to the switcher
 
-.. autoclass:: pyatem.command.AutoCommand
-   :members:
-   :special-members:
+.. toctree::
+   :maxdepth: 1
+   :caption: Command categories:
 
-.. autoclass:: pyatem.command.ProgramInputCommand
-   :members:
-   :special-members:
-
-.. autoclass:: pyatem.command.PreviewInputCommand
-   :members:
-   :special-members:
-
-.. autoclass:: pyatem.command.TransitionPreviewCommand
-   :members:
-   :special-members:
-
-.. autoclass:: pyatem.command.ColorGeneratorCommand
-   :members:
-   :special-members:
-
-.. autoclass:: pyatem.command.FadeToBlackCommand
-   :members:
-   :special-members:
-
-.. autoclass:: pyatem.command.CaptureStillCommand
-   :members:
-   :special-members:
+   commands/switcher
+   commands/fairlightmixer
