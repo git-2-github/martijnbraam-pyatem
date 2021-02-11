@@ -465,7 +465,7 @@ class DipSettingsCommand(Command):
 
 class WipeSettingsCommand(Command):
     """
-    Implementation of the `CTWp` command. This sets the settings for the dip transition
+    Implementation of the `CTWp` command. This sets the settings for the wipe transition
     panel.
 
     ====== ==== ====== ===========
@@ -570,7 +570,7 @@ class WipeSettingsCommand(Command):
 
 class DveSettingsCommand(Command):
     """
-    Implementation of the `CTDv` command. This sets the settings for the dip transition
+    Implementation of the `CTDv` command. This sets the settings for the DVE transition
     panel.
 
     ====== ==== ====== ===========
@@ -581,29 +581,33 @@ class DveSettingsCommand(Command):
     3      1    u8     Rate in frames
     4      1    u8     Pattern style [0-17]
     5      1    ?      unknown
-    6      2    u16    Border width [0-10000]
-    8      2    u16    Border fill source
-    10     2    u16    Symmetry [0-10000]
-    12     2    u16    Softness [0-10000]
-    14     2    16     Transition origin x [0-10000]
-    16     2    16     Transition origin y [0-10000]
-    18     1    bool   Reverse
-    19     1    bool   Flip flop
+    6      2    u16    Fill source index
+    8      2    u16    Key source index
+    10     1    bool   Enable key
+    11     1    bool   Key is premultiplied
+    12     2    u16    Key clip [0-1000]
+    14     2    u16    Key gain [0-1000]
+    16     1    bool   Invert key
+    17     1    bool   Reverse transition direction
+    18     1    bool   Enable flip-flop
+    19     1    ?      unknown
     ====== ==== ====== ===========
 
     === ==========
     Bit Mask value
     === ==========
     0   Rate
-    1   Pattern
-    2   Border width
-    3   Border fill source
-    4   Symmetry
-    5   Softness
-    6   Position x
-    7   Position y
-    8   Reverse
-    9   Flip flop
+    1   ?
+    2   Style
+    3   Fill source
+    4   Key source
+    5   Enable key
+    6   Key is premultiplied
+    7   Key clip
+    8   Key gain
+    9   Invert key
+    10  Reverse
+    11  Flip-flop
     === ==========
     """
 
