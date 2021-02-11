@@ -1170,9 +1170,10 @@ class FairlightStripPropertiesField(FieldBase):
                                                                                                   extra)
 
 
-class FairlightStripDField(FieldBase):
+class FairlightStripDeleteField(FieldBase):
     """
-    Data from the `FASD`. No clue what this does, only gets sent on audio channel routing changes, but not on connection.
+    Data from the `FASD`. Fairlight strip delete, received only when changing the source routing in fairlight to remove
+    channels that have changed.
 
     """
 
@@ -1180,7 +1181,7 @@ class FairlightStripDField(FieldBase):
         self.raw = raw
 
     def __repr__(self):
-        return '<fairlight-strip-d {}>'.format(self.raw)
+        return '<fairlight-strip-delete {}>'.format(self.raw)
 
 
 class FairlightAudioInputField(FieldBase):
