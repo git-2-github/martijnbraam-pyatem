@@ -21,6 +21,8 @@ class SwitcherPage:
         self.dsks = builder.get_object('dsks')
         self.tbar = builder.get_object('tbar')
         self.tbar_adj = builder.get_object('tbar_adj')
+        self.tbar.adj = self.tbar_adj
+        self.tbar.is_tbar = True
         self.tbar_held = False
         self.transition_progress = builder.get_object('transition_progress')
         self.last_transition_state = False
@@ -111,6 +113,7 @@ class SwitcherPage:
         self.tbar_held = False
 
     def on_cut_clicked(self, widget, *args):
+        print("CUT!")
         cmd = CutCommand(index=0)
         self.connection.mixer.send_commands([cmd])
 
