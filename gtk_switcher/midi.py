@@ -1,3 +1,4 @@
+import json
 import threading
 import time
 
@@ -91,10 +92,12 @@ class MidiLink:
         if self.type == 'button':
             self.widget.emit("clicked")
         if self.type == 'scale':
+            self.widget.tbar_held = True
             if self.inverted:
                 self.adjustment.set_value(self._remap(127, 0, self.min, self.max, value))
             else:
                 self.adjustment.set_value(self._remap(0, 127, self.min, self.max, value))
+            self.widget.tbar_held = False
 
     def _remap(self, in_min, in_max, out_min, out_max, value):
         in_range = in_max - in_min
@@ -127,7 +130,9 @@ class MidiControl:
         self.midi_learning = False
         self.midi_learning_widget = None
 
-        # self.restore_midi_map(builder)
+        mapstr = self.settings.get_string('midi-map')
+        map = json.loads(mapstr)
+        self.restore_midi_map(map, builder)
 
     def on_midi(self, event, channel, value):
         if event == 176 or event == 144:
@@ -142,6 +147,7 @@ class MidiControl:
                 self.midi_learning = False
                 self.midi_map[key] = MidiLink(self.midi_learning_widget, key, self.midi)
                 self.midi_learning_widget = None
+                self.save_midi_map()
 
     def on_context_menu(self, widget, event, *args):
         if event.button != 3:
@@ -159,10 +165,20 @@ class MidiControl:
         self.midi_learning = True
 
     def restore_midi_map(self, map, builder):
-        for key, widget_name in map:
+        for line in map:
+            *key, widget_name = line
+            key = tuple(*key)
             if 'dyn:' in widget_name:
                 pass
             else:
                 widget = builder.get_object(widget_name)
             link = MidiLink(widget, key, self.midi)
             self.midi_map[key] = link
+
+    def save_midi_map(self):
+        result = []
+        for key in self.midi_map:
+            result.append([key, self.midi_map[key].name])
+
+        js = json.dumps(result)
+        self.settings.set_string('midi-map', js)
