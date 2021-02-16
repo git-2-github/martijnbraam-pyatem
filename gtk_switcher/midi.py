@@ -6,10 +6,14 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gtk
 
-import rtmidi
-from rtmidi.midiutil import open_midiinput
+has_midi = False
+try:
+    import rtmidi
+    from rtmidi.midiutil import open_midiinput, open_midioutput, list_available_ports
 
-port = '20:0'
+    has_midi = True
+except ImportError as e:
+    print("Module 'rtmidi' not found, skipping midi support")
 
 
 class MidiConnection(threading.Thread):
@@ -17,12 +21,30 @@ class MidiConnection(threading.Thread):
         threading.Thread.__init__(self)
         self.callback = callback
         self.port = port
+        self.output = None
 
     def run(self):
+        if not has_midi:
+            return
+
         def _midi_in(event, data=None):
             self._do_callback(*event[0])
 
+        if self.port is None:
+            temp = rtmidi.MidiIn()
+            ports = temp.get_ports()
+            for port in ports:
+                if 'Midi Through' in port:
+                    continue
+                break
+            else:
+                print("No suitable midi port found")
+                return
+            self.port = port
+
         midiin, port_name = open_midiinput(self.port, client_name="Switcher")
+        midiout, port_name = open_midioutput(self.port, client_name="Switcher")
+        self.output = midiout
         midiin.set_callback(_midi_in)
 
         while True:
@@ -31,10 +53,15 @@ class MidiConnection(threading.Thread):
     def _do_callback(self, *args, **kwargs):
         GLib.idle_add(self.callback, *args, **kwargs)
 
+    def send(self, *args):
+        self.output.send_message(args)
+
 
 class MidiLink:
-    def __init__(self, widget):
+    def __init__(self, widget, key, midi):
         self.type = None
+        self.key = key
+        self.midi = midi
         self.widget = widget
         self.adjustment = None
         self.min = None
@@ -51,6 +78,7 @@ class MidiLink:
                 self.widget.connect("notify::inverted", self.on_tbar_inverted)
         if isinstance(widget, gi.repository.Gtk.Button):
             self.type = 'button'
+            self.widget.connect("style-updated", self.on_style_changed)
 
     def new_value(self, value):
         if self.type == 'button':
@@ -69,10 +97,20 @@ class MidiLink:
     def on_tbar_inverted(self, *args):
         self.inverted = not self.inverted
 
+    def on_style_changed(self, *args):
+        value = 0
+        if self.widget.get_style_context().has_class('active'):
+            value = 127
+        if self.widget.get_style_context().has_class('program'):
+            value = 127
+        if self.widget.get_style_context().has_class('preview'):
+            value = 127
+        self.midi.send(*self.key, value)
+
 
 class MidiControl:
     def __init__(self, builder):
-        self.midi = MidiConnection('20:0', self.on_midi)
+        self.midi = MidiConnection(None, self.on_midi)
         self.midi.daemon = True
         self.midi.start()
 
@@ -83,16 +121,17 @@ class MidiControl:
         self.midi_learning_widget = None
 
     def on_midi(self, event, channel, value):
-        if event == 176:
-            # CC
-
+        if event == 176 or event == 144:
+            # CC and NoteOn
+            key = (event, channel)
             print(event, channel, value)
-            if channel in self.midi_map:
-                self.midi_map[channel].new_value(value)
+
+            if key in self.midi_map:
+                self.midi_map[key].new_value(value)
 
             if self.midi_learning:
                 self.midi_learning = False
-                self.midi_map[channel] = MidiLink(self.midi_learning_widget)
+                self.midi_map[key] = MidiLink(self.midi_learning_widget, key, self.midi)
                 self.midi_learning_widget = None
 
     def on_context_menu(self, widget, event, *args):
