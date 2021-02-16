@@ -2223,6 +2223,7 @@ TRANS</property>
                                                             <property name="adjustment">wipe_symmetry_adj</property>
                                                             <property name="round-digits">1</property>
                                                             <property name="draw-value">False</property>
+                                                            <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
                                                             <signal name="button-press-event" handler="on_slider_held" swapped="no"/>
                                                             <signal name="button-release-event" handler="on_slider_released" swapped="no"/>
                                                             </object>
@@ -2267,6 +2268,7 @@ TRANS</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="adjustment">wipe_x_adj</property>
                                                             <property name="draw-value">False</property>
+                                                            <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
                                                             <signal name="button-press-event" handler="on_slider_held" swapped="no"/>
                                                             <signal name="button-release-event" handler="on_slider_released" swapped="no"/>
                                                             </object>
@@ -2281,6 +2283,7 @@ TRANS</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="adjustment">wipe_y_adj</property>
                                                             <property name="draw-value">False</property>
+                                                            <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
                                                             <signal name="button-press-event" handler="on_slider_held" swapped="no"/>
                                                             <signal name="button-release-event" handler="on_slider_released" swapped="no"/>
                                                             </object>
@@ -2336,6 +2339,7 @@ TRANS</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="adjustment">wipe_softness_adj</property>
                                                             <property name="draw-value">False</property>
+                                                            <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
                                                             <signal name="button-press-event" handler="on_slider_held" swapped="no"/>
                                                             <signal name="button-release-event" handler="on_slider_released" swapped="no"/>
                                                             </object>
@@ -2350,6 +2354,7 @@ TRANS</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="adjustment">wipe_width_adj</property>
                                                             <property name="draw-value">False</property>
+                                                            <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
                                                             <signal name="button-press-event" handler="on_slider_held" swapped="no"/>
                                                             <signal name="button-release-event" handler="on_slider_released" swapped="no"/>
                                                             </object>
@@ -2418,6 +2423,7 @@ TRANS</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
+                                                            <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
                                                             <signal name="clicked" handler="on_wipe_reverse_clicked" swapped="no"/>
                                                             <style>
                                                             <class name="bmdbtn"/>
@@ -2437,6 +2443,7 @@ TRANS</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
+                                                            <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
                                                             <signal name="clicked" handler="on_wipe_flipflop_clicked" swapped="no"/>
                                                             <style>
                                                             <class name="bmdbtn"/>
@@ -2649,6 +2656,7 @@ TRANS</property>
                                                         <property name="visible">True</property>
                                                         <property name="can-focus">True</property>
                                                         <property name="receives-default">True</property>
+                                                        <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
                                                         <signal name="clicked" handler="on_ftb_afv_clicked" swapped="no"/>
                                                         <style>
                                                           <class name="bmdbtn"/>

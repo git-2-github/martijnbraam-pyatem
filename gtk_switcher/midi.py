@@ -59,6 +59,10 @@ class MidiConnection(threading.Thread):
 
 class MidiLink:
     def __init__(self, widget, key, midi):
+        if hasattr(widget, 'dynamic_id'):
+            self.name = 'dyn:' + widget.dynamic_id
+        else:
+            self.name = Gtk.Buildable.get_name(widget)
         self.type = None
         self.key = key
         self.midi = midi
@@ -71,8 +75,9 @@ class MidiLink:
 
         if isinstance(widget, gi.repository.Gtk.Scale):
             self.type = 'scale'
-            self.min = widget.adj.get_lower()
-            self.max = widget.adj.get_upper()
+            self.adjustment = widget.get_adjustment()
+            self.min = self.adjustment.get_lower()
+            self.max = self.adjustment.get_upper()
             if hasattr(widget, 'is_tbar') and widget.is_tbar:
                 self.is_tbar = True
                 self.widget.connect("notify::inverted", self.on_tbar_inverted)
@@ -80,14 +85,16 @@ class MidiLink:
             self.type = 'button'
             self.widget.connect("style-updated", self.on_style_changed)
 
+        print("New midi mapping: {} <-> {}".format(key, self.name))
+
     def new_value(self, value):
         if self.type == 'button':
             self.widget.emit("clicked")
         if self.type == 'scale':
             if self.inverted:
-                self.widget.adj.set_value(self._remap(127, 0, self.min, self.max, value))
+                self.adjustment.set_value(self._remap(127, 0, self.min, self.max, value))
             else:
-                self.widget.adj.set_value(self._remap(0, 127, self.min, self.max, value))
+                self.adjustment.set_value(self._remap(0, 127, self.min, self.max, value))
 
     def _remap(self, in_min, in_max, out_min, out_max, value):
         in_range = in_max - in_min
@@ -120,6 +127,8 @@ class MidiControl:
         self.midi_learning = False
         self.midi_learning_widget = None
 
+        # self.restore_midi_map(builder)
+
     def on_midi(self, event, channel, value):
         if event == 176 or event == 144:
             # CC and NoteOn
@@ -148,3 +157,12 @@ class MidiControl:
 
     def on_start_midi_learn(self, *args):
         self.midi_learning = True
+
+    def restore_midi_map(self, map, builder):
+        for key, widget_name in map:
+            if 'dyn:' in widget_name:
+                pass
+            else:
+                widget = builder.get_object(widget_name)
+            link = MidiLink(widget, key, self.midi)
+            self.midi_map[key] = link

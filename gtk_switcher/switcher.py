@@ -113,7 +113,6 @@ class SwitcherPage:
         self.tbar_held = False
 
     def on_cut_clicked(self, widget, *args):
-        print("CUT!")
         cmd = CutCommand(index=0)
         self.connection.mixer.send_commands([cmd])
 
