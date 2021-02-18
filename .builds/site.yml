@@ -1,0 +1,11 @@
+image: alpine/edge
+packages:
+  - sphinx
+tasks:
+  - build: |
+      cd pyatem/docs
+      make html
+  - deploy: |
+      ls -lah
+sources:
+  - https://git.sr.ht/~martijnbraam/pyatem
