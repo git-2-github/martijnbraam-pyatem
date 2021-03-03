@@ -6,5 +6,10 @@
             <summary>Switcher ip address</summary>
             <description>Ip address of the BMD switcher</description>
         </key>
+        <key type="s" name="midi-map">
+            <default>"[]"</default>
+            <summary>Midi mapping</summary>
+            <description>Mapping between midi messages and gtk controls, as json</description>
+        </key>
     </schema>
 </schemalist>

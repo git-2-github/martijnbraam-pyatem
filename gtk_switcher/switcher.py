@@ -21,6 +21,9 @@ class SwitcherPage:
         self.dsks = builder.get_object('dsks')
         self.tbar = builder.get_object('tbar')
         self.tbar_adj = builder.get_object('tbar_adj')
+        self.tbar.adj = self.tbar_adj
+        self.tbar.is_tbar = True
+        self.tbar.tbar_held = False
         self.tbar_held = False
         self.transition_progress = builder.get_object('transition_progress')
         self.last_transition_state = False
@@ -150,7 +153,7 @@ class SwitcherPage:
 
     def on_tbar_adj_value_changed(self, widget):
         # Ignore value changes if it's not from the user
-        if not self.tbar_held:
+        if not self.tbar_held and not self.tbar.tbar_held:
             return
 
         val = widget.get_value() / 100.0

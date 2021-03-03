@@ -5,9 +5,10 @@ import gi
 from hexdump import hexdump
 
 from gtk_switcher.audio import AudioPage
+from gtk_switcher.midi import MidiConnection, MidiControl
 from gtk_switcher.preferenceswindow import PreferencesWindow
 from gtk_switcher.switcher import SwitcherPage
-from pyatem.command import ProgramInputCommand, PreviewInputCommand, AutoCommand
+from pyatem.command import ProgramInputCommand, PreviewInputCommand, AutoCommand, TransitionPositionCommand
 from pyatem.protocol import AtemProtocol
 
 gi.require_version('Gtk', '3.0')
@@ -57,7 +58,7 @@ class AtemConnection(threading.Thread):
             print('Exception raise failure')
 
 
-class AtemWindow(SwitcherPage, AudioPage):
+class AtemWindow(SwitcherPage, AudioPage, MidiControl):
     def __init__(self, application, args):
         self.application = application
         self.args = args
@@ -86,6 +87,7 @@ class AtemWindow(SwitcherPage, AudioPage):
 
         SwitcherPage.__init__(self, builder)
         AudioPage.__init__(self, builder)
+        MidiControl.__init__(self, builder)
 
         self.media_flow = builder.get_object('media_flow')
 

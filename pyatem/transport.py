@@ -107,7 +107,7 @@ class UdpProtocol:
     def _send_packet(self, packet):
         packet.session = self.session_id
         if not packet.flags & UdpProtocol.FLAG_ACK:
-            packet.sequence_number = self.local_sequence_number + 1
+            packet.sequence_number = (self.local_sequence_number + 1) % 2 ** 16
         raw = packet.to_bytes()
         self.sock.sendto(raw, (self.ip, self.port))
         logging.debug('> {}'.format(packet))
@@ -115,7 +115,7 @@ class UdpProtocol:
             # hexdump(raw)
             pass
         if packet.flags & (UdpProtocol.FLAG_SYN | UdpProtocol.FLAG_ACK) == 0:
-            self.local_sequence_number += 1
+            self.local_sequence_number = (self.local_sequence_number + 1) % 2 ** 16
 
     def _receive_packet(self):
         data, address = self.sock.recvfrom(2048)
