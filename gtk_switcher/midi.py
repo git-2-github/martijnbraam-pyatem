@@ -23,6 +23,7 @@ class MidiConnection(threading.Thread):
         self.callback = callback
         self.port = port
         self.output = None
+        self.enabled = False
 
     def run(self):
         if not has_midi:
@@ -47,6 +48,7 @@ class MidiConnection(threading.Thread):
         midiout, port_name = open_midioutput(self.port, client_name="Switcher")
         self.output = midiout
         midiin.set_callback(_midi_in)
+        self.enabled = True
 
         while True:
             time.sleep(10)
@@ -55,7 +57,8 @@ class MidiConnection(threading.Thread):
         GLib.idle_add(self.callback, *args, **kwargs)
 
     def send(self, *args):
-        self.output.send_message(args)
+        if self.enabled:
+            self.output.send_message(args)
 
 
 class MidiLink:
