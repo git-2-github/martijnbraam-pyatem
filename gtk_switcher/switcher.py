@@ -1,7 +1,7 @@
 from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, TransitionSettingsCommand, WipeSettingsCommand, \
     TransitionPositionCommand, TransitionPreviewCommand, ColorGeneratorCommand, MixSettingsCommand, DipSettingsCommand, \
     DveSettingsCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, DkeyAutoCommand, DkeyTieCommand, \
-    DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand
+    DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAir
 from pyatem.field import TransitionSettingsField, InputPropertiesField
 
 import gi
@@ -601,6 +601,27 @@ class SwitcherPage:
         self.transition_progress.set_fraction(data.position)
         if not self.tbar_held:
             self.tbar_adj.set_value(data.position * 100.0)
+
+    def on_onair_key1_clicked(self, widget):
+        enabled = not widget.get_style_context().has_class('program')
+        cmd = KeyOnAir(index=0, keyer=0, enabled=enabled)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_onair_key2_clicked(self, widget):
+        enabled = not widget.get_style_context().has_class('program')
+        cmd = KeyOnAir(index=0, keyer=1, enabled=enabled)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_onair_key3_clicked(self, widget):
+        enabled = not widget.get_style_context().has_class('program')
+        cmd = KeyOnAir(index=0, keyer=2, enabled=enabled)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_onair_key4_clicked(self, widget):
+        enabled = not widget.get_style_context().has_class('program')
+        cmd = KeyOnAir(index=0, keyer=3, enabled=enabled)
+        self.connection.mixer.send_commands([cmd])
+
 
     def on_program_input_change(self, data):
         # support only M/E 1

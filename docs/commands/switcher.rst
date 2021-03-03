@@ -84,3 +84,10 @@ Downstream
 .. autoclass:: pyatem.command.CaptureStillCommand
    :members:
    :special-members:
+
+Upstream keyers
+---------------
+
+.. autoclass:: pyatem.command.KeyOnAir
+   :members:
+   :special-members:

@@ -558,6 +558,7 @@ AIR</property>
                                         <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
+                                        <signal name="clicked" handler="on_onair_key1_clicked" swapped="no"/>
                                         <style>
                                           <class name="bmdbtn"/>
                                         </style>
@@ -577,6 +578,7 @@ AIR</property>
                                         <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
+                                        <signal name="clicked" handler="on_onair_key2_clicked" swapped="no"/>
                                         <style>
                                           <class name="bmdbtn"/>
                                         </style>
@@ -596,6 +598,7 @@ AIR</property>
                                         <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
+                                        <signal name="clicked" handler="on_onair_key3_clicked" swapped="no"/>
                                         <style>
                                           <class name="bmdbtn"/>
                                         </style>
@@ -615,6 +618,7 @@ AIR</property>
                                         <property name="can-focus">False</property>
                                         <property name="receives-default">True</property>
                                         <signal name="button-press-event" handler="on_context_menu" swapped="no"/>
+                                        <signal name="clicked" handler="on_onair_key4_clicked" swapped="no"/>
                                         <style>
                                           <class name="bmdbtn"/>
                                         </style>

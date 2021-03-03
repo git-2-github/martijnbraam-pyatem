@@ -832,3 +832,33 @@ class FairlightStripPropertiesCommand(Command):
                            gain, eq_gain,
                            dynamics_gain, balance, volume, state)
         return self._make_command('CFSP', data)
+
+
+class KeyOnAir(Command):
+    """
+    Implementation of the `CKOn` command. This enables an upstream keyer without having a transition.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index, 0-indexed
+    1      1    u8     Keyer index
+    2      1    bool   Enabled
+    4      1    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, keyer, enabled):
+        """
+        :param index: 0-indexed DSK number to trigger
+        :param keyer: 0-indexed keyer number
+        :param enabled: Set the keyer on-air or disabled
+        """
+        self.index = index
+        self.keyer = keyer
+        self.enabled = enabled
+
+    def get_command(self):
+        data = struct.pack('>BB?x', self.index, self.keyer, self.enabled)
+        return self._make_command('CKOn', data)
