@@ -1,6 +1,8 @@
 import colorsys
 import struct
 
+from hexdump import hexdump
+
 
 class FieldBase:
     def _get_string(self, raw):
@@ -1314,3 +1316,31 @@ class AudioInputField(FieldBase):
 
     def __repr__(self):
         return '<audio-input index={} type={} plug={}>'.format(self.index, self.type, self.plug)
+
+
+class KeyPropertiesBaseField(FieldBase):
+    """
+    Data from the `KeBP`. The upstream keyer base properties.
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>BBB Bx B HH ?x 4h', raw)
+        self.index = field[0]
+        self.keyer = field[1]
+        self.type = field[2]
+        self.enabled = field[3]
+        self.fly_enabled = field[4]
+        self.fill_source = field[5]
+        self.key_source = field[6]
+        self.mask_enabled = field[7]
+
+        self.mask_top = field[8]
+        self.mask_bottom = field[9]
+        self.mask_left = field[10]
+        self.mask_right = field[11]
+
+        hexdump(raw)
+
+    def __repr__(self):
+        return '<key-properties-base me={}, key={}, type={}>'.format(self.index, self.keyer, self.type)

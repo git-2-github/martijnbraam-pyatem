@@ -834,7 +834,7 @@ class FairlightStripPropertiesCommand(Command):
         return self._make_command('CFSP', data)
 
 
-class KeyOnAir(Command):
+class KeyOnAirCommand(Command):
     """
     Implementation of the `CKOn` command. This enables an upstream keyer without having a transition.
 
@@ -862,3 +862,32 @@ class KeyOnAir(Command):
     def get_command(self):
         data = struct.pack('>BB?x', self.index, self.keyer, self.enabled)
         return self._make_command('CKOn', data)
+
+
+class KeyFillCommand(Command):
+    """
+    Implementation of the `CKeF` command. This enables an upstream keyer without having a transition.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index, 0-indexed
+    1      1    u8     Keyer index
+    2      2    u16    Source index
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, keyer, source):
+        """
+        :param index: 0-indexed DSK number to trigger
+        :param keyer: 0-indexed keyer number
+        :param source: Source index for the keyer fill
+        """
+        self.index = index
+        self.keyer = keyer
+        self.source = source
+
+    def get_command(self):
+        data = struct.pack('>BBH', self.index, self.keyer, self.source)
+        return self._make_command('CKeF', data)

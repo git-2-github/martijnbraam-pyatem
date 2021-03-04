@@ -256,7 +256,10 @@ class AtemWindow(SwitcherPage, AudioPage, MidiControl):
             self.on_fairlight_strip_properties_change(data)
         elif field == 'fairlight-tally':
             self.on_fairlight_tally_change(data)
+        elif field == 'key-properties-base':
+            self.on_key_properties_base_change(data)
         else:
+            print(field)
             if field == 'time':
                 return
             if not self.debug and self.args.dump is not None and len(self.args.dump) > 0:

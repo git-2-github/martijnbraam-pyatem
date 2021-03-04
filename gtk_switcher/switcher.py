@@ -1,7 +1,7 @@
 from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, TransitionSettingsCommand, WipeSettingsCommand, \
     TransitionPositionCommand, TransitionPreviewCommand, ColorGeneratorCommand, MixSettingsCommand, DipSettingsCommand, \
     DveSettingsCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, DkeyAutoCommand, DkeyTieCommand, \
-    DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAir
+    DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand
 from pyatem.field import TransitionSettingsField, InputPropertiesField
 
 import gi
@@ -61,6 +61,15 @@ class SwitcherPage:
         self.onair_key2 = builder.get_object('onair_key2')
         self.onair_key3 = builder.get_object('onair_key3')
         self.onair_key4 = builder.get_object('onair_key4')
+
+        self.keyer_stack = builder.get_object('keyer_stack')
+
+        self.usk1_dve_fill = builder.get_object('usk1_dve_fill')
+        self.usk1_mask_en = builder.get_object('usk1_mask_en')
+        self.usk1_mask_top = builder.get_object('usk1_mask_top')
+        self.usk1_mask_bottom = builder.get_object('usk1_mask_bottom')
+        self.usk1_mask_left = builder.get_object('usk1_mask_left')
+        self.usk1_mask_right = builder.get_object('usk1_mask_right')
 
         self.focus_dummy = builder.get_object('focus_dummy')
         self.prev_trans = builder.get_object('prev_trans')
@@ -604,24 +613,51 @@ class SwitcherPage:
 
     def on_onair_key1_clicked(self, widget):
         enabled = not widget.get_style_context().has_class('program')
-        cmd = KeyOnAir(index=0, keyer=0, enabled=enabled)
+        cmd = KeyOnAirCommand(index=0, keyer=0, enabled=enabled)
         self.connection.mixer.send_commands([cmd])
 
     def on_onair_key2_clicked(self, widget):
         enabled = not widget.get_style_context().has_class('program')
-        cmd = KeyOnAir(index=0, keyer=1, enabled=enabled)
+        cmd = KeyOnAirCommand(index=0, keyer=1, enabled=enabled)
         self.connection.mixer.send_commands([cmd])
 
     def on_onair_key3_clicked(self, widget):
         enabled = not widget.get_style_context().has_class('program')
-        cmd = KeyOnAir(index=0, keyer=2, enabled=enabled)
+        cmd = KeyOnAirCommand(index=0, keyer=2, enabled=enabled)
         self.connection.mixer.send_commands([cmd])
 
     def on_onair_key4_clicked(self, widget):
         enabled = not widget.get_style_context().has_class('program')
-        cmd = KeyOnAir(index=0, keyer=3, enabled=enabled)
+        cmd = KeyOnAirCommand(index=0, keyer=3, enabled=enabled)
         self.connection.mixer.send_commands([cmd])
 
+    def on_key_properties_base_change(self, data):
+        self.model_changing = True
+        self.usk1_dve_fill.set_active_id(str(data.fill_source))
+        self.model_changing = False
+
+        if data.type == 0:
+            self.keyer_stack.set_visible_child_name('key_luma')
+        elif data.type == 1:
+            self.keyer_stack.set_visible_child_name('key_chroma')
+        elif data.type == 2:
+            self.keyer_stack.set_visible_child_name('key_pattern')
+        elif data.type == 3:
+            self.keyer_stack.set_visible_child_name('key_dve')
+
+        self.set_class(self.usk1_mask_en, 'active', data.mask_enabled)
+
+        self.usk1_mask_top.set_text(str(data.mask_top / 1000))
+        self.usk1_mask_bottom.set_text(str(data.mask_bottom / 1000))
+        self.usk1_mask_left.set_text(str(data.mask_left / 1000))
+        self.usk1_mask_right.set_text(str(data.mask_right / 1000))
+
+    def on_usk1_dve_fill_changed(self, widget, *args):
+        if hasattr(widget, 'ignore_change') and widget.ignore_change or self.model_changing:
+            return
+        source = int(widget.get_active_id())
+        cmd = KeyFillCommand(index=0, keyer=0, source=source)
+        self.connection.mixer.send_commands([cmd])
 
     def on_program_input_change(self, data):
         # support only M/E 1
