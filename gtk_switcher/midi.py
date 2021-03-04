@@ -66,7 +66,10 @@ class MidiLink:
         if hasattr(widget, 'dynamic_id'):
             self.name = 'dyn:' + widget.dynamic_id
         else:
-            self.name = Gtk.Buildable.get_name(widget)
+            try:
+                self.name = Gtk.Buildable.get_name(widget)
+            except:
+                return
         self.type = None
         self.key = key
         self.midi = midi

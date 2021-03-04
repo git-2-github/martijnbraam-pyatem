@@ -231,6 +231,8 @@ class AtemWindow(SwitcherPage, AudioPage, MidiControl):
             print("Mixer model: {}".format(data.name))
         elif field == 'video-mode':
             self.mode = data
+            for me in self.me:
+                me.set_mode(data)
             self.status_mode.set_text(data.get_label())
         elif field == 'dkey-properties':
             self.on_dsk_change(data)

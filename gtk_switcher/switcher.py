@@ -1,7 +1,8 @@
 from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, TransitionSettingsCommand, WipeSettingsCommand, \
     TransitionPositionCommand, TransitionPreviewCommand, ColorGeneratorCommand, MixSettingsCommand, DipSettingsCommand, \
     DveSettingsCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, DkeyAutoCommand, DkeyTieCommand, \
-    DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand
+    DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand, \
+    FadeToBlackConfigCommand
 from pyatem.field import TransitionSettingsField, InputPropertiesField
 
 import gi
@@ -15,20 +16,43 @@ from gi.repository import Handy
 
 class SwitcherPage:
     def __init__(self, builder):
-        self.program_bus = builder.get_object('program')
-        self.preview_bus = builder.get_object('preview')
+        from gtk_switcher.mixeffect import MixEffectBlock
 
-        self.dsks = builder.get_object('dsks')
-        self.tbar = builder.get_object('tbar')
-        self.tbar_adj = builder.get_object('tbar_adj')
-        self.tbar.adj = self.tbar_adj
-        self.tbar.is_tbar = True
-        self.tbar.tbar_held = False
-        self.tbar_held = False
-        self.transition_progress = builder.get_object('transition_progress')
-        self.last_transition_state = False
-        self.auto = builder.get_object('auto')
-        self.auto_rate = builder.get_object('auto_rate')
+        self.main_blocks = builder.get_object('main_blocks')
+        me1 = MixEffectBlock(0)
+        me2 = MixEffectBlock(1)
+        me2.set_dsk(False)
+        self.me = [
+            me1,
+            me2
+        ]
+        self.me_map = {
+            (0, 0): 0,
+            (0, 0): 1
+        }
+        self.main_blocks.add(me2)
+        self.main_blocks.add(me1)
+
+        for me in self.me:
+            me.connect('program-changed', self.on_me_program_changed)
+            me.connect('preview-changed', self.on_me_preview_changed)
+            me.connect('rate-focus', self.on_rate_focus)
+            me.connect('rate-unfocus', self.on_rate_unfocus)
+            me.connect('ftb-clicked', self.on_ftb_clicked)
+            me.connect('ftb-rate', self.on_ftb_rate_changed)
+            me.connect('tbar-position-changed', self.on_tbar_position_changed)
+            me.connect('auto-rate-changed', self.on_auto_rate_changed)
+            me.connect('auto-clicked', self.on_auto_clicked)
+            me.connect('cut-clicked', self.on_cut_clicked)
+            me.connect('preview-transition-clicked', self.on_prev_trans_clicked)
+            me.connect('style-changed', self.on_style_clicked)
+            me.connect('onair-clicked', self.on_onair_clicked)
+            me.connect('next-clicked', self.on_next_clicked)
+            me.connect('dsk-tie', self.on_dsk_tie_clicked)
+            me.connect('dsk-onair', self.on_dsk_onair_clicked)
+            me.connect('dsk-auto', self.on_dsk_auto_clicked)
+            me.connect('dsk-rate', self.on_dsk_rate_activate)
+
         self.mix_rate = builder.get_object('mix_rate')
         self.dip_rate = builder.get_object('dip_rate')
         self.wipe_rate = builder.get_object('wipe_rate')
@@ -44,23 +68,7 @@ class SwitcherPage:
         self.wipe_reverse = builder.get_object('wipe_reverse')
         self.wipe_flipflop = builder.get_object('wipe_flipflop')
 
-        self.style_mix = builder.get_object('style_mix')
-        self.style_dip = builder.get_object('style_dip')
-        self.style_wipe = builder.get_object('style_wipe')
-        self.style_sting = builder.get_object('style_sting')
-        self.style_dve = builder.get_object('style_dve')
-        self.next_bkgd = builder.get_object('next_bkgd')
-        self.next_key1 = builder.get_object('next_key1')
-        self.next_key2 = builder.get_object('next_key2')
-        self.next_key3 = builder.get_object('next_key3')
-        self.next_key4 = builder.get_object('next_key4')
-
         self.ftb_afv = builder.get_object('ftb_afv')
-
-        self.onair_key1 = builder.get_object('onair_key1')
-        self.onair_key2 = builder.get_object('onair_key2')
-        self.onair_key3 = builder.get_object('onair_key3')
-        self.onair_key4 = builder.get_object('onair_key4')
 
         self.keyer_stack = builder.get_object('keyer_stack')
 
@@ -71,8 +79,6 @@ class SwitcherPage:
         self.usk1_mask_left = builder.get_object('usk1_mask_left')
         self.usk1_mask_right = builder.get_object('usk1_mask_right')
 
-        self.focus_dummy = builder.get_object('focus_dummy')
-        self.prev_trans = builder.get_object('prev_trans')
         self.wipe_style = [
             builder.get_object('wipestyle_h'),
             builder.get_object('wipestyle_v'),
@@ -101,105 +107,64 @@ class SwitcherPage:
         self.color1 = builder.get_object('color1')
         self.color2 = builder.get_object('color2')
 
-        self.ftb = builder.get_object('ftb')
-
         self.model_me1_fill = builder.get_object('model_me1_fill')
         self.model_key = builder.get_object('model_key')
         self.model_changing = False
         self.slider_held = False
 
-        self.rate = {
-            'mix': '0:00',
-            'dip': '0:00',
-            'wipe': '0:00',
-            'sting': '0:00',
-            'dve': '0:00'
-        }
-
-    def on_tbar_button_press_event(self, widget, *args):
-        self.tbar_held = True
-
-    def on_tbar_button_release_event(self, widget, *args):
-        self.tbar_held = False
-
-    def on_cut_clicked(self, widget, *args):
-        cmd = CutCommand(index=0)
+    def on_cut_clicked(self, widget, index):
+        cmd = CutCommand(index=index)
         self.connection.mixer.send_commands([cmd])
 
-    def on_auto_clicked(self, widget, *args):
-        if len(args) > 0 and self.disable_shortcuts:
+    def on_auto_clicked(self, widget, index, *args):
+        if self.disable_shortcuts and len(args) == 2:
             return
-        cmd = AutoCommand(index=0)
+
+        # When triggered by keyboard shortcut, control M/E 1
+        if len(args) != 0:
+            index = 0
+
+        cmd = AutoCommand(index=index)
         self.connection.mixer.send_commands([cmd])
 
-    def on_ftb_clicked(self, widget):
-        cmd = FadeToBlackCommand(index=0)
+    def on_ftb_clicked(self, widget, index):
+        cmd = FadeToBlackCommand(index=index)
         self.connection.mixer.send_commands([cmd])
 
-    def on_style_mix_clicked(self, widget):
-        cmd = TransitionSettingsCommand(index=0, style=TransitionSettingsField.STYLE_MIX)
+    def on_ftb_rate_changed(self, widget, index, frames):
+        cmd = FadeToBlackConfigCommand(index=index, frames=frames)
         self.connection.mixer.send_commands([cmd])
 
-    def on_style_dip_clicked(self, widget):
-        cmd = TransitionSettingsCommand(index=0, style=TransitionSettingsField.STYLE_DIP)
-        self.connection.mixer.send_commands([cmd])
-
-    def on_style_wipe_clicked(self, widget):
-        cmd = TransitionSettingsCommand(index=0, style=TransitionSettingsField.STYLE_WIPE)
-        self.connection.mixer.send_commands([cmd])
-
-    def on_style_sting_clicked(self, widget):
-        cmd = TransitionSettingsCommand(index=0, style=TransitionSettingsField.STYLE_STING)
-        self.connection.mixer.send_commands([cmd])
-
-    def on_style_dve_clicked(self, widget):
-        cmd = TransitionSettingsCommand(index=0, style=TransitionSettingsField.STYLE_DVE)
+    def on_style_clicked(self, widget, index, style):
+        s = None
+        if style == 'mix':
+            s = TransitionSettingsField.STYLE_MIX
+        elif style == 'dip':
+            s = TransitionSettingsField.STYLE_DIP
+        elif style == 'wipe':
+            s = TransitionSettingsField.STYLE_WIPE
+        elif style == 'sting':
+            s = TransitionSettingsField.STYLE_STING
+        elif style == 'dve':
+            s = TransitionSettingsField.STYLE_DVE
+        cmd = TransitionSettingsCommand(index=index, style=s)
         self.connection.mixer.send_commands([cmd])
 
     def on_wipe_pattern_clicked(self, widget):
         cmd = WipeSettingsCommand(index=0, pattern=widget.pattern)
         self.connection.mixer.send_commands([cmd])
 
-    def on_tbar_adj_value_changed(self, widget):
-        # Ignore value changes if it's not from the user
-        if not self.tbar_held and not self.tbar.tbar_held:
-            return
-
-        val = widget.get_value() / 100.0
-        if val == 1.0:
-            # Transition done
-            widget.set_value(0.0)
-            self.tbar.set_inverted(not self.tbar.get_inverted())
-            self.transition_progress.set_inverted(self.tbar.get_inverted())
-            cmd = TransitionPositionCommand(index=0, position=0)
-        else:
-            cmd = TransitionPositionCommand(index=0, position=val)
+    def on_tbar_position_changed(self, widget, index, position):
+        cmd = TransitionPositionCommand(index=index, position=position)
         self.connection.mixer.send_commands([cmd])
 
-    def on_next_clicked(self, widget):
-        if widget.get_style_context().has_class('active'):
-            widget.get_style_context().remove_class('active')
-        else:
-            widget.get_style_context().add_class('active')
-
-        current = 0
-        if self.next_bkgd.get_style_context().has_class('active'):
-            current |= (1 << 0)
-        if self.next_key1.get_style_context().has_class('active'):
-            current |= (1 << 1)
-        if self.next_key2.get_style_context().has_class('active'):
-            current |= (1 << 2)
-        if self.next_key3.get_style_context().has_class('active'):
-            current |= (1 << 3)
-        if self.next_key4.get_style_context().has_class('active'):
-            current |= (1 << 4)
-
-        cmd = TransitionSettingsCommand(index=0, next_transition=current)
+    def on_next_clicked(self, widget, index, current):
+        print('next', index, current)
+        cmd = TransitionSettingsCommand(index=index, next_transition=current)
         self.connection.mixer.send_commands([cmd])
 
-    def on_prev_trans_clicked(self, widget):
-        current = widget.get_style_context().has_class('program')
-        cmd = TransitionPreviewCommand(index=0, enabled=not current)
+    def on_prev_trans_clicked(self, widget, index, enabled):
+        cmd = TransitionPreviewCommand(index=index, enabled=enabled)
         self.connection.mixer.send_commands([cmd])
 
     def on_color1_color_set(self, widget):
@@ -212,45 +177,19 @@ class SwitcherPage:
         cmd = ColorGeneratorCommand.from_rgb(index=1, red=color.red, green=color.green, blue=color.blue)
         self.connection.mixer.send_commands([cmd])
 
-    def on_auto_rate_activate(self, widget, *args):
+    def on_auto_rate_changed(self, widget, index, style, frames):
         cmd = None
-        style = None
-
-        # Get current transition style
-        if self.style_mix.get_style_context().has_class('active'):
-            style = 'mix'
-        elif self.style_dip.get_style_context().has_class('active'):
-            style = 'dip'
-        elif self.style_wipe.get_style_context().has_class('active'):
-            style = 'wipe'
-        elif self.style_sting.get_style_context().has_class('active'):
-            style = 'sting'
-        elif self.style_dve.get_style_context().has_class('active'):
-            style = 'dve'
-
-        # Try to parse the new rate, on failure restore last rate
-        try:
-            frames = self.time_to_frames(self.auto_rate.get_text())
-        except Exception as e:
-            if style is not None:
-                self.auto_rate.set_text(self.rate[style])
-            print(e)
-            return
-
         # Send new rate to the mixer
         if style == 'mix':
-            cmd = MixSettingsCommand(index=0, rate=frames)
+            cmd = MixSettingsCommand(index=index, rate=frames)
         elif style == 'dip':
-            cmd = DipSettingsCommand(index=0, rate=frames)
+            cmd = DipSettingsCommand(index=index, rate=frames)
         elif style == 'wipe':
-            cmd = WipeSettingsCommand(index=0, rate=frames)
+            cmd = WipeSettingsCommand(index=index, rate=frames)
         elif style == 'dve':
-            cmd = DveSettingsCommand(index=0, rate=frames)
+            cmd = DveSettingsCommand(index=index, rate=frames)
         if cmd is not None:
             self.connection.mixer.send_commands([cmd])
-
-        # Remove focus from the entry so the keyboard shortcuts start working again
-        self.focus_dummy.grab_focus()
 
     def on_dip_source_changed(self, widget):
         if hasattr(widget, 'ignore_change') and widget.ignore_change or self.model_changing:
@@ -349,15 +288,12 @@ class SwitcherPage:
             return (int(part[0]) * transition_rate) + int(part[1])
 
     def on_ftb_change(self, data):
-        label = self.frames_to_time(data.rate)
-        self.ftb_rate.set_text(label)
+        self.me[data.index].set_ftb_rate(data.rate)
 
     def on_transition_mix_change(self, data):
         label = self.frames_to_time(data.rate)
         self.mix_rate.set_text(label)
-        self.rate['mix'] = label
-        if self.style_mix.get_style_context().has_class('active'):
-            self.auto_rate.set_text(label)
+        self.me[data.index].set_auto_rate('mix', data.rate)
 
     def on_transition_dip_change(self, data):
         label = self.frames_to_time(data.rate)
@@ -365,16 +301,12 @@ class SwitcherPage:
         self.dip_source.ignore_change = True
         self.dip_source.set_active_id(str(data.source))
         self.dip_source.ignore_change = False
-        self.rate['dip'] = label
-        if self.style_dip.get_style_context().has_class('active'):
-            self.auto_rate.set_text(label)
+        self.me[data.index].set_auto_rate('dip', data.rate)
 
     def on_transition_wipe_change(self, data):
         label = self.frames_to_time(data.rate)
         self.wipe_rate.set_text(label)
-        self.rate['wipe'] = label
-        if self.style_wipe.get_style_context().has_class('active'):
-            self.auto_rate.set_text(label)
+        self.me[data.index].set_auto_rate('wipe', data.rate)
 
         for style, button in enumerate(self.wipe_style):
             self.set_class(button, 'stylebtn', True)
@@ -398,9 +330,7 @@ class SwitcherPage:
     def on_transition_dve_change(self, data):
         label = self.frames_to_time(data.rate)
         self.dve_rate.set_text(label)
-        self.rate['dve'] = label
-        if self.style_dve.get_style_context().has_class('active'):
-            self.auto_rate.set_text(label)
+        self.me[data.index].set_auto_rate('dve', data.rate)
 
     def on_mediaplayer_slots_change(self, data):
         for child in self.media_flow:
@@ -421,119 +351,37 @@ class SwitcherPage:
         self.media_flow.show_all()
 
     def on_dsk_change(self, data):
-        for child in self.dsks:
-            if hasattr(child, 'dsk_tie') and child.dsk_tie == data.index:
-                self.set_class(child, 'active', data.tie)
-            if hasattr(child, 'dsk_rate_box') and child.dsk_rate_box == data.index:
-                for bc in child:
-                    if hasattr(bc, 'dsk_rate'):
-                        label = self.frames_to_time(data.rate)
-                        bc.set_text(label)
+        self.me[0].set_dsk(data)
 
     def on_dsk_state_change(self, data):
-        for child in self.dsks:
-            if hasattr(child, 'dsk_onair') and child.dsk_onair == data.index:
-                self.set_class(child, 'program', data.on_air)
-            if hasattr(child, 'dsk_auto') and child.dsk_auto == data.index:
-                self.set_class(child, 'active', data.is_autotransitioning)
+        self.me[0].set_dsk_state(data)
 
     def on_topology_change(self, data):
-        for child in self.dsks:
-            child.destroy()
+        # Topology is only used for downstream keyer count, only available on M/E 1
+        self.me[0].set_topology(data)
+        self.apply_css(self.me[0], self.provider)
 
-        for i in range(0, data.downstream_keyers):
-            tie_label = Gtk.Label(label="TIE")
-            tie = Gtk.Button()
-            tie.add(tie_label)
-            tie.dsk_tie = i
-            tie.set_size_request(48, 48)
-            tie.get_style_context().add_class('bmdbtn')
-            tie.connect('clicked', self.do_dsk_tie_clicked)
-            self.dsks.attach(tie, i, 0, 1, 1)
-
-            rate_label = Gtk.Label(label="rate")
-            rate_label.get_style_context().add_class('dim-label')
-            rate_label.get_style_context().add_class('rate')
-            rate_entry = Gtk.Entry()
-            rate_entry.get_style_context().add_class('rate')
-            rate_entry.set_size_request(48, 0)
-            rate_entry.set_width_chars(5)
-            rate_entry.set_max_width_chars(5)
-            rate_entry.set_alignment(0.5)
-            rate_entry.connect('focus-in-event', self.on_rate_focus)
-            rate_entry.connect('focus-out-event', self.on_rate_unfocus)
-            rate_entry.connect('activate', self.do_dsk_rate_activate)
-            rate_entry.dsk_rate = i
-            rate_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-            rate_box.pack_start(rate_label, 1, 1, 1)
-            rate_box.dsk_rate_box = i
-            rate_box.pack_start(rate_entry, 1, 1, 1)
-            self.dsks.attach(rate_box, i, 1, 1, 1)
-
-            air_label = Gtk.Label(label="ON\nAIR")
-            air = Gtk.Button()
-            air.add(air_label)
-            air.dsk_onair = i
-            air.set_size_request(48, 48)
-            air.get_style_context().add_class('bmdbtn')
-            air.connect('clicked', self.do_dsk_onair_clicked)
-            self.dsks.attach(air, i, 2, 1, 1)
-
-            auto_label = Gtk.Label(label="AUTO")
-            auto = Gtk.Button()
-            auto.add(auto_label)
-            auto.dsk_auto = i
-            auto.set_size_request(48, 48)
-            auto.get_style_context().add_class('bmdbtn')
-            auto.connect('clicked', self.do_dsk_auto_clicked)
-            self.dsks.attach(auto, i, 3, 1, 1)
-        self.apply_css(self.dsks, self.provider)
-        self.dsks.show_all()
-
-    def do_dsk_tie_clicked(self, widget):
-        state = widget.get_style_context().has_class('active')
-        cmd = DkeyTieCommand(index=widget.dsk_tie, tie=not state)
+    def on_dsk_tie_clicked(self, widget, index, dsk, enabled):
+        cmd = DkeyTieCommand(index=dsk, tie=enabled)
         self.connection.mixer.send_commands([cmd])
 
-    def do_dsk_onair_clicked(self, widget):
-        state = widget.get_style_context().has_class('program')
-        cmd = DkeyOnairCommand(index=widget.dsk_onair, on_air=not state)
+    def on_dsk_onair_clicked(self, widget, index, dsk, enabled):
+        cmd = DkeyOnairCommand(index=dsk, on_air=enabled)
         self.connection.mixer.send_commands([cmd])
 
-    def do_dsk_rate_activate(self, widget):
-        # Try to parse the new rate
-        try:
-            frames = self.time_to_frames(widget.get_text())
-        except Exception as e:
-            print(e)
-            return
-
-        cmd = DkeyRateCommand(index=widget.dsk_rate, rate=frames)
+    def on_dsk_rate_activate(self, widget, index, dsk, frames):
+        cmd = DkeyRateCommand(index=dsk, rate=frames)
         self.connection.mixer.send_commands([cmd])
-        self.focus_dummy.grab_focus()
 
-    def do_dsk_auto_clicked(self, widget):
-        cmd = DkeyAutoCommand(index=widget.dsk_auto)
+    def on_dsk_auto_clicked(self, widget, index, dsk):
+        cmd = DkeyAutoCommand(index=dsk)
         self.connection.mixer.send_commands([cmd])
 
     def on_mixer_effect_config_change(self, data):
-        # Only M/E 1 is supported
-        if data.me != 0:
-            return
-
-        self.next_key1.set_sensitive(data.keyers > 0)
-        self.next_key2.set_sensitive(data.keyers > 1)
-        self.next_key3.set_sensitive(data.keyers > 2)
-        self.next_key4.set_sensitive(data.keyers > 3)
-
-        self.onair_key1.set_sensitive(data.keyers > 0)
-        self.onair_key2.set_sensitive(data.keyers > 1)
-        self.onair_key3.set_sensitive(data.keyers > 2)
-        self.onair_key4.set_sensitive(data.keyers > 3)
+        self.me[data.index].set_config(data)
 
     def on_ftb_state_change(self, data):
-        self.set_class(self.ftb, 'program', data.done)
-        self.set_class(self.ftb, 'active', data.transitioning)
+        self.me[data.index].set_ftb_state(data.done, data.transitioning)
 
     def on_color_change(self, data):
         r, g, b = data.get_rgb()
@@ -549,86 +397,19 @@ class SwitcherPage:
             self.color2.set_rgba(color)
 
     def on_key_on_air_change(self, data):
-        # support only M/E 1
-        if data.index != 0:
-            return
-
-        if data.keyer == 0:
-            self.set_class(self.onair_key1, 'program', data.enabled)
-        elif data.keyer == 1:
-            self.set_class(self.onair_key2, 'program', data.enabled)
-        elif data.keyer == 2:
-            self.set_class(self.onair_key3, 'program', data.enabled)
-        elif data.keyer == 4:
-            self.set_class(self.onair_key4, 'program', data.enabled)
+        self.me[data.index].set_key_on_air(data)
 
     def on_transition_preview_change(self, data):
-        # support only M/E 1
-        if data.index != 0:
-            return
-
-        self.set_class(self.prev_trans, 'program', data.enabled)
+        self.me[data.index].set_preview_transition(data.enabled)
 
     def on_transition_settings_change(self, data):
-        self.set_class(self.style_mix, 'active', data.style == TransitionSettingsField.STYLE_MIX)
-        self.set_class(self.style_dip, 'active', data.style == TransitionSettingsField.STYLE_DIP)
-        self.set_class(self.style_wipe, 'active', data.style == TransitionSettingsField.STYLE_WIPE)
-        self.set_class(self.style_sting, 'active', data.style == TransitionSettingsField.STYLE_STING)
-        self.set_class(self.style_dve, 'active', data.style == TransitionSettingsField.STYLE_DVE)
-
-        self.set_class(self.next_bkgd, 'active', data.next_transition_bkgd)
-        self.set_class(self.next_key1, 'active', data.next_transition_key1)
-        self.set_class(self.next_key2, 'active', data.next_transition_key2)
-        self.set_class(self.next_key3, 'active', data.next_transition_key3)
-        self.set_class(self.next_key4, 'active', data.next_transition_key4)
-
-        if data.style == TransitionSettingsField.STYLE_MIX:
-            self.auto_rate.set_text(self.rate['mix'])
-        elif data.style == TransitionSettingsField.STYLE_DIP:
-            self.auto_rate.set_text(self.rate['dip'])
-        elif data.style == TransitionSettingsField.STYLE_WIPE:
-            self.auto_rate.set_text(self.rate['wipe'])
-        elif data.style == TransitionSettingsField.STYLE_STING:
-            self.auto_rate.set_text(self.rate['sting'])
-        elif data.style == TransitionSettingsField.STYLE_DVE:
-            self.auto_rate.set_text(self.rate['dve'])
+        self.me[data.index].set_transition_settings(data)
 
     def on_transition_position_change(self, data):
-        if data.in_transition:
-            self.auto.get_style_context().add_class('program')
-        else:
-            self.auto.get_style_context().remove_class('program')
+        self.me[data.index].set_transition_progress(data)
 
-        if data.in_transition != self.last_transition_state:
-            self.last_transition_state = data.in_transition
-            if not data.in_transition:
-                # Transition just ended, perform the flip
-                self.tbar.set_inverted(not self.tbar.get_inverted())
-                self.transition_progress.set_inverted(self.tbar.get_inverted())
-                self.tbar_adj.set_value(0.0)
-
-        self.transition_progress.set_fraction(data.position)
-        if not self.tbar_held:
-            self.tbar_adj.set_value(data.position * 100.0)
-
-    def on_onair_key1_clicked(self, widget):
-        enabled = not widget.get_style_context().has_class('program')
-        cmd = KeyOnAirCommand(index=0, keyer=0, enabled=enabled)
-        self.connection.mixer.send_commands([cmd])
-
-    def on_onair_key2_clicked(self, widget):
-        enabled = not widget.get_style_context().has_class('program')
-        cmd = KeyOnAirCommand(index=0, keyer=1, enabled=enabled)
-        self.connection.mixer.send_commands([cmd])
-
-    def on_onair_key3_clicked(self, widget):
-        enabled = not widget.get_style_context().has_class('program')
-        cmd = KeyOnAirCommand(index=0, keyer=2, enabled=enabled)
-        self.connection.mixer.send_commands([cmd])
-
-    def on_onair_key4_clicked(self, widget):
-        enabled = not widget.get_style_context().has_class('program')
-        cmd = KeyOnAirCommand(index=0, keyer=3, enabled=enabled)
+    def on_onair_clicked(self, widget, index, keyer, enabled):
+        cmd = KeyOnAirCommand(index=index, keyer=keyer, enabled=enabled)
         self.connection.mixer.send_commands([cmd])
 
     def on_key_properties_base_change(self, data):
@@ -660,37 +441,17 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_program_input_change(self, data):
-        # support only M/E 1
-        if data.index != 0:
-            return
-
-        for btn in self.program_bus:
-            if btn.source_index == data.source:
-                btn.get_style_context().add_class('program')
-            else:
-                btn.get_style_context().remove_class('program')
+        self.me[data.index].program_input_change(data)
 
     def on_preview_input_change(self, data):
-        # support only M/E 1
-        if data.index != 0:
-            return
+        self.me[data.index].preview_input_change(data)
 
-        for btn in self.preview_bus:
-            if btn.source_index == data.source:
-                if data.in_program:
-                    btn.get_style_context().add_class('program')
-                else:
-                    btn.get_style_context().add_class('preview')
-            else:
-                btn.get_style_context().remove_class('preview')
-                btn.get_style_context().remove_class('program')
-
-    def do_program_input_change(self, widget):
-        cmd = ProgramInputCommand(index=0, source=widget.source_index)
+    def on_me_program_changed(self, widget, index, source):
+        cmd = ProgramInputCommand(index=index, source=source)
         self.connection.mixer.send_commands([cmd])
 
-    def do_preview_input_change(self, widget):
-        cmd = PreviewInputCommand(index=0, source=widget.source_index)
+    def on_me_preview_changed(self, widget, index, source):
+        cmd = PreviewInputCommand(index=index, source=source)
         self.connection.mixer.send_commands([cmd])
 
     def on_input_layout_change(self, changed_input):
@@ -735,52 +496,9 @@ class SwitcherPage:
 
         buttons = [row1, row2]
 
-        # Clear the existing buttons
-        for child in self.program_bus:
-            child.destroy()
-        for child in self.preview_bus:
-            child.destroy()
-
-        for top, row in enumerate(buttons):
-            for left, button in enumerate(row):
-                if button is None:
-                    spacer = Gtk.Box()
-                    spacer.set_size_request(4, 4)
-                    spacer.source_index = -1
-                    pspacer = Gtk.Box()
-                    pspacer.set_size_request(4, 4)
-                    pspacer.source_index = -1
-
-                    self.program_bus.attach(spacer, left, top, 1, 1)
-                    self.preview_bus.attach(pspacer, left, top, 1, 1)
-                    continue
-                active = button.short_name != ""
-
-                label = Gtk.Label(label=button.short_name)
-
-                btn = Gtk.Button()
-                btn.add(label)
-                btn.source_index = button.index
-                btn.set_sensitive(active)
-                btn.set_size_request(48, 48)
-                btn.get_style_context().add_class('bmdbtn')
-                btn.connect('clicked', self.do_program_input_change)
-                self.program_bus.attach(btn, left, top, 1, 1)
-
-                plabel = Gtk.Label(label=button.short_name)
-                pbtn = Gtk.Button()
-                pbtn.add(plabel)
-                pbtn.source_index = button.index
-                pbtn.set_sensitive(active)
-                pbtn.set_size_request(48, 48)
-                pbtn.get_style_context().add_class('bmdbtn')
-                pbtn.connect('clicked', self.do_preview_input_change)
-                self.preview_bus.attach(pbtn, left, top, 1, 1)
-
-        self.apply_css(self.program_bus, self.provider)
-        self.apply_css(self.preview_bus, self.provider)
-
-        self.program_bus.show_all()
-        self.preview_bus.show_all()
+        self.me[0].set_inputs(buttons)
+        self.me[1].set_inputs(buttons)
+        self.apply_css(self.me[0], self.provider)
+        self.apply_css(self.me[1], self.provider)
 
         self.model_changing = False

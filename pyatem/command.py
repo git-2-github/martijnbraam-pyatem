@@ -121,7 +121,7 @@ class TransitionPositionCommand(Command):
         self.position = position
 
     def get_command(self):
-        position = int(self.position * 9999)
+        position = self.position
         data = struct.pack('>BxH', self.index, position)
         return self._make_command('CTPs', data)
 
@@ -266,6 +266,34 @@ class FadeToBlackCommand(Command):
     def get_command(self):
         data = struct.pack('>B 3x', self.index)
         return self._make_command('FtbA', data)
+
+
+class FadeToBlackConfigCommand(Command):
+    """
+    Implementation of the `FtbC` command. This sets the duration for the fade-to-black block
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask, always 1
+    1      1    u8     M/E index
+    2      1    u8     frames
+    3      1    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, frames):
+        """
+        :param index: 0-indexed M/E number to configure
+        :param index: Number of frames in the FTB transition
+        """
+        self.index = index
+        self.frames = frames
+
+    def get_command(self):
+        data = struct.pack('>BBBx', 1, self.index, self.frames)
+        return self._make_command('FtbC', data)
 
 
 class CaptureStillCommand(Command):

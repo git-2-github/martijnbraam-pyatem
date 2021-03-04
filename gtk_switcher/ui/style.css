@@ -122,6 +122,10 @@ box.tally {
     border: 1px solid @borders;
 }
 
+box.hidden {
+    opacity: 0;
+}
+
 box.tally.program {
     background: linear-gradient(#ff3b3b, #f52727);
 }

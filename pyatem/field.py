@@ -77,15 +77,16 @@ class MixerEffectConfigField(FieldBase):
 
     After parsing:
 
-    :ivar name: User friendly product name
+    :ivar index: 0-based M/E index
+    :ivar keyers: Number of upstream keyers on this M/E
     """
 
     def __init__(self, raw):
         self.raw = raw
-        self.me, self.keyers = struct.unpack('>2B2x', raw)
+        self.index, self.keyers = struct.unpack('>2B2x', raw)
 
     def __repr__(self):
-        return '<mixer-effect-config m/e {}: keyers={}>'.format(self.me, self.keyers)
+        return '<mixer-effect-config m/e {}: keyers={}>'.format(self.index, self.keyers)
 
 
 class MediaplayerSlotsField(FieldBase):
@@ -492,13 +493,13 @@ class TransitionPositionField(FieldBase):
     :ivar index: M/E index in the mixer
     :ivar in_transition: True if the transition is active
     :ivar frames_remaining: Number of frames left to complete the transition on auto
-    :ivar position: Position of the transition, 0.0 - 1.0
+    :ivar position: Position of the transition, 0-9999
     """
 
     def __init__(self, raw):
         self.raw = raw
         self.index, self.in_transition, self.frames_remaining, position = struct.unpack('>B ? B x H 2x', raw)
-        self.position = position / 9999.0
+        self.position = position
 
     def __repr__(self):
         return '<transition-position: me={} frames-remaining={} position={:02f}>'.format(self.index,

@@ -4,6 +4,7 @@
     <file>ui/mixer.glade</file>
     <file>ui/connection.glade</file>
     <file>ui/style.css</file>
+    <file>ui/mixeffect.glade</file>
 
     <file>icons/wipe-h.svg</file>
     <file>icons/wipe-v.svg</file>

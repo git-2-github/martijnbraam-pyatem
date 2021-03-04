@@ -462,4 +462,5 @@ class AudioPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_fairlight_master_properties_change(self, data):
+        return
         self.set_class(self.ftb_afv, 'active', data.afv)
