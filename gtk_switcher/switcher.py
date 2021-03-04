@@ -16,42 +16,8 @@ from gi.repository import Handy
 
 class SwitcherPage:
     def __init__(self, builder):
-        from gtk_switcher.mixeffect import MixEffectBlock
-
         self.main_blocks = builder.get_object('main_blocks')
-        me1 = MixEffectBlock(0)
-        me2 = MixEffectBlock(1)
-        me2.set_dsk(False)
-        self.me = [
-            me1,
-            me2
-        ]
-        self.me_map = {
-            (0, 0): 0,
-            (0, 0): 1
-        }
-        self.main_blocks.add(me2)
-        self.main_blocks.add(me1)
-
-        for me in self.me:
-            me.connect('program-changed', self.on_me_program_changed)
-            me.connect('preview-changed', self.on_me_preview_changed)
-            me.connect('rate-focus', self.on_rate_focus)
-            me.connect('rate-unfocus', self.on_rate_unfocus)
-            me.connect('ftb-clicked', self.on_ftb_clicked)
-            me.connect('ftb-rate', self.on_ftb_rate_changed)
-            me.connect('tbar-position-changed', self.on_tbar_position_changed)
-            me.connect('auto-rate-changed', self.on_auto_rate_changed)
-            me.connect('auto-clicked', self.on_auto_clicked)
-            me.connect('cut-clicked', self.on_cut_clicked)
-            me.connect('preview-transition-clicked', self.on_prev_trans_clicked)
-            me.connect('style-changed', self.on_style_clicked)
-            me.connect('onair-clicked', self.on_onair_clicked)
-            me.connect('next-clicked', self.on_next_clicked)
-            me.connect('dsk-tie', self.on_dsk_tie_clicked)
-            me.connect('dsk-onair', self.on_dsk_onair_clicked)
-            me.connect('dsk-auto', self.on_dsk_auto_clicked)
-            me.connect('dsk-rate', self.on_dsk_rate_activate)
+        self.me = []
 
         self.mix_rate = builder.get_object('mix_rate')
         self.dip_rate = builder.get_object('dip_rate')
@@ -111,6 +77,32 @@ class SwitcherPage:
         self.model_key = builder.get_object('model_key')
         self.model_changing = False
         self.slider_held = False
+
+    def add_mixeffect(self):
+        from gtk_switcher.mixeffect import MixEffectBlock
+        me = MixEffectBlock(len(self.me))
+        self.me.append(me)
+        me.set_dsk(False)
+        self.main_blocks.add(me)
+
+        me.connect('program-changed', self.on_me_program_changed)
+        me.connect('preview-changed', self.on_me_preview_changed)
+        me.connect('rate-focus', self.on_rate_focus)
+        me.connect('rate-unfocus', self.on_rate_unfocus)
+        me.connect('ftb-clicked', self.on_ftb_clicked)
+        me.connect('ftb-rate', self.on_ftb_rate_changed)
+        me.connect('tbar-position-changed', self.on_tbar_position_changed)
+        me.connect('auto-rate-changed', self.on_auto_rate_changed)
+        me.connect('auto-clicked', self.on_auto_clicked)
+        me.connect('cut-clicked', self.on_cut_clicked)
+        me.connect('preview-transition-clicked', self.on_prev_trans_clicked)
+        me.connect('style-changed', self.on_style_clicked)
+        me.connect('onair-clicked', self.on_onair_clicked)
+        me.connect('next-clicked', self.on_next_clicked)
+        me.connect('dsk-tie', self.on_dsk_tie_clicked)
+        me.connect('dsk-onair', self.on_dsk_onair_clicked)
+        me.connect('dsk-auto', self.on_dsk_auto_clicked)
+        me.connect('dsk-rate', self.on_dsk_rate_activate)
 
     def on_cut_clicked(self, widget, index):
         cmd = CutCommand(index=index)
@@ -357,6 +349,9 @@ class SwitcherPage:
         self.me[0].set_dsk_state(data)
 
     def on_topology_change(self, data):
+        for i in range(0, data.me_units-len(self.me)):
+            self.add_mixeffect()
+
         # Topology is only used for downstream keyer count, only available on M/E 1
         self.me[0].set_topology(data)
         self.apply_css(self.me[0], self.provider)
@@ -496,9 +491,8 @@ class SwitcherPage:
 
         buttons = [row1, row2]
 
-        self.me[0].set_inputs(buttons)
-        self.me[1].set_inputs(buttons)
-        self.apply_css(self.me[0], self.provider)
-        self.apply_css(self.me[1], self.provider)
+        for me in self.me:
+            me.set_inputs(buttons)
+            self.apply_css(me, self.provider)
 
         self.model_changing = False
