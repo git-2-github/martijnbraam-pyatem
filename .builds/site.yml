@@ -1,6 +1,7 @@
 image: alpine/edge
 packages:
   - sphinx
+  - py3-sphinx
 tasks:
   - build: |
       cd pyatem/docs
