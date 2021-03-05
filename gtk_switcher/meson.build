@@ -32,6 +32,8 @@ switcher_sources = [
     'preferenceswindow.py',
     'switcher.py',
     'audio.py',
+    'mixeffect.py',
+    'colorwheel.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)

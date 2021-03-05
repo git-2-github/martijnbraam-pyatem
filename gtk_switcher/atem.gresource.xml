@@ -24,5 +24,7 @@
     <file>icons/wipe-box-right.svg</file>
     <file>icons/wipe-diag1.svg</file>
     <file>icons/wipe-diag2.svg</file>
+
+    <file>asset/rainbow.png</file>
   </gresource>
 </gresources>

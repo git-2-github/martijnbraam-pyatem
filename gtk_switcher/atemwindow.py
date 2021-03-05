@@ -5,6 +5,7 @@ import gi
 from hexdump import hexdump
 
 from gtk_switcher.audio import AudioPage
+from gtk_switcher.camera import CameraPage
 from gtk_switcher.midi import MidiConnection, MidiControl
 from gtk_switcher.preferenceswindow import PreferencesWindow
 from gtk_switcher.switcher import SwitcherPage
@@ -58,7 +59,7 @@ class AtemConnection(threading.Thread):
             print('Exception raise failure')
 
 
-class AtemWindow(SwitcherPage, AudioPage, MidiControl):
+class AtemWindow(SwitcherPage, AudioPage, CameraPage, MidiControl):
     def __init__(self, application, args):
         self.application = application
         self.args = args
@@ -87,6 +88,7 @@ class AtemWindow(SwitcherPage, AudioPage, MidiControl):
 
         SwitcherPage.__init__(self, builder)
         AudioPage.__init__(self, builder)
+        CameraPage.__init__(self, builder)
         MidiControl.__init__(self, builder)
 
         self.media_flow = builder.get_object('media_flow')
@@ -204,6 +206,7 @@ class AtemWindow(SwitcherPage, AudioPage, MidiControl):
             print("Firmware: {}".format(data.version))
         elif field == 'input-properties':
             self.on_input_layout_change(data)
+            self.on_camera_layout_change(data)
         elif field == 'program-bus-input':
             self.on_program_input_change(data)
         elif field == 'preview-bus-input':
