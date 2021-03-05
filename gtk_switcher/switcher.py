@@ -324,24 +324,6 @@ class SwitcherPage:
         self.dve_rate.set_text(label)
         self.me[data.index].set_auto_rate('dve', data.rate)
 
-    def on_mediaplayer_slots_change(self, data):
-        for child in self.media_flow:
-            child.destroy()
-
-        for i in range(0, data.stills):
-            slot = Gtk.Box()
-            slot_label = Gtk.Label(label=str(i + 1))
-            slot_label.get_style_context().add_class('dim-label')
-            slot.pack_start(slot_label, False, False, False)
-
-            slot_img = Gtk.Box()
-            slot_img.get_style_context().add_class('mp-slot')
-            slot_img.set_size_request(160, 120)
-            slot.pack_start(slot_img, False, False, False)
-
-            self.media_flow.add(slot)
-        self.media_flow.show_all()
-
     def on_dsk_change(self, data):
         self.me[0].set_dsk(data)
 

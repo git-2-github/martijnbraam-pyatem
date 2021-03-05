@@ -31,7 +31,9 @@ switcher_sources = [
     'atemwindow.py',
     'preferenceswindow.py',
     'switcher.py',
+    'media.py',
     'audio.py',
+    'camera.py',
     'mixeffect.py',
     'colorwheel.py',
 ]

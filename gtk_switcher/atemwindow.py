@@ -6,6 +6,7 @@ from hexdump import hexdump
 
 from gtk_switcher.audio import AudioPage
 from gtk_switcher.camera import CameraPage
+from gtk_switcher.media import MediaPage
 from gtk_switcher.midi import MidiConnection, MidiControl
 from gtk_switcher.preferenceswindow import PreferencesWindow
 from gtk_switcher.switcher import SwitcherPage
@@ -59,7 +60,7 @@ class AtemConnection(threading.Thread):
             print('Exception raise failure')
 
 
-class AtemWindow(SwitcherPage, AudioPage, CameraPage, MidiControl):
+class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
     def __init__(self, application, args):
         self.application = application
         self.args = args
@@ -87,11 +88,10 @@ class AtemWindow(SwitcherPage, AudioPage, CameraPage, MidiControl):
         self.mainstack.set_visible_child_name(args.view)
 
         SwitcherPage.__init__(self, builder)
+        MediaPage.__init__(self, builder)
         AudioPage.__init__(self, builder)
         CameraPage.__init__(self, builder)
         MidiControl.__init__(self, builder)
-
-        self.media_flow = builder.get_object('media_flow')
 
         self.status_model = builder.get_object('status_model')
         self.status_mode = builder.get_object('status_mode')
