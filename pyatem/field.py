@@ -1345,3 +1345,48 @@ class KeyPropertiesBaseField(FieldBase):
 
     def __repr__(self):
         return '<key-properties-base me={}, key={}, type={}>'.format(self.index, self.keyer, self.type)
+
+
+class LockObtainedField(FieldBase):
+    """
+    Data from the `LKOB`. This signals that a datastore lock has been successfully obtained for
+    a specific datastore index. Used for data transfers.
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.store, = struct.unpack('>H2x', raw)
+
+    def __repr__(self):
+        return '<lock-obtained store={}>'.format(self.store)
+
+
+class FileTransferDataField(FieldBase):
+    """
+    Data from the `FTDa`. This is an incoming chunk of data for a running file transfer.
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.transfer, self.size = struct.unpack('>HH', raw[0:4])
+        self.data = raw[4:(4 + self.size)]
+
+    def __repr__(self):
+        return '<file-transfer-data transfer={} size={}>'.format(self.transfer, self.size)
+
+
+class FileTransferErrorField(FieldBase):
+    """
+    Data from the `FTDE`. Somehting went wrong with a file transfer.
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.transfer, self.status = struct.unpack('>HBx', raw)
+
+    def __repr__(self):
+        errors = {
+            1: 'try-again',
+            2: 'not-found',
+        }
+        return '<file-transfer-error transfer={} status={}>'.format(self.transfer, errors[self.status])

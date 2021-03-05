@@ -11,6 +11,14 @@ class AtemProtocol:
 
         self.mixerstate = {}
         self.callbacks = {}
+        self.locks = {}
+        self.mode = None
+        self.transfer_queue = {}
+        self.transfer_id = 42
+        self.transfer_buffer = b''
+        self.transfer_store = None
+        self.transfer_slot = None
+        self.transfer_requested = False
 
     def connect(self):
         logging.debug('Starting connection')
@@ -22,6 +30,57 @@ class AtemProtocol:
 
         for fieldname, data in self.decode_packet(packet.data):
             self.save_field_data(fieldname, data)
+
+    def download(self, store, index):
+        if store not in self.transfer_queue:
+            self.transfer_queue[store] = []
+        self.transfer_queue[store].append(index)
+        self._transfer_trigger(store)
+
+    def _transfer_trigger(self, store, retry=False):
+        next = None
+
+        # Try the preferred queue
+        if store in self.transfer_queue:
+            if len(self.transfer_queue[store]) > 0:
+                next = (store, self.transfer_queue[store][0])
+
+        # Try any queue
+        if next is None:
+            for store in self.transfer_queue:
+                if len(self.transfer_queue[store]) > 0:
+                    next = (store, self.transfer_queue[store][0])
+                    break
+
+        # All transfers done, clean locks
+        if next is None:
+            for lock in self.locks:
+                if self.locks[lock]:
+                    logging.debug('Releasing lock {}'.format(lock))
+                    cmd = LockCommand(lock, False)
+                    self.send_commands([cmd])
+            return
+
+        # Request a lock if needed
+        if next[0] not in self.locks or not self.locks[next[0]]:
+            logging.debug('Requesting lock for {}'.format(next[0]))
+            cmd = LockCommand(next[0], True)
+            self.send_commands([cmd])
+            return
+
+        # A transfer request is already running, don't start a new one
+        if self.transfer_requested:
+            logging.debug('Request already submitted, do nothing')
+            return
+
+        # Assign a transfer id and start the transfer
+        if not retry:
+            self.transfer_id += 1
+        self.transfer_store, self.transfer_slot = next
+        cmd = TransferDownloadRequestCommand(self.transfer_id, next[0], next[1])
+        logging.debug('Requesting download of {}:{}'.format(*next))
+        self.transfer_requested = True
+        self.send_commands([cmd])
 
     def on(self, event, callback):
         if event not in self.callbacks:
@@ -88,6 +147,10 @@ class AtemProtocol:
             'FASD': 'fairlight-strip-ding',
             'FAIP': 'fairlight-audio-input',
             'AMIP': 'audio-input',
+            'LKOB': 'lock-obtained',
+            'FTDa': 'file-transfer-data',
+            'LKST': 'lock-state',
+            'FTDE': 'file-transfer-error',
         }
 
         fieldname_to_unique = {
@@ -118,6 +181,35 @@ class AtemProtocol:
             if hasattr(fieldmodule, classname):
                 contents = getattr(fieldmodule, classname)(contents)
 
+        if key == 'lock-obtained':
+            logging.debug('Got lock for {}'.format(contents.store))
+            self.locks[contents.store] = True
+            self._transfer_trigger(contents.store)
+            return
+        elif key == 'lock-state':
+            logging.debug('Lock state changed')
+        elif key == 'file-transfer-data':
+            if contents.transfer == self.transfer_id:
+                self.transfer_buffer += contents.data
+                self.send_commands([TransferAckCommand(self.transfer_id, 0)])
+            return
+        elif key == 'file-transfer-error':
+            if contents.status == 1:
+                # Status is try-again
+                logging.debug("Retrying transfer")
+                self._transfer_trigger(self.transfer_store, retry=True)
+                return
+        elif key == 'FTDC':
+            logging.debug('Transfer complete')
+            queue = self.transfer_queue[self.transfer_store]
+            self.transfer_queue[self.transfer_store] = queue[1:]
+            self._transfer_trigger(self.transfer_store)
+            self._raise('download-done', self.transfer_store, self.transfer_slot, self.transfer_buffer)
+            return
+        elif key == 'video-mode':
+            # Store the current video mode for image processing
+            self.mode = contents
+
         if key in fieldname_to_unique:
             idx, = struct.unpack_from(fieldname_to_unique[key], raw, 0)
             if key not in self.mixerstate:
@@ -145,11 +237,11 @@ class AtemProtocol:
 
 
 if __name__ == '__main__':
-    from pyatem.command import CutCommand
+    from pyatem.command import CutCommand, TransferDownloadRequestCommand, LockCommand, TransferAckCommand
 
     logging.basicConfig(level=logging.INFO)
 
-    testmixer = AtemProtocol('192.168.2.17')
+    testmixer = AtemProtocol('192.168.2.84')
 
     waiter = 5
     waiting = False
@@ -161,16 +253,9 @@ if __name__ == '__main__':
         global waiting
         global done
 
-        if waiting and not done:
-            waiter -= 1
-            if waiter == 0:
-                logging.debug('SENDING CUT')
-                done = True
-                cmd = CutCommand(index=0)
-                testmixer.send_commands([cmd])
-
         if key == 'InCm':
             waiting = True
+            testmixer.download(0, 0)
 
         if key == 'time':
             return
@@ -180,7 +265,16 @@ if __name__ == '__main__':
             print(key)
 
 
+    def downloaded(store, slot, data):
+        filename = 'download-{}-{}.bin'.format(store, slot)
+        print("Saving data to {}".format(filename))
+        with open(filename, 'wb') as handle:
+            handle.write(data)
+        exit(0)
+
+
     testmixer.on('change', changed)
+    testmixer.on('download-done', downloaded)
 
     testmixer.connect()
     while True:

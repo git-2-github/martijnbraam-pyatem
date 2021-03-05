@@ -1,6 +1,8 @@
 import colorsys
 import struct
 
+from hexdump import hexdump
+
 
 class Command:
     def get_command(self):
@@ -919,3 +921,87 @@ class KeyFillCommand(Command):
     def get_command(self):
         data = struct.pack('>BBH', self.index, self.keyer, self.source)
         return self._make_command('CKeF', data)
+
+
+class LockCommand(Command):
+    """
+    Implementation of the `LOCK` command. This requests a new lock, used for data transfers.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u16    Store index
+    2      1    bool   Lock state
+    3      1    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, store, state):
+        """
+        :param index: 0-indexed DSK number to trigger
+        :param keyer: 0-indexed keyer number
+        :param source: Source index for the keyer fill
+        """
+        self.store = store
+        self.state = state
+
+    def get_command(self):
+        data = struct.pack('>H?x', self.store, self.state)
+        return self._make_command('LOCK', data)
+
+
+class TransferDownloadRequestCommand(Command):
+    """
+    Implementation of the `FTSU` command. This requests download from the switcher to the client.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Tranfer id
+    2      2    u16    Store
+    4      2    u16    Slot
+    8      4    u32    unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, transfer, store, slot):
+        """
+        :param transfer: Unique transfer number
+        :param store: Store index
+        :param slot: Slot index
+        """
+        self.transfer = transfer
+        self.store = store
+        self.slot = slot
+
+    def get_command(self):
+        data = struct.pack('>HHH2xI', self.transfer, self.store, self.slot, 0x00965340)
+        return self._make_command('FTSU', data)
+
+
+class TransferAckCommand(Command):
+    """
+    Implementation of the `FTUA` command. This is an acknowledgement for FTDa packets.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Tranfer id
+    2      2    u16    Slot
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, transfer, slot):
+        """
+        :param transfer: Unique transfer number
+        :param slot: Slot index
+        """
+        self.transfer = transfer
+        self.slot = slot
+
+    def get_command(self):
+        data = struct.pack('>HH', self.transfer, self.slot)
+        return self._make_command('FTUA', data)

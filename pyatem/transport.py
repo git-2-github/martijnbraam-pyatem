@@ -11,6 +11,7 @@ class Packet:
         self.sequence_number = 0
         self.acknowledgement_number = 0
         self.remote_sequence_number = 0
+        self.retransmission_number = 0
         self.data = None
         self.debug = False
         self.original = None
@@ -20,7 +21,7 @@ class Packet:
     def from_bytes(cls, packet):
         res = cls()
         res.original = packet
-        fields = struct.unpack('>HHH 2x HH', packet[0:12])
+        fields = struct.unpack('>HHH H HH', packet[0:12])
         res.length = fields[0] & ~(0x1f << 11)
         res.flags = (fields[0] & (0x1f << 11)) >> 11
 
@@ -31,8 +32,9 @@ class Packet:
 
         res.session = fields[1]
         res.acknowledgement_number = fields[2]
-        res.remote_sequence_number = fields[3]
-        res.sequence_number = fields[4]
+        res.retransmission_number = fields[3]
+        res.remote_sequence_number = fields[4]
+        res.sequence_number = fields[5]
 
         res.data = packet[12:]
         return res
@@ -41,10 +43,11 @@ class Packet:
         header_len = 12
         data_len = len(self.data) if self.data is not None else 0
         packet_len = header_len + data_len
-        result = struct.pack('!HHH 2x HH',
+        result = struct.pack('!HHH H HH',
                              packet_len + (self.flags << 11),
                              self.session,
                              self.acknowledgement_number,
+                             self.retransmission_number,
                              self.remote_sequence_number,
                              self.sequence_number)
 
@@ -64,7 +67,7 @@ class Packet:
             flags += ' RETRANSMISSION'
         if self.flags & UdpProtocol.FLAG_REQUEST_RETRANSMISSION:
             flags += ' REQ-RETRANSMISSION'
-            extra = ' req={}'.format(self.remote_sequence_number)
+            extra = ' req={}'.format(self.retransmission_number)
         if self.flags & UdpProtocol.FLAG_ACK:
             flags += ' ACK'
             extra = ' ack={}'.format(self.acknowledgement_number)
@@ -102,12 +105,19 @@ class UdpProtocol:
         self.state = UdpProtocol.STATE_CLOSED
         self.session_id = 0x1337
 
+        self.packetlog = {}
+        self.reorder_buffer = {}
+        self.missing = []
+
         self.enable_ack = False
 
     def _send_packet(self, packet):
         packet.session = self.session_id
         if not packet.flags & UdpProtocol.FLAG_ACK:
             packet.sequence_number = (self.local_sequence_number + 1) % 2 ** 16
+        if packet.flags & UdpProtocol.FLAG_REQUEST_RETRANSMISSION:
+            print(packet)
+        self.packetlog[packet.sequence_number] = packet
         raw = packet.to_bytes()
         self.sock.sendto(raw, (self.ip, self.port))
         logging.debug('> {}'.format(packet))
@@ -118,18 +128,51 @@ class UdpProtocol:
             self.local_sequence_number = (self.local_sequence_number + 1) % 2 ** 16
 
     def _receive_packet(self):
+
+        if len(self.missing) == 0 and len(self.reorder_buffer) > 0:
+            print("Flusing reorder buffer")
+            next_seq = list(sorted(self.reorder_buffer.keys()))[0]
+            packet = self.reorder_buffer[next_seq]
+            del self.reorder_buffer[next_seq]
+            return packet
+
         data, address = self.sock.recvfrom(2048)
         packet = Packet.from_bytes(data)
         logging.debug('< {}'.format(packet))
 
         if packet.flags & UdpProtocol.FLAG_REQUEST_RETRANSMISSION:
-            pass
-            # hexdump(data)
+            logging.debug("ATEM requested a retransmission")
+            requested = self.packetlog[packet.retransmission_number]
+            requested.flags |= UdpProtocol.FLAG_RETRANSMISSION
+            self._send_packet(requested)
+            return
+
+        if packet.flags & UdpProtocol.FLAG_ACK:
+            keys = list(self.packetlog.keys())
+            for i in keys:
+                if i <= packet.acknowledgement_number:
+                    del self.packetlog[i]
 
         new_sequence_number = packet.sequence_number
-        if new_sequence_number > self.remote_sequence_number + 1:
+
+        if packet.flags & UdpProtocol.FLAG_RETRANSMISSION:
+            if packet.sequence_number in self.missing:
+                self.reorder_buffer[packet.sequence_number] = packet
+                self.missing.remove(packet.sequence_number)
+                print(self.missing)
+            else:
+                print("Somehow got {}".format(packet.sequence_number))
+        elif new_sequence_number == 0:
             pass
-        self.remote_sequence_number = new_sequence_number
+        else:
+            if new_sequence_number != 0 and new_sequence_number > 14 and new_sequence_number > self.remote_sequence_number + 1:
+                num_missing = new_sequence_number - self.remote_sequence_number - 1
+                first_missing = self.remote_sequence_number + 1
+                last_missing = first_missing + num_missing - 1
+                print("Missed packet {}..{}".format(first_missing, last_missing))
+                for i in range(first_missing, last_missing):
+                    self.missing.append(i)
+            self.remote_sequence_number = new_sequence_number
 
         if self.session_id is None:
             self.session_id = packet.session
@@ -138,9 +181,18 @@ class UdpProtocol:
             # This packet needs an ACK
             ack = Packet()
             ack.flags = UdpProtocol.FLAG_ACK
-            ack.acknowledgement_number = self.remote_sequence_number
+            ack.acknowledgement_number = packet.sequence_number
             ack.remote_sequence_number = 0x61
+            print("ACK {}".format(packet.sequence_number))
             self._send_packet(ack)
+
+        if len(self.missing) > 0:
+            # Store packets until the missing ones are received
+            self.reorder_buffer[packet.sequence_number] = packet
+            return
+
+        if len(self.reorder_buffer) > 0:
+            return
 
         return packet
 
@@ -185,6 +237,8 @@ class UdpProtocol:
     def receive_packet(self):
         while True:
             packet = self._receive_packet()
+            if packet is None:
+                continue
             if self.state == UdpProtocol.STATE_SYN_SENT:
                 # Got response for the first handshake packet
                 self._handshake(packet)
