@@ -88,7 +88,7 @@ Downstream
 Upstream keyers
 ---------------
 
-.. autoclass:: pyatem.command.KeyOnAir
+.. autoclass:: pyatem.command.KeyOnAirCommand
    :members:
    :special-members:
 
