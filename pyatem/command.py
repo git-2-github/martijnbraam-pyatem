@@ -921,6 +921,82 @@ class KeyFillCommand(Command):
         return self._make_command('CKeF', data)
 
 
+class KeyCutCommand(Command):
+    """
+    Implementation of the `CKeC` command. This sets the key source for an upstream keyer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index, 0-indexed
+    1      1    u8     Keyer index
+    2      2    u16    Source index
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, keyer, source):
+        """
+        :param index: 0-indexed DSK number to trigger
+        :param keyer: 0-indexed keyer number
+        :param source: Source index for the keyer fill
+        """
+        self.index = index
+        self.keyer = keyer
+        self.source = source
+
+    def get_command(self):
+        data = struct.pack('>BBH', self.index, self.keyer, self.source)
+        return self._make_command('CKeC', data)
+
+
+class KeyTypeCommand(Command):
+    """
+    Implementation of the `CKTp` command. This sets the type of an upstream keyer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask
+    1      1    u8     M/E index, 0-indexed
+    2      1    u8     Keyer index
+    3      1    u8     Keyer type
+    4      1    bool   Fly enabled
+    5      3    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    LUMA = 0
+    CHROMA = 1
+    PATTERN = 2
+    DVE = 3
+
+    def __init__(self, index, keyer, type=None, fly_enabled=None):
+        """
+        :param index: 0-indexed DSK number to trigger
+        :param keyer: 0-indexed keyer number
+        :param source: Source index for the keyer fill
+        """
+        self.index = index
+        self.keyer = keyer
+        self.type = type
+        self.fly_enabled = fly_enabled
+
+    def get_command(self):
+        mask = 0
+        if self.type is not None:
+            mask |= 1 << 0
+        if self.fly_enabled is not None:
+            mask |= 1 << 1
+
+        key_type = 0 if self.type is None else self.type
+        fly_enabled = 0 if self.fly_enabled is None else self.fly_enabled
+
+        data = struct.pack('>BBB B? 3x', mask, self.index, self.keyer, key_type, fly_enabled)
+        return self._make_command('CKTp', data)
+
+
 class KeyPropertiesDveCommand(Command):
     """
     Implementation of the `CKDV` command. This sets the settings of the DVE in an upstream keyer
@@ -1088,3 +1164,55 @@ class KeyPropertiesDveCommand(Command):
                            mask_right,
                            rate)
         return self._make_command('CKDV', data)
+
+
+class KeyPropertiesLumaCommand(Command):
+    """
+    Implementation of the `CKLm` command. This sets the key source for an upstream keyer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask
+    1      1    u8     M/E index, 0-indexed
+    2      1    u8     Keyer index
+    3      1    bool   Pre-multiplied
+    4      2    u16    Clip
+    6      2    u16    Gain
+    8      1    bool   Invert key
+    9      3    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, keyer, premultiplied=None, clip=None, gain=None, invert_key=None):
+        """
+        :param index: 0-indexed DSK number to trigger
+        :param keyer: 0-indexed keyer number
+        :param source: Source index for the keyer fill
+        """
+        self.index = index
+        self.keyer = keyer
+        self.premultiplied = premultiplied
+        self.clip = clip
+        self.gain = gain
+        self.invert_key = invert_key
+
+    def get_command(self):
+        mask = 0
+        if self.premultiplied is not None:
+            mask |= 1 << 0
+        if self.clip is not None:
+            mask |= 1 << 1
+        if self.gain is not None:
+            mask |= 1 << 2
+        if self.invert_key is not None:
+            mask |= 1 << 3
+
+        premultiplied = 0 if self.premultiplied is None else self.premultiplied
+        clip = 0 if self.clip is None else self.clip
+        gain = 0 if self.gain is None else self.gain
+        invert_key = 0 if self.invert_key is None else self.invert_key
+
+        data = struct.pack('>BBB?HH?3x', mask, self.index, self.keyer, premultiplied, clip, gain, invert_key)
+        return self._make_command('CKLm', data)

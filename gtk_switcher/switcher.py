@@ -383,6 +383,7 @@ class SwitcherPage:
                 exp.add(usk)
                 self.apply_css(usk, self.provider)
                 usk.set_fill_model(self.model_me1_fill)
+                usk.set_key_model(self.model_key)
                 self.upstream_keyers.pack_start(exp, False, True, 0)
 
             self.upstream_keyers.show_all()
@@ -421,6 +422,9 @@ class SwitcherPage:
 
     def on_key_properties_base_change(self, data):
         self.usks[data.index].on_key_properties_base_change(data)
+
+    def on_key_properties_luma_change(self, data):
+        self.usks[data.index].on_key_properties_luma_change(data)
 
     def on_key_properties_dve_change(self, data):
         self.usks[data.index].on_key_properties_dve_change(data)

@@ -1,7 +1,8 @@
 from gi.repository import Gtk, GObject, Gdk
 
-from pyatem.command import KeyFillCommand, KeyPropertiesDveCommand
-from pyatem.field import TransitionSettingsField, KeyPropertiesDveField
+from pyatem.command import KeyFillCommand, KeyPropertiesDveCommand, KeyTypeCommand, KeyCutCommand, \
+    KeyPropertiesLumaCommand
+from pyatem.field import TransitionSettingsField, KeyPropertiesDveField, KeyPropertiesLumaField
 
 
 @Gtk.Template(resource_path='/nl/brixit/switcher/ui/upstream-keyer.glade')
@@ -14,6 +15,15 @@ class UpstreamKeyer(Gtk.Frame):
     mask_left = Gtk.Template.Child()
     mask_right = Gtk.Template.Child()
     mask_en = Gtk.Template.Child()
+
+    luma_fill = Gtk.Template.Child()
+    luma_key = Gtk.Template.Child()
+    luma_premultiplied = Gtk.Template.Child()
+    luma_clip = Gtk.Template.Child()
+    luma_clip_adj = Gtk.Template.Child()
+    luma_gain = Gtk.Template.Child()
+    luma_gain_adj = Gtk.Template.Child()
+    luma_invert = Gtk.Template.Child()
 
     dve_fill = Gtk.Template.Child()
     dve_shadow_en = Gtk.Template.Child()
@@ -55,12 +65,19 @@ class UpstreamKeyer(Gtk.Frame):
     def set_fill_model(self, model):
         self.model_changing = True
         self.dve_fill.set_model(model)
+        self.luma_fill.set_model(model)
+        self.model_changing = False
+
+    def set_key_model(self, model):
+        self.model_changing = True
+        self.luma_key.set_model(model)
         self.model_changing = False
 
     def on_key_properties_base_change(self, data):
         self.model_changing = True
         self.dve_fill.set_active_id(str(data.fill_source))
-        self.model_changing = False
+        self.luma_fill.set_active_id(str(data.fill_source))
+        self.luma_key.set_active_id(str(data.key_source))
 
         if data.type == 0:
             self.keyer_stack.set_visible_child_name('key_luma')
@@ -71,6 +88,8 @@ class UpstreamKeyer(Gtk.Frame):
         elif data.type == 3:
             self.keyer_stack.set_visible_child_name('key_dve')
 
+        self.model_changing = False
+
         if data.type != 3:
             self.set_class(self.mask_en, 'active', data.mask_enabled)
 
@@ -78,6 +97,19 @@ class UpstreamKeyer(Gtk.Frame):
             self.mask_bottom.set_text(str(data.mask_bottom / 1000))
             self.mask_left.set_text(str(data.mask_left / 1000))
             self.mask_right.set_text(str(data.mask_right / 1000))
+
+    def on_key_properties_luma_change(self, data):
+        if not isinstance(data, KeyPropertiesLumaField):
+            return
+
+        self.set_class(self.luma_premultiplied, 'active', data.premultiplied)
+        self.set_class(self.luma_invert, 'active', data.key_inverted)
+
+        self.luma_clip.set_sensitive(not data.premultiplied)
+        self.luma_gain.set_sensitive(not data.premultiplied)
+
+        self.luma_clip_adj.set_value(data.clip)
+        self.luma_gain_adj.set_value(data.gain)
 
     def on_key_properties_dve_change(self, data):
         if not isinstance(data, KeyPropertiesDveField):
@@ -117,11 +149,19 @@ class UpstreamKeyer(Gtk.Frame):
         self.mask_right.set_text(str(data.mask_right / 1000))
 
     @Gtk.Template.Callback()
-    def on_dve_fill_changed(self, widget, *args):
+    def on_fill_changed(self, widget, *args):
         if self.model_changing:
             return
         source = int(widget.get_active_id())
         cmd = KeyFillCommand(index=self.index, keyer=self.keyer, source=source)
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_key_changed(self, widget, *args):
+        if self.model_changing:
+            return
+        source = int(widget.get_active_id())
+        cmd = KeyCutCommand(index=self.index, keyer=self.keyer, source=source)
         self.connection.mixer.send_commands([cmd])
 
     @Gtk.Template.Callback()
@@ -253,4 +293,32 @@ class UpstreamKeyer(Gtk.Frame):
             return
 
         cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, bevel_position=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_keyer_stack_visible_child_notify(self, widget, *args):
+        if self.model_changing:
+            return
+        state = widget.get_visible_child_name()
+        if state == 'key_luma':
+            cmd = KeyTypeCommand(index=self.index, keyer=self.keyer, type=KeyTypeCommand.LUMA)
+        elif state == 'key_chroma':
+            cmd = KeyTypeCommand(index=self.index, keyer=self.keyer, type=KeyTypeCommand.CHROMA)
+        elif state == 'key_pattern':
+            cmd = KeyTypeCommand(index=self.index, keyer=self.keyer, type=KeyTypeCommand.PATTERN)
+        elif state == 'key_dve':
+            cmd = KeyTypeCommand(index=self.index, keyer=self.keyer, type=KeyTypeCommand.DVE)
+
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_luma_premultiplied_clicked(self, widget, *args):
+        state = widget.get_style_context().has_class('active')
+        cmd = KeyPropertiesLumaCommand(index=self.index, keyer=self.keyer, premultiplied=not state)
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_luma_invert_clicked(self, widget, *args):
+        state = widget.get_style_context().has_class('active')
+        cmd = KeyPropertiesLumaCommand(index=self.index, keyer=self.keyer, invert_key=not state)
         self.connection.mixer.send_commands([cmd])

@@ -1395,3 +1395,23 @@ class KeyPropertiesDveField(FieldBase):
 
     def __repr__(self):
         return '<key-properties-dve me={}, key={}>'.format(self.index, self.keyer)
+
+
+class KeyPropertiesLumaField(FieldBase):
+    """
+    Data from the `KeLm`. The upstream keyer luma-specific properties.
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>BB?x HH ?3x', raw)
+        self.index = field[0]
+        self.keyer = field[1]
+        self.premultiplied = field[2]
+
+        self.clip = field[3]
+        self.gain = field[4]
+        self.key_inverted = field[5]
+
+    def __repr__(self):
+        return '<key-properties-luma me={}, key={}>'.format(self.index, self.keyer)
