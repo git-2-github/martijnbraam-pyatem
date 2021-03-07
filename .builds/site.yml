@@ -1,4 +1,7 @@
 image: alpine/edge
+oauth: pages.sr.ht/PAGES:RW
+environment:
+  site: docs.openswitcher.org
 packages:
   - sphinx
   - py3-sphinx
@@ -8,6 +11,8 @@ tasks:
       cd pyatem/docs
       make html
   - deploy: |
-      ls -lah
+      cd pyatem/docs/_build
+      tar -C html -cvz . > site.tar.gz
+      acurl -f https://pages.sr.ht/publish/$site -Fcontent=@site.tar.gz
 sources:
   - https://git.sr.ht/~martijnbraam/pyatem
