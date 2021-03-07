@@ -964,6 +964,12 @@ class KeyPropertiesDveCommand(Command):
         self.mask_right = mask_right
         self.rate = rate
 
+    def set_border_color_rgb(self, red, green, blue):
+        h, l, s = colorsys.rgb_to_hls(red, green, blue)
+        self.border_hue = int(h * 3590)
+        self.border_saturation = int(s * 1000)
+        self.border_luma = int(l * 1000)
+
     def get_command(self):
         mask = 0
         if self.size_x is not None:

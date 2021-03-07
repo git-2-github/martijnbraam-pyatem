@@ -6,42 +6,56 @@
     <property name="upper">100</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_dve_border_bevel_position_adj_value_changed" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="dve_border_bevel_soften_adj">
     <property name="upper">100</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_dve_border_bevel_soften_adj_value_changed" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="dve_border_inner_soften_adj">
     <property name="upper">100</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_dve_border_inner_soften_adj_value_changed" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="dve_border_inner_width_adj">
     <property name="upper">1600</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_dve_border_inner_width_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="dve_border_opacity_adj">
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_dve_border_opacity_adj_value_changed" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="dve_border_outer_soften_adj">
     <property name="upper">100</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_dve_border_outer_soften_adj_value_changed" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="dve_border_outer_width_adj">
     <property name="upper">1600</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_dve_border_outer_width_adj_value_changed" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="dve_light_altitude_adj">
     <property name="lower">10</property>
     <property name="upper">100</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_dve_light_altitude_adj_value_changed" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="dve_light_angle_adj">
     <property name="upper">3590</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_dve_light_angle_adj_value_changed" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="dve_pos_x_adj">
     <property name="lower">-16000</property>
@@ -58,13 +72,13 @@
     <signal name="value-changed" handler="on_dve_pos_y_adj_value_changed" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="dve_size_x_adj">
-    <property name="upper">99990</property>
+    <property name="upper">1000</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
     <signal name="value-changed" handler="on_dve_size_x_adj_value_changed" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="dve_size_y_adj">
-    <property name="upper">99990</property>
+    <property name="upper">1000</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
     <signal name="value-changed" handler="on_dve_size_y_adj_value_changed" swapped="no"/>
@@ -515,6 +529,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
+                        <signal name="clicked" handler="on_dve_border_en_clicked" swapped="no"/>
                         <style>
                           <class name="bmdbtn"/>
                         </style>
@@ -540,120 +555,6 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">end</property>
-                        <property name="label" translatable="yes">Outer width</property>
-                        <style>
-                          <class name="dim-label"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">10</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">end</property>
-                        <property name="label" translatable="yes">Inner width</property>
-                        <style>
-                          <class name="dim-label"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">11</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">end</property>
-                        <property name="label" translatable="yes">Outer soften</property>
-                        <style>
-                          <class name="dim-label"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">12</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">end</property>
-                        <property name="label" translatable="yes">Inner soften</property>
-                        <style>
-                          <class name="dim-label"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">13</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">end</property>
-                        <property name="label" translatable="yes">Bevel position</property>
-                        <style>
-                          <class name="dim-label"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">14</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">end</property>
-                        <property name="label" translatable="yes">Bevel soften</property>
-                        <style>
-                          <class name="dim-label"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">15</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkScale" id="dve_border_outer_width">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="adjustment">dve_border_outer_width_adj</property>
-                        <property name="draw-value">False</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">10</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkScale" id="dve_border_inner_width">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="adjustment">dve_border_inner_width_adj</property>
-                        <property name="draw-value">False</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">11</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
@@ -663,6 +564,7 @@
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
                             <property name="title" translatable="yes">Pick a border color</property>
+                            <signal name="color-set" handler="on_dve_border_color_color_set" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -698,39 +600,93 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkScale" id="dve_border_outer_soften">
+                      <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="adjustment">dve_border_outer_soften_adj</property>
-                        <property name="draw-value">False</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Bevel soften</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
                       </object>
                       <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">12</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">16</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkScale" id="dve_border_inner_soften">
+                      <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="adjustment">dve_border_inner_soften_adj</property>
-                        <property name="draw-value">False</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Bevel position</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
                       </object>
                       <packing>
-                        <property name="left-attach">1</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">15</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Inner soften</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">14</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Outer soften</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
                         <property name="top-attach">13</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkScale" id="dve_border_bevel_position">
+                      <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="adjustment">dve_border_bevel_position_adj</property>
-                        <property name="draw-value">False</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Inner width</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
                       </object>
                       <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">14</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">12</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Outer width</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">11</property>
                       </packing>
                     </child>
                     <child>
@@ -739,6 +695,22 @@
                         <property name="can-focus">True</property>
                         <property name="adjustment">dve_border_bevel_soften_adj</property>
                         <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">16</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="dve_border_bevel_position">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">dve_border_bevel_position_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
@@ -746,10 +718,89 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkScale" id="dve_border_inner_soften">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">dve_border_inner_soften_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">14</property>
+                      </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkScale" id="dve_border_outer_soften">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">dve_border_outer_soften_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">13</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="dve_border_inner_width">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">dve_border_inner_width_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">12</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="dve_border_outer_width">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">dve_border_outer_width_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">11</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Border opacity</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">10</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="dve_border_opacity">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">dve_border_opacity_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">10</property>
+                      </packing>
                     </child>
                     <child>
                       <placeholder/>

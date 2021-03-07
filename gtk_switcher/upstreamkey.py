@@ -27,6 +27,7 @@ class UpstreamKeyer(Gtk.Frame):
 
     dve_border_en = Gtk.Template.Child()
     dve_border_color = Gtk.Template.Child()
+    dve_border_opacity = Gtk.Template.Child()
     dve_border_outer_width_adj = Gtk.Template.Child()
     dve_border_inner_width_adj = Gtk.Template.Child()
     dve_border_outer_soften_adj = Gtk.Template.Child()
@@ -92,6 +93,7 @@ class UpstreamKeyer(Gtk.Frame):
         self.dve_light_angle_adj.set_value(data.light_angle)
         self.dve_light_altitude_adj.set_value(data.light_altitude)
 
+        self.dve_border_opacity.set_value(data.border_opacity)
         self.dve_border_outer_width_adj.set_value(data.border_outer_width)
         self.dve_border_inner_width_adj.set_value(data.border_inner_width)
         self.dve_border_outer_soften_adj.set_value(data.border_outer_softness)
@@ -166,4 +168,89 @@ class UpstreamKeyer(Gtk.Frame):
     def on_dve_shadow_en_clicked(self, widget):
         state = widget.get_style_context().has_class('active')
         cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, shadow_enabled=not state)
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_light_angle_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+
+        cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, angle=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_light_altitude_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+
+        cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, altitude=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_border_en_clicked(self, widget):
+        state = widget.get_style_context().has_class('active')
+        cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, border_enabled=not state)
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_border_color_color_set(self, widget):
+        color = widget.get_rgba()
+        cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer)
+        cmd.set_border_color_rgb(color.red, color.green, color.blue)
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_border_opacity_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+
+        cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, border_opacity=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_border_outer_width_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+
+        cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, outer_width=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_border_inner_width_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+
+        cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, inner_width=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_border_outer_soften_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+
+        cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, outer_softness=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_border_inner_soften_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+
+        cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, inner_softness=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_border_bevel_soften_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+
+        cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, bevel_softness=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_border_bevel_position_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+
+        cmd = KeyPropertiesDveCommand(index=self.index, keyer=self.keyer, bevel_position=int(widget.get_value()))
         self.connection.mixer.send_commands([cmd])
