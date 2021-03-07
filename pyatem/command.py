@@ -965,6 +965,13 @@ class KeyTypeCommand(Command):
     5      3    ?      unknown
     ====== ==== ====== ===========
 
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Key type
+    1   Fly enabled
+    === ==========
+
     """
 
     LUMA = 0
@@ -1000,6 +1007,76 @@ class KeyTypeCommand(Command):
 class KeyPropertiesDveCommand(Command):
     """
     Implementation of the `CKDV` command. This sets the settings of the DVE in an upstream keyer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u32    Mask
+    4      1    u8     M/E index, 0-indexed
+    5      1    u8     Keyer index
+    6      2    ?      unknown
+    8      4    i32    Size x [0 - 9900]
+    12     4    i32    Size y [0 - 9900]
+    16     4    i32    Position x [-16000 - 16000]
+    20     4    i32    Position y [-9000 - 9000]
+    24     4    i32    Rotation
+    28     1    bool   Border enabled
+    29     1    bool   Shadow enabled
+    30     1    u8     Border bevel mode
+    31     1    ?      unknown
+    32     2    u16    Border outer width [0 - 1600]
+    34     2    u16    Border inner width [0 - 1600]
+    36     1    u8     Border outer softness [0 - 100]
+    37     1    u8     Border inner softness [0 - 100]
+    38     1    u8     Border bevel softness [0 - 100]
+    39     1    u8     Border bevel position [0 - 100]
+    40     1    u8     Border opacity [0-100]
+    41     1    ?      unknown
+    42     2    u16    Border color hue [0 - 3599]
+    44     2    u16    Border color saturation [0 - 1000]
+    46     2    u16    Border color luma [0 - 1000]
+    48     2    u16    Shadow light source angle [0 - 3590]
+    50     1    u8     Shadow light source altitude [10-100]
+    51     1    bool   Mask enabled
+    52     2    i16    Mask top [-9000 - 9000]
+    54     2    i16    Mask bottom [-9000 - 9000]
+    56     2    i16    Mask left [-16000 - 16000]
+    58     2    i16    Mask right [-16000 - 16000]
+    60     1    u8     Rate
+    61     3    ?      unknown
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Size x
+    1   Size y
+    2   Position x
+    3   Position y
+    4   Rotation
+    5   Border enabled
+    6   Shadow enabled
+    7   Border bevel mode
+    8   Outer width
+    9   Inner width
+    10  Outer softness
+    11  Inner softness
+    12  Bevel softness
+    13  Bevel position
+    14  Border opacity
+    15  Border hue
+    16  Border saturation
+    17  Border luma
+    18  Shadow angle
+    19  Shadow altitude
+    20  Mask enabled
+    21  Mask top
+    22  Mask bottom
+    23  Mask left
+    24  Mask right
+    25  Rate
+    === ==========
+
     """
 
     def __init__(self, index, keyer, size_x=None, size_y=None, pos_x=None, pos_y=None, rotation=None,
@@ -1182,6 +1259,15 @@ class KeyPropertiesLumaCommand(Command):
     8      1    bool   Invert key
     9      3    ?      unknown
     ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Pre-multiplied
+    1   Clip
+    2   Gain
+    3   Invert key
+    === ==========
 
     """
 

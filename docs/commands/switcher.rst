@@ -91,3 +91,24 @@ Upstream keyers
 .. autoclass:: pyatem.command.KeyOnAir
    :members:
    :special-members:
+
+.. autoclass:: pyatem.command.KeyTypeCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.KeyFillCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.KeyCutCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.KeyPropertiesLumaCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.KeyPropertiesDveCommand
+   :members:
+   :special-members:
+

@@ -59,6 +59,22 @@ Palettes
 .. autoclass:: pyatem.field.TransitionDveField
    :members:
 
+Upstream keys
+-------------
+
+These are the fields related to the "Upstream key %n" blocks in the palette sidebar. The information about the upstream
+keyer is split over multiple fields, one with base information and one with extra information about the specific mode
+the keyer is in.
+
+.. autoclass:: pyatem.field.KeyPropertiesBaseField
+   :members:
+
+.. autoclass:: pyatem.field.KeyPropertiesLumaField
+   :members:
+
+.. autoclass:: pyatem.field.KeyPropertiesDveField
+   :members:
+
 
 Video Tally
 -----------

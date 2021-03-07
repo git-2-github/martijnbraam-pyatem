@@ -1,8 +1,6 @@
 import colorsys
 import struct
 
-from hexdump import hexdump
-
 
 class FieldBase:
     def _get_string(self, raw):
@@ -1340,8 +1338,6 @@ class KeyPropertiesBaseField(FieldBase):
         self.mask_bottom = field[9]
         self.mask_left = field[10]
         self.mask_right = field[11]
-
-        hexdump(raw)
 
     def __repr__(self):
         return '<key-properties-base me={}, key={}, type={}>'.format(self.index, self.keyer, self.type)
