@@ -919,3 +919,166 @@ class KeyFillCommand(Command):
     def get_command(self):
         data = struct.pack('>BBH', self.index, self.keyer, self.source)
         return self._make_command('CKeF', data)
+
+
+class KeyPropertiesDveCommand(Command):
+    """
+    Implementation of the `CKDV` command. This sets the settings of the DVE in an upstream keyer
+    """
+
+    def __init__(self, index, keyer, size_x=None, size_y=None, pos_x=None, pos_y=None, rotation=None,
+                 border_enabled=None, shadow_enabled=None, border_bevel_enabled=None, outer_width=None,
+                 inner_width=None, outer_softness=None, inner_softness=None, bevel_softness=None, bevel_position=None,
+                 border_opacity=None, border_hue=None, border_saturation=None, border_luma=None, angle=None,
+                 altitude=None, mask_enabled=None, mask_top=None, mask_bottom=None, mask_left=None, mask_right=None,
+                 rate=None):
+        """
+        :param index: 0-indexed M/E number to control the preview bus of
+        """
+        self.index = index
+        self.keyer = keyer
+        self.size_x = size_x
+        self.size_y = size_y
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+        self.rotation = rotation
+        self.border_enabled = border_enabled
+        self.shadow_enabled = shadow_enabled
+        self.border_bevel_enabled = border_bevel_enabled
+        self.outer_width = outer_width
+        self.inner_width = inner_width
+        self.outer_softness = outer_softness
+        self.inner_softness = inner_softness
+        self.bevel_softness = bevel_softness
+        self.bevel_position = bevel_position
+        self.border_opacity = border_opacity
+        self.border_hue = border_hue
+        self.border_saturation = border_saturation
+        self.border_luma = border_luma
+        self.angle = angle
+        self.altitude = altitude
+        self.mask_enabled = mask_enabled
+        self.mask_top = mask_top
+        self.mask_bottom = mask_bottom
+        self.mask_left = mask_left
+        self.mask_right = mask_right
+        self.rate = rate
+
+    def get_command(self):
+        mask = 0
+        if self.size_x is not None:
+            mask |= 1 << 0
+        if self.size_y is not None:
+            mask |= 1 << 1
+        if self.pos_x is not None:
+            mask |= 1 << 2
+        if self.pos_y is not None:
+            mask |= 1 << 3
+        if self.rotation is not None:
+            mask |= 1 << 4
+        if self.border_enabled is not None:
+            mask |= 1 << 5
+        if self.shadow_enabled is not None:
+            mask |= 1 << 6
+        if self.border_bevel_enabled is not None:
+            mask |= 1 << 7
+        if self.outer_width is not None:
+            mask |= 1 << 8
+        if self.inner_width is not None:
+            mask |= 1 << 9
+        if self.outer_softness is not None:
+            mask |= 1 << 10
+        if self.inner_softness is not None:
+            mask |= 1 << 11
+        if self.bevel_softness is not None:
+            mask |= 1 << 12
+        if self.bevel_position is not None:
+            mask |= 1 << 13
+        if self.border_opacity is not None:
+            mask |= 1 << 14
+        if self.border_hue is not None:
+            mask |= 1 << 15
+        if self.border_saturation is not None:
+            mask |= 1 << 16
+        if self.border_luma is not None:
+            mask |= 1 << 17
+        if self.angle is not None:
+            mask |= 1 << 18
+        if self.altitude is not None:
+            mask |= 1 << 19
+        if self.mask_enabled is not None:
+            mask |= 1 << 20
+        if self.mask_top is not None:
+            mask |= 1 << 21
+        if self.mask_bottom is not None:
+            mask |= 1 << 22
+        if self.mask_left is not None:
+            mask |= 1 << 23
+        if self.mask_right is not None:
+            mask |= 1 << 24
+        if self.rate is not None:
+            mask |= 1 << 25
+
+        index = 0 if self.index is None else self.index
+        keyer = 0 if self.keyer is None else self.keyer
+        size_x = 0 if self.size_x is None else self.size_x
+        size_y = 0 if self.size_y is None else self.size_y
+        pos_x = 0 if self.pos_x is None else self.pos_x
+        pos_y = 0 if self.pos_y is None else self.pos_y
+        rotation = 0 if self.rotation is None else self.rotation
+        border_enabled = 0 if self.border_enabled is None else self.border_enabled
+        shadow_enabled = 0 if self.shadow_enabled is None else self.shadow_enabled
+        border_bevel_enabled = 0 if self.border_bevel_enabled is None else self.border_bevel_enabled
+        outer_width = 0 if self.outer_width is None else self.outer_width
+        inner_width = 0 if self.inner_width is None else self.inner_width
+        outer_softness = 0 if self.outer_softness is None else self.outer_softness
+        inner_softness = 0 if self.inner_softness is None else self.inner_softness
+        bevel_softness = 0 if self.bevel_softness is None else self.bevel_softness
+        bevel_position = 0 if self.bevel_position is None else self.bevel_position
+        border_opacity = 0 if self.border_opacity is None else self.border_opacity
+        border_hue = 0 if self.border_hue is None else self.border_hue
+        border_saturation = 0 if self.border_saturation is None else self.border_saturation
+        border_luma = 0 if self.border_luma is None else self.border_luma
+        angle = 0 if self.angle is None else self.angle
+        altitude = 0 if self.altitude is None else self.altitude
+        mask_enabled = 0 if self.mask_enabled is None else self.mask_enabled
+        mask_top = 0 if self.mask_top is None else self.mask_top
+        mask_bottom = 0 if self.mask_bottom is None else self.mask_bottom
+        mask_left = 0 if self.mask_left is None else self.mask_left
+        mask_right = 0 if self.mask_right is None else self.mask_right
+        rate = 0 if self.rate is None else self.rate
+
+        data = struct.pack('>I BBxx 5i ??Bx HH5Bx 4HB?hhhhBxxx', mask, index,
+                           keyer,
+
+                           size_x,
+                           size_y,
+                           pos_x,
+                           pos_y,
+                           rotation,
+
+                           border_enabled,
+                           shadow_enabled,
+                           border_bevel_enabled,
+
+                           outer_width,
+                           inner_width,
+                           outer_softness,
+                           inner_softness,
+                           bevel_softness,
+                           bevel_position,
+                           border_opacity,
+
+                           border_hue,
+                           border_saturation,
+                           border_luma,
+                           angle,
+
+                           altitude,
+                           mask_enabled,
+                           mask_top,
+                           mask_bottom,
+                           mask_left,
+                           mask_right,
+                           rate)
+        return self._make_command('CKDV', data)

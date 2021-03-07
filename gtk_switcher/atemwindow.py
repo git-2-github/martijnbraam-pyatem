@@ -263,6 +263,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
             self.on_fairlight_tally_change(data)
         elif field == 'key-properties-base':
             self.on_key_properties_base_change(data)
+        elif field == 'key-properties-dve':
+            self.on_key_properties_dve_change(data)
         else:
             print(field)
             if field == 'time':

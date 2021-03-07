@@ -1345,3 +1345,53 @@ class KeyPropertiesBaseField(FieldBase):
 
     def __repr__(self):
         return '<key-properties-base me={}, key={}, type={}>'.format(self.index, self.keyer, self.type)
+
+
+class KeyPropertiesDveField(FieldBase):
+    """
+    Data from the `KeDV`. The upstream keyer DVE-specific properties.
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>BBxx 5i ??Bx HH BBBBBx 4HB? 4hB 3x', raw)
+        self.index = field[0]
+        self.keyer = field[1]
+
+        self.size_x = field[2]
+        self.size_y = field[3]
+        self.pos_x = field[4]
+        self.pos_y = field[5]
+        self.rotation = field[6]
+
+        self.border_enabled = field[7]
+        self.shadow_enabled = field[8]
+        self.border_bevel = field[9]
+
+        self.border_outer_width = field[10]
+        self.border_inner_width = field[11]
+
+        self.border_outer_softness = field[12]
+        self.border_inner_softness = field[13]
+        self.border_bevel_softness = field[14]
+        self.border_bevel_position = field[15]
+        self.border_opacity = field[16]
+
+        self.border_hue = field[17] / 10.0
+        self.border_saturation = field[18] / 1000.0
+        self.border_luma = field[19] / 1000.0
+        self.light_angle = field[20]
+        self.light_altitude = field[21]
+        self.mask_enabled = field[22]
+
+        self.mask_top = field[23]
+        self.mask_bottom = field[24]
+        self.mask_left = field[25]
+        self.mask_right = field[26]
+        self.rate = field[27]
+
+    def get_border_color_rgb(self):
+        return colorsys.hls_to_rgb(self.border_hue / 360.0, self.border_luma, self.border_saturation)
+
+    def __repr__(self):
+        return '<key-properties-dve me={}, key={}>'.format(self.index, self.keyer)

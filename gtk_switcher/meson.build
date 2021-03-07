@@ -35,6 +35,7 @@ switcher_sources = [
     'audio.py',
     'camera.py',
     'mixeffect.py',
+    'upstreamkey.py',
     'colorwheel.py',
 ]
 

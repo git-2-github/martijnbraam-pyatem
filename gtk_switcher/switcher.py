@@ -38,6 +38,13 @@ class SwitcherPage:
 
         self.keyer_stack = builder.get_object('keyer_stack')
 
+        self.usk_count = 0
+        self.usks = {}
+        self.has_models = []
+
+        self.upstream_keyers = builder.get_object('upstream_keyers')
+        self.downstream_keyers = builder.get_object('downstream_keyers')
+
         self.usk1_dve_fill = builder.get_object('usk1_dve_fill')
         self.usk1_mask_en = builder.get_object('usk1_mask_en')
         self.usk1_mask_top = builder.get_object('usk1_mask_top')
@@ -331,7 +338,7 @@ class SwitcherPage:
         self.me[0].set_dsk_state(data)
 
     def on_topology_change(self, data):
-        for i in range(0, data.me_units-len(self.me)):
+        for i in range(0, data.me_units - len(self.me)):
             self.add_mixeffect()
 
         # Topology is only used for downstream keyer count, only available on M/E 1
@@ -356,6 +363,29 @@ class SwitcherPage:
 
     def on_mixer_effect_config_change(self, data):
         self.me[data.index].set_config(data)
+
+        from gtk_switcher.upstreamkey import UpstreamKeyer
+
+        if data.keyers > self.usk_count:
+            add = data.keyers - self.usk_count
+
+            for i in range(0, add):
+                self.usk_count += 1
+                exp = Gtk.Expander()
+                exp.get_style_context().add_class('bmdgroup')
+                frame_label = Gtk.Label("Upstream keyer {}".format(self.usk_count))
+                frame_label.get_style_context().add_class("heading")
+                exp.set_label_widget(frame_label)
+                exp.set_expanded(True)
+                usk = UpstreamKeyer(index=0, keyer=self.usk_count - 1, connection=self.connection)
+                self.usks[usk.index] = usk
+                self.has_models.append(usk)
+                exp.add(usk)
+                self.apply_css(usk, self.provider)
+                usk.set_fill_model(self.model_me1_fill)
+                self.upstream_keyers.pack_start(exp, False, True, 0)
+
+            self.upstream_keyers.show_all()
 
     def on_ftb_state_change(self, data):
         self.me[data.index].set_ftb_state(data.done, data.transitioning)
@@ -390,32 +420,10 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_key_properties_base_change(self, data):
-        self.model_changing = True
-        self.usk1_dve_fill.set_active_id(str(data.fill_source))
-        self.model_changing = False
+        self.usks[data.index].on_key_properties_base_change(data)
 
-        if data.type == 0:
-            self.keyer_stack.set_visible_child_name('key_luma')
-        elif data.type == 1:
-            self.keyer_stack.set_visible_child_name('key_chroma')
-        elif data.type == 2:
-            self.keyer_stack.set_visible_child_name('key_pattern')
-        elif data.type == 3:
-            self.keyer_stack.set_visible_child_name('key_dve')
-
-        self.set_class(self.usk1_mask_en, 'active', data.mask_enabled)
-
-        self.usk1_mask_top.set_text(str(data.mask_top / 1000))
-        self.usk1_mask_bottom.set_text(str(data.mask_bottom / 1000))
-        self.usk1_mask_left.set_text(str(data.mask_left / 1000))
-        self.usk1_mask_right.set_text(str(data.mask_right / 1000))
-
-    def on_usk1_dve_fill_changed(self, widget, *args):
-        if hasattr(widget, 'ignore_change') and widget.ignore_change or self.model_changing:
-            return
-        source = int(widget.get_active_id())
-        cmd = KeyFillCommand(index=0, keyer=0, source=source)
-        self.connection.mixer.send_commands([cmd])
+    def on_key_properties_dve_change(self, data):
+        self.usks[data.index].on_key_properties_dve_change(data)
 
     def on_program_input_change(self, data):
         self.me[data.index].program_input_change(data)
@@ -441,6 +449,8 @@ class SwitcherPage:
 
         # Clear the combobox models
         self.model_changing = True
+        for i in self.has_models:
+            i.model_changing = True
         self.model_me1_fill.clear()
         self.model_key.clear()
 
@@ -478,3 +488,5 @@ class SwitcherPage:
             self.apply_css(me, self.provider)
 
         self.model_changing = False
+        for i in self.has_models:
+            i.model_changing = False
