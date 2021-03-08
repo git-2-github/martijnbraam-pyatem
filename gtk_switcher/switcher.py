@@ -441,6 +441,9 @@ class SwitcherPage:
         self.layout[data.index].update_region('Upstream key {}'.format(data.keyer + 1),
                                               data.pos_x / 1000, data.pos_y / 1000, width, height)
 
+        self.layout[data.index].update_mask('Upstream key {}'.format(data.keyer + 1),
+                                            data.mask_top, data.mask_bottom, data.mask_left, data.mask_right)
+
     def on_program_input_change(self, data):
         self.me[data.index].program_input_change(data)
 

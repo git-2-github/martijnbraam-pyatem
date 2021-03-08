@@ -48,10 +48,19 @@ class LayoutView(Gtk.Frame):
         self.offset_y = None
 
         self.regions = {}
+        self.masks = {}
         self.tally = {}
 
     def update_region(self, label, x, y, w, h):
         self.regions[label] = [x, y, w, h]
+        self.da.queue_draw()
+
+    def update_mask(self, label, top, bottom, left, right):
+        top = (top) / 18000
+        bottom = (bottom) / 18000
+        left = (left) / 32000
+        right = (right) / 32000
+        self.masks[label] = [top, bottom, left, right]
         self.da.queue_draw()
 
     def region_onair(self, label, onair):
@@ -87,6 +96,17 @@ class LayoutView(Gtk.Frame):
         x = self._coord_x(region[0]) - (w / 2)
         y = self._coord_y(region[1]) - (h / 2)
 
+        mtop = 0
+        mbottom = 0
+        mleft = 0
+        mright = 0
+        if self.selected in self.masks:
+            mask = self.masks[self.selected]
+            mtop = mask[0]
+            mbottom = mask[1]
+            mleft = mask[2]
+            mright = mask[3]
+
         if (x - 5) < event.x < (x + 5):
             if (y - 5) < event.y < (y + 5):
                 self.handle = 'bl'
@@ -115,12 +135,37 @@ class LayoutView(Gtk.Frame):
                 self.offset_y = y
                 return
 
+        if (x - 5 + (mleft * w)) < event.x < (x + 5 + (mleft * w)):
+            if (y - 15 + (h / 2)) < event.y < (y + 15 + (h / 2)):
+                self.handle = 'ml'
+                self.offset_x = x
+                return
+
+        if (x - 5 + w - (mright * w)) < event.x < (x + 5 + w - (mright * w)):
+            if (y - 15 + (h / 2)) < event.y < (y + 15 + (h / 2)):
+                self.handle = 'mr'
+                self.offset_x = x + w
+                return
+
+        if (x - 15 + (w / 2)) < event.x < (x + 15 + (w / 2)):
+            if (y - 5 + h - (mtop * h)) < event.y < (y + 5 + h - (mtop * h)):
+                self.handle = 'mt'
+                self.offset_y = y + h
+                return
+
+        if (x - 15 + (w / 2)) < event.x < (x + 15 + (w / 2)):
+            if (y - 5 + (mbottom * h)) < event.y < (y + 5 + (mbottom * h)):
+                self.handle = 'mb'
+                self.offset_y = y
+                return
+
         if x < event.x < (x + w):
             if y < event.y < (y + h):
                 self.handle = 'pos'
                 self.offset_x = (x + (w / 2)) - event.x
                 self.offset_y = (y + (h / 2)) - event.y
                 return
+
         self.selected = None
         self.da.queue_draw()
 
@@ -137,10 +182,27 @@ class LayoutView(Gtk.Frame):
         event.y = self.area_height - event.y - self.area_top
         event.x = event.x - self.area_left
 
+        region = self.regions[self.selected]
+        w = self._coord_w(region[2])
+        h = self._coord_h(region[3])
+
         if self.handle == 'pos':
             new_x = event.x + self.offset_x
             new_y = event.y + self.offset_y
             self.on_region_update(self.selected, pos_x=new_x, pos_y=new_y)
+        elif self.handle.startswith("m"):
+            if self.handle == "ml":
+                new_left = min(1.0, max(0, (event.x - self.offset_x) / w))
+                self.on_mask_update(self.selected, left=new_left)
+            elif self.handle == "mr":
+                new_right = min(1.0, max(0, (self.offset_x - event.x) / w))
+                self.on_mask_update(self.selected, right=new_right)
+            elif self.handle == "mt":
+                new_top = min(1.0, max(0, (self.offset_y - event.y) / h))
+                self.on_mask_update(self.selected, top=new_top)
+            elif self.handle == "mb":
+                new_bottom = min(1.0, max(0, (event.y - self.offset_y) / h))
+                self.on_mask_update(self.selected, bottom=new_bottom)
         else:
             new_x = (self.offset_x + event.x) / 2
             new_y = (self.offset_y + event.y) / 2
@@ -160,6 +222,19 @@ class LayoutView(Gtk.Frame):
                 h = int(h * 100)
             cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, pos_x=int(x * 1000), pos_y=int(y * 1000),
                                           size_x=w, size_y=h)
+            self.connection.mixer.send_commands([cmd])
+
+    def on_mask_update(self, label, left=None, right=None, top=None, bottom=None):
+        if label.startswith("Upstream key"):
+            keyer = int(label[13:]) - 1
+            if left is not None:
+                cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_left=int(left * 32000))
+            if right is not None:
+                cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_right=int(right * 32000))
+            if top is not None:
+                cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_top=int(top * 18000))
+            if bottom is not None:
+                cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_bottom=int(bottom * 18000))
             self.connection.mixer.send_commands([cmd])
 
     def _coord_x(self, input_coord):
@@ -227,15 +302,41 @@ class LayoutView(Gtk.Frame):
 
             x = self._coord_x(region[0]) - (w / 2)
             y = self._coord_y(region[1]) - (h / 2)
+
+            mtop = 0
+            mbottom = 0
+            mleft = 0
+            mright = 0
+            if label in self.masks:
+                mask = self.masks[label]
+                mtop = mask[0]
+                mbottom = mask[1]
+                mleft = mask[2]
+                mright = mask[3]
+
             if label in self.tally and self.tally[label]:
                 cr.set_source_rgb(1.0, 0, 0)
             else:
                 cr.set_source_rgb(1.0, 1.0, 1.0)
+            if mleft != 0:
+                cr.move_to(x + left + (w * mleft), height - (y + top + h))
+                cr.line_to(x + left + (w * mleft), height - (y + top))
+            if mtop != 0:
+                cr.move_to(x + left, height - (y + top + h) + (mtop * h))
+                cr.line_to(x + left + w, height - (y + top + h) + (mtop * h))
+            if mbottom != 0:
+                cr.move_to(x + left, height - (y + top + h) + h - (mbottom * h))
+                cr.line_to(x + left + w, height - (y + top + h) + h - (mbottom * h))
+            if mright != 0:
+                cr.move_to(x + left + w - (w * mright), height - (y + top + h))
+                cr.line_to(x + left + w - (w * mright), height - (y + top))
+
             if self.selected == label:
                 cr.set_dash([2.0, 1.0])
             cr.rectangle(x + left, height - (y + top + h), w, h)
             cr.stroke()
             if self.selected == label:
+                # Position/Size handles on the corners
                 cr.rectangle(x + left - 5, height - (y + top + h) - 5, 10, 10)
                 cr.fill()
                 cr.rectangle(x + left - 5 + w, height - (y + top + h) - 5, 10, 10)
@@ -245,6 +346,16 @@ class LayoutView(Gtk.Frame):
                 cr.rectangle(x + left - 5 + w, height - (y + top) - 5, 10, 10)
                 cr.fill()
                 cr.rectangle(x + left - 5 + (w / 2), height - (y + top + (h / 2)) - 5, 10, 10)
+                cr.fill()
+
+                # Mask handles on the sides
+                cr.rectangle(x + left - 4 + (w * mleft), height - (y + top + (h / 2)) - 15, 5, 30)
+                cr.fill()
+                cr.rectangle(x + left + w - (w * mright), height - (y + top + (h / 2)) - 15, 5, 30)
+                cr.fill()
+                cr.rectangle(x + left + (w / 2) - 15, height - (y + top + h - (mtop * h) + 4), 30, 5)
+                cr.fill()
+                cr.rectangle(x + left + (w / 2) - 15, height - (y + top + (mbottom * h)), 30, 5)
                 cr.fill()
 
             cr.move_to(x + left + 10, height - (y + top + h) + 20)
