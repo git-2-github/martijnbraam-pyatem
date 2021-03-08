@@ -1,3 +1,4 @@
+from gtk_switcher.layout import LayoutView
 from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, TransitionSettingsCommand, WipeSettingsCommand, \
     TransitionPositionCommand, TransitionPreviewCommand, ColorGeneratorCommand, MixSettingsCommand, DipSettingsCommand, \
     DveSettingsCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, DkeyAutoCommand, DkeyTieCommand, \
@@ -18,6 +19,7 @@ class SwitcherPage:
     def __init__(self, builder):
         self.main_blocks = builder.get_object('main_blocks')
         self.me = []
+        self.layout = {}
 
         self.mix_rate = builder.get_object('mix_rate')
         self.dip_rate = builder.get_object('dip_rate')
@@ -87,7 +89,8 @@ class SwitcherPage:
 
     def add_mixeffect(self):
         from gtk_switcher.mixeffect import MixEffectBlock
-        me = MixEffectBlock(len(self.me))
+        index = len(self.me)
+        me = MixEffectBlock(index)
         self.me.append(me)
         me.set_dsk(False)
         self.main_blocks.add(me)
@@ -110,6 +113,10 @@ class SwitcherPage:
         me.connect('dsk-onair', self.on_dsk_onair_clicked)
         me.connect('dsk-auto', self.on_dsk_auto_clicked)
         me.connect('dsk-rate', self.on_dsk_rate_activate)
+
+        layout = LayoutView(index, self.connection)
+        self.layout[index] = layout
+        self.main_blocks.add(layout)
 
     def on_cut_clicked(self, widget, index):
         cmd = CutCommand(index=index)
@@ -406,6 +413,7 @@ class SwitcherPage:
 
     def on_key_on_air_change(self, data):
         self.me[data.index].set_key_on_air(data)
+        self.layout[data.index].region_onair('Upstream key {}'.format(data.keyer + 1), data.enabled)
 
     def on_transition_preview_change(self, data):
         self.me[data.index].set_preview_transition(data.enabled)
@@ -427,7 +435,11 @@ class SwitcherPage:
         self.usks[data.index].on_key_properties_luma_change(data)
 
     def on_key_properties_dve_change(self, data):
-        self.usks[data.index].on_key_properties_dve_change(data)
+        self.usks[data.keyer].on_key_properties_dve_change(data)
+        width = 16.0 * data.size_x / 1000
+        height = 9.0 * data.size_y / 1000
+        self.layout[data.index].update_region('Upstream key {}'.format(data.keyer + 1),
+                                              data.pos_x / 1000, data.pos_y / 1000, width, height)
 
     def on_program_input_change(self, data):
         self.me[data.index].program_input_change(data)
