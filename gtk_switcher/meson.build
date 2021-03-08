@@ -38,6 +38,7 @@ switcher_sources = [
     'mixeffect.py',
     'upstreamkey.py',
     'colorwheel.py',
+    'layout.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)
