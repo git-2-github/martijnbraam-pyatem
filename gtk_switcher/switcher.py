@@ -116,7 +116,12 @@ class SwitcherPage:
 
         layout = LayoutView(index, self.connection)
         self.layout[index] = layout
-        self.main_blocks.add(layout)
+        layout_exp = Gtk.Expander(label="Layout editor M/E {}".format(index + 1))
+        layout_exp.set_margin_start(12)
+        layout_exp.set_margin_end(12)
+        layout_exp.add(layout)
+        layout_exp.show_all()
+        self.main_blocks.add(layout_exp)
 
     def on_cut_clicked(self, widget, index):
         cmd = CutCommand(index=index)
