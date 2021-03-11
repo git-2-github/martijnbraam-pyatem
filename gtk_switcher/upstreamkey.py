@@ -322,3 +322,19 @@ class UpstreamKeyer(Gtk.Frame):
         state = widget.get_style_context().has_class('active')
         cmd = KeyPropertiesLumaCommand(index=self.index, keyer=self.keyer, invert_key=not state)
         self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_luma_clip_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+
+        cmd = KeyPropertiesLumaCommand(index=self.index, keyer=self.keyer, clip=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_luma_gain_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+
+        cmd = KeyPropertiesLumaCommand(index=self.index, keyer=self.keyer, gain=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])

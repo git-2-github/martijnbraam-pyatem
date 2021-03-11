@@ -87,11 +87,13 @@
     <property name="upper">1000</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_luma_clip_adj_value_changed" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="luma_gain_adj">
     <property name="upper">1000</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_luma_gain_adj_value_changed" swapped="no"/>
   </object>
   <template class="UpstreamKeyer" parent="GtkFrame">
     <property name="visible">True</property>
@@ -291,6 +293,8 @@
                         <property name="can-focus">True</property>
                         <property name="adjustment">luma_clip_adj</property>
                         <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
@@ -303,6 +307,8 @@
                         <property name="can-focus">True</property>
                         <property name="adjustment">luma_gain_adj</property>
                         <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
