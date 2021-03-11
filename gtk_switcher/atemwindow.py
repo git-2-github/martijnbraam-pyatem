@@ -119,10 +119,10 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         self.connection.start()
 
         accel = Gtk.AccelGroup()
-        accel.connect(Gdk.keyval_from_name('space'), 0, 0, self.on_cut_clicked)
-        accel.connect(Gdk.keyval_from_name('ISO_Enter'), 0, 0, self.on_auto_clicked)
-        accel.connect(Gdk.keyval_from_name('Return'), 0, 0, self.on_auto_clicked)
-        accel.connect(Gdk.keyval_from_name('KP_Enter'), 0, 0, self.on_auto_clicked)
+        accel.connect(Gdk.keyval_from_name('space'), 0, 0, self.on_cut_shortcut)
+        accel.connect(Gdk.keyval_from_name('ISO_Enter'), 0, 0, self.on_auto_shortcut)
+        accel.connect(Gdk.keyval_from_name('Return'), 0, 0, self.on_auto_shortcut)
+        accel.connect(Gdk.keyval_from_name('KP_Enter'), 0, 0, self.on_auto_shortcut)
 
         for i in range(0, 9):
             accel.connect(Gdk.keyval_from_name(str(i)), 0, 0, self.on_preview_keyboard_change)

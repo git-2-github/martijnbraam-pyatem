@@ -187,9 +187,11 @@ class MixEffectBlock(Gtk.Grid):
         pass
 
     def do_program_input_change(self, widget):
+        self.focus_dummy.grab_focus()
         self.emit("program-changed", self.index, widget.source_index)
 
     def do_preview_input_change(self, widget):
+        self.focus_dummy.grab_focus()
         self.emit("preview-changed", self.index, widget.source_index)
 
     @Gtk.Template.Callback()
@@ -207,6 +209,7 @@ class MixEffectBlock(Gtk.Grid):
     @GObject.Signal(name="rate-unfocus")
     def rate_unfocus(self, *args):
         self.disable_shortcuts = False
+        self.focus_dummy.grab_focus()
 
     @Gtk.Template.Callback()
     def on_context_menu(self, *args):
@@ -214,6 +217,7 @@ class MixEffectBlock(Gtk.Grid):
 
     @Gtk.Template.Callback()
     def on_ftb_clicked(self, *args):
+        self.focus_dummy.grab_focus()
         self.emit('ftb-clicked', self.index)
 
     @GObject.Signal(name="ftb-clicked", flags=GObject.SignalFlags.RUN_LAST, return_type=bool,
@@ -362,6 +366,7 @@ class MixEffectBlock(Gtk.Grid):
     @Gtk.Template.Callback()
     def on_auto_clicked(self, *args):
         self.emit('auto-clicked', self.index)
+        self.focus_dummy.grab_focus()
 
     @GObject.Signal(name="cut-clicked", flags=GObject.SignalFlags.RUN_LAST, return_type=bool,
                     arg_types=(int,),
@@ -372,6 +377,7 @@ class MixEffectBlock(Gtk.Grid):
     @Gtk.Template.Callback()
     def on_cut_clicked(self, *args):
         self.emit('cut-clicked', self.index)
+        self.focus_dummy.grab_focus()
 
     @GObject.Signal(name="preview-transition-clicked", flags=GObject.SignalFlags.RUN_LAST, return_type=bool,
                     arg_types=(int, bool),
@@ -383,6 +389,7 @@ class MixEffectBlock(Gtk.Grid):
     def on_prev_trans_clicked(self, widget):
         current = widget.get_style_context().has_class('program')
         self.emit('preview-transition-clicked', self.index, not current)
+        self.focus_dummy.grab_focus()
 
     def set_preview_transition(self, enabled):
         self.set_class(self.prev_trans, 'program', enabled)
@@ -396,22 +403,27 @@ class MixEffectBlock(Gtk.Grid):
     @Gtk.Template.Callback()
     def on_style_mix_clicked(self, *args):
         self.emit('style-changed', self.index, 'mix')
+        self.focus_dummy.grab_focus()
 
     @Gtk.Template.Callback()
     def on_style_dip_clicked(self, *args):
         self.emit('style-changed', self.index, 'dip')
+        self.focus_dummy.grab_focus()
 
     @Gtk.Template.Callback()
     def on_style_wipe_clicked(self, *args):
         self.emit('style-changed', self.index, 'wipe')
+        self.focus_dummy.grab_focus()
 
     @Gtk.Template.Callback()
     def on_style_sting_clicked(self, *args):
         self.emit('style-changed', self.index, 'sting')
+        self.focus_dummy.grab_focus()
 
     @Gtk.Template.Callback()
     def on_style_dve_clicked(self, *args):
         self.emit('style-changed', self.index, 'dve')
+        self.focus_dummy.grab_focus()
 
     def set_key_on_air(self, data):
         if data.keyer == 0:
@@ -433,21 +445,25 @@ class MixEffectBlock(Gtk.Grid):
     def on_onair_key1_clicked(self, widget):
         enabled = not widget.get_style_context().has_class('program')
         self.emit('onair-clicked', self.index, 0, enabled)
+        self.focus_dummy.grab_focus()
 
     @Gtk.Template.Callback()
     def on_onair_key2_clicked(self, widget):
         enabled = not widget.get_style_context().has_class('program')
         self.emit('onair-clicked', self.index, 1, enabled)
+        self.focus_dummy.grab_focus()
 
     @Gtk.Template.Callback()
     def on_onair_key3_clicked(self, widget):
         enabled = not widget.get_style_context().has_class('program')
         self.emit('onair-clicked', self.index, 2, enabled)
+        self.focus_dummy.grab_focus()
 
     @Gtk.Template.Callback()
     def on_onair_key4_clicked(self, widget):
         enabled = not widget.get_style_context().has_class('program')
         self.emit('onair-clicked', self.index, 3, enabled)
+        self.focus_dummy.grab_focus()
 
     @GObject.Signal(name="next-clicked", flags=GObject.SignalFlags.RUN_LAST, return_type=bool,
                     arg_types=(int, int),
@@ -475,6 +491,7 @@ class MixEffectBlock(Gtk.Grid):
             current |= (1 << 4)
 
         self.emit('next-clicked', self.index, current)
+        self.focus_dummy.grab_focus()
 
     def set_topology(self, data):
         for child in self.dsks:
@@ -554,6 +571,7 @@ class MixEffectBlock(Gtk.Grid):
     def do_dsk_tie_clicked(self, widget, *args):
         state = not widget.get_style_context().has_class('active')
         self.emit('dsk-tie', self.index, widget.dsk_tie, state)
+        self.focus_dummy.grab_focus()
 
     @GObject.Signal(name="dsk-onair", flags=GObject.SignalFlags.RUN_LAST, return_type=bool,
                     arg_types=(int, int, bool),
@@ -563,6 +581,7 @@ class MixEffectBlock(Gtk.Grid):
 
     def do_dsk_onair_clicked(self, widget):
         state = not widget.get_style_context().has_class('program')
+        self.focus_dummy.grab_focus()
         self.emit('dsk-onair', self.index, widget.dsk_onair, state)
 
     @GObject.Signal(name="dsk-auto", flags=GObject.SignalFlags.RUN_LAST, return_type=bool,
@@ -572,6 +591,7 @@ class MixEffectBlock(Gtk.Grid):
         pass
 
     def do_dsk_auto_clicked(self, widget):
+        self.focus_dummy.grab_focus()
         self.emit('dsk-auto', self.index, widget.dsk_auto)
 
     @GObject.Signal(name="dsk-rate", flags=GObject.SignalFlags.RUN_LAST, return_type=bool,

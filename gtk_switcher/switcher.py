@@ -127,15 +127,25 @@ class SwitcherPage:
         cmd = CutCommand(index=index)
         self.connection.mixer.send_commands([cmd])
 
+    def on_cut_shortcut(self, *args):
+        if self.disable_shortcuts:
+            return
+
+        cmd = CutCommand(index=0)
+        self.connection.mixer.send_commands([cmd])
+
     def on_auto_clicked(self, widget, index, *args):
         if self.disable_shortcuts and len(args) == 2:
             return
 
-        # When triggered by keyboard shortcut, control M/E 1
-        if len(args) != 0:
-            index = 0
-
         cmd = AutoCommand(index=index)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_auto_shortcut(self, *args):
+        if self.disable_shortcuts:
+            return
+
+        cmd = AutoCommand(index=0)
         self.connection.mixer.send_commands([cmd])
 
     def on_ftb_clicked(self, widget, index):
