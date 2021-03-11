@@ -26,6 +26,15 @@
 	<url type="bugtracker">https://todo.sr.ht/~martijnbraam/OpenAtem</url>
 	<content_rating type="oars-1.1" />
 	<releases>
+        <release version="0.2.0" date="2021-03-11">
+			<description>
+				<p>
+                    This release adds support for multiple M/E blocks. Some basic upstream keyer config
+                    and a visual layout editor to move DVE keys around. The plan is to also control the other
+                    positionable elements using the same layout editor.
+				</p>
+			</description>
+		</release>
 		<release version="0.1.0" date="2021-02-09">
 			<description>
 				<p>
