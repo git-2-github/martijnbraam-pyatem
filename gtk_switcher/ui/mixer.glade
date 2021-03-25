@@ -95,6 +95,14 @@
     <property name="can-focus">False</property>
     <property name="resource">/nl/brixit/switcher/icons/wipe-box-tl.svg</property>
   </object>
+  <object class="GtkListStore" id="model_disks">
+    <columns>
+      <!-- column-name index -->
+      <column type="gchararray"/>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkListStore" id="model_key">
     <columns>
       <!-- column-name source -->
@@ -1446,7 +1454,7 @@
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">12</property>
                                     <child>
-                                      <object class="GtkExpander" id="expander_colors2">
+                                      <object class="GtkExpander" id="expander_status">
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="expanded">True</property>
@@ -1541,7 +1549,7 @@
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <property name="margin-bottom">5</property>
-                                            <property name="label" translatable="yes">Mixer status</property>
+                                            <property name="label" translatable="yes">Hardware status</property>
                                             <style>
                                               <class name="heading"/>
                                             </style>
@@ -1558,7 +1566,316 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <placeholder/>
+                                      <object class="GtkExpander" id="expander_stream_recorder">
+                                        <property name="can-focus">True</property>
+                                        <property name="no-show-all">True</property>
+                                        <property name="expanded">True</property>
+                                        <child>
+                                          <object class="GtkFrame">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="label-xalign">0</property>
+                                            <property name="shadow-type">in</property>
+                                            <child>
+                                              <object class="GtkAlignment">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="top-padding">12</property>
+                                                <property name="bottom-padding">12</property>
+                                                <property name="left-padding">12</property>
+                                                <property name="right-padding">12</property>
+                                                <child>
+                                                  <!-- n-columns=2 n-rows=10 -->
+                                                  <object class="GtkGrid">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="row-spacing">12</property>
+                                                    <property name="column-spacing">12</property>
+                                                    <child>
+                                                      <object class="GtkLabel">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="halign">end</property>
+                                                        <property name="label" translatable="yes">Filename</property>
+                                                        <style>
+                                                          <class name="dim-label"/>
+                                                        </style>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="left-attach">0</property>
+                                                        <property name="top-attach">1</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkFrame">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="label-xalign">0</property>
+                                                        <property name="shadow-type">in</property>
+                                                        <child>
+                                                          <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="margin-start">12</property>
+                                                            <property name="margin-end">12</property>
+                                                            <property name="margin-top">12</property>
+                                                            <property name="margin-bottom">12</property>
+                                                            <property name="orientation">vertical</property>
+                                                            <property name="spacing">12</property>
+                                                            <child>
+                                                            <object class="GtkLabel" id="stream_recorder_clock">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="label" translatable="yes">00:00:00</property>
+                                                            <attributes>
+                                                            <attribute name="size" value="15360"/>
+                                                            </attributes>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">0</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkLabel" id="stream_recorder_status">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="label" translatable="yes">STOP</property>
+                                                            <attributes>
+                                                            <attribute name="weight" value="bold"/>
+                                                            <attribute name="size" value="20480"/>
+                                                            </attributes>
+                                                            <style>
+                                                            <class name="clock"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                          </object>
+                                                        </child>
+                                                        <child type="label_item">
+                                                          <placeholder/>
+                                                        </child>
+                                                        <style>
+                                                          <class name="fake-lcd"/>
+                                                        </style>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="left-attach">0</property>
+                                                        <property name="top-attach">0</property>
+                                                        <property name="width">2</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkEntry" id="stream_recorder_filename">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">True</property>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="left-attach">1</property>
+                                                        <property name="top-attach">1</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkLabel">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="halign">end</property>
+                                                        <property name="label" translatable="yes">Disk 1</property>
+                                                        <style>
+                                                          <class name="dim-label"/>
+                                                        </style>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="left-attach">0</property>
+                                                        <property name="top-attach">2</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkLabel">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="halign">end</property>
+                                                        <property name="label" translatable="yes">Disk 2</property>
+                                                        <style>
+                                                          <class name="dim-label"/>
+                                                        </style>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="left-attach">0</property>
+                                                        <property name="top-attach">3</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkCheckButton" id="stream_recorder_trigger_cameras">
+                                                        <property name="label" translatable="yes">Record in all cameras</property>
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">True</property>
+                                                        <property name="receives-default">False</property>
+                                                        <property name="draw-indicator">True</property>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="left-attach">1</property>
+                                                        <property name="top-attach">4</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkSeparator">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="left-attach">0</property>
+                                                        <property name="top-attach">8</property>
+                                                        <property name="width">2</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkBox">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="spacing">8</property>
+                                                        <child>
+                                                          <object class="GtkButton">
+                                                            <property name="label" translatable="yes">Switch</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="sensitive">False</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                          </object>
+                                                          <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">0</property>
+                                                          </packing>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkButton">
+                                                            <property name="label" translatable="yes">Stop</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="sensitive">False</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                          </object>
+                                                          <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">1</property>
+                                                          </packing>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkButton">
+                                                            <property name="label" translatable="yes">Record</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                          </object>
+                                                          <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">2</property>
+                                                          </packing>
+                                                        </child>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="left-attach">0</property>
+                                                        <property name="top-attach">9</property>
+                                                        <property name="width">2</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkComboBox" id="stream_recorder_disk1">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="model">model_disks</property>
+                                                        <property name="entry-text-column">1</property>
+                                                        <property name="id-column">0</property>
+                                                        <child>
+                                                          <object class="GtkCellRendererText"/>
+                                                          <attributes>
+                                                            <attribute name="text">1</attribute>
+                                                          </attributes>
+                                                        </child>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="left-attach">1</property>
+                                                        <property name="top-attach">2</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkComboBox" id="stream_recorder_disk2">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="model">model_disks</property>
+                                                        <property name="entry-text-column">1</property>
+                                                        <property name="id-column">0</property>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="left-attach">1</property>
+                                                        <property name="top-attach">3</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <placeholder/>
+                                                    </child>
+                                                    <child>
+                                                      <placeholder/>
+                                                    </child>
+                                                    <child>
+                                                      <placeholder/>
+                                                    </child>
+                                                    <child>
+                                                      <placeholder/>
+                                                    </child>
+                                                    <child>
+                                                      <placeholder/>
+                                                    </child>
+                                                    <child>
+                                                      <placeholder/>
+                                                    </child>
+                                                    <child>
+                                                      <placeholder/>
+                                                    </child>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                            <child type="label_item">
+                                              <placeholder/>
+                                            </child>
+                                            <style>
+                                              <class name="view"/>
+                                            </style>
+                                          </object>
+                                        </child>
+                                        <child type="label">
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="margin-bottom">5</property>
+                                            <property name="label" translatable="yes">Stream recorder</property>
+                                            <style>
+                                              <class name="heading"/>
+                                            </style>
+                                          </object>
+                                        </child>
+                                        <style>
+                                          <class name="bmdgroup"/>
+                                        </style>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
                                     </child>
                                     <child>
                                       <placeholder/>

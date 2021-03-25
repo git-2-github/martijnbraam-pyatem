@@ -141,3 +141,7 @@ box.tally.program.afv {
 separator.dark {
     background: @borders;
 }
+
+frame.fake-lcd {
+    background: black;
+}

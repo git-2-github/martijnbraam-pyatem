@@ -267,6 +267,10 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
             self.on_key_properties_luma_change(data)
         elif field == 'key-properties-dve':
             self.on_key_properties_dve_change(data)
+        elif field == 'recording-settings':
+            self.on_stream_recording_setting_change(data)
+        elif field == 'recording-disk':
+            self.on_stream_recording_disks_change(data)
         else:
             print(field)
             if field == 'time':

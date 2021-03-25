@@ -88,6 +88,16 @@ class AtemProtocol:
             'FASD': 'fairlight-strip-ding',
             'FAIP': 'fairlight-audio-input',
             'AMIP': 'audio-input',
+            'RTMR': 'recording-duration',
+            'RTMD': 'recording-disk',
+            'RTMS': 'recording-status',
+            'RMSu': 'recording-settings',
+            'SRSU': 'streaming-services',
+            'STAB': 'streaming-audio-bitrate',
+            'StRS': 'streaming-status',
+            'SRST': 'streaming-time',
+            'SRSS': 'streaming-stats',
+            'SAth': 'streaming-authentication',
         }
 
         fieldname_to_unique = {

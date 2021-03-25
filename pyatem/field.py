@@ -1411,3 +1411,150 @@ class KeyPropertiesLumaField(FieldBase):
 
     def __repr__(self):
         return '<key-properties-luma me={}, key={}>'.format(self.index, self.keyer)
+
+
+class RecordingDiskField(FieldBase):
+    """
+    Data from the `RTMD`. Info about an attached recording disk.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      4    u32    Disk index
+    4      4    u32    Recording time available in seconds
+    8      2    u16    Status bitfield
+    10     64   char[] Volume name
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Status value
+    === ==========
+    0   Idle
+    1   Unformatted
+    2   Ready
+    3   Recording
+    4   ?
+    5   Deleted
+    === ==========
+
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>IIH 64s 2x', raw)
+        self.index = field[0]
+        self.time_available = field[1]
+        self.status = field[2]
+        self.volumename = self._get_string(field[3])
+
+        self.is_attached = field[2] & 1 << 0 > 0
+        self.is_attached = field[2] & 1 << 1 > 0
+        self.is_ready = field[2] & 1 << 2 > 0
+        self.is_recording = field[2] & 1 << 3 > 0
+        self.is_deleted = field[2] & 1 << 5 > 0
+
+    def __repr__(self):
+        return '<recording-disk disk={} label={} status={} available={}>'.format(self.index, self.volumename,
+                                                                                 self.status, self.time_available)
+
+
+class RecordingSettingsField(FieldBase):
+    """
+    Data from the `RMSu`. The settings for the stream recorder.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      128  char[] Audio source index
+    128    4    i32    Disk slot 1 index, or -1 for no disk
+    132    4    i32    Disk slot 2 index, or -1 for no disk
+    136    1    bool   Trigger recording in cameras
+    137    3    ?      ?
+    ====== ==== ====== ===========
+
+    The recorder settings has 2 slots to select attached USB disks. If no disk is selected the i32 will be -1 otherwise
+    it will be the disk number referring a RTMD field
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>128s ii ?3x', raw)
+        self.filename = self._get_string(field[0])
+        self.disk1 = field[1] if field[1] != -1 else None
+        self.disk2 = field[2] if field[2] != -1 else None
+        self.record_in_cameras = field[3]
+
+    def __repr__(self):
+        return '<recording-settings filename={} disk1={} disk2={} in-camera={}>'.format(self.filename, self.disk1,
+                                                                                        self.disk2,
+                                                                                        self.record_in_cameras)
+
+
+class RecordingStatusField(FieldBase):
+    """
+    Data from the `RTMS`. The status for the stream recorder.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Recording status
+    4      4    i32    Total recording time available
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Status value
+    === ==========
+    0   Idle
+    1   Recording
+    2   Disk full
+    3   Disk error
+    4   Disk unformatted
+    5   Frames dropped
+    6   ?
+    7   ?
+    8   Stopping
+    === ==========
+
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>H2xi', raw)
+        self.status = field[0]
+        self.time_available = field[1] if field[1] != -1 else None
+
+    def __repr__(self):
+        return '<recording-status status={} time-available={}>'.format(self.status, self.time_available)
+
+
+class RecordingDurationField(FieldBase):
+    """
+    Data from the `RTMS`. The status for the stream recorder.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     Hours
+    1      1    u8     Minutes
+    2      1    u8     Seconds
+    3      1    u8     Frames
+    4      1    bool   Has dropped frames
+    5      3    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>4B ?3x', raw)
+        self.hours = field[0]
+        self.minutes = field[1]
+        self.seconds = field[2]
+        self.frames = field[3]
+        self.has_dropped_frames = field[4]
+
+    def __repr__(self):
+        drop = ''
+        if self.has_dropped_frames:
+            drop = ' dropped-frames'
+        return '<recording-duration {}:{}:{}:{}{}>'.format(self.hours, self.minutes, self.seconds, self.frames, drop)

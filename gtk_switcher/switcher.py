@@ -54,6 +54,12 @@ class SwitcherPage:
         self.usk1_mask_left = builder.get_object('usk1_mask_left')
         self.usk1_mask_right = builder.get_object('usk1_mask_right')
 
+        self.expander_stream_recorder = builder.get_object('expander_stream_recorder')
+        self.stream_recorder_filename = builder.get_object('stream_recorder_filename')
+        self.stream_recorder_disk2 = builder.get_object('stream_recorder_disk2')
+        self.stream_recorder_disk1 = builder.get_object('stream_recorder_disk1')
+        self.stream_recorder_disk = [None, None]
+
         self.wipe_style = [
             builder.get_object('wipestyle_h'),
             builder.get_object('wipestyle_v'),
@@ -84,6 +90,7 @@ class SwitcherPage:
 
         self.model_me1_fill = builder.get_object('model_me1_fill')
         self.model_key = builder.get_object('model_key')
+        self.model_disks = builder.get_object('model_disks')
         self.model_changing = False
         self.slider_held = False
 
@@ -472,6 +479,30 @@ class SwitcherPage:
     def on_me_preview_changed(self, widget, index, source):
         cmd = PreviewInputCommand(index=index, source=source)
         self.connection.mixer.send_commands([cmd])
+
+    def on_stream_recording_setting_change(self, data):
+        self.expander_stream_recorder.show()
+        self.model_changing = True
+        self.stream_recorder_filename.set_text(data.filename)
+        self.stream_recorder_disk = [data.disk1, data.disk2]
+        self.stream_recorder_disk1.set_active_id(str(data.disk1))
+        self.stream_recorder_disk2.set_active_id(str(data.disk2))
+        self.model_changing = False
+
+    def on_stream_recording_disks_change(self, data):
+        self.model_changing = True
+        if data.is_deleted:
+            pass
+        else:
+            for row in self.model_disks:
+                if row[0] == str(data.index):
+                    break
+            else:
+                self.model_disks.append([str(data.index), data.volumename])
+
+        self.stream_recorder_disk1.set_active_id(str(self.stream_recorder_disk[0]))
+        self.stream_recorder_disk2.set_active_id(str(self.stream_recorder_disk[0]))
+        self.model_changing = False
 
     def on_input_layout_change(self, changed_input):
         inputs = self.connection.mixer.mixerstate['input-properties']
