@@ -145,3 +145,11 @@ separator.dark {
 frame.fake-lcd {
     background: black;
 }
+
+label.program {
+    color: red;
+}
+
+label.active {
+    color: #e7af40;
+}

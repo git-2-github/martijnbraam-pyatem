@@ -1630,6 +1630,9 @@
                                                             <attributes>
                                                             <attribute name="size" value="15360"/>
                                                             </attributes>
+                                                            <style>
+                                                            <class name="clock"/>
+                                                            </style>
                                                             </object>
                                                             <packing>
                                                             <property name="expand">False</property>
@@ -1646,9 +1649,6 @@
                                                             <attribute name="weight" value="bold"/>
                                                             <attribute name="size" value="20480"/>
                                                             </attributes>
-                                                            <style>
-                                                            <class name="clock"/>
-                                                            </style>
                                                             </object>
                                                             <packing>
                                                             <property name="expand">False</property>
@@ -1685,7 +1685,7 @@
                                                       </packing>
                                                     </child>
                                                     <child>
-                                                      <object class="GtkLabel">
+                                                      <object class="GtkLabel" id="stream_recorder_disk1_label">
                                                         <property name="visible">True</property>
                                                         <property name="can-focus">False</property>
                                                         <property name="halign">end</property>
@@ -1700,7 +1700,7 @@
                                                       </packing>
                                                     </child>
                                                     <child>
-                                                      <object class="GtkLabel">
+                                                      <object class="GtkLabel" id="stream_recorder_disk2_label">
                                                         <property name="visible">True</property>
                                                         <property name="can-focus">False</property>
                                                         <property name="halign">end</property>
@@ -1744,7 +1744,7 @@
                                                         <property name="can-focus">False</property>
                                                         <property name="spacing">8</property>
                                                         <child>
-                                                          <object class="GtkButton">
+                                                          <object class="GtkButton" id="stream_recorder_switch">
                                                             <property name="label" translatable="yes">Switch</property>
                                                             <property name="visible">True</property>
                                                             <property name="sensitive">False</property>
@@ -1758,12 +1758,13 @@
                                                           </packing>
                                                         </child>
                                                         <child>
-                                                          <object class="GtkButton">
+                                                          <object class="GtkButton" id="stream_recorder_stop">
                                                             <property name="label" translatable="yes">Stop</property>
                                                             <property name="visible">True</property>
                                                             <property name="sensitive">False</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
+                                                            <signal name="clicked" handler="on_stream_recorder_stop_clicked" swapped="no"/>
                                                           </object>
                                                           <packing>
                                                             <property name="expand">False</property>
@@ -1772,11 +1773,12 @@
                                                           </packing>
                                                         </child>
                                                         <child>
-                                                          <object class="GtkButton">
+                                                          <object class="GtkButton" id="stream_recorder_start">
                                                             <property name="label" translatable="yes">Record</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
+                                                            <signal name="clicked" handler="on_stream_recorder_start_clicked" swapped="no"/>
                                                           </object>
                                                           <packing>
                                                             <property name="expand">False</property>

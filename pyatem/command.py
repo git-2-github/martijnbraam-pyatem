@@ -1302,3 +1302,27 @@ class KeyPropertiesLumaCommand(Command):
 
         data = struct.pack('>BBB?HH?3x', mask, self.index, self.keyer, premultiplied, clip, gain, invert_key)
         return self._make_command('CKLm', data)
+
+
+class RecorderStatusCommand(Command):
+    """
+    Implementation of the `RcTM` command. This starts and stops the stream recorder.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    bool   Recording state
+    1      3    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, recording):
+        """
+        :param recording: Wether the hardware should be recording
+        """
+        self.recording = recording
+
+    def get_command(self):
+        data = struct.pack('>?3x', self.recording)
+        return self._make_command('RcTM', data)

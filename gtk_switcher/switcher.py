@@ -3,7 +3,7 @@ from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, Transiti
     TransitionPositionCommand, TransitionPreviewCommand, ColorGeneratorCommand, MixSettingsCommand, DipSettingsCommand, \
     DveSettingsCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, DkeyAutoCommand, DkeyTieCommand, \
     DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand, \
-    FadeToBlackConfigCommand
+    FadeToBlackConfigCommand, RecorderStatusCommand
 from pyatem.field import TransitionSettingsField, InputPropertiesField
 
 import gi
@@ -58,7 +58,15 @@ class SwitcherPage:
         self.stream_recorder_filename = builder.get_object('stream_recorder_filename')
         self.stream_recorder_disk2 = builder.get_object('stream_recorder_disk2')
         self.stream_recorder_disk1 = builder.get_object('stream_recorder_disk1')
+        self.stream_recorder_disk1_label = builder.get_object('stream_recorder_disk1_label')
+        self.stream_recorder_disk2_label = builder.get_object('stream_recorder_disk2_label')
+        self.stream_recorder_start = builder.get_object('stream_recorder_start')
+        self.stream_recorder_stop = builder.get_object('stream_recorder_stop')
+        self.stream_recorder_switch = builder.get_object('stream_recorder_switch')
+        self.stream_recorder_clock = builder.get_object('stream_recorder_clock')
+        self.stream_recorder_status = builder.get_object('stream_recorder_status')
         self.stream_recorder_disk = [None, None]
+        self.disks = {}
 
         self.wipe_style = [
             builder.get_object('wipestyle_h'),
@@ -487,13 +495,15 @@ class SwitcherPage:
         self.stream_recorder_disk = [data.disk1, data.disk2]
         self.stream_recorder_disk1.set_active_id(str(data.disk1))
         self.stream_recorder_disk2.set_active_id(str(data.disk2))
+        self.on_update_recording_buttons()
         self.model_changing = False
 
     def on_stream_recording_disks_change(self, data):
         self.model_changing = True
         if data.is_deleted:
-            pass
+            del self.disks[data.index]
         else:
+            self.disks[data.index] = data
             for row in self.model_disks:
                 if row[0] == str(data.index):
                     break
@@ -502,7 +512,66 @@ class SwitcherPage:
 
         self.stream_recorder_disk1.set_active_id(str(self.stream_recorder_disk[0]))
         self.stream_recorder_disk2.set_active_id(str(self.stream_recorder_disk[0]))
+        self.stream_recorder_disk1.set_sensitive(self.stream_recorder_disk[0] is not None)
+        self.stream_recorder_disk2.set_sensitive(self.stream_recorder_disk[1] is not None)
+        self.on_update_recording_buttons()
         self.model_changing = False
+
+    def on_stream_recording_status_change(self, data):
+        self.on_update_recording_buttons()
+
+        status = 'STOP'
+        active = False
+        if data.has_dropped:
+            status = 'DROP'
+            active = True
+        elif data.is_stopping:
+            status = 'STOPPING'
+        elif data.disk_full:
+            status = 'DISK FULL'
+        elif data.is_recording:
+            status = 'REC'
+            active = True
+
+        self.stream_recorder_status.set_text(status)
+        self.set_class(self.stream_recorder_status, 'program', active)
+        self.set_class(self.stream_recorder_clock, 'program', active)
+
+        print(data)
+
+    def on_update_recording_buttons(self):
+        has_usable_disks = False
+        for index in self.disks:
+            if self.disks[index].is_ready:
+                has_usable_disks = True
+        has_multi_ready_disks = self.stream_recorder_disk[0] is not None and self.stream_recorder_disk[1] is not None
+
+        if 'recording-status' not in self.connection.mixer.mixerstate:
+            return
+
+        status = self.connection.mixer.mixerstate['recording-status']
+        is_recording = status.is_recording
+
+        self.stream_recorder_start.set_sensitive(has_usable_disks and not is_recording)
+        self.stream_recorder_stop.set_sensitive(is_recording)
+        self.stream_recorder_switch.set_sensitive(has_multi_ready_disks and is_recording)
+
+        self.set_class(self.stream_recorder_disk1_label, 'program',
+                       self.stream_recorder_disk[0] is not None
+                       and self.stream_recorder_disk[0] in self.disks
+                       and self.disks[self.stream_recorder_disk[0]].is_recording)
+        self.set_class(self.stream_recorder_disk2_label, 'program',
+                       self.stream_recorder_disk[1] is not None
+                       and self.stream_recorder_disk[1] in self.disks
+                       and self.disks[self.stream_recorder_disk[1]].is_recording)
+
+    def on_stream_recorder_start_clicked(self, widget, *args):
+        cmd = RecorderStatusCommand(recording=True)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_stream_recorder_stop_clicked(self, widget, *args):
+        cmd = RecorderStatusCommand(recording=False)
+        self.connection.mixer.send_commands([cmd])
 
     def on_input_layout_change(self, changed_input):
         inputs = self.connection.mixer.mixerstate['input-properties']

@@ -1504,15 +1504,14 @@ class RecordingStatusField(FieldBase):
     === ==========
     Bit Status value
     === ==========
-    0   Idle
-    1   Recording
+    0   Recording
+    1   ?
     2   Disk full
     3   Disk error
     4   Disk unformatted
     5   Frames dropped
     6   ?
-    7   ?
-    8   Stopping
+    7   Stopping
     === ==========
 
     """
@@ -1522,6 +1521,13 @@ class RecordingStatusField(FieldBase):
         field = struct.unpack('>H2xi', raw)
         self.status = field[0]
         self.time_available = field[1] if field[1] != -1 else None
+
+        self.is_recording = field[0] & 1 << 0 > 0
+        self.is_stopping = field[0] & 1 << 7 > 0
+        self.disk_full = field[0] & 1 << 2 > 0
+        self.disk_error = field[0] & 1 << 3 > 0
+        self.disk_unformatted = field[0] & 1 << 4 > 0
+        self.has_dropped = field[0] & 1 << 5 > 0
 
     def __repr__(self):
         return '<recording-status status={} time-available={}>'.format(self.status, self.time_available)
