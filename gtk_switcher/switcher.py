@@ -332,6 +332,7 @@ class SwitcherPage:
     def on_transition_mix_change(self, data):
         if data.index > len(self.me) - 1:
             print("Got transition mix change for non-existing M/E {}".format(data.index + 1))
+            return
 
         label = self.frames_to_time(data.rate)
         self.mix_rate.set_text(label)
@@ -340,6 +341,7 @@ class SwitcherPage:
     def on_transition_dip_change(self, data):
         if data.index > len(self.me) - 1:
             print("Got transition dip change for non-existing M/E {}".format(data.index + 1))
+            return
 
         label = self.frames_to_time(data.rate)
         self.dip_rate.set_text(label)
@@ -351,6 +353,7 @@ class SwitcherPage:
     def on_transition_wipe_change(self, data):
         if data.index > len(self.me) - 1:
             print("Got transition wipe change for non-existing M/E {}".format(data.index + 1))
+            return
 
         label = self.frames_to_time(data.rate)
         self.wipe_rate.set_text(label)
@@ -378,6 +381,7 @@ class SwitcherPage:
     def on_transition_dve_change(self, data):
         if data.index > len(self.me) - 1:
             print("Got transition dve change for non-existing M/E {}".format(data.index + 1))
+            return
 
         label = self.frames_to_time(data.rate)
         self.dve_rate.set_text(label)
@@ -416,6 +420,7 @@ class SwitcherPage:
     def on_mixer_effect_config_change(self, data):
         if data.index > len(self.me) - 1:
             print("Got _MeC for non-existing M/E {}".format(data.index + 1))
+            return
 
         self.me[data.index].set_config(data)
 
@@ -446,6 +451,7 @@ class SwitcherPage:
     def on_ftb_state_change(self, data):
         if data.index > len(self.me) - 1:
             print("Got FTB state change for non-existing M/E {}".format(data.index + 1))
+            return
 
         self.me[data.index].set_ftb_state(data.done, data.transitioning)
 
