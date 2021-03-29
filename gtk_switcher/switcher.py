@@ -324,6 +324,9 @@ class SwitcherPage:
             return (int(part[0]) * transition_rate) + int(part[1])
 
     def on_ftb_change(self, data):
+        if data.index not in self.me:
+            print("Got FTB change for non-existing M/E {}".format(data.index + 1))
+            return
         self.me[data.index].set_ftb_rate(data.rate)
 
     def on_transition_mix_change(self, data):
@@ -442,16 +445,28 @@ class SwitcherPage:
             self.color2.set_rgba(color)
 
     def on_key_on_air_change(self, data):
+        if data.index not in self.me:
+            print("Got key-on-air for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            return
         self.me[data.index].set_key_on_air(data)
         self.layout[data.index].region_onair('Upstream key {}'.format(data.keyer + 1), data.enabled)
 
     def on_transition_preview_change(self, data):
+        if data.index not in self.me:
+            print("Got transition preview change for non-existing M/E {}".format(data.index + 1))
+            return
         self.me[data.index].set_preview_transition(data.enabled)
 
     def on_transition_settings_change(self, data):
+        if data.index not in self.me:
+            print("Got transition settings change for non-existing M/E {}".format(data.index + 1))
+            return
         self.me[data.index].set_transition_settings(data)
 
     def on_transition_position_change(self, data):
+        if data.index not in self.me:
+            print("Got transition position change for non-existing M/E {}".format(data.index + 1))
+            return
         self.me[data.index].set_transition_progress(data)
 
     def on_onair_clicked(self, widget, index, keyer, enabled):
@@ -459,12 +474,21 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_key_properties_base_change(self, data):
+        if data.keyer not in self.usks:
+            print("Got key-properties-base for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            return
         self.usks[data.index].on_key_properties_base_change(data)
 
     def on_key_properties_luma_change(self, data):
+        if data.keyer not in self.usks:
+            print("Got key-properties-luma for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            return
         self.usks[data.index].on_key_properties_luma_change(data)
 
     def on_key_properties_dve_change(self, data):
+        if data.keyer not in self.usks:
+            print("Got key-properties-dve for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            return
         self.usks[data.keyer].on_key_properties_dve_change(data)
         width = 16.0 * data.size_x / 1000
         height = 9.0 * data.size_y / 1000
@@ -475,9 +499,15 @@ class SwitcherPage:
                                             data.mask_top, data.mask_bottom, data.mask_left, data.mask_right)
 
     def on_program_input_change(self, data):
+        if data.index not in self.me:
+            print("Got program input change for non-existing M/E {}".format(data.index + 1))
+            return
         self.me[data.index].program_input_change(data)
 
     def on_preview_input_change(self, data):
+        if data.index not in self.me:
+            print("Got preview input change for non-existing M/E {}".format(data.index + 1))
+            return
         self.me[data.index].preview_input_change(data)
 
     def on_me_program_changed(self, widget, index, source):
