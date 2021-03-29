@@ -324,7 +324,7 @@ class SwitcherPage:
             return (int(part[0]) * transition_rate) + int(part[1])
 
     def on_ftb_change(self, data):
-        if data.index not in self.me:
+        if data.index > len(self.me) - 1:
             print("Got FTB change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].set_ftb_rate(data.rate)
@@ -445,26 +445,26 @@ class SwitcherPage:
             self.color2.set_rgba(color)
 
     def on_key_on_air_change(self, data):
-        if data.index not in self.me:
+        if data.index > len(self.me) - 1:
             print("Got key-on-air for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
             return
         self.me[data.index].set_key_on_air(data)
         self.layout[data.index].region_onair('Upstream key {}'.format(data.keyer + 1), data.enabled)
 
     def on_transition_preview_change(self, data):
-        if data.index not in self.me:
+        if data.index > len(self.me) - 1:
             print("Got transition preview change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].set_preview_transition(data.enabled)
 
     def on_transition_settings_change(self, data):
-        if data.index not in self.me:
+        if data.index > len(self.me) - 1:
             print("Got transition settings change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].set_transition_settings(data)
 
     def on_transition_position_change(self, data):
-        if data.index not in self.me:
+        if data.index > len(self.me) - 1:
             print("Got transition position change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].set_transition_progress(data)
@@ -499,13 +499,13 @@ class SwitcherPage:
                                             data.mask_top, data.mask_bottom, data.mask_left, data.mask_right)
 
     def on_program_input_change(self, data):
-        if data.index not in self.me:
+        if data.index > len(self.me) - 1:
             print("Got program input change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].program_input_change(data)
 
     def on_preview_input_change(self, data):
-        if data.index not in self.me:
+        if data.index > len(self.me) - 1:
             print("Got preview input change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].preview_input_change(data)
