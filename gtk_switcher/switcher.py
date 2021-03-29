@@ -330,11 +330,17 @@ class SwitcherPage:
         self.me[data.index].set_ftb_rate(data.rate)
 
     def on_transition_mix_change(self, data):
+        if data.index > len(self.me) - 1:
+            print("Got transition mix change for non-existing M/E {}".format(data.index + 1))
+
         label = self.frames_to_time(data.rate)
         self.mix_rate.set_text(label)
         self.me[data.index].set_auto_rate('mix', data.rate)
 
     def on_transition_dip_change(self, data):
+        if data.index > len(self.me) - 1:
+            print("Got transition dip change for non-existing M/E {}".format(data.index + 1))
+
         label = self.frames_to_time(data.rate)
         self.dip_rate.set_text(label)
         self.dip_source.ignore_change = True
@@ -343,6 +349,9 @@ class SwitcherPage:
         self.me[data.index].set_auto_rate('dip', data.rate)
 
     def on_transition_wipe_change(self, data):
+        if data.index > len(self.me) - 1:
+            print("Got transition wipe change for non-existing M/E {}".format(data.index + 1))
+
         label = self.frames_to_time(data.rate)
         self.wipe_rate.set_text(label)
         self.me[data.index].set_auto_rate('wipe', data.rate)
@@ -367,6 +376,9 @@ class SwitcherPage:
         self.set_class(self.wipe_flipflop, 'active', data.flipflop)
 
     def on_transition_dve_change(self, data):
+        if data.index > len(self.me) - 1:
+            print("Got transition dve change for non-existing M/E {}".format(data.index + 1))
+
         label = self.frames_to_time(data.rate)
         self.dve_rate.set_text(label)
         self.me[data.index].set_auto_rate('dve', data.rate)
@@ -402,6 +414,9 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_mixer_effect_config_change(self, data):
+        if data.index > len(self.me) - 1:
+            print("Got _MeC for non-existing M/E {}".format(data.index + 1))
+
         self.me[data.index].set_config(data)
 
         from gtk_switcher.upstreamkey import UpstreamKeyer
@@ -429,6 +444,9 @@ class SwitcherPage:
             self.upstream_keyers.show_all()
 
     def on_ftb_state_change(self, data):
+        if data.index > len(self.me) - 1:
+            print("Got FTB state change for non-existing M/E {}".format(data.index + 1))
+
         self.me[data.index].set_ftb_state(data.done, data.transitioning)
 
     def on_color_change(self, data):
