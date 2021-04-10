@@ -37,7 +37,7 @@ class CutCommand(Command):
 
 class AutoCommand(Command):
     """
-    Implementation of the `DAut` command. This is equivalent to pressing the CUT button in the UI
+    Implementation of the `DAut` command. This is equivalent to pressing the AUTO button in the UI
 
     ====== ==== ====== ===========
     Offset Size Type   Description
