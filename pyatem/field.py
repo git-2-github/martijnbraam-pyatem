@@ -2042,6 +2042,39 @@ class MultiviewerInputField(FieldBase):
     5      1    bool   Supports enabling the safe area overlay
     6      2    ?      unknown
     ====== ==== ====== ===========
+
+    Window numbering differs between switcher families. For example, on Atem
+    Mini Extreme, windows are numbered on a row-by-row basis, starting at upper
+    left. If a quadrant is not split, it gets the number of its upper left
+    mini-window. This is an example of a layout on Atem Mini Extreme:
+
+     +----+----+---------+
+     |  0 |  1 |    2    |
+     |  4 |  5 |         |
+     +----+----+----+----+
+     |    8    | 10 | 11 |
+     |         | 14 | 15 |
+     +---------+----+----+
+
+    On the non-Extreme Mini switchers, the window layout does not appear to be
+    configurable, and therefore the numbers are allocated on a contiguous
+    basis:
+
+     +----+----+---------+
+     |  0      |    1    |
+     +----+----+----+----+
+     |  2 |  3 |  4 |  5 |
+     +----+----+----+----+
+     |  6 | 7? | 8? | 9? |
+     +----+----+----+----+
+
+    Since the windows marked '?' are not configurable on non-Extreme Minis,
+    these numbers are just an educated guess.
+
+    Audio VU meters appear to be supported on small and big windows alike, but
+    only on those which show a video input or the Program output. The safe area
+    overlay appears to only work on full-sized Preview.
+
     """
 
     CODE = "MvIn"
