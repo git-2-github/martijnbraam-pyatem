@@ -279,7 +279,7 @@ class InputPropertiesField(FieldBase):
     7     passthrough
     128   M/E output
     129   AUX output
-    131   Multiview output
+    131   Multiview output, or a dedicated status window (audio, recording, streaming)
     ===== =========
 
     ===== ===============
