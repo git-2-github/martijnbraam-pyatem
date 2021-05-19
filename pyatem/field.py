@@ -314,6 +314,8 @@ class InputPropertiesField(FieldBase):
     :ivar available_supersource_art: Source can be routed to supersource
     :ivar available_supersource_box: Source can be routed to supersource
     :ivar available_key_source: Source can be used as keyer key source
+    :ivar available_aux1: Source can be sent to AUX1 (Extreme only)
+    :ivar available_aux2: Source can be sent to AUX2 (Extreme only)
     :ivar available_me1: Source can be routed to M/E 1
     :ivar available_me2: Source can be routed to M/E 2
     """
@@ -347,6 +349,8 @@ class InputPropertiesField(FieldBase):
         self.available_supersource_art = fields[11] & (1 << 2) != 0
         self.available_supersource_box = fields[11] & (1 << 3) != 0
         self.available_key_source = fields[11] & (1 << 4) != 0
+        self.available_aux1 = fields[11] & (1 << 5) != 0
+        self.available_aux2 = fields[11] & (1 << 6) != 0
 
         self.available_me1 = fields[12] & (1 << 0) != 0
         self.available_me2 = fields[12] & (1 << 1) != 0
