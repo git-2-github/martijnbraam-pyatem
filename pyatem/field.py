@@ -1560,6 +1560,59 @@ class FairlightTallyField(FieldBase):
         return '<fairlight-tally {}>'.format(self.tally)
 
 
+class FairlightHeadphonesField(FieldBase):
+    """
+    Data from the `FMHP`, phones output volume and mute
+
+    This doesn't get triggered when soloing channels.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      4    i32    Volume in 0.01 dB (-60.00 to +6.00 dB)
+    5      4    ?      Unknown
+    8      1    bool   Muted (0) / Umuted (1)
+    9      1    u8     Last soloed channel (just the main part)
+    10     22   ?      Unknown
+
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.volume, self.unmuted = struct.unpack('> i 4x ? 23x', raw)
+
+    def __repr__(self):
+        return '<fairlight-headphones volume={} unmuted={}>'.format(self.volume, self.unmuted)
+
+
+class FairlightSoloField(FieldBase):
+    """
+    Data from the `FAMS`, soloing channels to phones
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    bool   Anything soloed?
+    1      7    ?      Unknown
+    8      1    u8     Unknown: 0x00 for HDMI channels, 0x05 for 3.5mm jack
+    9      1    u8     Soloed channel (main)
+    10     12   ?      Unknown
+    22     1    u8     No subchannels (0x01), split into L/R (0xff)
+    23     1    u8     Soloed channel (subchannel)
+
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.solo, self.channel, self.is_split_lr, self.subchannel = struct.unpack('> ? 8x B 12x BB', raw)
+
+    def __repr__(self):
+        return '<fairlight-solo active={} source={}>'.format(
+            self.solo,
+            self.channel if self.is_split_lr == 0x01 else '{}.{}'.format(self.channel, self.subchannel),
+        )
+
+
 class AtemEqBandPropertiesField(FieldBase):
     """
     Data from the `AEBP` field. This encodes the EQ settings in the fairlight mixer. For every channel there will

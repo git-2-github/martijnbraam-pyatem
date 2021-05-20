@@ -124,6 +124,8 @@ class AtemProtocol:
             'AMTl': 'audio-mixer-tally',
             'FASP': 'fairlight-strip-properties',
             'FAMP': 'fairlight-master-properties',
+            'FMHP': 'fairlight-headphones',
+            'FAMS': 'fairlight-solo',
             '_TlC': 'tally-config',
             'TlIn': 'tally-index',
             'TlSr': 'tally-source',
