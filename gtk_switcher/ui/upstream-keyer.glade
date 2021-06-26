@@ -1177,6 +1177,142 @@
                 <property name="position">3</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkSeparator">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=3 n-rows=2 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">4</property>
+                <property name="column-spacing">4</property>
+                <property name="row-homogeneous">True</property>
+                <property name="column-homogeneous">True</property>
+                <child>
+                  <object class="GtkToggleButton" id="dve_lock">
+                    <property name="label" translatable="yes">Lock keyframes</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="active">True</property>
+                    <signal name="toggled" handler="on_dve_lock_toggled" swapped="no"/>
+                    <style>
+                      <class name="bmdbtn"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="dve_set_a">
+                    <property name="label" translatable="yes">Set A</property>
+                    <property name="width-request">48</property>
+                    <property name="height-request">48</property>
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="clicked" handler="on_dve_set_a_clicked" swapped="no"/>
+                    <style>
+                      <class name="bmdbtn"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="dve_set_b">
+                    <property name="label" translatable="yes">Set B</property>
+                    <property name="width-request">48</property>
+                    <property name="height-request">48</property>
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="clicked" handler="on_dve_set_b_clicked" swapped="no"/>
+                    <style>
+                      <class name="bmdbtn"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="dve_run_full">
+                    <property name="label" translatable="yes">Run full</property>
+                    <property name="width-request">48</property>
+                    <property name="height-request">48</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="clicked" handler="on_dve_run_full_clicked" swapped="no"/>
+                    <style>
+                      <class name="bmdbtn"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="dve_run_a">
+                    <property name="label" translatable="yes">Run A</property>
+                    <property name="width-request">48</property>
+                    <property name="height-request">48</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="clicked" handler="on_dve_run_a_clicked" swapped="no"/>
+                    <style>
+                      <class name="bmdbtn"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="dve_run_b">
+                    <property name="label" translatable="yes">Run B</property>
+                    <property name="width-request">48</property>
+                    <property name="height-request">48</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="clicked" handler="on_dve_run_b_clicked" swapped="no"/>
+                    <style>
+                      <class name="bmdbtn"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">5</property>
+              </packing>
+            </child>
           </object>
         </child>
       </object>

@@ -1,7 +1,7 @@
 from gi.repository import Gtk, GObject, Gdk
 
 from pyatem.command import KeyFillCommand, KeyPropertiesDveCommand, KeyTypeCommand, KeyCutCommand, \
-    KeyPropertiesLumaCommand
+    KeyPropertiesLumaCommand, KeyerKeyframeSetCommand, KeyerKeyframeRunCommand
 from pyatem.field import TransitionSettingsField, KeyPropertiesDveField, KeyPropertiesLumaField
 
 
@@ -44,6 +44,9 @@ class UpstreamKeyer(Gtk.Frame):
     dve_border_inner_soften_adj = Gtk.Template.Child()
     dve_border_bevel_position_adj = Gtk.Template.Child()
     dve_border_bevel_soften_adj = Gtk.Template.Child()
+
+    dve_set_a = Gtk.Template.Child()
+    dve_set_b = Gtk.Template.Child()
 
     def __init__(self, index, keyer, connection):
         self.index = index
@@ -337,4 +340,35 @@ class UpstreamKeyer(Gtk.Frame):
             return
 
         cmd = KeyPropertiesLumaCommand(index=self.index, keyer=self.keyer, gain=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_lock_toggled(self, widget):
+        self.set_class(widget, 'program', not widget.get_active)
+        self.dve_set_a.set_sensitive(not widget.get_active())
+        self.dve_set_b.set_sensitive(not widget.get_active())
+
+    @Gtk.Template.Callback()
+    def on_dve_set_a_clicked(self, widget):
+        cmd = KeyerKeyframeSetCommand(index=self.index, keyer=self.keyer, keyframe='A')
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_set_b_clicked(self, widget):
+        cmd = KeyerKeyframeSetCommand(index=self.index, keyer=self.keyer, keyframe='B')
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_run_full_clicked(self, widget):
+        cmd = KeyerKeyframeRunCommand(index=self.index, keyer=self.keyer, run_to='Full')
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_run_a_clicked(self, widget):
+        cmd = KeyerKeyframeRunCommand(index=self.index, keyer=self.keyer, run_to='A')
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_dve_run_b_clicked(self, widget):
+        cmd = KeyerKeyframeRunCommand(index=self.index, keyer=self.keyer, run_to='B')
         self.connection.mixer.send_commands([cmd])

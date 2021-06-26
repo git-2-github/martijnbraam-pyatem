@@ -1304,6 +1304,84 @@ class KeyPropertiesLumaCommand(Command):
         return self._make_command('CKLm', data)
 
 
+class KeyerKeyframeSetCommand(Command):
+    """
+    Implementation of the `SFKF` command. This sets the A or B keyframe for the flying key in the keyer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index, 0-indexed
+    1      1    u8     Keyer index
+    2      1    u8     keyframe, A = 1, B = 2
+    3      1    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, keyer, keyframe):
+        """
+        :param index: M/E index
+        :param keyer: 0-indexed keyer number
+        :param keyframe: wether to store the A or B frame, set to 'A' or 'B'
+        """
+        self.index = index
+        self.keyer = keyer
+        self.keyframe = keyframe
+
+    def get_command(self):
+        keyframe = 1 if self.keyframe == 'A' else 2
+        data = struct.pack('>BBBx', self.index, self.keyer, keyframe)
+        return self._make_command('SFKF', data)
+
+
+class KeyerKeyframeRunCommand(Command):
+    """
+    Implementation of the `RFlK` command. This makes the flying key run to full, A or B
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask
+    1      1    u8     M/E index, zero indexed
+    2      1    u8     Keyer index, zero indexed
+    3      1    ?      unknown
+    4      1    u8     Keyframe, 1=A, 2=B, 3=Full, 4=Infinite
+    5      1    u8     Ininite run index
+    6      2    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, keyer, run_to=None, set_infinite=None):
+        """
+        :param index: M/E index
+        :param keyer: 0-indexed keyer number
+        :param slot: wether to store the A or B frame, set to 'A' or 'B'
+        """
+        self.index = index
+        self.keyer = keyer
+        self.run_to = run_to
+        self.set_infinite = set_infinite
+
+    def get_command(self):
+        run_to_lut = {
+            'A': 1,
+            'B': 2,
+            'Full': 3,
+            'Infinite': 4,
+        }
+        run_to = run_to_lut[self.run_to]
+        set_infinite = self.set_infinite or 0
+
+        mask = 0
+        if self.set_infinite is not None:
+            mask |= 1 << 1
+
+        data = struct.pack('>BBBxBB2x', mask, self.index, self.keyer, run_to, set_infinite)
+        return self._make_command('RFlK', data)
+
+
 class RecorderStatusCommand(Command):
     """
     Implementation of the `RcTM` command. This starts and stops the stream recorder.
