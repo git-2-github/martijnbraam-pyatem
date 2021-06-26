@@ -6,6 +6,7 @@ from hexdump import hexdump
 
 from gtk_switcher.audio import AudioPage
 from gtk_switcher.camera import CameraPage
+from gtk_switcher.decorators import field, call_fields
 from gtk_switcher.media import MediaPage
 from gtk_switcher.midi import MidiConnection, MidiControl
 from gtk_switcher.preferenceswindow import PreferencesWindow
@@ -192,6 +193,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         PreferencesWindow(self.window)
 
     def on_change(self, field, data):
+        global _callbacks
         if self.args.dump is not None and field in self.args.dump:
             if isinstance(data, bytes):
                 print('== {} ({} bytes)=='.format(field, len(data)))
@@ -200,6 +202,9 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
                 print('== {} ({} bytes)=='.format(field, len(data.raw)))
                 hexdump(data.raw)
                 print(data)
+
+        # Call all the registered decorators
+        call_fields(field, self, data)
 
         if field == 'firmware-version':
             self.firmware_version = data
@@ -283,3 +288,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
                 print(field)
             else:
                 print(data)
+
+#    @field('input-properties')
+#    def on_input_properties_changed(self, data):
+#        print(data)
