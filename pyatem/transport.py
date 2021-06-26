@@ -1,6 +1,13 @@
 import socket
 import struct
 import logging
+import time
+from queue import Queue, Empty
+from threading import Lock
+
+import usb.core
+import usb.util
+from hexdump import hexdump
 
 
 class Packet:
@@ -51,6 +58,14 @@ class Packet:
         if self.data:
             result += bytes(self.data)
 
+        return result
+
+    def to_usb(self):
+        data_len = len(self.data) if self.data is not None else 0
+        result = struct.pack('<I', data_len)
+        if self.data:
+            result += bytes(self.data)
+        hexdump(result)
         return result
 
     def __repr__(self):
@@ -205,6 +220,77 @@ class UdpProtocol:
                 else:
                     # Data packet for the upper layer
                     return packet
+
+    def send_packet(self, packet):
+        self._send_packet(packet)
+
+
+class UsbProtocol:
+    STATE_INIT = 0
+
+    def __init__(self, port=None):
+        port = port or "auto"
+        self.port = port
+        self.queue = Queue()
+
+        self.handle = usb.core.find(idVendor=0x1edb, idProduct=0xbe55)
+        self._detach_kernel()
+        self.handle.set_configuration()
+
+    def _detach_kernel(self):
+        for config in self.handle:
+            for i in range(config.bNumInterfaces):
+                if self.handle.is_kernel_driver_active(i):
+                    try:
+                        self.handle.detach_kernel_driver(i)
+                        logging.debug('kernel driver detached')
+                    except usb.core.USBError as e:
+                        logging.error('Could not detach kernel driver: ' + str(e))
+
+    def _send_packet(self, packet):
+        raw = packet.to_usb()
+        self.queue.put(raw)
+
+    def _receive_packet(self):
+        try:
+            data = self.handle.read(0x82, 8192 * 4, timeout=1100)
+        except:
+            return None
+
+        raw = bytes(data)
+        if len(raw) == 0:
+            return None
+
+        chunks = []
+        while True:
+            length, = struct.unpack('<I', raw[0:4])
+            chunks.append(raw[4:length + 4])
+            raw = raw[length + 4:]
+            if len(raw) == 0:
+                break
+
+        packet = Packet()
+        packet.data = b''.join(chunks)
+        return packet
+
+    def connect(self):
+        self.handle.ctrl_transfer(0xa1, 2, 0x0000, 2, 1)
+        self.handle.ctrl_transfer(0x21, 0, 0x0000, 2, [])
+        self.handle.ctrl_transfer(0xa1, 2, 0x0000, 2, 1)
+
+    def receive_packet(self):
+        while True:
+
+            try:
+                item = self.queue.get(block=False)
+                self.handle.write(0x02, item)
+            except Empty as e:
+                self.handle.write(0x02, b'')
+                time.sleep(0.020)
+
+            packet = self._receive_packet()
+            if packet is not None:
+                return packet
 
     def send_packet(self, packet):
         self._send_packet(packet)

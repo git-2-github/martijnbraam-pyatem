@@ -1,13 +1,18 @@
 import logging
 import struct
 
-from pyatem.transport import UdpProtocol, Packet
+from pyatem.transport import UdpProtocol, Packet, UsbProtocol
 import pyatem.field as fieldmodule
 
 
 class AtemProtocol:
-    def __init__(self, ip, port=9910):
-        self.transport = UdpProtocol(ip, port)
+    def __init__(self, ip=None, port=9910, usb=None):
+        if ip is None and usb is None:
+            raise ValueError("Need either an ip or usb port")
+        if ip is not None:
+            self.transport = UdpProtocol(ip, port)
+        else:
+            self.transport = UsbProtocol(usb)
 
         self.mixerstate = {}
         self.callbacks = {}
@@ -159,7 +164,8 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    testmixer = AtemProtocol('192.168.2.17')
+    # testmixer = AtemProtocol('192.168.2.17')
+    testmixer = AtemProtocol(usb='auto')
 
     waiter = 5
     waiting = False
