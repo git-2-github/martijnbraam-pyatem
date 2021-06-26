@@ -32,9 +32,12 @@ class AtemConnection(threading.Thread):
     def run(self):
         # Don't run if the ip isn't set yet
         if self.ip is None or self.ip == '0.0.0.0':
-            return
-
-        self.mixer = AtemProtocol(self.ip)
+            if AtemProtocol.usb_exists():
+                self.mixer = AtemProtocol(usb="auto")
+            else:
+                return
+        else:
+            self.mixer = AtemProtocol(self.ip)
         self.mixer.on('change', self.do_callback)
         self.mixer.connect()
         while not self.stop:

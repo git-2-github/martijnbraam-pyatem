@@ -17,6 +17,10 @@ class AtemProtocol:
         self.mixerstate = {}
         self.callbacks = {}
 
+    @classmethod
+    def usb_exists(cls):
+        return UsbProtocol.device_exists()
+
     def connect(self):
         logging.debug('Starting connection')
         self.transport.connect()

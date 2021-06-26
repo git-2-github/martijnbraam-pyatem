@@ -237,6 +237,10 @@ class UsbProtocol:
         self._detach_kernel()
         self.handle.set_configuration()
 
+    @classmethod
+    def device_exists(cls):
+        return usb.core.find(idVendor=0x1edb, idProduct=0xbe55) is not None
+
     def _detach_kernel(self):
         for config in self.handle:
             for i in range(config.bNumInterfaces):
