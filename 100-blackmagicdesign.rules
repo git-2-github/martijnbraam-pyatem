@@ -1,0 +1,7 @@
+# This goes into /etc/udev/rules.d/100-blackmagicdesign.rules
+
+# Atem Mini
+SUBSYSTEM=="usb", ATTR{idVendor}=="1edb", ATTR{idProduct}=="be49", MODE="0666"
+
+# Atem Mini Pro
+SUBSYSTEM=="usb", ATTR{idVendor}=="1edb", ATTR{idProduct}=="be55", MODE="0666"
