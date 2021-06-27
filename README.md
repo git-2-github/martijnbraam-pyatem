@@ -10,18 +10,18 @@ Installation
 
 Install the pyatem protocol module::
 
-   sudo setup.py install
+    sudo setup.py install
 
 Build and install the gtk application::
 
-   meson build
-   cd build
-   ninja
-   sudo ninja install
+    meson build
+    cd build
+    ninja
+    sudo ninja install
 
 Run the application::
 
-   switcher-control
+    switcher-control
 
 Developing
 ----------
