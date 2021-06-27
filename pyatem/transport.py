@@ -228,18 +228,31 @@ class UdpProtocol:
 class UsbProtocol:
     STATE_INIT = 0
 
+    PRODUCTS = [
+        0xbe49,  # Atem Mini
+        0xbe55,  # Atem Mini Pro
+    ]
+
     def __init__(self, port=None):
         port = port or "auto"
         self.port = port
         self.queue = Queue()
 
-        self.handle = usb.core.find(idVendor=0x1edb, idProduct=0xbe55)
+        self.handle = UsbProtocol.find_device()
         self._detach_kernel()
         self.handle.set_configuration()
 
     @classmethod
     def device_exists(cls):
-        return usb.core.find(idVendor=0x1edb, idProduct=0xbe55) is not None
+        return cls.find_device() is not None
+
+    @classmethod
+    def find_device(cls):
+        for prod in UsbProtocol.PRODUCTS:
+            device = usb.core.find(idVendor=0x1edb, idProduct=prod)
+            if device is not None:
+                return device
+        return None
 
     def _detach_kernel(self):
         for config in self.handle:
