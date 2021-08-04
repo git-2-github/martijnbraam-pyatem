@@ -161,6 +161,14 @@ label.active {
     box-shadow: 2px 3px 4px 0 rgba(0, 0, 0, 0.5);
 }
 
+.dial:hover {
+    background: radial-gradient(ellipse at center, #eeeeee 0%, #c6c6c6 30%, #727272 34%, #eee 36%, #474747 100%);
+}
+
+.dial.active {
+    border: 2px solid #15539e;
+}
+
 .dial-mark {
     color: white;
 }

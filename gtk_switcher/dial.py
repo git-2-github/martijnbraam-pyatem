@@ -12,6 +12,12 @@ class Dial(Gtk.Range):
     def __init__(self):
         super(Gtk.Range, self).__init__()
         self.set_size_request(64, 64)
+        self.editing = False
+        self.start_y = None
+        self.position = None
+        self.connect('button-press-event', self.on_mouse_down)
+        self.connect('button-release-event', self.on_mouse_up)
+        self.connect('motion-notify-event', self.on_mouse_move)
 
     def _polar(self, dist, angle):
         x = dist * math.cos(math.radians(angle))
@@ -29,6 +35,8 @@ class Dial(Gtk.Range):
         context.restore()
         context.save()
         context.add_class('dial')
+        if self.editing:
+            context.add_class('active')
 
         padding = 16
         top = padding / 2
@@ -59,3 +67,39 @@ class Dial(Gtk.Range):
         cr.set_source_rgba(255, 255, 255, 1)
         cr.stroke()
         context.restore()
+
+    def on_mouse_down(self, widget, event):
+        self.editing = True
+        self.start_y = event.y
+        adj = self.get_adjustment()
+        value = adj.get_value()
+        self.position = self._remap(value, adj.get_lower(), adj.get_upper(), -100, 100)
+
+    def on_mouse_up(self, widget, *args):
+        self.editing = False
+        self.invalidate()
+
+    def on_mouse_move(self, widget, event):
+        if self.editing:
+            new_y = event.y
+
+            change = self.start_y - new_y
+            change += self.position
+            new_val = self._remap(change, -100, 100, self.get_adjustment().get_lower(),
+                                  self.get_adjustment().get_upper())
+            self.get_adjustment().set_value(new_val)
+
+    def _remap(self, value, old_min, old_max, new_min, new_max):
+        return ((value - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min
+
+    def invalidate(self):
+        # TODO: Make functional
+        return
+        rect = self.get_allocation()
+        parent = self.get_parent()
+        if parent:
+            offset = parent.get_allocation()
+            rect.x -= offset.x
+            rect.y -= offset.y
+
+        self.window.invalidate_rect(rect, False)
