@@ -62,6 +62,13 @@ class AudioPage:
                                                   volume=int(widget.get_value()))
             self.connection.mixer.send_commands([cmd])
 
+    def on_input_gain_changed(self, widget, *args):
+        if self.mixer == 'fairlight':
+            print("NEW GAIN", int(widget.get_value()))
+            cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel,
+                                                  gain=int(widget.get_value()))
+            self.connection.mixer.send_commands([cmd])
+
     def on_audio_input_change(self, data):
         self.mixer = 'atem'
 
@@ -302,9 +309,12 @@ class AudioPage:
                     self.input_gain[strip_id] = Gtk.Adjustment(0, -10000, 600, 10, 10, 100)
                     self.delay[strip_id] = Gtk.Adjustment(0, 0, 8, 1, 1, 1)
                     self.volume_level[strip_id].connect('value-changed', self.on_volume_changed)
+                    self.input_gain[strip_id].connect('value-changed', self.on_input_gain_changed)
 
                 self.volume_level[strip_id].source = input.index
                 self.volume_level[strip_id].channel = c if num_subchannels > 1 else -1
+                self.input_gain[strip_id].source = input.index
+                self.input_gain[strip_id].channel = c if num_subchannels > 1 else -1
 
                 tally = Gtk.Box()
                 tally.get_style_context().add_class('tally')

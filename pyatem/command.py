@@ -787,7 +787,7 @@ class FairlightStripPropertiesCommand(Command):
     2      2    u16    Source index
     15     1    u8     Channel number
     16     1    u8     Delay in frames
-    22     2    i16    Gain [-10000 - 600]
+    22     4    i32    Gain [-10000 - 600]
     30     2    i16    EQ Gain
     34     2    u16    Dynamics Gain
     36     2    i16    Pan [-10000 - 10000]
@@ -856,7 +856,7 @@ class FairlightStripPropertiesCommand(Command):
         split = 0xff if self.channel > -1 else 0x01
         self.channel = 0x00 if self.channel == -1 else self.channel
         pad = b'\xff\xff\xff\xff\xff\xff\xff'
-        data = struct.pack('>H H4x6sBb B 5x h 6x h 2x Hh 2x iB 3x', mask, self.source, pad, split, self.channel, delay,
+        data = struct.pack('>H H4x6sBb B 3x i 6x h 2x Hh 2x iB 3x', mask, self.source, pad, split, self.channel, delay,
                            gain, eq_gain,
                            dynamics_gain, balance, volume, state)
         return self._make_command('CFSP', data)
