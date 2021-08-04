@@ -127,8 +127,6 @@ class AtemProtocol:
             'audio-input': '>H',
         }
 
-        if fieldname == b'InCm':
-            print("done")
         raw = contents
         key = fieldname.decode()
         if key in fieldname_to_pretty:
@@ -147,6 +145,8 @@ class AtemProtocol:
         else:
             self.mixerstate[key] = contents
             self._raise('change:' + key, contents)
+        if key == 'InCm':
+            self._raise('connected')
         self._raise('change', key, contents)
 
     def send_commands(self, commands):
