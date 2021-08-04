@@ -99,6 +99,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
 
         self.status_model = builder.get_object('status_model')
         self.status_mode = builder.get_object('status_mode')
+        self.focus_dummy = builder.get_object('focus_dummy')
         self.disable_shortcuts = False
 
         self.apply_css(self.window, self.provider)
@@ -163,6 +164,21 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         cmd = PreviewInputCommand(index=0, source=index + 1)
         auto = AutoCommand(index=0)
         self.connection.mixer.send_commands([cmd, auto])
+
+    def on_entry_focus(self, *args):
+        self.disable_shortcuts = True
+
+    def on_entry_unfocus(self, *args):
+        self.disable_shortcuts = False
+        self.focus_dummy.grab_focus()
+
+    def on_entry_activate(self, *args):
+        self.focus_dummy.grab_focus()
+
+    def hook_up_focus(self, widget):
+        widget.connect("focus-in-event", self.on_entry_focus)
+        widget.connect("focus-out-event", self.on_entry_unfocus)
+        widget.connect("activate", self.on_entry_activate)
 
     def apply_css(self, widget, provider):
         Gtk.StyleContext.add_provider(widget.get_style_context(),

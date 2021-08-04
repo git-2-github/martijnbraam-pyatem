@@ -153,3 +153,20 @@ label.program {
 label.active {
     color: #e7af40;
 }
+
+.dial {
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, #c5c5c5 0%, #adadad 30%, #515151 34%, #eee 36%, #474747 100%);
+    border: 2px solid #454545;
+    box-shadow: 2px 3px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+.dial-mark {
+    color: white;
+}
+
+entry.mini {
+    padding: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.5);
+}

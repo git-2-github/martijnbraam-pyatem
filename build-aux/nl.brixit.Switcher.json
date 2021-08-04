@@ -10,19 +10,20 @@
     "--share=network",
     "--socket=fallback-x11",
     "--socket=wayland",
-    "--device=dri"
+    "--device=dri",
+    "--device=all"
   ],
   "modules": [
     {
       "name": "hexdump",
       "buildsystem": "simple",
       "build-commands": [
-        "pip3 install --prefix=/app hexdump"
+        "pip3 install --prefix=/app hexdump pyusb"
       ],
       "build-options": {
-	"build-args": [
-	  "--share=network"
-	]
+        "build-args": [
+          "--share=network"
+        ]
       }
     },
     {

@@ -1,5 +1,7 @@
 import gi
 
+from gtk_switcher.adjustmententry import AdjustmentEntry
+from gtk_switcher.dial import Dial
 from pyatem.command import FairlightStripPropertiesCommand
 
 gi.require_version('Gtk', '3.0')
@@ -314,6 +316,21 @@ class AudioPage:
 
                 input_frame = Gtk.Frame()
                 input_frame.get_style_context().add_class('view')
+                dial = Dial()
+                dial.set_adjustment(self.input_gain[strip_id])
+                gain_input = AdjustmentEntry(self.input_gain[strip_id], -100, 6)
+                gain_input.get_style_context().add_class('mini')
+                gain_input.set_margin_left(16)
+                gain_input.set_margin_right(16)
+                gain_input.set_margin_end(8)
+                gain_input.set_max_width_chars(6)
+                gain_input.set_width_chars(6)
+                gain_input.set_alignment(xalign=0.5)
+                self.hook_up_focus(gain_input)
+                gain_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+                gain_box.add(dial)
+                gain_box.add(gain_input)
+                input_frame.add(gain_box)
                 self.audio_channels.attach(input_frame, left + c, 2, 1, 1)
 
                 eq_frame = Gtk.Frame()
