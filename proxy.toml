@@ -1,0 +1,24 @@
+[[hardware]]
+id = "mini"
+label = "Atem Mini"
+address = "192.168.2.84"
+
+[[frontend]]
+type = "http-api"
+bind = ":8080"
+auth = false
+hardware = "mini"
+
+[[frontend]]
+type = "websocket"
+bind = ":8081"
+auth = true
+username = "admin"
+password = "admin"
+hardware = "mini"
+static-files = "/var/www/mywebapp"
+
+[[frontend]]
+type = "status"
+bind = "127.0.0.1:8082"
+auth = false

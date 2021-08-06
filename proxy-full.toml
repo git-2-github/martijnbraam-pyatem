@@ -1,0 +1,30 @@
+[[hardware]]
+id = "mini"
+label = "Atem Mini"
+address = "192.168.2.84"
+
+[[hardware]]
+id = "mini2"
+label = "The other Mini"
+address = "192.168.2.85"
+
+[[virtual]]
+id = "merged"
+label = "The big mini"
+hardware = "mini,mini2"
+connections = "mini2->mini:3"
+
+[[frontend]]
+type = "http-api"
+bind = ":8080"
+auth = false
+hardware = "mini,mini2"
+
+[[frontend]]
+type = "websocket"
+bind = ":8081"
+hardware = "merged"
+auth = true
+username = "admin"
+password = "admin"
+static-files = "/var/www/mywebapp"
