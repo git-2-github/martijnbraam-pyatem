@@ -107,6 +107,7 @@ class AtemProtocol:
             'SRST': 'streaming-time',
             'SRSS': 'streaming-stats',
             'SAth': 'streaming-authentication',
+            'AEBP': 'atem-eq-band-properties',
         }
 
         fieldname_to_unique = {

@@ -19,4 +19,5 @@ mixers of the previous models. These mostly use new datastructures to represent 
 .. autoclass:: pyatem.field.FairlightTallyField
    :members:
 
-
+.. autoclass:: pyatem.field.AtemEqBandPropertiesField
+   :members:

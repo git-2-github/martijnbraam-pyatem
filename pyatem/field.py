@@ -1263,6 +1263,92 @@ class FairlightTallyField(FieldBase):
         return '<fairlight-tally {}>'.format(self.tally)
 
 
+class AtemEqBandPropertiesField(FieldBase):
+    """
+    Data from the `AEBP` field. This encodes the EQ settings in the fairlight mixer. For every channel there will
+    be 6 off these fields sent, one for every band of the EQ. The "possible band filters" differentiates the first
+    and last band which have a different option list for the filter dropdown in the UI.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Audio source index
+    2      2    ?      unknown
+    4      4    ?      unknown
+    14     1    u8     Split indicator? [01 for normal, FF for split]
+    15     1    u8     subchannel index
+    16     1    u8     bond index
+    17     1    bool   band enabled
+    18     1    u8     possible band filters
+    19     1    u8     band filter
+    20     1    ?      ?
+    21     1    ?      band frequency range
+    26     2    u16    band frequency
+    28     4    i32    band gain
+    32     2    u16    band Q
+    ====== ==== ====== ===========
+
+    === ==========
+    Val Band filter
+    === ==========
+    01  Low shelf
+    02  Low pass
+    04  Bell
+    08  Notch
+    10  High pass
+    20  High shelf
+    === ==========
+
+    After parsing:
+    :ivar volume: Master volume for the mixer, signed int which maps [-10000 - 1000] to +10dB - -100dB (inf)
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        values = struct.unpack('>H 2x 4x 6x BB B ? B B x B 4x H i H 2x', raw)
+        self.index = values[0]
+        self.is_split = values[1]
+        self.subchannel = values[2]
+        self.band_index = values[3]
+        self.band_enabled = values[4]
+        self.band_possible_filters = values[5]
+        self.band_filter = values[6]
+        self.band_freq_range = values[7]
+        self.band_frequency = values[8]
+        self.band_gain = values[9]
+        self.band_q = values[10]
+
+        self.strip_id = str(self.index)
+        if self.is_split == 0xff:
+            self.strip_id += '.' + str(self.subchannel)
+        else:
+            self.strip_id += '.0'
+
+    def __repr__(self):
+        desc = ''
+        filters = {
+            0x01: 'low-shelf',
+            0x02: 'low-pass',
+            0x04: 'bell',
+            0x08: 'notch',
+            0x10: 'high-pass',
+            0x20: 'high-shelf'
+        }
+        if self.band_filter in filters:
+            desc += filters[self.band_filter]
+        else:
+            desc += 'filter ' + str(self.band_filter)
+
+        if self.band_enabled:
+            desc += '[on]'
+        else:
+            desc += '[off]'
+        desc += ' freq ' + str(self.band_frequency)
+        desc += ' gain ' + str(self.band_gain)
+        desc += ' Q ' + str(self.band_q)
+        return '<atem-eq-band-properties {} band {} {}>'.format(self.strip_id, self.band_index, desc)
+
+
 class AudioInputField(FieldBase):
     """
     Data from the `AMIP`. Describes the inputs to the atem audio mixer
