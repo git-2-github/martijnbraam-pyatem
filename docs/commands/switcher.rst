@@ -13,6 +13,13 @@ Program / Preview bus
    :members:
    :special-members:
 
+Aux routing
+-----------
+
+.. autoclass:: pyatem.command.AuxSourceCommand
+   :members:
+   :special-members:
+
 Transitions
 -----------
 

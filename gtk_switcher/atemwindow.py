@@ -297,6 +297,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
             self.on_stream_recording_disks_change(data)
         elif field == 'recording-status':
             self.on_stream_recording_status_change(data)
+        elif field == 'aux-output-source':
+            self.on_aux_output_source_change(data)
         else:
             print(field)
             if field == 'time':

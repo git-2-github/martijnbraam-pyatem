@@ -115,6 +115,33 @@ class PreviewInputCommand(Command):
         return self._make_command('CPvI', data)
 
 
+class AuxSourceCommand(Command):
+    """
+    Implementation of the `CAuS` command. This selects the source that will be sent to a specific AUX output
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask, always 1
+    1      1    u8     AUX index
+    2      2    u16    Source index
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, source):
+        """
+        :param index: 0-indexed AUX output number
+        :param source: Source index to send to the aux output
+        """
+        self.index = index
+        self.source = source
+
+    def get_command(self):
+        data = struct.pack('>BBH', 1, self.index, self.source)
+        return self._make_command('CAuS', data)
+
+
 class TransitionPositionCommand(Command):
     def __init__(self, index, position):
         self.index = index

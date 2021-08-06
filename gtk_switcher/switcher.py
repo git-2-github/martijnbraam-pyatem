@@ -3,7 +3,7 @@ from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, Transiti
     TransitionPositionCommand, TransitionPreviewCommand, ColorGeneratorCommand, MixSettingsCommand, DipSettingsCommand, \
     DveSettingsCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, DkeyAutoCommand, DkeyTieCommand, \
     DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand, \
-    FadeToBlackConfigCommand, RecorderStatusCommand
+    FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand
 from pyatem.field import TransitionSettingsField, InputPropertiesField
 
 import gi
@@ -67,6 +67,9 @@ class SwitcherPage:
         self.stream_recorder_status = builder.get_object('stream_recorder_status')
         self.stream_recorder_disk = [None, None]
         self.disks = {}
+        self.aux = {}
+
+        self.grid_aux = builder.get_object('grid_aux')
 
         self.wipe_style = [
             builder.get_object('wipestyle_h'),
@@ -98,6 +101,7 @@ class SwitcherPage:
 
         self.model_me1_fill = builder.get_object('model_me1_fill')
         self.model_key = builder.get_object('model_key')
+        self.model_aux = builder.get_object('model_aux')
         self.model_disks = builder.get_object('model_disks')
         self.model_changing = False
         self.slider_held = False
@@ -231,6 +235,12 @@ class SwitcherPage:
         if hasattr(widget, 'ignore_change') and widget.ignore_change or self.model_changing:
             return
         cmd = DipSettingsCommand(index=0, source=int(self.dip_source.get_active_id()))
+        self.connection.mixer.send_commands([cmd])
+
+    def on_aux_source_changed(self, widget):
+        if hasattr(widget, 'ignore_change') and widget.ignore_change or self.model_changing:
+            return
+        cmd = AuxSourceCommand(widget.index, source=int(widget.get_active_id()))
         self.connection.mixer.send_commands([cmd])
 
     def on_wipe_symmetry_adj_value_changed(self, widget, *args):
@@ -627,6 +637,14 @@ class SwitcherPage:
         cmd = RecorderStatusCommand(recording=False)
         self.connection.mixer.send_commands([cmd])
 
+    def on_aux_output_source_change(self, source):
+        if source.index not in self.aux:
+            return
+
+        self.aux[source.index].ignore_change = True
+        self.aux[source.index].set_active_id(str(source.source))
+        self.aux[source.index].ignore_change = False
+
     def on_input_layout_change(self, changed_input):
         inputs = self.connection.mixer.mixerstate['input-properties']
         external = []
@@ -640,6 +658,7 @@ class SwitcherPage:
         for i in self.has_models:
             i.model_changing = True
         self.model_me1_fill.clear()
+        self.model_aux.clear()
         self.model_key.clear()
 
         for i in inputs.values():
@@ -658,6 +677,27 @@ class SwitcherPage:
                 self.model_me1_fill.append([str(i.index), i.name])
             if i.available_key_source:
                 self.model_key.append([str(i.index), i.name])
+
+            if i.available_aux:
+                self.model_aux.append([str(i.index), i.name])
+
+            if i.port_type == InputPropertiesField.PORT_AUX_OUTPUT:
+                aux_id = i.index - 8001
+                if aux_id not in self.aux:
+                    self.aux[aux_id] = Gtk.ComboBox.new_with_model(self.model_aux)
+                    self.aux[aux_id].set_entry_text_column(1)
+                    self.aux[aux_id].set_id_column(0)
+                    self.aux[aux_id].index = aux_id
+                    self.aux[aux_id].connect('changed', self.on_aux_source_changed)
+                    renderer = Gtk.CellRendererText()
+                    self.aux[aux_id].pack_start(renderer, True)
+                    self.aux[aux_id].add_attribute(renderer, "text", 1)
+                    self.grid_aux.attach(self.aux[aux_id], 1, aux_id, 1, 1)
+
+                    aux_label = Gtk.Label(label=i.name)
+                    aux_label.get_style_context().add_class('dim-label')
+                    self.grid_aux.attach(aux_label, 0, aux_id, 1, 1)
+                    self.grid_aux.show_all()
 
         row1_ext = external
         row2_ext = [None] * len(external)
