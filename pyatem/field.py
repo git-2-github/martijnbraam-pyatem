@@ -634,6 +634,32 @@ class ColorGeneratorField(FieldBase):
                                                                                   self.luma)
 
 
+class AuxOutputSourceField(FieldBase):
+    """
+    Data from the `AuxS`. The routing for the AUX outputs of the hardware.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     AUX output index
+    1      1    ?      unknown
+    2      2    u16    Source index
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: AUX index
+    :ivar rate: Source index
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.source = struct.unpack('>BxH', raw)
+
+    def __repr__(self):
+        return '<aux-output-source: aux={}, source={}>'.format(self.index, self.source)
+
+
 class FadeToBlackStateField(FieldBase):
     """
     Data from the `FtbS`. This contains the information about the fade-to-black transition.

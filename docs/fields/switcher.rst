@@ -13,6 +13,9 @@ Program / Preview bus
 .. autoclass:: pyatem.field.PreviewBusInputField
    :members:
 
+.. autoclass:: pyatem.field.AuxOutputSourceField
+   :members:
+
 Transition settings
 -------------------
 
