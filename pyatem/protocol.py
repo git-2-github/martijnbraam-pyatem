@@ -16,6 +16,7 @@ class AtemProtocol:
 
         self.mixerstate = {}
         self.callbacks = {}
+        self.inputs = {}
 
     @classmethod
     def usb_exists(cls):
@@ -94,7 +95,7 @@ class AtemProtocol:
             'FMTl': 'fairlight-tally',
             'MPrp': 'macro-properties',
             'AiVM': 'auto-input-video-mode',
-            'FASD': 'fairlight-strip-ding',
+            'FASD': 'fairlight-strip-delete',
             'FAIP': 'fairlight-audio-input',
             'AMIP': 'audio-input',
             'RTMR': 'recording-duration',
@@ -111,7 +112,7 @@ class AtemProtocol:
         }
 
         fieldname_to_unique = {
-            'mixer-effect-config': '>H',
+            'mixer-effect-config': '>B',
             'input-properties': '>H',
             'program-bus-input': '>B',
             'preview-bus-input': '>B',
@@ -126,6 +127,23 @@ class AtemProtocol:
             'macro-properties': '>H',
             'fairlight-audio-input': '>H',
             'audio-input': '>H',
+            'key-on-air': '>BB',
+            'key-properties-base': '>BB',
+            'key-properties-luma': '>BB',
+            'key-properties-pattern': '>BB',
+            'key-properties-dve': '>BB',
+            'key-properties-fly': '>BB',
+            'key-properties-fly-keyframe': '>BBB',
+            'dkey-properties-base': '>B',
+            'dkey-properties': '>B',
+            'dkey-state': '>B',
+            'fade-to-black': '>B',
+            'fade-to-black-state': '>B',
+            'color-generator': '>B',
+            'aux-output-source': '>B',
+            'mediaplayer-file-info': '>xxH',
+            'mediaplayer-selected': '>B',
+            'atem-eq-band-properties': '>H14xB',
         }
 
         raw = contents
@@ -137,18 +155,47 @@ class AtemProtocol:
                 contents = getattr(fieldmodule, classname)(contents)
 
         if key in fieldname_to_unique:
-            idx, = struct.unpack_from(fieldname_to_unique[key], raw, 0)
+            idxes = struct.unpack_from(fieldname_to_unique[key], raw, 0)
             if key not in self.mixerstate:
                 self.mixerstate[key] = {}
-            self.mixerstate[key][idx] = contents
-            self._raise('change:' + key + ':' + str(idx), contents)
+
+            # Fairlight strips have weird numbering that's harder to parse here, read it back from the class
+            if hasattr(contents, 'strip_id'):
+                idxes = list(idxes)
+                idxes[0] = contents.strip_id
+                idxes = tuple(idxes)
+
+            unique = self.make_unique_dict(contents, idxes)
+            self.mixerstate[key] = self.recursive_merge(self.mixerstate[key], unique)
+            self._raise('change:' + key + ':' + str(idxes[0]), contents)
             self._raise('change:' + key + ':*', contents)
         else:
             self.mixerstate[key] = contents
             self._raise('change:' + key, contents)
+        if key == 'input-properties':
+            self.inputs[contents.short_name] = contents.index
+
         if key == 'InCm':
             self._raise('connected')
         self._raise('change', key, contents)
+
+    def make_unique_dict(self, content, path):
+        result = {}
+        if len(path) == 1:
+            result[path[0]] = content
+        else:
+            result[path[0]] = self.make_unique_dict(content, path[1:])
+        return result
+
+    def recursive_merge(self, d1, d2):
+        '''update first dict with second recursively'''
+        if not isinstance(d2, dict):
+            return d2
+        for k, v in d1.items():
+            if k in d2:
+                d2[k] = self.recursive_merge(v, d2[k])
+        d1.update(d2)
+        return d1
 
     def send_commands(self, commands):
         data = b''
