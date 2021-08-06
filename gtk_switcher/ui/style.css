@@ -207,3 +207,11 @@ headerbar.streaming button:not(.radio) {
 headerbar.streaming button.radio:checked {
     background: #8d1926;
 }
+
+.eq-window-lines {
+    color: rgba(128, 128, 128, 0.3);
+}
+
+.eq-window-curve {
+    color: #15539e;
+}

@@ -349,6 +349,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                 self.on_fairlight_master_properties_change(data)
             elif field == 'fairlight-audio-input':
                 self.on_fairlight_audio_input_change(data)
+            elif field == 'atem-eq-band-properties':
+                self.on_fairlight_eq_band_change(data)
             elif field == 'audio-input':
                 self.on_audio_input_change(data)
             elif field == 'fairlight-strip-properties':

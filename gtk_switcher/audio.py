@@ -3,6 +3,7 @@ import gi
 from gtk_switcher.adjustmententry import AdjustmentEntry
 from gtk_switcher.dial import Dial
 from gtk_switcher.gtklogadjustment import LogAdjustment
+from gtk_switcher.eqcurve import EqCurve
 from pyatem.command import AudioInputCommand, FairlightStripPropertiesCommand, FairlightMasterPropertiesCommand, \
     AudioMasterPropertiesCommand, AudioMonitorPropertiesCommand, SendAudioLevelsCommand, SendFairlightLevelsCommand, \
     AuxSourceCommand
@@ -30,6 +31,7 @@ class AudioPage:
         self.audio_afv = {}
         self.audio_monitor = {}
         self.vu = {}
+        self.eq = {}
 
         self.master_level = None
         self.master_afv = None
@@ -49,6 +51,7 @@ class AudioPage:
         self.audio_afv = {}
         self.audio_monitor = {}
         self.vu = {}
+        self.eq = {}
 
         self.master_level = None
         self.master_afv = None
@@ -185,9 +188,15 @@ class AudioPage:
                     input_frame.add(gain_box)
                     self.audio_channels.attach(input_frame, strip_index + c, 2, 1, 1)
 
-                    eq_frame = Gtk.Frame()
+                    eq_frame = EqCurve()
+                    if 'atem-eq-band-properties' in self.connection.mixer.mixerstate and strip_id in \
+                            self.connection.mixer.mixerstate['atem-eq-band-properties']:
+                        for band_id in self.connection.mixer.mixerstate['atem-eq-band-properties'][strip_id]:
+                            band = self.connection.mixer.mixerstate['atem-eq-band-properties'][strip_id][band_id]
+                            eq_frame.update_band(band)
                     eq_frame.get_style_context().add_class('view')
                     eq_frame.set_size_request(0, 64)
+                    self.eq[strip_id] = eq_frame
                     self.audio_channels.attach(eq_frame, strip_index + c, 3, 1, 1)
 
                     dynamics_frame = Gtk.Frame()
@@ -461,6 +470,11 @@ class AudioPage:
         self.set_class(self.master_afv, 'active', data.afv)
         self.set_class(self.ftb_afv, 'active', data.afv)
         self.model_changing = False
+
+    def on_fairlight_eq_band_change(self, data):
+        if data.strip_id not in self.eq:
+            return
+        self.eq[data.strip_id].update_band(data)
 
     def on_volume_changed(self, widget, *args):
         if self.model_changing:
