@@ -13,6 +13,7 @@ a few parts since the skaarhoj documentation has been last updated.
    fields
    commands
    python
+   proxy
 
 Indices and tables
 ==================
