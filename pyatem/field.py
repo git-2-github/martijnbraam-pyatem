@@ -6,6 +6,10 @@ class FieldBase:
     def _get_string(self, raw):
         return raw.split(b'\x00')[0].decode()
 
+    def make_packet(self):
+        header = struct.pack('!H2x 4s', len(self.raw) + 8, self.fieldcode.encode())
+        return header + self.raw
+
 
 class FirmwareVersionField(FieldBase):
     """
@@ -24,11 +28,17 @@ class FirmwareVersionField(FieldBase):
     :ivar minor: Minor firmware version
     """
 
+    @classmethod
+    def create(cls, major, minor):
+        raw = struct.pack('>HH', major, minor)
+        return cls(raw)
+
     def __init__(self, raw):
         """
         :param raw:
         """
         self.raw = raw
+        self.fieldcode = '_ver'
         self.major, self.minor = struct.unpack('>HH', raw)
         self.version = "{}.{}".format(self.major, self.minor)
 
@@ -51,8 +61,15 @@ class ProductNameField(FieldBase):
     :ivar name: User friendly product name
     """
 
+    @classmethod
+    def create(cls, name):
+        name = name.encode()
+        name += b'\0' * (44 - len(name))
+        return cls(name)
+
     def __init__(self, raw):
         self.raw = raw
+        self.fieldcode = '_pin'
         self.name = self._get_string(raw)
 
     def __repr__(self):
@@ -79,7 +96,13 @@ class MixerEffectConfigField(FieldBase):
     :ivar keyers: Number of upstream keyers on this M/E
     """
 
+    @classmethod
+    def create(cls, index, keyers):
+        raw = struct.pack('>2B2x', index, keyers)
+        return cls(raw)
+
     def __init__(self, raw):
+        self.fieldcode = '_MeC'
         self.raw = raw
         self.index, self.keyers = struct.unpack('>2B2x', raw)
 
@@ -104,7 +127,13 @@ class MediaplayerSlotsField(FieldBase):
     :ivar name: User friendly product name
     """
 
+    @classmethod
+    def create(cls, stills, clips):
+        raw = struct.pack('>2B2x', stills, clips)
+        return cls(raw)
+
     def __init__(self, raw):
+        self.fieldcode = '_mpl'
         self.raw = raw
         self.stills, self.clips = struct.unpack('>2B2x', raw)
 
@@ -158,7 +187,13 @@ class VideoModeField(FieldBase):
     :ivar rate: refresh rate of the mode
     """
 
+    @classmethod
+    def create(cls, mode):
+        raw = struct.pack('>1B3x', mode)
+        return cls(raw)
+
     def __init__(self, raw):
+        self.fieldcode = 'VidM'
         self.raw = raw
         self.mode, = struct.unpack('>1B3x', raw)
 
@@ -289,7 +324,31 @@ class InputPropertiesField(FieldBase):
     PORT_ME_OUTPUT = 128
     PORT_AUX_OUTPUT = 129
 
+    @classmethod
+    def create(cls, index, name, short_name, source_category, port_type, source_ports, available, available_me1=True,
+               available_me2=False):
+
+        available_me = 0
+        if available_me1:
+            available_me += 1
+        if available_me2:
+            available_me += 2
+
+        raw = struct.pack('>H 20s 4s 10B', index, name.encode(), short_name.encode(),
+                          source_category,
+                          0,
+                          source_category,
+                          source_ports,
+                          source_category,
+                          source_ports,
+                          port_type,
+                          0,
+                          available,
+                          available_me)
+        return cls(raw)
+
     def __init__(self, raw):
+        self.fieldcode = 'InPr'
         self.raw = raw
         fields = struct.unpack('>H 20s 4s 10B', raw)
         self.index = fields[0]
@@ -333,6 +392,7 @@ class ProgramBusInputField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'PrgI'
         self.raw = raw
         self.index, self.source = struct.unpack('>BxH', raw)
 
@@ -364,6 +424,7 @@ class PreviewBusInputField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'PrvI'
         self.raw = raw
         self.index, self.source, in_program = struct.unpack('>B x H B 3x', raw)
         self.in_program = in_program == 1
@@ -422,6 +483,7 @@ class TransitionSettingsField(FieldBase):
     STYLE_STING = 4
 
     def __init__(self, raw):
+        self.fieldcode = 'TrSS'
         self.raw = raw
         self.index, self.style, nt, self.style_next, ntn = struct.unpack('>B 2B 2B 3x', raw)
 
@@ -462,6 +524,7 @@ class TransitionPreviewField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'TsPr'
         self.raw = raw
         self.index, self.enabled = struct.unpack('>B ? 2x', raw)
 
@@ -495,6 +558,7 @@ class TransitionPositionField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'TrPs'
         self.raw = raw
         self.index, self.in_transition, self.frames_remaining, position = struct.unpack('>B ? B x H 2x', raw)
         self.position = position
@@ -523,6 +587,7 @@ class TallyIndexField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'TlIn'
         self.raw = raw
         offset = 0
         self.num, = struct.unpack_from('>H', raw, offset)
@@ -556,6 +621,7 @@ class TallySourceField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'TlSr'
         self.raw = raw
         offset = 0
         self.num, = struct.unpack_from('>H', raw, offset)
@@ -591,6 +657,7 @@ class KeyOnAirField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'KeOn'
         self.raw = raw
         self.index, self.keyer, self.enabled = struct.unpack('>BB?x', raw)
 
@@ -620,6 +687,7 @@ class ColorGeneratorField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'ColV'
         self.raw = raw
         self.index, self.hue, self.saturation, self.luma = struct.unpack('>Bx 3H', raw)
         self.hue = self.hue / 10.0
@@ -653,6 +721,7 @@ class AuxOutputSourceField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'AuxS'
         self.raw = raw
         self.index, self.source = struct.unpack('>BxH', raw)
 
@@ -682,6 +751,7 @@ class FadeToBlackStateField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'FtbS'
         self.raw = raw
         self.index, self.done, self.transitioning, self.frames_remaining = struct.unpack('>B??B', raw)
 
@@ -718,6 +788,7 @@ class MediaplayerFileInfoField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'MPfe'
         self.raw = raw
         namelen = len(raw) - 23
         self.type, self.index, self.is_used, self.hash, self.name = struct.unpack('>Bx H ? 16s 2x {}p'.format(namelen),
@@ -796,6 +867,7 @@ class TopologyField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = '_top'
         self.raw = raw
         field = struct.unpack('>28B', raw)
 
@@ -847,6 +919,7 @@ class DkeyPropertiesField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'DskP'
         self.raw = raw
         field = struct.unpack('>B?B ?HH? ?4h 2B', raw)
         self.index = field[0]
@@ -892,6 +965,7 @@ class DkeyStateField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'DskS'
         self.raw = raw
         field = struct.unpack('>B 3? B 3x', raw)
         self.index = field[0]
@@ -927,6 +1001,7 @@ class TransitionMixField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'TMxP'
         self.raw = raw
         self.index, self.rate = struct.unpack('>BBxx', raw)
 
@@ -953,6 +1028,7 @@ class FadeToBlackField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'FtbP'
         self.raw = raw
         self.index, self.rate = struct.unpack('>BBxx', raw)
 
@@ -980,6 +1056,7 @@ class TransitionDipField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'TDpP'
         self.raw = raw
         self.index, self.rate, self.source = struct.unpack('>BBH', raw)
 
@@ -1016,6 +1093,7 @@ class TransitionWipeField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'TWpP'
         self.raw = raw
         field = struct.unpack('>BBBx 6H 2? 2x', raw)
         self.index = field[0]
@@ -1073,6 +1151,7 @@ class TransitionDveField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'TDvP'
         self.raw = raw
         field = struct.unpack('>BBx B 2H 2? 2H 3? 3x', raw)
         self.index = field[0]
@@ -1119,6 +1198,7 @@ class FairlightMasterPropertiesField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'FAMP'
         self.raw = raw
         field = struct.unpack('>x ? 4x h 2x H i ? 3x', raw)
         self.eq_enable = field[0]
@@ -1164,6 +1244,7 @@ class FairlightStripPropertiesField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'FASP'
         self.raw = raw
         field = struct.unpack('>H 12xBBxB 4x h 5x ? 4x h 2x Hh 4x h x B 2x', raw)
         self.index = field[0]
@@ -1205,6 +1286,7 @@ class FairlightStripDeleteField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'FASD'
         self.raw = raw
 
     def __repr__(self):
@@ -1239,6 +1321,7 @@ class FairlightAudioInputField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'FAIP'
         self.raw = raw
         self.index, self.type, self.number, self.split, self.level = struct.unpack('>HB 2x B xxxx B x B 3x', raw)
 
@@ -1274,6 +1357,7 @@ class FairlightTallyField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'FMTl'
         self.raw = raw
         offset = 0
         self.num, = struct.unpack_from('>H', raw, offset)
@@ -1330,6 +1414,7 @@ class AtemEqBandPropertiesField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'AEBP'
         self.raw = raw
         values = struct.unpack('>H 2x 4x 6x BB B ? B B x B 4x H i H 2x', raw)
         self.index = values[0]
@@ -1420,6 +1505,7 @@ class AudioInputField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'AMIP'
         self.raw = raw
         self.index, self.type, self.number, self.plug, self.state, self.volume, self.balance = struct.unpack(
             '>HB 2x B x BB x Hh 2x', raw)
@@ -1435,6 +1521,7 @@ class KeyPropertiesBaseField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'KeBP'
         self.raw = raw
         field = struct.unpack('>BBB Bx B HH ?x 4h', raw)
         self.index = field[0]
@@ -1461,6 +1548,7 @@ class KeyPropertiesDveField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'KeDV'
         self.raw = raw
         field = struct.unpack('>BBxx 5i ??Bx HH BBBBBx 4HB? 4hB 3x', raw)
         self.index = field[0]
@@ -1511,6 +1599,7 @@ class KeyPropertiesLumaField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'KeLm'
         self.raw = raw
         field = struct.unpack('>BB?x HH ?3x', raw)
         self.index = field[0]
@@ -1552,6 +1641,7 @@ class RecordingDiskField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'RTMD'
         self.raw = raw
         field = struct.unpack('>IIH 64s 2x', raw)
         self.index = field[0]
@@ -1589,6 +1679,7 @@ class RecordingSettingsField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'RMSu'
         self.raw = raw
         field = struct.unpack('>128s ii ?3x', raw)
         self.filename = self._get_string(field[0])
@@ -1629,6 +1720,7 @@ class RecordingStatusField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'RTMS'
         self.raw = raw
         field = struct.unpack('>H2xi', raw)
         self.status = field[0]
@@ -1647,7 +1739,7 @@ class RecordingStatusField(FieldBase):
 
 class RecordingDurationField(FieldBase):
     """
-    Data from the `RTMS`. The status for the stream recorder.
+    Data from the `RTMR`. The status for the stream recorder.
 
     ====== ==== ====== ===========
     Offset Size Type   Descriptions
@@ -1663,6 +1755,7 @@ class RecordingDurationField(FieldBase):
     """
 
     def __init__(self, raw):
+        self.fieldcode = 'RTMR'
         self.raw = raw
         field = struct.unpack('>4B ?3x', raw)
         self.hours = field[0]
@@ -1676,3 +1769,39 @@ class RecordingDurationField(FieldBase):
         if self.has_dropped_frames:
             drop = ' dropped-frames'
         return '<recording-duration {}:{}:{}:{}{}>'.format(self.hours, self.minutes, self.seconds, self.frames, drop)
+
+
+class InitCompleteField(FieldBase):
+    """
+    Data from the `InCm` field. This marks the end of the initial configuration packets
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      4    ?      Unknown
+    ====== ==== ====== ===========
+
+    """
+
+    @classmethod
+    def create(cls):
+        return cls(b'\1\0\0\4')
+
+    def __init__(self, raw):
+        """
+        :param raw:
+        """
+        self.raw = raw
+        self.fieldcode = 'InCm'
+
+    def __repr__(self):
+        return '<init-complete>'
+
+
+class ManualField(FieldBase):
+    def __init__(self, fieldcode, raw):
+        self.fieldcode = fieldcode
+        self.raw = raw
+
+    def __repr__(self):
+        return '<manual {}>'.format(self.fieldcode)

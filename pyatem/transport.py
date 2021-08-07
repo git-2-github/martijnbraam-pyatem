@@ -12,6 +12,7 @@ from hexdump import hexdump
 
 class Packet:
     def __init__(self):
+        self.emulator = False
         self.flags = 0
         self.length = 0
         self.session = 0
@@ -88,7 +89,12 @@ class Packet:
         label = ''
         if self.label:
             label = ' ' + self.label
-        return '<Packet flags={} data={} sequence={}{}{}>'.format(flags, data_len, self.sequence_number, extra, label)
+        if False:
+            return '<Packet flags={} data={} sequence={}{}{}>'.format(flags, data_len, self.remote_sequence_number,
+                                                                      extra, label)
+        else:
+            return '<Packet flags={} data={} sequence={}{}{}>'.format(flags, data_len, self.sequence_number, extra,
+                                                                      label)
 
 
 class UdpProtocol:
