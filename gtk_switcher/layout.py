@@ -46,6 +46,16 @@ class LayoutView(Gtk.Frame):
         self.handle = None
         self.offset_x = None
         self.offset_y = None
+        self.offset_alt_x = None
+        self.offset_alt_y = None
+        self.move_alt = False
+        self.alt_x = None
+        self.alt_y = None
+
+        self.mask_top = 0
+        self.mask_bottom = 0
+        self.mask_left = 0
+        self.mask_right = 0
 
         self.regions = {}
         self.masks = {}
@@ -74,6 +84,7 @@ class LayoutView(Gtk.Frame):
         # grr cairo coordinates
         event.y = self.area_height - event.y - self.area_top
         event.x = event.x - self.area_left
+        self.move_alt = event.state & Gdk.ModifierType.CONTROL_MASK > 0
 
         if self.selected is None:
             for label in self.regions:
@@ -106,6 +117,10 @@ class LayoutView(Gtk.Frame):
             mbottom = mask[1]
             mleft = mask[2]
             mright = mask[3]
+            self.mask_top = mtop
+            self.mask_bottom = mbottom
+            self.mask_left = mleft
+            self.mask_right = mright
 
         if (x - 5) < event.x < (x + 5):
             if (y - 5) < event.y < (y + 5):
@@ -162,6 +177,11 @@ class LayoutView(Gtk.Frame):
         if x < event.x < (x + w):
             if y < event.y < (y + h):
                 self.handle = 'pos'
+                if self.move_alt:
+                    self.offset_alt_x = event.x
+                    self.offset_alt_y = event.y
+                    self.alt_x = (x + (w / 2))
+                    self.alt_y = (y + (h / 2))
                 self.offset_x = (x + (w / 2)) - event.x
                 self.offset_y = (y + (h / 2)) - event.y
                 return
@@ -187,9 +207,29 @@ class LayoutView(Gtk.Frame):
         h = self._coord_h(region[3])
 
         if self.handle == 'pos':
-            new_x = event.x + self.offset_x
-            new_y = event.y + self.offset_y
-            self.on_region_update(self.selected, pos_x=new_x, pos_y=new_y)
+            if self.move_alt:
+                # Alternate move moves the source inside the mask area instead of the key itself
+
+                # Vertical axis first
+                new_left = min(1.0, max(0, ((event.x - self.offset_alt_x) / w) + self.mask_left))
+                new_right = min(1.0, max(0, self.mask_right + (self.mask_left - new_left)))
+
+                # Horizontal axis
+                new_bottom = min(1.0, max(0, ((event.y - self.offset_alt_y) / h) + self.mask_bottom))
+                new_top = min(1.0, max(0, self.mask_top + (self.mask_bottom - new_bottom)))
+
+                # Move the flying key in the opposite direction to compensate
+                new_x = self.alt_x + (self.offset_alt_x - event.x)
+                new_y = self.alt_y + (self.offset_alt_y - event.y)
+
+                mask_cmd = self.on_mask_update(self.selected, left=new_left, right=new_right, top=new_top,
+                                               bottom=new_bottom, exec=False)
+                pos_cmd = self.on_region_update(self.selected, pos_x=new_x, pos_y=new_y, exec=False)
+                self.connection.mixer.send_commands([pos_cmd, mask_cmd])
+            else:
+                new_x = event.x + self.offset_x
+                new_y = event.y + self.offset_y
+                self.on_region_update(self.selected, pos_x=new_x, pos_y=new_y)
         elif self.handle.startswith("m"):
             if self.handle == "ml":
                 new_left = min(1.0, max(0, (event.x - self.offset_x) / w))
@@ -210,7 +250,7 @@ class LayoutView(Gtk.Frame):
             new_h = max(self.offset_y, event.y) - min(self.offset_y, event.y)
             self.on_region_update(self.selected, pos_x=new_x, pos_y=new_y, size_x=new_w, size_y=new_h)
 
-    def on_region_update(self, label, pos_x=None, pos_y=None, size_x=None, size_y=None):
+    def on_region_update(self, label, pos_x=None, pos_y=None, size_x=None, size_y=None, exec=True):
         if label.startswith("Upstream key"):
             keyer = int(label[13:]) - 1
             x, y = self._pos_to_atem(pos_x, pos_y)
@@ -222,20 +262,30 @@ class LayoutView(Gtk.Frame):
                 h = int(h * 100)
             cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, pos_x=int(x * 1000), pos_y=int(y * 1000),
                                           size_x=w, size_y=h)
-            self.connection.mixer.send_commands([cmd])
+            if exec:
+                self.connection.mixer.send_commands([cmd])
+            return cmd
 
-    def on_mask_update(self, label, left=None, right=None, top=None, bottom=None):
+    def on_mask_update(self, label, left=None, right=None, top=None, bottom=None, exec=True):
         if label.startswith("Upstream key"):
             keyer = int(label[13:]) - 1
+            ml = None
+            mr = None
+            mt = None
+            mb = None
             if left is not None:
-                cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_left=int(left * 32000))
+                ml = int(left * 32000)
             if right is not None:
-                cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_right=int(right * 32000))
+                mr = int(right * 32000)
             if top is not None:
-                cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_top=int(top * 18000))
+                mt = int(top * 18000)
             if bottom is not None:
-                cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_bottom=int(bottom * 18000))
-            self.connection.mixer.send_commands([cmd])
+                mb = int(bottom * 18000)
+            cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_top=mt, mask_bottom=mb, mask_left=ml,
+                                          mask_right=mr)
+            if exec:
+                self.connection.mixer.send_commands([cmd])
+            return cmd
 
     def _coord_x(self, input_coord):
         input_coord = (input_coord + 16) / 32.0
