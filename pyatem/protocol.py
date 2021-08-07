@@ -1,7 +1,7 @@
 import logging
 import struct
 
-from pyatem.transport import UdpProtocol, Packet, UsbProtocol
+from pyatem.transport import UdpProtocol, Packet, UsbProtocol, TcpProtocol
 import pyatem.field as fieldmodule
 
 
@@ -10,13 +10,17 @@ class AtemProtocol:
         if ip is None and usb is None:
             raise ValueError("Need either an ip or usb port")
         if ip is not None:
-            self.transport = UdpProtocol(ip, port)
+            if ip.startswith('tcp://'):
+                self.transport = TcpProtocol(url=ip)
+            else:
+                self.transport = UdpProtocol(ip, port)
         else:
             self.transport = UsbProtocol(usb)
 
         self.mixerstate = {}
         self.callbacks = {}
         self.inputs = {}
+        self.callback_idx = 1
 
     @classmethod
     def usb_exists(cls):
@@ -35,13 +39,20 @@ class AtemProtocol:
 
     def on(self, event, callback):
         if event not in self.callbacks:
-            self.callbacks[event] = []
-        self.callbacks[event].append(callback)
+            self.callbacks[event] = {}
+        self.callbacks[event][self.callback_idx] = callback
+        self.callback_idx += 1
+        return self.callback_idx - 1
+
+    def off(self, event, callback_id):
+        if event not in self.callbacks:
+            return
+        del self.callbacks[event][callback_id]
 
     def _raise(self, event, *args, **kwargs):
         if event in self.callbacks:
-            for cb in self.callbacks[event]:
-                cb(*args, **kwargs)
+            for cbidx in self.callbacks[event]:
+                self.callbacks[event][cbidx](*args, **kwargs)
 
     def decode_packet(self, data):
         offset = 0
@@ -213,6 +224,9 @@ class AtemProtocol:
         if len(data) > 1300:
             raise ValueError("Command list too long for UDP packet")
 
+        self.send_raw(data)
+
+    def send_raw(self, data):
         packet = Packet()
         packet.flags = UdpProtocol.FLAG_RELIABLE
         packet.data = data

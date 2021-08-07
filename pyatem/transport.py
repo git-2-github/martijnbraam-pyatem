@@ -4,6 +4,7 @@ import logging
 import time
 from queue import Queue, Empty
 from threading import Lock
+from urllib.parse import urlparse
 
 import usb.core
 import usb.util
@@ -311,3 +312,97 @@ class UsbProtocol:
 
     def send_packet(self, packet):
         self._send_packet(packet)
+
+
+class TcpProtocol:
+    STATE_INIT = 0
+    STATE_AUTH = 1
+    STATE_CONNECTED = 2
+
+    def __init__(self, url=None, host=None, port=None, username=None, password=None, device=None):
+        if url is not None:
+            part = urlparse(url)
+            host = part.hostname
+            port = part.port or 4532
+            username = part.username
+            password = part.password
+            device = part.path[1:]
+        self.host = host
+        self.port = port
+        self.username = username
+        self.password = password
+        self.device = device
+
+        self.sock = None
+        self.state = TcpProtocol.STATE_INIT
+
+    def _send_packet(self, data):
+        header = struct.pack('!H', len(data))
+        self.sock.sendall(header + data)
+
+    def _receive_packet(self):
+        try:
+            header = self.sock.recv(2)
+            datalength, = struct.unpack('!H', header)
+            data = self.sock.recv(datalength)
+        except:
+            return None
+
+        packet = Packet()
+        packet.data = data
+        return packet
+
+    def decode_packet(self, data):
+        offset = 0
+        if len(data) < 8:
+            raise ValueError("Packet too short")
+        while offset < len(data):
+            datalen, cmd = struct.unpack_from('!H2x 4s', data, offset)
+            raw = data[offset + 8:offset + datalen]
+            yield (cmd, raw)
+            offset += datalen
+
+    def list_to_packets(self, data):
+        result = b''
+        for key, value in data:
+            result += struct.pack('!H2x 4s', len(value) + 8, key)
+            result += value
+        return result
+
+    def connect(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect((self.host, self.port))
+
+        # Send magic packet to init the connection
+        self._send_packet(self.list_to_packets([(b'*SW*', b'')]))
+
+    def send_auth(self):
+        self._send_packet(self.list_to_packets([
+            (b'*USR', self.username.encode()),
+            (b'*PWD', self.password.encode()),
+        ]))
+
+    def connect_device(self):
+        self._send_packet(self.list_to_packets([
+            (b'*DEV', self.device.encode()),
+        ]))
+
+    def receive_packet(self):
+        while True:
+            packet = self._receive_packet()
+            if packet is None:
+                continue
+            if self.state == TcpProtocol.STATE_INIT:
+                fields = list(self.decode_packet(packet.data))
+                if fields[0][0] == b'AUTH':
+                    self.send_auth()
+                    continue
+                elif fields[0][0] == b'*HW*':
+                    self.connect_device()
+                    self.state = TcpProtocol.STATE_CONNECTED
+            elif self.state == TcpProtocol.STATE_CONNECTED:
+                if packet is not None:
+                    return packet
+
+    def send_packet(self, packet):
+        self._send_packet(packet.data)

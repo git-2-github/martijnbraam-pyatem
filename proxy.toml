@@ -22,3 +22,11 @@ static-files = "/var/www/mywebapp"
 type = "status"
 bind = "127.0.0.1:8082"
 auth = false
+
+[[frontend]]
+type = "tcp"
+bind = ":8083"
+auth = true
+username = "admin"
+password = "password"
+hardware = "mini"
