@@ -6,6 +6,10 @@ class FieldBase:
     def _get_string(self, raw):
         return raw.split(b'\x00')[0].decode()
 
+    def make_packet(self):
+        header = struct.pack('!H2x 4s', len(self.raw) + 8, self.__class__.CODE.encode())
+        return header + self.raw
+
 
 class FirmwareVersionField(FieldBase):
     """
@@ -23,6 +27,8 @@ class FirmwareVersionField(FieldBase):
     :ivar major: Major firmware version
     :ivar minor: Minor firmware version
     """
+
+    CODE = "_ver"
 
     def __init__(self, raw):
         """
@@ -50,6 +56,8 @@ class ProductNameField(FieldBase):
 
     :ivar name: User friendly product name
     """
+
+    CODE = "_pin"
 
     def __init__(self, raw):
         self.raw = raw
@@ -79,6 +87,8 @@ class MixerEffectConfigField(FieldBase):
     :ivar keyers: Number of upstream keyers on this M/E
     """
 
+    CODE = "_MeC"
+
     def __init__(self, raw):
         self.raw = raw
         self.index, self.keyers = struct.unpack('>2B2x', raw)
@@ -103,6 +113,8 @@ class MediaplayerSlotsField(FieldBase):
 
     :ivar name: User friendly product name
     """
+
+    CODE = "_mpl"
 
     def __init__(self, raw):
         self.raw = raw
@@ -157,6 +169,8 @@ class VideoModeField(FieldBase):
     :ivar interlaced: the current mode is interlaced
     :ivar rate: refresh rate of the mode
     """
+
+    CODE = "VidM"
 
     def __init__(self, raw):
         self.raw = raw
@@ -288,6 +302,7 @@ class InputPropertiesField(FieldBase):
     PORT_PASSTHROUGH = 7
     PORT_ME_OUTPUT = 128
     PORT_AUX_OUTPUT = 129
+    CODE = "InPr"
 
     def __init__(self, raw):
         self.raw = raw
@@ -332,6 +347,8 @@ class ProgramBusInputField(FieldBase):
     :ivar source: Input source index, refers to an InputPropertiesField index
     """
 
+    CODE = "PrgI"
+
     def __init__(self, raw):
         self.raw = raw
         self.index, self.source = struct.unpack('>BxH', raw)
@@ -362,6 +379,8 @@ class PreviewBusInputField(FieldBase):
     :ivar source: Input source index, refers to an InputPropertiesField index
     :ivar in_program: Preview source is mixed into progam
     """
+
+    CODE = "PrvI"
 
     def __init__(self, raw):
         self.raw = raw
@@ -420,6 +439,7 @@ class TransitionSettingsField(FieldBase):
     STYLE_WIPE = 2
     STYLE_DVE = 3
     STYLE_STING = 4
+    CODE = "TrSS"
 
     def __init__(self, raw):
         self.raw = raw
@@ -461,6 +481,8 @@ class TransitionPreviewField(FieldBase):
     :ivar enabled: True if the transition preview is enabled
     """
 
+    CODE = "TsPr"
+
     def __init__(self, raw):
         self.raw = raw
         self.index, self.enabled = struct.unpack('>B ? 2x', raw)
@@ -494,6 +516,8 @@ class TransitionPositionField(FieldBase):
     :ivar position: Position of the transition, 0-9999
     """
 
+    CODE = "TrPs"
+
     def __init__(self, raw):
         self.raw = raw
         self.index, self.in_transition, self.frames_remaining, position = struct.unpack('>B ? B x H 2x', raw)
@@ -521,6 +545,8 @@ class TallyIndexField(FieldBase):
     :ivar num: number of tally lights
     :ivar tally: List of tally values, every tally light is represented as a tuple with 2 booleans for PROGRAM and PREVIEW
     """
+
+    CODE = "TlIn"
 
     def __init__(self, raw):
         self.raw = raw
@@ -554,6 +580,8 @@ class TallySourceField(FieldBase):
     :ivar num: number of tally lights
     :ivar tally: Dict of tally lights, every tally light is represented as a tuple with 2 booleans for PROGRAM and PREVIEW
     """
+
+    CODE = "TlSr"
 
     def __init__(self, raw):
         self.raw = raw
@@ -590,6 +618,8 @@ class KeyOnAirField(FieldBase):
     :ivar enabled: Wether the keyer is on-air
     """
 
+    CODE = "KeOn"
+
     def __init__(self, raw):
         self.raw = raw
         self.index, self.keyer, self.enabled = struct.unpack('>BB?x', raw)
@@ -618,6 +648,8 @@ class ColorGeneratorField(FieldBase):
     :ivar keyer: Upstream keyer number
     :ivar enabled: Wether the keyer is on-air
     """
+
+    CODE = "ColV"
 
     def __init__(self, raw):
         self.raw = raw
@@ -652,6 +684,8 @@ class AuxOutputSourceField(FieldBase):
     :ivar rate: Source index
     """
 
+    CODE = "AuxS"
+
     def __init__(self, raw):
         self.raw = raw
         self.index, self.source = struct.unpack('>BxH', raw)
@@ -680,6 +714,8 @@ class FadeToBlackStateField(FieldBase):
     :ivar transitioning: Fade to black is fading, (Solid red in control panel)
     :ivar frames_remaining: Frames remaining in the transition
     """
+
+    CODE = "FtbS"
 
     def __init__(self, raw):
         self.raw = raw
@@ -716,6 +752,8 @@ class MediaplayerFileInfoField(FieldBase):
     :ivar hash: 16-byte md5 hash of the slot data
     :ivar name: Name of the content in the slot
     """
+
+    CODE = "MPfe"
 
     def __init__(self, raw):
         self.raw = raw
@@ -795,6 +833,8 @@ class TopologyField(FieldBase):
     :ivar supersources: Number of supersources
     """
 
+    CODE = "_top"
+
     def __init__(self, raw):
         self.raw = raw
         field = struct.unpack('>28B', raw)
@@ -837,6 +877,8 @@ class DkeyPropertiesBaseField(FieldBase):
     :ivar key_source: Source index for the key input
     """
 
+    CODE = "DskB"
+
     def __init__(self, raw):
         self.raw = raw
         self.index, self.fill_source, self.key_source = struct.unpack('>BxHH2x', raw)
@@ -874,6 +916,8 @@ class DkeyPropertiesField(FieldBase):
     :ivar transitioning: Fade to black is fading, (Solid red in control panel)
     :ivar frames_remaining: Frames remaining in the transition
     """
+
+    CODE = "DskP"
 
     def __init__(self, raw):
         self.raw = raw
@@ -920,6 +964,8 @@ class DkeyStateField(FieldBase):
     :ivar frames_remaining: Frames remaining in transition
     """
 
+    CODE = "DskS"
+
     def __init__(self, raw):
         self.raw = raw
         field = struct.unpack('>B 3? B 3x', raw)
@@ -955,6 +1001,8 @@ class TransitionMixField(FieldBase):
     :ivar rate: Number of frames in the transition
     """
 
+    CODE = "TMxP"
+
     def __init__(self, raw):
         self.raw = raw
         self.index, self.rate = struct.unpack('>BBxx', raw)
@@ -980,6 +1028,8 @@ class FadeToBlackField(FieldBase):
     :ivar index: M/E index in the mixer
     :ivar rate: Number of frames in transition
     """
+
+    CODE = "FtbP"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1007,6 +1057,8 @@ class TransitionDipField(FieldBase):
     :ivar rate: Number of frames in transition
     :ivar source: Source index for the dip
     """
+
+    CODE = "TDpP"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1043,6 +1095,8 @@ class TransitionWipeField(FieldBase):
     :ivar rate: Number of frames in transition
     :ivar source: Source index for the dip
     """
+
+    CODE = "TWpP"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1101,6 +1155,8 @@ class TransitionDveField(FieldBase):
     :ivar flipflop: Flip flop transition
     """
 
+    CODE = "TDvP"
+
     def __init__(self, raw):
         self.raw = raw
         field = struct.unpack('>BBx B 2H 2? 2H 3? 3x', raw)
@@ -1147,6 +1203,8 @@ class FairlightMasterPropertiesField(FieldBase):
     :ivar afv: Enable/disabled state for master audio-follow-video (for fade-to-black)
     """
 
+    CODE = "FAMP"
+
     def __init__(self, raw):
         self.raw = raw
         field = struct.unpack('>x ? 4x h 2x H i ? 3x', raw)
@@ -1192,6 +1250,8 @@ class FairlightStripPropertiesField(FieldBase):
     :ivar afv: Enable/disabled state for master audio-follow-video (for fade-to-black)
     """
 
+    CODE = "FASP"
+
     def __init__(self, raw):
         self.raw = raw
         field = struct.unpack('>H 12xBBxB 4x h 5x ? 4x h 2x Hh 4x h x B 2x', raw)
@@ -1233,6 +1293,8 @@ class FairlightStripDeleteField(FieldBase):
 
     """
 
+    CODE = "FASD"
+
     def __init__(self, raw):
         self.raw = raw
 
@@ -1266,6 +1328,8 @@ class FairlightAudioInputField(FieldBase):
     After parsing:
     :ivar volume: Master volume for the mixer, signed int which maps [-10000 - 1000] to +10dB - -100dB (inf)
     """
+
+    CODE = "FAIP"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1301,6 +1365,8 @@ class FairlightTallyField(FieldBase):
     After parsing:
     :ivar volume: Master volume for the mixer, signed int which maps [-10000 - 1000] to +10dB - -100dB (inf)
     """
+
+    CODE = "FMTl"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1357,6 +1423,8 @@ class AtemEqBandPropertiesField(FieldBase):
     After parsing:
     :ivar volume: Master volume for the mixer, signed int which maps [-10000 - 1000] to +10dB - -100dB (inf)
     """
+
+    CODE = "AEBP"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1448,6 +1516,8 @@ class AudioInputField(FieldBase):
     :ivar volume: Master volume for the mixer, signed int which maps [-10000 - 1000] to +10dB - -100dB (inf)
     """
 
+    CODE = "AMIP"
+
     def __init__(self, raw):
         self.raw = raw
         self.index, self.type, self.number, self.plug, self.state, self.volume, self.balance = struct.unpack(
@@ -1462,6 +1532,8 @@ class KeyPropertiesBaseField(FieldBase):
     """
     Data from the `KeBP`. The upstream keyer base properties.
     """
+
+    CODE = "KeBP"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1488,6 +1560,8 @@ class KeyPropertiesDveField(FieldBase):
     """
     Data from the `KeDV`. The upstream keyer DVE-specific properties.
     """
+
+    CODE = "KeDV"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1539,6 +1613,8 @@ class KeyPropertiesLumaField(FieldBase):
     Data from the `KeLm`. The upstream keyer luma-specific properties.
     """
 
+    CODE = "KeLm"
+
     def __init__(self, raw):
         self.raw = raw
         field = struct.unpack('>BB?x HH ?3x', raw)
@@ -1580,6 +1656,8 @@ class RecordingDiskField(FieldBase):
 
     """
 
+    CODE = "RTMD"
+
     def __init__(self, raw):
         self.raw = raw
         field = struct.unpack('>IIH 64s 2x', raw)
@@ -1616,6 +1694,8 @@ class RecordingSettingsField(FieldBase):
     The recorder settings has 2 slots to select attached USB disks. If no disk is selected the i32 will be -1 otherwise
     it will be the disk number referring a RTMD field
     """
+
+    CODE = "RMSu"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1657,6 +1737,8 @@ class RecordingStatusField(FieldBase):
 
     """
 
+    CODE = "RMTS"
+
     def __init__(self, raw):
         self.raw = raw
         field = struct.unpack('>H2xi', raw)
@@ -1676,7 +1758,7 @@ class RecordingStatusField(FieldBase):
 
 class RecordingDurationField(FieldBase):
     """
-    Data from the `RTMS`. The status for the stream recorder.
+    Data from the `RTMR`. The status for the stream recorder.
 
     ====== ==== ====== ===========
     Offset Size Type   Descriptions
@@ -1690,6 +1772,8 @@ class RecordingDurationField(FieldBase):
     ====== ==== ====== ===========
 
     """
+
+    CODE = "RTMR"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1734,6 +1818,8 @@ class MultiviewerPropertiesField(FieldBase):
     === ==========
     """
 
+    CODE = "MvPr"
+
     def __init__(self, raw):
         self.raw = raw
         field = struct.unpack('>BB?B', raw)
@@ -1768,6 +1854,8 @@ class MultiviewerInputField(FieldBase):
     ====== ==== ====== ===========
     """
 
+    CODE = "MvIn"
+
     def __init__(self, raw):
         self.raw = raw
         self.index, self.window, self.source, self.vu, self.safearea = struct.unpack('>BBH??2x', raw)
@@ -1789,6 +1877,8 @@ class MultiviewerVuField(FieldBase):
     3      1    ?      unknown
     ====== ==== ====== ===========
     """
+
+    CODE = "VuMC"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1812,6 +1902,8 @@ class MultiviewerSafeAreaField(FieldBase):
     3      1    ?      unknown
     ====== ==== ====== ===========
     """
+
+    CODE = "SaMw"
 
     def __init__(self, raw):
         self.raw = raw
