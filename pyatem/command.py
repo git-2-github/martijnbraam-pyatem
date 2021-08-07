@@ -1616,3 +1616,73 @@ class RecorderStatusCommand(Command):
     def get_command(self):
         data = struct.pack('>?3x', self.recording)
         return self._make_command('RcTM', data)
+
+
+class MultiviewPropertiesCommand(Command):
+    """
+    Implementation of the `CMvP` command. This sets the layout of a multiview output and can set a flag for
+    swapping the program and preview window.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask, see table below
+    1      1    u8     Multiviewer index
+    2      1    u8     Layout
+    3      1    bool   Swap program/preview
+    ====== ==== ====== ===========
+
+    See the MultiviewPropertiesField for the description of the layout value.
+
+    """
+
+    def __init__(self, index, layout=None, swap=None):
+        """
+        :param index: 0-indexed multiview output number
+        :param layout: The layout number to use, or None
+        :param swap: Make the program/preview swapped or not, or None
+        """
+        self.index = index
+        self.layout = layout
+        self.swap = swap
+
+    def get_command(self):
+        mask = 0
+        if self.layout is not None:
+            mask |= 1 << 0
+        if self.swap is not None:
+            mask |= 1 << 1
+
+        layout = 0 if self.layout is None else self.layout
+        swap = False if self.swap is None else self.swap
+        data = struct.pack('>BBB?', mask, self.index, layout, swap)
+        return self._make_command('CMvP', data)
+
+
+class MultiviewInputCommand(Command):
+    """
+    Implementation of the `CMvI` command. This routes a source to one of the windows in a multiview output
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Multiviewer index
+    1      1    u8     Window index
+    2      2    u16    Source index
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, window, source):
+        """
+        :param index: 0-indexed multiview output number
+        :param window: The window number on the multiview
+        :param source: The source index index to route to the window
+        """
+        self.index = index
+        self.window = window
+        self.source = source
+
+    def get_command(self):
+        data = struct.pack('>BBH', self.index, self.window, self.source)
+        return self._make_command('CMvI', data)
