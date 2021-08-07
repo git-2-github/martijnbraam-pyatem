@@ -299,6 +299,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
             self.on_stream_recording_status_change(data)
         elif field == 'aux-output-source':
             self.on_aux_output_source_change(data)
+        elif field == 'dkey-properties-base':
+            self.on_dkey_properties_base_change(data)
         else:
             print(field)
             if field == 'time':

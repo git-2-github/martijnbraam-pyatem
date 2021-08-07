@@ -42,6 +42,7 @@ class SwitcherPage:
 
         self.usk_count = 0
         self.usks = {}
+        self.dsks = {}
         self.has_models = []
 
         self.upstream_keyers = builder.get_object('upstream_keyers')
@@ -399,6 +400,8 @@ class SwitcherPage:
 
     def on_dsk_change(self, data):
         self.me[0].set_dsk(data)
+        if data.index in self.dsks:
+            self.dsks[data.index].on_key_properties_change(data)
 
     def on_dsk_state_change(self, data):
         self.me[0].set_dsk_state(data)
@@ -410,6 +413,28 @@ class SwitcherPage:
         # Topology is only used for downstream keyer count, only available on M/E 1
         self.me[0].set_topology(data)
         self.apply_css(self.me[0], self.provider)
+
+        from gtk_switcher.downstreamkey import DownstreamKeyer
+        for widget in self.downstream_keyers:
+            widget.remove()
+
+        for i in range(0, data.downstream_keyers):
+            exp = Gtk.Expander()
+            exp.get_style_context().add_class('bmdgroup')
+            frame_label = Gtk.Label("Downstream keyer {}".format(i + 1))
+            frame_label.get_style_context().add_class("heading")
+            exp.set_label_widget(frame_label)
+            exp.set_expanded(True)
+            dsk = DownstreamKeyer(index=i, connection=self.connection)
+            self.dsks[dsk.index] = dsk
+            self.has_models.append(dsk)
+            exp.add(dsk)
+            self.apply_css(dsk, self.provider)
+            dsk.set_fill_model(self.model_me1_fill)
+            dsk.set_key_model(self.model_key)
+            self.downstream_keyers.pack_start(exp, False, True, 0)
+
+        self.downstream_keyers.show_all()
 
     def on_dsk_tie_clicked(self, widget, index, dsk, enabled):
         cmd = DkeyTieCommand(index=dsk, tie=enabled)
@@ -543,6 +568,12 @@ class SwitcherPage:
             print("Got preview input change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].preview_input_change(data)
+
+    def on_dkey_properties_base_change(self, data):
+        if data.index not in self.dsks:
+            print("Got dkey-properties-base for non-existant keyer {}".format(data.index))
+            return
+        self.dsks[data.index].on_key_properties_base_change(data)
 
     def on_me_program_changed(self, widget, index, source):
         cmd = ProgramInputCommand(index=index, source=source)

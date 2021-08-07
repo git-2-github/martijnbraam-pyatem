@@ -448,6 +448,124 @@ class DkeyRateCommand(Command):
         return self._make_command('CDsR', data)
 
 
+class DkeySetFillCommand(Command):
+    """
+    Implementation of the `CDsF` command. This sets the fill source on a downstream keyer
+    panel.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Keyer index, 0-indexed
+    1      1    ?      unknown
+    2      2    u16    Fill source index
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, source):
+        """
+        :param index: 0-indexed DSK number to control
+        :param source: The source index to set on the keyer
+        """
+        self.index = index
+        self.source = source
+
+    def get_command(self):
+        data = struct.pack('>BxH', self.index, self.source)
+        return self._make_command('CDsF', data)
+
+
+class DkeySetKeyCommand(Command):
+    """
+    Implementation of the `CDsC` command. This sets the key source on a downstream keyer
+    panel.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Keyer index, 0-indexed
+    1      1    ?      unknown
+    2      2    u16    Key source index
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, source):
+        """
+        :param index: 0-indexed DSK number to control
+        :param source: The source index to set on the keyer
+        """
+        self.index = index
+        self.source = source
+
+    def get_command(self):
+        data = struct.pack('>BxH', self.index, self.source)
+        return self._make_command('CDsC', data)
+
+
+class DkeyGainCommand(Command):
+    """
+    Implementation of the `CDsG` command. This controls the gain, clip, premultiplied and invert settings for a
+    downstream keyer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask
+    1      1    u8     Downstream keyer index
+    2      1    bool   Premultiplied
+    3      1    ?      unknown
+    4      2    u16    Clip
+    6      2    u16    Gain
+    8      1    bool   Invert
+    9      3    ?      unknown
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Pre-multiplied
+    1   Clip
+    2   Gain
+    3   Invert key
+    === ==========
+
+    """
+
+    def __init__(self, index, premultiplied=None, clip=None, gain=None, invert=None):
+        """
+        :param index: 0-indexed DSK number to control
+        :param premultipled: The new premultiplied state for the keyer, or None
+        :param clip: The new clip value for the keyer, or None
+        :param gain: The new gain value for the keyer, or None
+        :param invert: The new invert state for the keyer, or None
+        """
+        self.index = index
+        self.premultiplied = premultiplied
+        self.clip = clip
+        self.gain = gain
+        self.invert = invert
+
+    def get_command(self):
+        mask = 0
+        if self.premultiplied is not None:
+            mask |= 0x01
+        if self.clip is not None:
+            mask |= 0x02
+        if self.gain is not None:
+            mask |= 0x04
+        if self.invert is not None:
+            mask |= 0x08
+
+        premultiplied = False if self.premultiplied is None else self.premultiplied
+        invert = False if self.invert is None else self.invert
+        clip = 0 if self.clip is None else self.clip
+        gain = 0 if self.gain is None else self.gain
+        data = struct.pack('>BB ?x H H ?3x', mask, self.index, premultiplied, clip, gain, invert)
+        return self._make_command('CDsG', data)
+
+
 class MixSettingsCommand(Command):
     """
     Implementation of the `CTMx` command. This sets the transition duration for the mix transition

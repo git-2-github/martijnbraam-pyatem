@@ -816,6 +816,35 @@ class TopologyField(FieldBase):
         return '<topology, me={} sources={} aux={}>'.format(self.me_units, self.sources, self.aux_outputs)
 
 
+class DkeyPropertiesBaseField(FieldBase):
+    """
+    Data from the `DskB`. Downstream keyer base info.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     Downstream keyer index, 0-indexed
+    1      1    ?      unknown
+    2      2    u16    Fill source index
+    4      2    u16    Key source index
+    6      2    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: DSK index
+    :ivar fill_source: Source index for the fill input
+    :ivar key_source: Source index for the key input
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.fill_source, self.key_source = struct.unpack('>BxHH2x', raw)
+
+    def __repr__(self):
+        return '<downstream-keyer-base: dsk={}, fill={}, key={}>'.format(self.index, self.fill_source, self.key_source)
+
+
 class DkeyPropertiesField(FieldBase):
     """
     Data from the `DskP`. Downstream keyer info.
