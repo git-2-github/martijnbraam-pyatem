@@ -100,6 +100,10 @@ Downstream
    :members:
    :special-members:
 
+.. autoclass:: pyatem.command.DkeyMaskCommand
+   :members:
+   :special-members:
+
 
 .. autoclass:: pyatem.command.CaptureStillCommand
    :members:
