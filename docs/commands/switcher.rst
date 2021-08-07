@@ -88,6 +88,19 @@ Downstream
    :members:
    :special-members:
 
+.. autoclass:: pyatem.command.DkeySetFillCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.DkeySetKeyCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.DkeyGainCommand
+   :members:
+   :special-members:
+
+
 .. autoclass:: pyatem.command.CaptureStillCommand
    :members:
    :special-members:

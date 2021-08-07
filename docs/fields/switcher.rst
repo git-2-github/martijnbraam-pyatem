@@ -37,6 +37,9 @@ Downstream
 .. autoclass:: pyatem.field.FadeToBlackStateField
    :members:
 
+.. autoclass:: pyatem.field.DkeyBasePropertiesField
+   :members:
+
 .. autoclass:: pyatem.field.DkeyPropertiesField
    :members:
 
