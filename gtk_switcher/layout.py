@@ -1,6 +1,6 @@
 from gi.repository import Gtk, GObject, Gdk
 
-from pyatem.command import KeyPropertiesDveCommand
+from pyatem.command import KeyPropertiesDveCommand, DkeyMaskCommand
 
 
 class LayoutView(Gtk.Frame):
@@ -60,6 +60,7 @@ class LayoutView(Gtk.Frame):
         self.regions = {}
         self.masks = {}
         self.tally = {}
+        self.types = {}
 
     def update_region(self, label, x, y, w, h):
         self.regions[label] = [x, y, w, h]
@@ -87,6 +88,7 @@ class LayoutView(Gtk.Frame):
         self.move_alt = event.state & Gdk.ModifierType.CONTROL_MASK > 0
 
         if self.selected is None:
+            hits = []
             for label in self.regions:
                 region = self.regions[label]
                 w = self._coord_w(region[2])
@@ -96,9 +98,12 @@ class LayoutView(Gtk.Frame):
                 y = self._coord_y(region[1]) - (h / 2)
                 if x < event.x < (x + w):
                     if y < event.y < (y + h):
-                        self.selected = label
-                        self.da.queue_draw()
-                        return
+                        hits.append((label, w * h))
+            if len(hits) == 0:
+                return
+            sorted_hits = list(sorted(hits, key=lambda k: k[1]))
+            self.selected = sorted_hits[0][0]
+            self.da.queue_draw()
             return
 
         region = self.regions[self.selected]
@@ -267,25 +272,41 @@ class LayoutView(Gtk.Frame):
             return cmd
 
     def on_mask_update(self, label, left=None, right=None, top=None, bottom=None, exec=True):
+        ml = None
+        mr = None
+        mt = None
+        mb = None
+        if left is not None:
+            ml = int(left * 32000)
+        if right is not None:
+            mr = int(right * 32000)
+        if top is not None:
+            mt = int(top * 18000)
+        if bottom is not None:
+            mb = int(bottom * 18000)
+
         if label.startswith("Upstream key"):
             keyer = int(label[13:]) - 1
-            ml = None
-            mr = None
-            mt = None
-            mb = None
-            if left is not None:
-                ml = int(left * 32000)
-            if right is not None:
-                mr = int(right * 32000)
-            if top is not None:
-                mt = int(top * 18000)
-            if bottom is not None:
-                mb = int(bottom * 18000)
+
             cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_top=mt, mask_bottom=mb, mask_left=ml,
                                           mask_right=mr)
-            if exec:
-                self.connection.mixer.send_commands([cmd])
-            return cmd
+        elif label.startswith("Downstream key"):
+            keyer = int(label[17:]) - 1
+            if ml is not None:
+                ml = ml - 16000
+            if mr is not None:
+                mr = 16000 - mr
+            if mt is not None:
+                mt = 9000 - mt
+            if mb is not None:
+                mb = mb - 9000
+            cmd = DkeyMaskCommand(index=keyer, top=mt, bottom=mb, left=ml, right=mr)
+
+        if not cmd:
+            return None
+        if exec:
+            self.connection.mixer.send_commands([cmd])
+        return cmd
 
     def _coord_x(self, input_coord):
         input_coord = (input_coord + 16) / 32.0

@@ -398,10 +398,20 @@ class SwitcherPage:
         self.dve_rate.set_text(label)
         self.me[data.index].set_auto_rate('dve', data.rate)
 
+    def _remap(self, value, old_min, old_max, new_min, new_max):
+        return ((value - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min
+
     def on_dsk_change(self, data):
         self.me[0].set_dsk(data)
         if data.index in self.dsks:
             self.dsks[data.index].on_key_properties_change(data)
+            label = "Downstream keyer {}".format(data.index + 1)
+
+            top = 9000 - data.top
+            bottom = data.bottom + 9000
+            left = data.left + 16000
+            right = 16000 - data.right
+            self.layout[0].update_mask(label, top, bottom, left, right)
 
     def on_dsk_state_change(self, data):
         self.me[0].set_dsk_state(data)
@@ -421,7 +431,8 @@ class SwitcherPage:
         for i in range(0, data.downstream_keyers):
             exp = Gtk.Expander()
             exp.get_style_context().add_class('bmdgroup')
-            frame_label = Gtk.Label("Downstream keyer {}".format(i + 1))
+            label = "Downstream keyer {}".format(i + 1)
+            frame_label = Gtk.Label(label)
             frame_label.get_style_context().add_class("heading")
             exp.set_label_widget(frame_label)
             exp.set_expanded(True)
@@ -434,6 +445,9 @@ class SwitcherPage:
             dsk.set_key_model(self.model_key)
             self.downstream_keyers.pack_start(exp, False, True, 0)
 
+            # Add the DSK to the layout editor of M/E 1
+            self.layout[0].update_region(label, 0, 0, 16, 9)
+            self.layout[0].update_mask(label, 0, 0, 0, 0)
         self.downstream_keyers.show_all()
 
     def on_dsk_tie_clicked(self, widget, index, dsk, enabled):

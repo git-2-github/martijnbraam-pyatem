@@ -566,6 +566,73 @@ class DkeyGainCommand(Command):
         return self._make_command('CDsG', data)
 
 
+class DkeyMaskCommand(Command):
+    """
+    Implementation of the `CDsM` command. This controls the mask values for a downstream keyer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask
+    1      1    u8     Downstream keyer index
+    2      1    bool   Mask enabled
+    3      1    ?      unknown
+    4      2    i16    Mask Top
+    6      2    i16    Mask bottom
+    8      2    i16    Mask left
+    10     2    i16    Mask right
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Mask enabled
+    1   Top
+    2   Bottom
+    3   Left
+    4   Right
+    === ==========
+
+    """
+
+    def __init__(self, index, enabled=None, top=None, bottom=None, left=None, right=None):
+        """
+        :param index: 0-indexed DSK number to control
+        :param enabled: Enable or disable the mask, or None
+        :param top: The new top offset for the mask, or None
+        :param bottom: The new bottom offset for the mask, or None
+        :param left: The new left offset for the mask, or None
+        :param right: The new right offset for the mask, or None
+        """
+        self.index = index
+        self.enabled = enabled
+        self.top = top
+        self.bottom = bottom
+        self.left = left
+        self.right = right
+
+    def get_command(self):
+        mask = 0
+        if self.enabled is not None:
+            mask |= 0x01
+        if self.top is not None:
+            mask |= 0x02
+        if self.bottom is not None:
+            mask |= 0x04
+        if self.left is not None:
+            mask |= 0x08
+        if self.right is not None:
+            mask |= 0x10
+
+        enabled = False if self.enabled is None else self.enabled
+        top = 0 if self.top is None else self.top
+        bottom = 0 if self.bottom is None else self.bottom
+        left = 0 if self.left is None else self.left
+        right = 0 if self.right is None else self.right
+        data = struct.pack('>BB ?x 4h', mask, self.index, enabled, top, bottom, left, right)
+        return self._make_command('CDsM', data)
+
+
 class MixSettingsCommand(Command):
     """
     Implementation of the `CTMx` command. This sets the transition duration for the mix transition
