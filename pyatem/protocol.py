@@ -109,6 +109,8 @@ class AtemProtocol:
             'SRSS': 'streaming-stats',
             'SAth': 'streaming-authentication',
             'AEBP': 'atem-eq-band-properties',
+            'MvPr': 'multiviewer-properties',
+            'MvIn': 'multiviewer-input',
         }
 
         fieldname_to_unique = {
@@ -144,6 +146,8 @@ class AtemProtocol:
             'mediaplayer-file-info': '>xxH',
             'mediaplayer-selected': '>B',
             'atem-eq-band-properties': '>H14xB',
+            'multiviewer-properties': '>B',
+            'multiviewer-input': '>BB',
         }
 
         raw = contents

@@ -25,3 +25,12 @@ Hardware contents
 .. autoclass:: pyatem.field.MediaplayerSlotsField
    :members:
 
+
+Multiviewer routing
+-------------------
+
+.. autoclass:: pyatem.field.MultiviewerPropertiesField
+   :members:
+
+.. autoclass:: pyatem.field.MultiviewerInputField
+   :members:

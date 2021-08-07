@@ -1705,3 +1705,72 @@ class RecordingDurationField(FieldBase):
         if self.has_dropped_frames:
             drop = ' dropped-frames'
         return '<recording-duration {}:{}:{}:{}{}>'.format(self.hours, self.minutes, self.seconds, self.frames, drop)
+
+
+class MultiviewerPropertiesField(FieldBase):
+    """
+    Data from the `MvPr`. The layout preset for the multiviewer output.
+
+    The multiviewer is divided in 4 quadrants and the layout bitfield describes which of those quadrants are
+    subdivided again in 4 more viewers. The default layout will have the top 2 quadrants not divided and the bottom
+    quadrants used for small viewers.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     Multiviewer index, 0-indexed
+    1      1    u8     Layout bitfield
+    1      1    bool   Flip program/preview
+    1      1    ?      unknown
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Layout value
+    === ==========
+    0   Top left small
+    1   Top right small
+    2   Bottom left small
+    4   Bottom right small
+    === ==========
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>BB?B', raw)
+        self.index = field[0]
+        self.layout = field[1]
+        self.flip = field[2]
+        self.u1 = field[3]
+
+        self.top_left_small = field[1] & 0x01 > 0
+        self.top_right_small = field[1] & 0x02 > 0
+        self.bottom_left_small = field[1] & 0x04 > 0
+        self.bottom_right_small = field[1] & 0x08 > 0
+
+    def __repr__(self):
+        return '<multiviewer-properties mv={} layout={} flip={} u1={}>'.format(self.index, self.layout, self.flip,
+                                                                               self.u1)
+
+
+class MultiviewerInputField(FieldBase):
+    """
+    Data from the `MvIn`. The input routing for the multiviewer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     Multiviewer index, 0-indexed
+    1      1    u8     Window index 0-9
+    2      2    u16    Source index
+    4      1    bool   Supports enabling the VU meter
+    5      1    bool   Supports enabling the safe area overlay
+    6      2    ?      unknown
+    ====== ==== ====== ===========
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.window, self.source, self.vu, self.safearea = struct.unpack('>BBH??2x', raw)
+
+    def __repr__(self):
+        return '<multiviewer-input mv={} win={} source={}>'.format(self.index, self.window, self.source)
