@@ -111,6 +111,8 @@ class AtemProtocol:
             'AEBP': 'atem-eq-band-properties',
             'MvPr': 'multiviewer-properties',
             'MvIn': 'multiviewer-input',
+            'VuMC': 'multiviewer-vu',
+            'SaMw': 'multiviewer-safe-area',
         }
 
         fieldname_to_unique = {
@@ -148,6 +150,8 @@ class AtemProtocol:
             'atem-eq-band-properties': '>H14xB',
             'multiviewer-properties': '>B',
             'multiviewer-input': '>BB',
+            'multiviewer-vu': '>BB',
+            'multiviewer-safe-area': '>BB',
         }
 
         raw = contents

@@ -34,3 +34,9 @@ Multiviewer routing
 
 .. autoclass:: pyatem.field.MultiviewerInputField
    :members:
+
+.. autoclass:: pyatem.field.MultiviewerVuField
+   :members:
+
+.. autoclass:: pyatem.field.MultiviewerSafeAreaField
+   :members:

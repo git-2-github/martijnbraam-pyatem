@@ -1774,3 +1774,48 @@ class MultiviewerInputField(FieldBase):
 
     def __repr__(self):
         return '<multiviewer-input mv={} win={} source={}>'.format(self.index, self.window, self.source)
+
+
+class MultiviewerVuField(FieldBase):
+    """
+    Data from the `VuMC`. This describes if a multiview window has the VU meter overlay enabled.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     Multiviewer index, 0-indexed
+    1      1    u8     Window index 0-9
+    2      1    bool   VU enabled
+    3      1    ?      unknown
+    ====== ==== ====== ===========
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.window, self.enabled = struct.unpack('>BB?x', raw)
+
+    def __repr__(self):
+        return '<multiviewer-vu mv={} win={} enabled={}>'.format(self.index, self.window, self.enabled)
+
+
+class MultiviewerSafeAreaField(FieldBase):
+    """
+    Data from the `SaMw`. This describes if a multiview window has the safe area overlay enabled. This is generally
+    only enabled on the preview window.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     Multiviewer index, 0-indexed
+    1      1    u8     Window index 0-9
+    2      1    bool   safe area enabled
+    3      1    ?      unknown
+    ====== ==== ====== ===========
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.window, self.enabled = struct.unpack('>BB?x', raw)
+
+    def __repr__(self):
+        return '<multiviewer-safe-area mv={} win={} enabled={}>'.format(self.index, self.window, self.enabled)
