@@ -60,7 +60,6 @@ class LayoutView(Gtk.Frame):
         self.regions = {}
         self.masks = {}
         self.tally = {}
-        self.types = {}
 
     def update_region(self, label, x, y, w, h):
         self.regions[label] = [x, y, w, h]

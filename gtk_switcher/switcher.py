@@ -415,6 +415,8 @@ class SwitcherPage:
 
     def on_dsk_state_change(self, data):
         self.me[0].set_dsk_state(data)
+        label = "Downstream keyer {}".format(data.index + 1)
+        self.layout[0].region_onair(label, data.on_air)
 
     def on_topology_change(self, data):
         for i in range(0, data.me_units - len(self.me)):
