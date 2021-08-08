@@ -7,5 +7,6 @@ These decribe the packets sent from the client to the switcher
    :maxdepth: 1
    :caption: Command categories:
 
+   commands/hardware
    commands/switcher
    commands/fairlightmixer

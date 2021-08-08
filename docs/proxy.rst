@@ -130,3 +130,31 @@ To send a command to the device the same transform applies, but a POST request i
 
    # Send as json
    $ curl -X POST "http://localhost:8080/mini/program-input" -d '{"index": 0, "source": 2}' -H "Content-Type: application/json"
+
+The TCP frontend
+^^^^^^^^^^^^^^^^
+
+The TCP frontend is a custom protocol implementation. The TCP protocol works between the OpenSwitcher proxy and the OpenSwitcher
+application and is basically the simplified atem USB protocol tunneled over TCP. It also adds authentication and device
+multiplexing. Using this protocol it's possible to control any amount of hardware switcheres over a single TCP port and
+have as many clients connected as required.
+
+.. code-block:: toml
+
+    [[frontend]]
+    type = "tcp"
+    bind = "127.0.0.1:8084"
+    auth = true
+    username = "admin"
+    password = "verysecure"
+    hardware = "mini,secondswitcher,constellation"
+
+The pyatem library can connect to this frontend by passing an URL to it:
+
+.. code-block:: url
+
+    tcp://username:password@myproxyserver:8084/secondswitcher
+
+The hardware list is also send to clients in the connection phase. The protocol is designed so clients can show
+a popup for authentication when it's enabled and show a device selection popup with the labels set in the hardware
+section.

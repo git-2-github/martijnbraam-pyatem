@@ -14,6 +14,7 @@ a few parts since the skaarhoj documentation has been last updated.
    commands
    python
    proxy
+   tcptransport
 
 Indices and tables
 ==================
