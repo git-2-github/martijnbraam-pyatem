@@ -21,6 +21,7 @@ class AtemProtocol:
         self.callbacks = {}
         self.inputs = {}
         self.callback_idx = 1
+        self.connected = False
 
     @classmethod
     def usb_exists(cls):
@@ -33,7 +34,14 @@ class AtemProtocol:
     def loop(self):
         logging.debug('Waiting for data packet...')
         packet = self.transport.receive_packet()
-
+        if packet is None:
+            # Disconnected from hardware
+            if self.connected:
+                self._raise('disconnected')
+                self.mixerstate = {}
+            self.connected = False
+            return
+        self.connected = True
         for fieldname, data in self.decode_packet(packet.data):
             self.save_field_data(fieldname, data)
 

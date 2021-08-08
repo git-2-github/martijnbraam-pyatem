@@ -22,6 +22,7 @@ class HardwareThread(threading.Thread):
             self.switcher = AtemProtocol(ip=self.config['address'])
         self.switcher.on('connected', self.on_connected)
         self.switcher.on('change', self.on_change)
+        self.switcher.on('disconnected', self.on_disconnected)
         self.switcher.connect()
         while not self.stop:
             self.switcher.loop()
@@ -36,6 +37,10 @@ class HardwareThread(threading.Thread):
     def on_connected(self):
         self.status = 'connected'
         logging.info('Initial state sync complete')
+
+    def on_disconnected(self):
+        self.status = 'lost connection'
+        logging.error('Lost connection with the hardware')
 
     def on_change(self, key, value):
         pass

@@ -22,9 +22,10 @@ from gi.repository import Handy
 
 
 class AtemConnection(threading.Thread):
-    def __init__(self, callback):
+    def __init__(self, callback, disconnected):
         threading.Thread.__init__(self)
         self.callback = callback
+        self.disconnected = disconnected
         self.atem = None
         self.ip = None
         self.stop = False
@@ -39,12 +40,16 @@ class AtemConnection(threading.Thread):
         else:
             self.mixer = AtemProtocol(self.ip)
         self.mixer.on('change', self.do_callback)
+        self.mixer.on('disconnected', self.do_disconnected)
         self.mixer.connect()
         while not self.stop:
             self.mixer.loop()
 
     def do_callback(self, *args, **kwargs):
         GLib.idle_add(self.callback, *args, **kwargs)
+
+    def do_disconnected(self):
+        GLib.idle_add(self.disconnected)
 
     def get_id(self):
 
@@ -89,7 +94,9 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
 
         # Load requested view
         self.mainstack = builder.get_object("mainstack")
+        self.connectionstack = builder.get_object("connectionstack")
         self.mainstack.set_visible_child_name(args.view)
+        self.connectionstack.set_visible_child_name("disconnected")
 
         SwitcherPage.__init__(self, builder)
         MediaPage.__init__(self, builder)
@@ -109,7 +116,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         self.firmware_version = None
         self.mode = None
 
-        self.connection = AtemConnection(self.on_change)
+        self.connection = AtemConnection(self.on_change, self.on_disconnect)
 
         if args.ip:
             self.connection.ip = args.ip
@@ -194,7 +201,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         self.connection.die()
         self.connection.join(timeout=1)
 
-        self.connection = AtemConnection(self.on_change)
+        self.connection = AtemConnection(self.on_change, self.on_disconnect)
         self.connection.daemon = True
         self.connection.ip = self.settings.get_string('switcher-ip')
         self.connection.start()
@@ -211,7 +218,12 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
     def on_preferences_button_clicked(self, widget):
         PreferencesWindow(self.window)
 
+    def on_disconnect(self):
+        self.connectionstack.set_visible_child_name("disconnected")
+        print("Disconnected from mixer")
+
     def on_change(self, field, data):
+        self.connectionstack.set_visible_child_name("connected")
         global _callbacks
         if self.args.dump is not None and field in self.args.dump:
             if isinstance(data, bytes):

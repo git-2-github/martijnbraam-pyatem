@@ -3,7 +3,6 @@ import struct
 import logging
 import time
 from queue import Queue, Empty
-from threading import Lock
 from urllib.parse import urlparse
 
 import usb.core
@@ -23,6 +22,7 @@ class Packet:
         self.debug = False
         self.original = None
         self.label = None
+        self.last_packet_time = None
 
     @classmethod
     def from_bytes(cls, packet):
@@ -109,6 +109,7 @@ class UdpProtocol:
         self.port = port
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.settimeout(5)
 
         self.local_sequence_number = 0
         self.local_ack_number = 0
@@ -119,6 +120,7 @@ class UdpProtocol:
         self.session_id = 0x1337
 
         self.enable_ack = False
+        self.had_traffic = False
 
     def _send_packet(self, packet):
         packet.session = self.session_id
@@ -134,7 +136,13 @@ class UdpProtocol:
             self.local_sequence_number = (self.local_sequence_number + 1) % 2 ** 16
 
     def _receive_packet(self):
-        data, address = self.sock.recvfrom(2048)
+        try:
+            data, address = self.sock.recvfrom(2048)
+        except socket.timeout:
+            # No longer receiving data from the hardware, reset the state of the connection and re-init
+            self.state = UdpProtocol.STATE_CLOSED
+            self.connect()
+            return
         packet = Packet.from_bytes(data)
         logging.debug('< {}'.format(packet))
 
@@ -186,6 +194,14 @@ class UdpProtocol:
         if self.state != UdpProtocol.STATE_CLOSED:
             raise RuntimeError("Trying to open an connection that's already open")
 
+        # Reset internal state
+        self.local_sequence_number = 0
+        self.local_ack_number = 0
+        self.remote_sequence_number = 0
+        self.remote_ack_numbe = 0
+        self.session_id = 0x1337
+        self.enable_ack = False
+
         # Create first syn packet
         syn = Packet()
         syn.flags = UdpProtocol.FLAG_SYN
@@ -201,8 +217,20 @@ class UdpProtocol:
     def receive_packet(self):
         while True:
             packet = self._receive_packet()
+            if packet is None and not self.had_traffic:
+                continue
+            if packet is None and self.state == UdpProtocol.STATE_SYN_SENT:
+                # No response in connect, retry connection
+                self.state = UdpProtocol.STATE_CLOSED
+                self.had_traffic = False
+                self.connect()
+                return None
+            if packet is None:
+                continue
+
             if self.state == UdpProtocol.STATE_SYN_SENT:
                 # Got response for the first handshake packet
+                self.had_traffic = True
                 self._handshake(packet)
             elif self.state == UdpProtocol.STATE_ESTABLISHED:
                 if packet.length == 12:

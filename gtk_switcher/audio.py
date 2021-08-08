@@ -45,6 +45,7 @@ class AudioPage:
             self.delay[data.strip_id] = Gtk.Adjustment(0, 0, 8, 1, 1, 1)
             self.volume_level[data.strip_id].connect('value-changed', self.on_volume_changed)
 
+        self.model_changing = True
         self.volume_level[data.strip_id].set_value(data.volume)
         self.pan[data.strip_id].set_value(data.pan)
         self.input_gain[data.strip_id].set_value(data.gain)
@@ -55,14 +56,19 @@ class AudioPage:
         if data.strip_id in self.audio_on:
             self.set_class(self.audio_on[data.strip_id], 'program', data.state & 2)
             self.set_class(self.audio_afv[data.strip_id], 'active', data.state & 4)
+        self.model_changing = False
 
     def on_volume_changed(self, widget, *args):
+        if self.model_changing:
+            return
         if self.mixer == 'fairlight':
             cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel,
                                                   volume=int(widget.get_value()))
             self.connection.mixer.send_commands([cmd])
 
     def on_input_gain_changed(self, widget, *args):
+        if self.model_changing:
+            return
         if self.mixer == 'fairlight':
             print("NEW GAIN", int(widget.get_value()))
             cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel,

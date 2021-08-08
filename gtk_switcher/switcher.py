@@ -192,6 +192,8 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_wipe_pattern_clicked(self, widget):
+        if self.model_changing:
+            return
         cmd = WipeSettingsCommand(index=0, pattern=widget.pattern)
         self.connection.mixer.send_commands([cmd])
 
@@ -219,6 +221,8 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_auto_rate_changed(self, widget, index, style, frames):
+        if self.model_changing:
+            return
         cmd = None
         # Send new rate to the mixer
         if style == 'mix':
@@ -245,22 +249,32 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_wipe_symmetry_adj_value_changed(self, widget, *args):
+        if self.model_changing:
+            return
         cmd = WipeSettingsCommand(index=0, symmetry=int(widget.get_value()))
         self.connection.mixer.send_commands([cmd])
 
     def on_wipe_x_adj_value_changed(self, widget, *args):
+        if self.model_changing:
+            return
         cmd = WipeSettingsCommand(index=0, positionx=int(widget.get_value()))
         self.connection.mixer.send_commands([cmd])
 
     def on_wipe_y_adj_value_changed(self, widget, *args):
+        if self.model_changing:
+            return
         cmd = WipeSettingsCommand(index=0, positiony=int(widget.get_value()))
         self.connection.mixer.send_commands([cmd])
 
     def on_wipe_width_adj_value_changed(self, widget, *args):
+        if self.model_changing:
+            return
         cmd = WipeSettingsCommand(index=0, width=int(widget.get_value()))
         self.connection.mixer.send_commands([cmd])
 
     def on_wipe_softness_adj_value_changed(self, widget, *args):
+        if self.model_changing:
+            return
         cmd = WipeSettingsCommand(index=0, softness=int(widget.get_value()))
         self.connection.mixer.send_commands([cmd])
 
@@ -272,11 +286,15 @@ class SwitcherPage:
         self.focus_dummy.grab_focus()
 
     def on_wipe_flipflop_clicked(self, widget, *args):
+        if self.model_changing:
+            return
         state = widget.get_style_context().has_class('active')
         cmd = WipeSettingsCommand(index=0, flipflop=not state)
         self.connection.mixer.send_commands([cmd])
 
     def on_wipe_reverse_clicked(self, widget, *args):
+        if self.model_changing:
+            return
         state = widget.get_style_context().has_class('active')
         cmd = WipeSettingsCommand(index=0, reverse=not state)
         self.connection.mixer.send_commands([cmd])
@@ -375,11 +393,13 @@ class SwitcherPage:
             self.set_class(button, 'active', style == data.pattern)
 
         if not self.slider_held:
+            self.model_changing = True
             self.wipe_symmetry_adj.set_value(data.symmetry)
             self.wipe_x_adj.set_value(data.positionx)
             self.wipe_y_adj.set_value(data.positiony)
             self.wipe_width_adj.set_value(data.width)
             self.wipe_softness_adj.set_value(data.softness)
+            self.model_changing = False
 
         self.model_changing = True
         self.wipe_fill.set_active_id(str(data.source))
@@ -428,7 +448,7 @@ class SwitcherPage:
 
         from gtk_switcher.downstreamkey import DownstreamKeyer
         for widget in self.downstream_keyers:
-            widget.remove()
+            self.downstream_keyers.remove(widget)
 
         for i in range(0, data.downstream_keyers):
             exp = Gtk.Expander()
