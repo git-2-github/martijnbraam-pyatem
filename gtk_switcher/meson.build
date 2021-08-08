@@ -40,6 +40,9 @@ switcher_sources = [
     'colorwheel.py',
     'layout.py',
     'decorators.py',
+    'adjustmententry.py',
+    'dial.py',
+    'downstreamkey.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)
