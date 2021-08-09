@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 6.3499998 6.3499998"
+   version="1.1"
+   id="svg8"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs2" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="g1517"
+     transform="rotate(180,2.8884835,3.1283953)">
+    <rect
+       style="fill:#bebebe;fill-opacity:1;stroke:none;stroke-width:0.093896"
+       id="rect833-3-3-3"
+       width="3.7041664"
+       height="0.52916664"
+       x="-5.1984572"
+       y="-0.04386615"
+       rx="0"
+       transform="rotate(-90)" />
+    <rect
+       style="fill:#bebebe;fill-opacity:1;stroke:none;stroke-width:0.100379"
+       id="rect833-3-3-6-6"
+       width="4.2333331"
+       height="0.52916676"
+       x="-5.1984572"
+       y="4.7186337"
+       rx="0"
+       transform="rotate(-90)" />
+    <rect
+       style="fill:#bebebe;fill-opacity:1;stroke:none;stroke-width:0.100379"
+       id="rect833-3-3-0-0"
+       width="0.5291667"
+       height="4.2333331"
+       x="-5.1984572"
+       y="0.48530051"
+       rx="0"
+       transform="rotate(-90)" />
+    <rect
+       style="fill:#bebebe;fill-opacity:1;stroke:none;stroke-width:0.106469"
+       id="rect833-3-3-6-9-6"
+       width="0.52916664"
+       height="4.7625003"
+       x="-1.4942907"
+       y="-0.04386615"
+       rx="0"
+       transform="rotate(-90)" />
+    <rect
+       style="fill:#bebebe;fill-opacity:1;stroke:none;stroke-width:0.0561137"
+       id="rect833-3-3-6-6-6"
+       width="0.52916682"
+       height="1.3229166"
+       x="-3.346374"
+       y="-0.30844948"
+       rx="0"
+       transform="rotate(-90)" />
+    <rect
+       style="fill:#bebebe;fill-opacity:1;stroke:none;stroke-width:0.0561137"
+       id="rect833-3-3-6-9-6-8"
+       width="0.52916682"
+       height="1.3229166"
+       x="-3.346374"
+       y="4.189467"
+       rx="0"
+       transform="rotate(-90)" />
+  </g>
+</svg>
