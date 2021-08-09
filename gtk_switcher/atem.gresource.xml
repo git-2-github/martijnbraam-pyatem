@@ -28,6 +28,12 @@
     <file>icons/wipe-diag1.svg</file>
     <file>icons/wipe-diag2.svg</file>
 
+    <file>icons/multiview-tl.svg</file>
+    <file>icons/multiview-tr.svg</file>
+    <file>icons/multiview-bl.svg</file>
+    <file>icons/multiview-br.svg</file>
+    <file>icons/multiview-swap.svg</file>
+
     <file>icons/openswitcher.svg</file>
 
     <file>asset/rainbow.png</file>

@@ -124,7 +124,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
                 self.settings.set_string('switcher-ip', args.ip)
         else:
             if self.connection.ip == "0.0.0.0":
-                ConnectionWindow(self.window, self.mixer, self.application)
+                ConnectionWindow(self.window, self.connection, self.application)
 
             self.connection.ip = self.settings.get_string('switcher-ip')
         self.connection.daemon = True
@@ -216,7 +216,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         Gtk.main_quit()
 
     def on_preferences_button_clicked(self, widget):
-        ConnectionWindow(self.window, self.mixer, self.application)
+        ConnectionWindow(self.window, self.connection, self.application)
 
     def on_disconnect(self):
         self.connectionstack.set_visible_child_name("disconnected")
