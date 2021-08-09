@@ -7,6 +7,7 @@
     <file>ui/mixeffect.glade</file>
     <file>ui/upstream-keyer.glade</file>
     <file>ui/downstream-keyer.glade</file>
+    <file>ui/preferences.glade</file>
 
     <file>icons/wipe-h.svg</file>
     <file>icons/wipe-v.svg</file>

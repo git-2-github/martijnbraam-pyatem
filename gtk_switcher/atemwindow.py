@@ -9,7 +9,7 @@ from gtk_switcher.camera import CameraPage
 from gtk_switcher.decorators import field, call_fields
 from gtk_switcher.media import MediaPage
 from gtk_switcher.midi import MidiConnection, MidiControl
-from gtk_switcher.preferenceswindow import PreferencesWindow
+from gtk_switcher.connectionwindow import ConnectionWindow
 from gtk_switcher.switcher import SwitcherPage
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, AutoCommand, TransitionPositionCommand
 from pyatem.protocol import AtemProtocol
@@ -124,7 +124,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
                 self.settings.set_string('switcher-ip', args.ip)
         else:
             if self.connection.ip == "0.0.0.0":
-                PreferencesWindow(self.window)
+                ConnectionWindow(self.window, self.mixer, self.application)
 
             self.connection.ip = self.settings.get_string('switcher-ip')
         self.connection.daemon = True
@@ -216,7 +216,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         Gtk.main_quit()
 
     def on_preferences_button_clicked(self, widget):
-        PreferencesWindow(self.window)
+        ConnectionWindow(self.window, self.mixer, self.application)
 
     def on_disconnect(self):
         self.connectionstack.set_visible_child_name("disconnected")
