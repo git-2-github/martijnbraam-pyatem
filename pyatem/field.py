@@ -88,6 +88,7 @@ class MixerEffectConfigField(FieldBase):
     """
 
     CODE = "_MeC"
+    ME = "index"
 
     def __init__(self, raw):
         self.raw = raw
@@ -348,6 +349,7 @@ class ProgramBusInputField(FieldBase):
     """
 
     CODE = "PrgI"
+    ME = "index"
 
     def __init__(self, raw):
         self.raw = raw
@@ -381,6 +383,7 @@ class PreviewBusInputField(FieldBase):
     """
 
     CODE = "PrvI"
+    ME = "index"
 
     def __init__(self, raw):
         self.raw = raw
@@ -852,6 +855,22 @@ class TopologyField(FieldBase):
         self.stingers = field[10]
         self.supersources = field[11]
 
+    def update(self):
+        field = list(struct.unpack('>28B', self.raw))
+        field[0] = self.me_units
+        field[1] = self.sources
+        field[2] = self.downstream_keyers
+        field[3] = self.aux_outputs
+        field[4] = self.mixminus_outputs
+        field[5] = self.mediaplayers
+        field[6] = self.multiviewers
+        field[7] = self.rs485
+        field[8] = self.hyperdecks
+        field[9] = self.dve
+        field[10] = self.stingers
+        field[11] = self.supersources
+        self.raw = struct.pack('>28B', *field)
+
     def __repr__(self):
         return '<topology, me={} sources={} aux={}>'.format(self.me_units, self.sources, self.aux_outputs)
 
@@ -1002,6 +1021,7 @@ class TransitionMixField(FieldBase):
     """
 
     CODE = "TMxP"
+    ME = "index"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1030,6 +1050,7 @@ class FadeToBlackField(FieldBase):
     """
 
     CODE = "FtbP"
+    ME = "index"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1059,6 +1080,7 @@ class TransitionDipField(FieldBase):
     """
 
     CODE = "TDpP"
+    ME = "index"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1097,6 +1119,7 @@ class TransitionWipeField(FieldBase):
     """
 
     CODE = "TWpP"
+    ME = "index"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1156,6 +1179,7 @@ class TransitionDveField(FieldBase):
     """
 
     CODE = "TDvP"
+    ME = "index"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1534,6 +1558,7 @@ class KeyPropertiesBaseField(FieldBase):
     """
 
     CODE = "KeBP"
+    ME = "index"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1562,6 +1587,7 @@ class KeyPropertiesDveField(FieldBase):
     """
 
     CODE = "KeDV"
+    ME = "index"
 
     def __init__(self, raw):
         self.raw = raw
@@ -1614,6 +1640,7 @@ class KeyPropertiesLumaField(FieldBase):
     """
 
     CODE = "KeLm"
+    ME = "index"
 
     def __init__(self, raw):
         self.raw = raw

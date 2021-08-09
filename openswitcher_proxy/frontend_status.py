@@ -33,10 +33,11 @@ class StatusRequestHandler(AuthRequestHandler):
                 '<table border="1"><tr><th>id</th><th>label</th><th>address</th><th>status</th></tr>'.encode())
             for hwid in self.threadpool['hardware']:
                 hardware = self.threadpool['hardware'][hwid]
+                address = hardware.config['address'] if 'address' in hardware.config else ''
                 self.wfile.write('<tr>'.encode())
                 self.wfile.write(f'<td>{hwid}</td>'.encode())
                 self.wfile.write(f'<td>{hardware.config["label"]}</td>'.encode())
-                self.wfile.write(f'<td>{hardware.config["address"]}</td>'.encode())
+                self.wfile.write(f'<td>{address}</td>'.encode())
                 self.wfile.write(f'<td>{hardware.get_status()}</td>'.encode())
                 self.wfile.write('</tr>'.encode())
             self.wfile.write('</table>'.encode())

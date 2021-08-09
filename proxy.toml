@@ -3,11 +3,23 @@ id = "mini"
 label = "Atem Mini"
 address = "192.168.2.84"
 
+[[hardware]]
+id = "mini2"
+label = "Testdevice"
+address = "192.168.2.17"
+
+[[hardware]]
+id = "merged"
+label = "Mini 2M/E"
+hardware = "mini,mini2"
+type = "merge-me"
+me-input = 4
+
 [[frontend]]
 type = "http-api"
 bind = ":8080"
 auth = false
-hardware = "mini"
+hardware = "mini,mini2,merged"
 
 [[frontend]]
 type = "websocket"
@@ -15,7 +27,7 @@ bind = ":8081"
 auth = true
 username = "admin"
 password = "admin"
-hardware = "mini"
+hardware = "mini,mini2"
 static-files = "/var/www/mywebapp"
 
 [[frontend]]
@@ -29,4 +41,4 @@ bind = ":8083"
 auth = true
 username = "admin"
 password = "password"
-hardware = "mini"
+hardware = "mini,mini2"

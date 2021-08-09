@@ -8,6 +8,7 @@ from openswitcher_proxy.frontend_httpapi import HttpApiFrontendThread
 from openswitcher_proxy.frontend_status import StatusFrontendThread
 from openswitcher_proxy.frontend_tcp import TcpFrontendThread
 from openswitcher_proxy.hardware import HardwareThread
+from openswitcher_proxy.hardware_merge_me import HardwareMergeMEThread
 
 logging.basicConfig(
     format="%(asctime)s [%(levelname)-8s %(threadName)-15s] %(message)s",
@@ -26,7 +27,13 @@ def run(config_path):
         nthreads['hardware'] = {}
         for hardware in config['hardware']:
             logging.info(f'  hardware: {hardware["id"]} ({hardware["label"]})')
-            t = HardwareThread(hardware)
+            htype = "atem"
+            if 'type' in hardware:
+                htype = hardware['type']
+            if htype == "atem":
+                t = HardwareThread(hardware)
+            elif htype == "merge-me":
+                t = HardwareMergeMEThread(hardware, nthreads)
             t.daemon = True
             threads.append(t)
             nthreads['hardware'][hardware['id']] = t
