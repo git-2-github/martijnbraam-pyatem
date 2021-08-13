@@ -1,17 +1,4 @@
-import ctypes
-import threading
-
 import gi
-from hexdump import hexdump
-
-from gtk_switcher.audio import AudioPage
-from gtk_switcher.camera import CameraPage
-from gtk_switcher.decorators import field, call_fields
-from gtk_switcher.media import MediaPage
-from gtk_switcher.midi import MidiConnection, MidiControl
-from gtk_switcher.switcher import SwitcherPage
-from pyatem.command import ProgramInputCommand, PreviewInputCommand, AutoCommand, TransitionPositionCommand
-from pyatem.protocol import AtemProtocol
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject, Gio, Gdk
@@ -95,32 +82,24 @@ class PreferencesWindow:
             if not multiviewer.bottom_right_small:
                 self.make_multiview_window(1, 1)
 
-        if sideways:
-            if multiviewer.top_left_small:
-                self.make_split_multiview_window(0, 0, sideways)
-            if multiviewer.bottom_left_small:
-                self.make_split_multiview_window(0, 1, sideways)
-            if multiviewer.top_right_small:
-                self.make_split_multiview_window(1, 0, sideways)
-            if multiviewer.bottom_right_small:
-                self.make_split_multiview_window(1, 1, sideways)
-        else:
-            if multiviewer.top_left_small:
-                self.make_split_multiview_window(0, 0, sideways, False)
-            if multiviewer.top_right_small:
-                self.make_split_multiview_window(1, 0, sideways, False)
-            if multiviewer.top_left_small:
-                self.make_split_multiview_window(0, 0, sideways, True)
-            if multiviewer.top_right_small:
-                self.make_split_multiview_window(1, 0, sideways, True)
-            if multiviewer.bottom_left_small:
-                self.make_split_multiview_window(0, 1, sideways, False)
-            if multiviewer.bottom_right_small:
-                self.make_split_multiview_window(1, 1, sideways, False)
-            if multiviewer.bottom_left_small:
-                self.make_split_multiview_window(0, 1, sideways, True)
-            if multiviewer.bottom_right_small:
-                self.make_split_multiview_window(1, 1, sideways, True)
+
+        if multiviewer.top_left_small:
+            self.make_split_multiview_window(0, 0, False)
+        if multiviewer.top_right_small:
+            self.make_split_multiview_window(1, 0, False)
+        if multiviewer.top_left_small:
+            self.make_split_multiview_window(0, 0, True)
+        if multiviewer.top_right_small:
+            self.make_split_multiview_window(1, 0, True)
+
+        if multiviewer.bottom_left_small:
+            self.make_split_multiview_window(0, 1, False)
+        if multiviewer.bottom_right_small:
+            self.make_split_multiview_window(1, 1, False)
+        if multiviewer.bottom_left_small:
+            self.make_split_multiview_window(0, 1, True)
+        if multiviewer.bottom_right_small:
+            self.make_split_multiview_window(1, 1, True)
 
         for index, window in enumerate(self.multiview_window):
             window.index = index
@@ -132,23 +111,15 @@ class PreferencesWindow:
         self.multiview_swap.set_active(multiviewer.flip)
         self.multiview_layout.show_all()
 
-    def make_split_multiview_window(self, x, y, sideways, second):
+    def make_split_multiview_window(self, x, y, second=False):
         x *= 2
         y *= 2
-        if sideways:
-            if not second:
-                self.make_multiview_window(x, y, 1, 1)
-                self.make_multiview_window(x, y + 1, 1, 1)
-            else:
-                self.make_multiview_window(x + 1, y, 1, 1)
-                self.make_multiview_window(x + 1, y + 1, 1, 1)
+        if not second:
+            self.make_multiview_window(x, y, 1, 1)
+            self.make_multiview_window(x + 1, y, 1, 1)
         else:
-            if not second:
-                self.make_multiview_window(x, y, 1, 1)
-                self.make_multiview_window(x + 1, y, 1, 1)
-            else:
-                self.make_multiview_window(x, y + 1, 1, 1)
-                self.make_multiview_window(x + 1, y + 1, 1, 1)
+            self.make_multiview_window(x, y + 1, 1, 1)
+            self.make_multiview_window(x + 1, y + 1, 1, 1)
 
     def make_multiview_window(self, x, y, w=2, h=2):
         x *= w
