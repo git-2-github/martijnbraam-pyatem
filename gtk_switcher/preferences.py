@@ -145,12 +145,16 @@ class PreferencesWindow:
             buttonbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
             box.pack_end(buttonbox, False, False, 0)
             if input.vu:
+                vu = self.connection.mixer.mixerstate['multiviewer-vu'][0][index]
                 icon = Gtk.Image.new_from_resource("/nl/brixit/switcher/icons/multiview-vu.svg")
-                vubutton = Gtk.Button(image=icon)
+                vubutton = Gtk.ToggleButton(image=icon)
+                vubutton.set_active(vu.enabled)
                 buttonbox.add(vubutton)
             if input.safearea:
+                sa = self.connection.mixer.mixerstate['multiviewer-safe-area'][0][index]
                 icon = Gtk.Image.new_from_resource("/nl/brixit/switcher/icons/multiview-safearea.svg")
-                sabutton = Gtk.Button(image=icon)
+                sabutton = Gtk.ToggleButton(image=icon)
+                sabutton.set_active(sa.enabled)
                 buttonbox.add(sabutton)
 
         self.multiview_layout.attach(frame, x, y, w, h)
