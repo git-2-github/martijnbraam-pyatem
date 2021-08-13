@@ -853,7 +853,6 @@ class TopologyField(FieldBase):
         self.supersources = field[11]
         self.multiviewer_routable = field[12] == 1
 
-
     def __repr__(self):
         return '<topology, me={} sources={} aux={}>'.format(self.me_units, self.sources, self.aux_outputs)
 
@@ -1193,6 +1192,9 @@ class AudioMixerMasterPropertiesField(FieldBase):
     After parsing:
     :ivar volume: Master volume for the mixer, unsigned int which maps [? - ?] to +10dB - -100dB (inf)
     """
+
+    CODE = "AMMO"
+
     def __init__(self, raw):
         self.raw = raw
         field = struct.unpack('>H 6x', raw)
@@ -1226,6 +1228,8 @@ class AudioMixerInputPropertiesField(FieldBase):
     :ivar afv: Enable/disabled state for master audio-follow-video (for fade-to-black)
     """
 
+    CODE = "AMIP"
+
     def __init__(self, raw):
         self.raw = raw
         field = struct.unpack('>H B 2x ? B B x H h x x x', raw)
@@ -1256,6 +1260,8 @@ class AudioMixerTallyField(FieldBase):
     4      1    bool   IsMixedIn (On/Off)
     ====== ==== ====== ===========
     """
+
+    CODE = "AMTl"
 
     def __init__(self, raw):
         self.raw = raw
