@@ -922,6 +922,119 @@ class DveSettingsCommand(Command):
         return self._make_command('CTDv', data)
 
 
+class AudioMasterPropertiesCommand(Command):
+    """
+    Implementation of the `CAMM` command. This sets the settings the master channel of legacy audio.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask, see table below
+    1      1    u8     unknown
+    2      2    u16    Master volume [0 - 65381]
+    4      3    ?      unknown
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Volume On/Off
+    1   ?
+    2   ?
+    3   ?
+    4   ?
+    5   ?
+    6   ?
+    7   ?
+    === ==========
+
+
+    """
+
+    def __init__(self, volume=None, volume_enable=None):
+        """
+        """
+
+        self.volume = volume
+        self.volume_enable = volume_enable
+
+    def get_command(self):
+        mask = 0
+        if self.volume_enable is not None:
+            mask |= 1 << 0
+
+        eq_enable = False if self.volume_enable is None else self.volume_enable
+        volume = 0 if self.volume is None else self.volume
+
+        data = struct.pack('>B x H 3x', mask, volume)
+        return self._make_command('CFMP', data)
+
+
+class AudioInputCommand(Command):
+    """
+    Implementation of the `CAMI` command. This sets the settings of a channel strip in legacy audio.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask, see table below
+    2      2    u16    Source index
+    4      1    u8     Mix Option [0: Off, 1: On, 2: AFV]
+    5      1    u8     unknown
+    6      2    u16    Volume [0 - 65381]
+    8      2    i16    Balance [-10000 - 10000]
+    10     2    u16    unknown
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Mix Option
+    1   Volume
+    2   Balance
+    3   ?
+    4   ?
+    5   ?
+    6   ?
+    7   ?
+    8   ?
+    === ==========
+
+
+    """
+
+    def __init__(self, source, balance=None, volume=None, on=None, afv=None):
+        """
+        :param index: 0-indexed M/E number to control the preview bus of
+        """
+        self.source = source
+        self.balance = balance
+        self.volume = volume
+        self.on = on
+        self.afv = afv
+
+    def get_command(self):
+        mask = 0
+        if self.on is not None or self.afv is not None:
+            mask |= 1 << 0
+        if self.volume is not None:
+            mask |= 1 << 1
+        if self.balance is not None:
+            mask |= 1 << 2
+
+        state = 0
+        if self.on is not None:
+            state = int(bool(self.on))
+        elif self.afv is not None:
+            state = int(bool(self.afv)) * 2
+
+        balance = 0 if self.balance is None else self.balance
+        volume = 0 if self.volume is None else self.volume
+
+        data = struct.pack('>B x H B x H h x x', mask, self.source, state, volume, balance)
+        return self._make_command('CAMI', data)
+
+
 class FairlightMasterPropertiesCommand(Command):
     """
     Implementation of the `CFMP` command. This sets the settings the master channel of fairlight audio.

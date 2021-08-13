@@ -106,6 +106,8 @@ class AtemProtocol:
             'AuxS': 'aux-output-source',
             'MPfe': 'mediaplayer-file-info',
             'MPCE': 'mediaplayer-selected',
+            'AMMO': 'audio-mixer-master-properties',
+            'AMTl': 'audio-mixer-tally',
             'FASP': 'fairlight-strip-properties',
             'FAMP': 'fairlight-master-properties',
             '_TlC': 'tally-config',

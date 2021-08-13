@@ -1179,6 +1179,100 @@ class TransitionDveField(FieldBase):
         return '<transition-dve: me={}, rate={} style={}>'.format(self.index, self.rate, self.style)
 
 
+class AudioMixerMasterPropertiesField(FieldBase):
+    """
+    Data from the `AMMO`. Settings for the master bus on legacy audio units.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Program Gain
+    2      6    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+    :ivar volume: Master volume for the mixer, unsigned int which maps [? - ?] to +10dB - -100dB (inf)
+    """
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>H 6x', raw)
+        self.volume = field[0]
+
+    def __repr__(self):
+        return '<audio-master-properties: volume={}>'.format(self.volume)
+
+
+class AudioMixerInputPropertiesField(FieldBase):
+    """
+    Data from the `AMIP`. Settings for a channel strip on legacy audio units.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Audio source index
+    2      1    u8     Type [0: External Video, 1: Media Player, 2: External Audio]
+    3      3    ?      unknown
+    6      1    bool   From Media Player
+    7      1    u8     Plug Type [0: Internal, 1: SDI, 2: HDMI, 3: Component, 4: Composite, 5: SVideo, 32: XLR, 64, AES/EBU, 128 RCA]
+    8      1    u8     Mix Option [0: Off, 1: On, 2: AFV]
+    9      1    u8     unknown
+    10     2    u16    Volume [0 - 65381]
+    12     2    i16    Pan [-10000 - 10000]
+    14     1    u8     unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+    :ivar volume: Master volume for the mixer, signed int which maps [-10000 - 1000] to +10dB - -100dB (inf)
+    :ivar afv: Enable/disabled state for master audio-follow-video (for fade-to-black)
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>H B 2x ? B B x H h x x x', raw)
+        self.index = field[0]
+        self.type = field[1]
+        self.is_media_player = field[2]
+        self.number = field[3]
+        self.mix_option = field[4]
+        self.volume = field[5]
+        self.balance = field[6]
+
+        self.strip_id = str(self.index) + '.0'
+
+    def __repr__(self):
+        return '<audio-mixer-input-properties: index={} volume={} balance={} >'.format(self.strip_id, self.volume,
+                                                                                       self.balance)
+
+
+class AudioMixerTallyField(FieldBase):
+    """
+    Data from the `AMTl`. Encodes the state of tally lights on the audio mixer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Number of tally lights
+    2      2    u16    Audio Source
+    4      1    bool   IsMixedIn (On/Off)
+    ====== ==== ====== ===========
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
+        offset = 0
+        self.num, = struct.unpack_from('>H', raw, offset)
+        self.tally = {}
+        offset += 2
+        for i in range(0, self.num):
+            source, tally, = struct.unpack_from('>H?', raw, offset)
+            strip_id = '{}.{}'.format(source, 0)
+            self.tally[strip_id] = tally
+            offset += 3
+
+    def __repr__(self):
+        return '<audio-mixer-tally {}>'.format(self.tally)
+
+
 class FairlightMasterPropertiesField(FieldBase):
     """
     Data from the `FAMP`. Settings for the master bus on fairlight audio units.

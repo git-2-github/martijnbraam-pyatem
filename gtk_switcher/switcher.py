@@ -1,7 +1,7 @@
 from gtk_switcher.layout import LayoutView
 from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, TransitionSettingsCommand, WipeSettingsCommand, \
     TransitionPositionCommand, TransitionPreviewCommand, ColorGeneratorCommand, MixSettingsCommand, DipSettingsCommand, \
-    DveSettingsCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, DkeyAutoCommand, DkeyTieCommand, \
+    DveSettingsCommand, AudioMasterPropertiesCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, DkeyAutoCommand, DkeyTieCommand, \
     DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand, \
     FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand
 from pyatem.field import TransitionSettingsField, InputPropertiesField
@@ -300,6 +300,7 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_ftb_afv_clicked(self, widget, *args):
+        # TODO: how to distingish between atem and fairlight?
         cmd = FairlightMasterPropertiesCommand(afv=not widget.get_style_context().has_class('active'))
         self.connection.mixer.send_commands([cmd])
 

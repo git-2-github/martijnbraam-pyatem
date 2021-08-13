@@ -2,7 +2,7 @@ import gi
 
 from gtk_switcher.adjustmententry import AdjustmentEntry
 from gtk_switcher.dial import Dial
-from pyatem.command import FairlightStripPropertiesCommand
+from pyatem.command import AudioInputCommand, FairlightStripPropertiesCommand
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject, Gio, Gdk
@@ -26,6 +26,11 @@ class AudioPage:
         self.audio_on = {}
         self.audio_afv = {}
         self.audio_monitor = {}
+
+    def on_audio_mixer_tally_change(self, data):
+        for strip_id in data.tally:
+            if strip_id in self.audio_tally:
+                self.set_class(self.audio_tally[strip_id], 'program', data.tally[strip_id])
 
     def on_fairlight_tally_change(self, data):
         for strip_id in data.tally:
@@ -65,6 +70,18 @@ class AudioPage:
             cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel,
                                                   volume=int(widget.get_value()))
             self.connection.mixer.send_commands([cmd])
+        elif self.mixer == 'atem':
+            cmd = AudioInputCommand(source=widget.source, volume=int(widget.get_value()))
+            self.connection.mixer.send_commands([cmd])
+
+    def on_pan_changed(self, widget, *args):
+        if self.mixer == 'fairlight':
+            cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel,
+                                                  balance=int(widget.get_value()))
+            self.connection.mixer.send_commands([cmd])
+        elif self.mixer == 'atem':
+            cmd = AudioInputCommand(source=widget.source, balance=int(widget.get_value()))
+            self.connection.mixer.send_commands([cmd])
 
     def on_input_gain_changed(self, widget, *args):
         if self.model_changing:
@@ -82,7 +99,23 @@ class AudioPage:
             self.on_audio_input_list_change()
             return
 
+        self.audio_strip[data.strip_id] = data
+        if data.strip_id not in self.volume_level:
+            self.volume_level[data.strip_id] = Gtk.Adjustment(0, 65381, 0, 10, 10, 100)
+            self.pan[data.strip_id] = Gtk.Adjustment(0, -10000, 10000, 10, 10, 100)
+            self.volume_level[data.strip_id].connect('value-changed', self.on_volume_changed)
+            self.pan[data.strip_id].source = input.index
+            self.pan[data.strip_id].connect('value-changed', self.on_pan_changed)
+
         self.volume_level[data.strip_id].set_value(data.volume)
+        self.pan[data.strip_id].set_value(data.balance)
+        if data.strip_id in self.audio_tally:
+             tally = self.audio_tally[data.strip_id]
+             self.set_class(tally, 'afv', data.state == 2)
+        if data.strip_id in self.audio_on:
+             self.set_class(self.audio_on[data.strip_id], 'program', data.state == 1)
+             self.set_class(self.audio_afv[data.strip_id], 'active', data.state == 2)
+
 
     def on_audio_input_list_change(self):
         inputs = self.connection.mixer.mixerstate['audio-input']
@@ -132,8 +165,10 @@ class AudioPage:
             if strip_id not in self.volume_level:
                 self.volume_level[strip_id] = Gtk.Adjustment(input.volume, 0, 65381, 10, 10, 100)
                 self.pan[strip_id] = Gtk.Adjustment(input.balance, -10000, 10000, 10, 10, 100)
-                self.volume_level[strip_id].connect('value-changed', self.on_volume_changed)
                 self.volume_level[strip_id].source = input.index
+                self.volume_level[strip_id].connect('value-changed', self.on_volume_changed)
+                self.pan[strip_id].source = input.index
+                self.pan[strip_id].connect('value-changed', self.on_pan_changed)
 
                 tally = Gtk.Box()
                 tally.get_style_context().add_class('tally')
@@ -184,11 +219,11 @@ class AudioPage:
                 routing_grid.set_column_spacing(8)
                 on = Gtk.Button(label="ON")
                 on.source = input.index
-                # on.connect('clicked', self.do_audio_channel_on)
+                on.connect('clicked', self.do_audio_channel_on)
                 on.get_style_context().add_class('bmdbtn')
                 routing_grid.attach(on, 0, 0, 1, 1)
                 afv = Gtk.Button(label="AFV")
-                # afv.connect('clicked', self.do_audio_channel_afv)
+                afv.connect('clicked', self.do_audio_channel_afv)
                 afv.get_style_context().add_class('bmdbtn')
                 afv.source = input.index
                 if input.type == 2:
@@ -497,3 +532,16 @@ class AudioPage:
     def on_fairlight_master_properties_change(self, data):
         return
         self.set_class(self.ftb_afv, 'active', data.afv)
+
+    def on_audio_master_properties_change(self, data):
+        return
+        self.set_class(self.ftb_afv, 'active', data.afv)
+
+    def do_audio_channel_on(self, widget, *args):
+        cmd = AudioInputCommand(source=widget.source, on=(not widget.get_style_context().has_class('program')))
+        self.connection.mixer.send_commands([cmd])
+
+    def do_audio_channel_afv(self, widget, *args):
+        cmd = AudioInputCommand(source=widget.source, afv=(not widget.get_style_context().has_class('active')))
+        self.connection.mixer.send_commands([cmd])
+
