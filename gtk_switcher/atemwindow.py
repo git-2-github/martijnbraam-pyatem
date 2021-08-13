@@ -1,5 +1,6 @@
 import ctypes
 import threading
+import traceback
 
 import gi
 from hexdump import hexdump
@@ -43,7 +44,11 @@ class AtemConnection(threading.Thread):
         self.mixer.on('disconnected', self.do_disconnected)
         self.mixer.connect()
         while not self.stop:
-            self.mixer.loop()
+            try:
+                self.mixer.loop()
+            except Exception as e:
+                traceback.print_stack()
+                print(e)
 
     def do_callback(self, *args, **kwargs):
         GLib.idle_add(self.callback, *args, **kwargs)
