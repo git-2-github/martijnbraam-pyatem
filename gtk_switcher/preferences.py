@@ -1,5 +1,8 @@
 import gi
 
+from pyatem.command import MultiviewInputCommand
+from pyatem.field import InputPropertiesField
+
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject, Gio, Gdk
 
@@ -12,6 +15,7 @@ class PreferencesWindow:
         self.application = application
         self.connection = connection
         self.settings = Gio.Settings.new('nl.brixit.Switcher')
+        self.model_changing = False
 
         builder = Gtk.Builder()
         builder.add_from_resource('/nl/brixit/switcher/ui/preferences.glade')
@@ -25,6 +29,9 @@ class PreferencesWindow:
         self.window.set_application(self.application)
 
         self.multiview_window = []
+
+        self.model_me1 = builder.get_object("model_me1")
+        self.model_aux = builder.get_object("model_aux")
 
         # Load requested view
         self.mainstack = builder.get_object("mainstack")
@@ -40,10 +47,22 @@ class PreferencesWindow:
 
         self.window.set_transient_for(parent)
         self.window.set_modal(True)
+        self.load_models()
         self.load_preferences()
         self.connection.mixer.on('change:multiviewer-properties:*', self.make_multiviewer)
         self.connection.mixer.on('change:multiviewer-input:*', self.update_multiviewer_input)
         self.window.show_all()
+
+    def load_models(self):
+        inputs = self.connection.mixer.mixerstate['input-properties']
+        self.model_changing = True
+        for i in inputs.values():
+            if i.available_me1:
+                self.model_me1.append([str(i.index), i.name])
+
+            if i.available_aux:
+                self.model_aux.append([str(i.index), i.name])
+        self.model_changing = False
 
     def load_preferences(self):
         state = self.connection.mixer.mixerstate
@@ -81,7 +100,6 @@ class PreferencesWindow:
                 self.make_multiview_window(0, 1)
             if not multiviewer.bottom_right_small:
                 self.make_multiview_window(1, 1)
-
 
         if multiviewer.top_left_small:
             self.make_split_multiview_window(0, 0, False)
@@ -124,6 +142,7 @@ class PreferencesWindow:
     def make_multiview_window(self, x, y, w=2, h=2):
         x *= w
         y *= h
+        routable = self.connection.mixer.mixerstate['topology'].multiviewer_routable
         frame = Gtk.Frame()
         frame.get_style_context().add_class('view')
 
@@ -138,9 +157,23 @@ class PreferencesWindow:
         if index in self.connection.mixer.mixerstate['multiviewer-input'][0]:
             input = self.connection.mixer.mixerstate['multiviewer-input'][0][index]
             ip = self.connection.mixer.mixerstate['input-properties'][input.source]
-            input_label = Gtk.Label(ip.name)
-            input_label.set_margin_bottom(16)
-            box.add(input_label)
+
+            if routable:
+                input_select = Gtk.ComboBox.new_with_model(self.model_aux)
+                input_select.set_entry_text_column(1)
+                input_select.set_id_column(0)
+                input_select.window = index
+                renderer = Gtk.CellRendererText()
+                input_select.pack_start(renderer, True)
+                input_select.add_attribute(renderer, "text", 1)
+                input_select.set_active_id(str(input.source))
+                input_select.set_margin_bottom(16)
+                input_select.connect('changed', self.on_multiview_window_changed)
+                box.add(input_select)
+            else:
+                input_label = Gtk.Label(ip.name)
+                input_label.set_margin_bottom(16)
+                box.add(input_label)
 
             buttonbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
             box.pack_end(buttonbox, False, False, 0)
@@ -159,6 +192,12 @@ class PreferencesWindow:
 
         self.multiview_layout.attach(frame, x, y, w, h)
         self.multiview_window.append(frame)
+
+    def on_multiview_window_changed(self, widget):
+        if self.model_changing:
+            return
+        cmd = MultiviewInputCommand(index=0, window=widget.window, source=int(widget.get_active_id()))
+        self.connection.mixer.send_commands([cmd])
 
     def apply_css(self, widget, provider):
         Gtk.StyleContext.add_provider(widget.get_style_context(),

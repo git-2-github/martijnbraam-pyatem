@@ -798,7 +798,7 @@ class TopologyField(FieldBase):
     9      1    u8     1         1         1       0       1      DVE
     10     1    u8     0         0         1       0       0      Stingers
     11     1    u8     0         0         0       0       0      supersources
-    12     1    u8     0         0         1       1       1      ?
+    12     1    u8     0         0         1       1       1      ? Multiview routable?
     13     1    u8     0         0         0       0       1      Talkback channels
     14     1    u8     0         0         0       0       4      ?
     15     1    u8     1         1         0       0       0      ?
@@ -807,7 +807,7 @@ class TopologyField(FieldBase):
     18     1    u8     1         1         1       1       1      Camera Control
     19     1    u8     0         0         1       0       1      ?
     20     1    u8     0         0         1       0       1      ?
-    21     1    u8     0         0         1       1       1      ?
+    21     1    u8     0         0         1       1       1      ? Multiview routable?
     22     1    u8     1         1         0       0       0      Advanced chroma keyers
     23     1    u8     1         1         0       0       0      Only configurable outputs
     24     1    u8     1         1         0       0       0      ?
@@ -851,6 +851,7 @@ class TopologyField(FieldBase):
         self.dve = field[9]
         self.stingers = field[10]
         self.supersources = field[11]
+        self.multiviewer_routable = field[12] == 1
 
 
     def __repr__(self):
