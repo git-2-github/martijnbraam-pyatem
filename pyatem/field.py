@@ -784,7 +784,7 @@ class TopologyField(FieldBase):
     =================== ========= ======= ======
 
     ====== ==== ====== ========= ========= ======= ======= ====== ===========
-    Offset Size Type   Atem Mini Mini Pro  1M/E 4k BS 4k   TVS HD Description
+    Offset Size Type   Atem Mini Mini Pro  1M/E 4k Prod 4k TVS HD Description
     ====== ==== ====== ========= ========= ======= ======= ====== ===========
     0      1    u8     1         1         1       1       1      Number of M/E units
     1      1    u8     14        15        31      24      24     Sources
