@@ -757,7 +757,7 @@ class MediaplayerFileInfoField(FieldBase):
 
     def __init__(self, raw):
         self.raw = raw
-        namelen = len(raw) - 23
+        namelen = max(0, len(raw) - 23)
         self.type, self.index, self.is_used, self.hash, self.name = struct.unpack('>Bx H ? 16s 2x {}p'.format(namelen),
                                                                                   raw)
 
