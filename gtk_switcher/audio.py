@@ -76,7 +76,9 @@ class AudioPage:
                 label = "MP {}".format(input.number + 1)
             else:
                 connector = 'Analog'
-                if 1300 <= input.index <= 1400:
+                if hasattr(input, 'plug_name'):
+                    connector = input.plug_name()
+                elif 1300 <= input.index <= 1400:
                     connector = 'Mic'
                 label = f"{connector} {input.number + 1}"
 

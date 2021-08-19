@@ -1626,6 +1626,23 @@ class AudioInputField(FieldBase):
             '>HB 2x B x BB x Hh 2x', raw)
         self.strip_id = str(self.index) + '.0'
 
+    def plug_name(self):
+        lut = {
+            0: "Internal",
+            1: "SDI",
+            2: "HDMI",
+            3: "Component",
+            4: "Composite",
+            5: "SVideo",
+            32: "XLR",
+            64: "AES",
+            128: "RCA",
+        }
+        if self.plug in lut:
+            return lut[self.plug]
+        else:
+            return 'Analog'
+
     def __repr__(self):
         return '<audio-input index={} type={} plug={}>'.format(self.index, self.type, self.plug)
 
