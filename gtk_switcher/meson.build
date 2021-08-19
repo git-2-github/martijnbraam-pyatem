@@ -44,6 +44,7 @@ switcher_sources = [
     'adjustmententry.py',
     'dial.py',
     'downstreamkey.py',
+    'gtklogadjustment.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)

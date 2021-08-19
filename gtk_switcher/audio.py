@@ -2,6 +2,7 @@ import gi
 
 from gtk_switcher.adjustmententry import AdjustmentEntry
 from gtk_switcher.dial import Dial
+from gtk_switcher.gtklogadjustment import LogAdjustment
 from pyatem.command import AudioInputCommand, FairlightStripPropertiesCommand, FairlightMasterPropertiesCommand, \
     AudioMasterPropertiesCommand
 
@@ -98,10 +99,10 @@ class AudioPage:
                 # Create GTK backing controls if the strip has never existed
                 if strip_id not in self.volume_level:
                     if self.mixer == 'atem':
-                        self.volume_level[strip_id] = Gtk.Adjustment(input.volume, 0, 65381, 10, 10, 100)
+                        self.volume_level[strip_id] = LogAdjustment(input.volume, 0, 65381, 10, 10, 100)
                         self.pan[strip_id] = Gtk.Adjustment(input.balance, -10000, 10000, 10, 10, 100)
                     else:
-                        self.volume_level[strip_id] = Gtk.Adjustment(0, -10000, 1000, 10, 10, 100)
+                        self.volume_level[strip_id] = LogAdjustment(0, -10000, 1000, 10, 10, 100, range=100)
                         self.pan[strip_id] = Gtk.Adjustment(0, -10000, 10000, 10, 10, 100)
                         self.input_gain[strip_id] = Gtk.Adjustment(0, -10000, 600, 10, 10, 100)
                         self.delay[strip_id] = Gtk.Adjustment(0, 0, 8, 1, 1, 1)
@@ -280,20 +281,21 @@ class AudioPage:
         self.mixer = 'atem'
 
         if data.strip_id not in self.volume_level:
-            self.master_level = Gtk.Adjustment(0, 0, 65381, 10, 10, 100)
+            self.master_level = LogAdjustment(0, 0, 65381, 10, 10, 100)
             self.master_level.connect('value-changed', self.on_master_changed)
             self.make_mixer_ui(self.connection.mixer.mixerstate['audio-input'])
             return
 
         self.audio_strip[data.strip_id] = data
         if data.strip_id not in self.volume_level:
-            self.volume_level[data.strip_id] = Gtk.Adjustment(0, 65381, 0, 10, 10, 100)
+            self.volume_level[data.strip_id] = LogAdjustment(0, 65381, 0, 10, 10, 100)
             self.pan[data.strip_id] = Gtk.Adjustment(0, -10000, 10000, 10, 10, 100)
             self.volume_level[data.strip_id].connect('value-changed', self.on_volume_changed)
             self.pan[data.strip_id].source = input.index
             self.pan[data.strip_id].connect('value-changed', self.on_pan_changed)
 
-        self.volume_level[data.strip_id].set_value(data.volume)
+        self.model_changing = True
+        self.volume_level[data.strip_id].set_value_log(data.volume)
         self.pan[data.strip_id].set_value(data.balance)
         if data.strip_id in self.audio_tally:
             tally = self.audio_tally[data.strip_id]
@@ -301,10 +303,11 @@ class AudioPage:
         if data.strip_id in self.audio_on:
             self.set_class(self.audio_on[data.strip_id], 'program', data.state == 1)
             self.set_class(self.audio_afv[data.strip_id], 'active', data.state == 2)
+        self.model_changing = False
 
     def on_fairlight_audio_input_change(self, data):
         self.mixer = 'fairlight'
-        self.master_level = Gtk.Adjustment(0, -10000, 1000, 10, 10, 100)
+        self.master_level = LogAdjustment(0, -10000, 1100, 10, 10, 100, range=100)
         self.master_level.connect('value-changed', self.on_master_changed)
         inputs = self.connection.mixer.mixerstate['fairlight-audio-input']
         self.make_mixer_ui(inputs)
@@ -326,7 +329,7 @@ class AudioPage:
         """
         self.audio_strip[data.strip_id] = data
         if data.strip_id not in self.volume_level:
-            self.volume_level[data.strip_id] = Gtk.Adjustment(0, -10000, 1000, 10, 10, 100)
+            self.volume_level[data.strip_id] = LogAdjustment(0, -10000, 1000, 10, 10, 100)
             self.pan[data.strip_id] = Gtk.Adjustment(0, -10000, 10000, 10, 10, 100)
             self.input_gain[data.strip_id] = Gtk.Adjustment(0, -10000, 600, 10, 10, 100)
             self.delay[data.strip_id] = Gtk.Adjustment(0, 0, 8, 1, 1, 1)
@@ -347,8 +350,7 @@ class AudioPage:
 
     def on_audio_mixer_master_properties_change(self, data):
         self.model_changing = True
-        self.master_level.set_value(data.volume)
-        print(data.volume)
+        self.master_level.set_value_log(data.volume)
         self.model_changing = False
 
     def on_volume_changed(self, widget, *args):
@@ -359,7 +361,7 @@ class AudioPage:
                                                   volume=int(widget.get_value()))
             self.connection.mixer.send_commands([cmd])
         elif self.mixer == 'atem':
-            cmd = AudioInputCommand(source=widget.source, volume=int(widget.get_value()))
+            cmd = AudioInputCommand(source=widget.source, volume=int(widget.get_value_log()))
             self.connection.mixer.send_commands([cmd])
 
     def on_master_changed(self, widget, *args):
@@ -369,10 +371,12 @@ class AudioPage:
             cmd = FairlightMasterPropertiesCommand(volume=int(widget.get_value()))
             self.connection.mixer.send_commands([cmd])
         elif self.mixer == 'atem':
-            cmd = AudioMasterPropertiesCommand(volume=int(widget.get_value()))
+            cmd = AudioMasterPropertiesCommand(volume=int(widget.get_value_log()))
             self.connection.mixer.send_commands([cmd])
 
     def on_pan_changed(self, widget, *args):
+        if self.model_changing:
+            return
         if self.mixer == 'fairlight':
             cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel,
                                                   balance=int(widget.get_value()))
@@ -385,7 +389,6 @@ class AudioPage:
         if self.model_changing:
             return
         if self.mixer == 'fairlight':
-            print("NEW GAIN", int(widget.get_value()))
             cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel,
                                                   gain=int(widget.get_value()))
             self.connection.mixer.send_commands([cmd])
@@ -407,8 +410,10 @@ class AudioPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_fairlight_master_properties_change(self, data):
-        return
-        self.set_class(self.ftb_afv, 'active', data.afv)
+        self.model_changing = True
+        self.master_level.set_value(data.volume)
+        # self.set_class(self.ftb_afv, 'active', data.afv)
+        self.model_changing = False
 
     def on_audio_master_properties_change(self, data):
         return
