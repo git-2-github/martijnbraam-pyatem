@@ -11,7 +11,7 @@ class Dial(Gtk.Range):
 
     def __init__(self):
         super(Gtk.Range, self).__init__()
-        self.set_size_request(64, 64)
+        self.set_size_request(48, 48)
         self.editing = False
         self.start_x = None
         self.position = None

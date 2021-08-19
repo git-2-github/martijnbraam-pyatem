@@ -16,6 +16,7 @@ class AdjustmentEntry(Gtk.Entry):
         self.display_min = display_min
         self.display_max = display_max
         self.set_adjustment(adjustment)
+        self.get_style_context().add_class('adjustmententry')
 
     def set_adjustment(self, adjustment):
         self.adjustment = adjustment

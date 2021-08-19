@@ -81,6 +81,7 @@ scale.tbar slider {
 scale.volume {
     padding-top: 0;
     padding-bottom: 0;
+    min-height: 170px;
 }
 
 scale.volume slider {
@@ -177,4 +178,9 @@ entry.mini {
     padding: 0;
     margin: 0;
     background: rgba(0, 0, 0, 0.5);
+}
+
+entry.adjustmententry {
+    margin-bottom: 3px;
+    min-height: 0;
 }
