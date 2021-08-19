@@ -306,6 +306,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
             self.on_fairlight_tally_change(data)
         elif field == 'audio-mixer-tally':
             self.on_audio_mixer_tally_change(data)
+        elif field == 'audio-mixer-master-properties':
+            self.on_audio_mixer_master_properties_change(data)
         elif field == 'key-properties-base':
             self.on_key_properties_base_change(data)
         elif field == 'key-properties-luma':

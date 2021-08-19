@@ -932,42 +932,40 @@ class AudioMasterPropertiesCommand(Command):
     0      1    u8     Mask, see table below
     1      1    u8     unknown
     2      2    u16    Master volume [0 - 65381]
-    4      3    ?      unknown
+    4      2    ?      unknown
+    6      1    bool   AFV
+    7      1    ?      unknown
     ====== ==== ====== ===========
 
     === ==========
     Bit Mask value
     === ==========
-    0   Volume On/Off
+    0   Volume
     1   ?
-    2   ?
-    3   ?
-    4   ?
-    5   ?
-    6   ?
-    7   ?
+    2   AFV On/Off
     === ==========
-
-
     """
 
-    def __init__(self, volume=None, volume_enable=None):
+    def __init__(self, volume=None, afv=None):
         """
+        :param volume: New volume of the master channel, or None
+        :param afv: Enable AFV for master, following the Fade-to-black, or None
         """
-
         self.volume = volume
-        self.volume_enable = volume_enable
+        self.afv = afv
 
     def get_command(self):
         mask = 0
-        if self.volume_enable is not None:
+        if self.volume is not None:
             mask |= 1 << 0
+        if self.afv is not None:
+            mask |= 1 << 2
 
-        eq_enable = False if self.volume_enable is None else self.volume_enable
+        afv = False if self.afv is None else self.afv
         volume = 0 if self.volume is None else self.volume
 
-        data = struct.pack('>B x H 3x', mask, volume)
-        return self._make_command('CFMP', data)
+        data = struct.pack('>B x H 2x ?x', mask, volume, afv)
+        return self._make_command('CAMM', data)
 
 
 class AudioInputCommand(Command):

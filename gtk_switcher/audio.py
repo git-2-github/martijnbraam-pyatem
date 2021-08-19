@@ -2,7 +2,8 @@ import gi
 
 from gtk_switcher.adjustmententry import AdjustmentEntry
 from gtk_switcher.dial import Dial
-from pyatem.command import AudioInputCommand, FairlightStripPropertiesCommand
+from pyatem.command import AudioInputCommand, FairlightStripPropertiesCommand, FairlightMasterPropertiesCommand, \
+    AudioMasterPropertiesCommand
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject, Gio, Gdk
@@ -26,6 +27,8 @@ class AudioPage:
         self.audio_on = {}
         self.audio_afv = {}
         self.audio_monitor = {}
+
+        self.master_level = None
 
     def _make_mixer_ui_label(self, index, name):
         label = Gtk.Label(label=name)
@@ -250,11 +253,17 @@ class AudioPage:
             volume_frame.set_vexpand(True)
             volume_box = Gtk.Box()
             volume_frame.add(volume_box)
-            volume_slider = Gtk.Scale(orientation=Gtk.Orientation.VERTICAL)
+            volume_slider = Gtk.Scale(orientation=Gtk.Orientation.VERTICAL,
+                                      adjustment=self.master_level)
+            volume_slider.set_inverted(True)
+            volume_slider.set_draw_value(False)
+            volume_slider.get_style_context().add_class('volume')
+            volume_slider.connect('button-press-event', self.on_slider_held)
+            volume_slider.connect('button-release-event', self.on_slider_released)
             volume_box.pack_start(volume_slider, True, True, 0)
             volume_box.set_margin_left(8)
             volume_box.set_margin_right(8)
-            volume_box.set_margin_top(8)
+            volume_box.set_margin_top(24)
             volume_box.set_margin_bottom(8)
             vu_left = Gtk.ProgressBar()
             vu_right = Gtk.ProgressBar()
@@ -271,6 +280,8 @@ class AudioPage:
         self.mixer = 'atem'
 
         if data.strip_id not in self.volume_level:
+            self.master_level = Gtk.Adjustment(0, 0, 65381, 10, 10, 100)
+            self.master_level.connect('value-changed', self.on_master_changed)
             self.make_mixer_ui(self.connection.mixer.mixerstate['audio-input'])
             return
 
@@ -293,6 +304,8 @@ class AudioPage:
 
     def on_fairlight_audio_input_change(self, data):
         self.mixer = 'fairlight'
+        self.master_level = Gtk.Adjustment(0, -10000, 1000, 10, 10, 100)
+        self.master_level.connect('value-changed', self.on_master_changed)
         inputs = self.connection.mixer.mixerstate['fairlight-audio-input']
         self.make_mixer_ui(inputs)
 
@@ -332,6 +345,12 @@ class AudioPage:
             self.set_class(self.audio_afv[data.strip_id], 'active', data.state & 4)
         self.model_changing = False
 
+    def on_audio_mixer_master_properties_change(self, data):
+        self.model_changing = True
+        self.master_level.set_value(data.volume)
+        print(data.volume)
+        self.model_changing = False
+
     def on_volume_changed(self, widget, *args):
         if self.model_changing:
             return
@@ -341,6 +360,16 @@ class AudioPage:
             self.connection.mixer.send_commands([cmd])
         elif self.mixer == 'atem':
             cmd = AudioInputCommand(source=widget.source, volume=int(widget.get_value()))
+            self.connection.mixer.send_commands([cmd])
+
+    def on_master_changed(self, widget, *args):
+        if self.model_changing:
+            return
+        if self.mixer == 'fairlight':
+            cmd = FairlightMasterPropertiesCommand(volume=int(widget.get_value()))
+            self.connection.mixer.send_commands([cmd])
+        elif self.mixer == 'atem':
+            cmd = AudioMasterPropertiesCommand(volume=int(widget.get_value()))
             self.connection.mixer.send_commands([cmd])
 
     def on_pan_changed(self, widget, *args):
