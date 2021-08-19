@@ -9,7 +9,7 @@ from gi.repository import Gtk, GLib, GObject, Gio, Gdk
 class LogAdjustment(Gtk.Adjustment):
     __gtype_name__ = 'LogAdjustment'
 
-    def __init__(self, value, lower, upper, step_increment, page_increment, page_size, range=60):
+    def __init__(self, value, lower, upper, step_increment, page_increment, page_size, exp=False, range=60):
         super(Gtk.Adjustment, self).__init__()
         self.set_value(value)
         self.set_lower(lower)
@@ -18,6 +18,7 @@ class LogAdjustment(Gtk.Adjustment):
         self.set_page_increment(page_increment)
         self.set_page_size(page_size)
         self.coeff = 10 ** (range / 20)
+        self.exp = exp
 
     def to_normalized(self, value):
         upper = self.get_upper() - self.get_page_size()
@@ -32,16 +33,18 @@ class LogAdjustment(Gtk.Adjustment):
         return val
 
     def set_value_log(self, value):
-        oldval = value
         value = self.to_normalized(value)
-        val = math.log((value * self.coeff) + 1) / math.log(self.coeff + 1)
+        if self.exp:
+            val = (math.exp((math.log(self.coeff + 1) * value)) - 1) / self.coeff
+        else:
+            val = math.log((value * self.coeff) + 1) / math.log(self.coeff + 1)
         self.set_value(self.from_normalized(val))
-        print("set_value_log", oldval, value, val, self.from_normalized(val))
 
     def get_value_log(self):
         value = self.get_value()
-        oldval = value
         value = self.to_normalized(value)
-        val = (math.exp((math.log(self.coeff + 1) * value)) - 1) / self.coeff
-        print("get_value_log", oldval, value, val, self.from_normalized(val))
+        if self.exp:
+            val = math.log((value * self.coeff) + 1) / math.log(self.coeff + 1)
+        else:
+            val = (math.exp((math.log(self.coeff + 1) * value)) - 1) / self.coeff
         return self.from_normalized(val)

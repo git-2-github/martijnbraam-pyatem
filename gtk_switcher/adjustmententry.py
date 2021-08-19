@@ -29,7 +29,10 @@ class AdjustmentEntry(Gtk.Entry):
         return ((value - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min
 
     def adj_changed(self, *args):
-        value = self.adjustment.get_value()
+        if hasattr(self.adjustment, 'get_value_log'):
+            value = self.adjustment.get_value_log()
+        else:
+            value = self.adjustment.get_value()
         display = self._remap(value, self.adjustment.get_lower(), self.adjustment.get_upper(), self.display_min,
                               self.display_max)
 
@@ -51,4 +54,7 @@ class AdjustmentEntry(Gtk.Entry):
         value = self._remap(value, self.display_min, self.display_max, self.adjustment.get_lower(),
                             self.adjustment.get_upper())
 
-        self.adjustment.set_value(value)
+        if hasattr(self.adjustment, 'set_value_log'):
+            self.adjustment.set_value_log(value)
+        else:
+            self.adjustment.set_value(value)
