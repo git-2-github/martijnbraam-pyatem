@@ -114,6 +114,8 @@ class AudioPage:
 
                     self.volume_level[strip_id].source = input.index
                     self.volume_level[strip_id].channel = c if num_subchannels > 1 else -1
+                    self.pan[strip_id].source = input.index
+                    self.pan[strip_id].channel = c if num_subchannels > 1 else -1
                     if self.mixer == 'fairlight':
                         self.input_gain[strip_id].source = input.index
                         self.input_gain[strip_id].channel = c if num_subchannels > 1 else -1
@@ -191,11 +193,22 @@ class AudioPage:
                 # Pan dial
                 pan_frame = Gtk.Frame()
                 pan_frame.get_style_context().add_class('view')
-                pan_slider = Gtk.Scale(adjustment=self.pan[strip_id])
-                pan_slider.set_draw_value(False)
-                pan_slider.get_style_context().add_class('mini')
-                pan_slider.get_style_context().add_class('pan')
-                pan_frame.add(pan_slider)
+                pan_dial = Dial()
+                pan_dial.set_adjustment(self.pan[strip_id])
+
+                pan_input = AdjustmentEntry(self.pan[strip_id], -100, 100)
+                pan_input.get_style_context().add_class('mini')
+                pan_input.set_margin_left(16)
+                pan_input.set_margin_right(16)
+                pan_input.set_margin_end(8)
+                pan_input.set_max_width_chars(6)
+                pan_input.set_width_chars(6)
+                pan_input.set_alignment(xalign=0.5)
+                self.hook_up_focus(pan_input)
+                pan_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+                pan_box.add(pan_dial)
+                pan_box.add(pan_input)
+                pan_frame.add(pan_box)
                 self.audio_channels.attach(pan_frame, strip_index + c, 6, 1, 1)
 
                 # Channel strip routing controls

@@ -13,7 +13,7 @@ class Dial(Gtk.Range):
         super(Gtk.Range, self).__init__()
         self.set_size_request(64, 64)
         self.editing = False
-        self.start_y = None
+        self.start_x = None
         self.position = None
         self.connect('button-press-event', self.on_mouse_down)
         self.connect('button-release-event', self.on_mouse_up)
@@ -70,7 +70,7 @@ class Dial(Gtk.Range):
 
     def on_mouse_down(self, widget, event):
         self.editing = True
-        self.start_y = event.y
+        self.start_x = event.x
         adj = self.get_adjustment()
         value = adj.get_value()
         self.position = self._remap(value, adj.get_lower(), adj.get_upper(), -100, 100)
@@ -81,9 +81,9 @@ class Dial(Gtk.Range):
 
     def on_mouse_move(self, widget, event):
         if self.editing:
-            new_y = event.y
+            new_x = event.x
 
-            change = self.start_y - new_y
+            change = new_x - self.start_x
             change += self.position
             new_val = self._remap(change, -100, 100, self.get_adjustment().get_lower(),
                                   self.get_adjustment().get_upper())
