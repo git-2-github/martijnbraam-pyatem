@@ -292,8 +292,6 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
             self.on_transition_wipe_change(data)
         elif field == 'transition-dve':
             self.on_transition_dve_change(data)
-        elif field == 'audio-master-properties':
-            self.on_audio_master_properties_change(data)
         elif field == 'fairlight-master-properties':
             self.on_fairlight_master_properties_change(data)
         elif field == 'fairlight-audio-input':
@@ -308,6 +306,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
             self.on_audio_mixer_tally_change(data)
         elif field == 'audio-mixer-master-properties':
             self.on_audio_mixer_master_properties_change(data)
+        elif field == 'audio-mixer-monitor-properties':
+            self.on_audio_monitor_properties_change(data)
         elif field == 'key-properties-base':
             self.on_key_properties_base_change(data)
         elif field == 'key-properties-luma':

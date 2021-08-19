@@ -968,6 +968,79 @@ class AudioMasterPropertiesCommand(Command):
         return self._make_command('CAMM', data)
 
 
+class AudioMonitorPropertiesCommand(Command):
+    """
+    Implementation of the `CAMm` command. This sets the settings the monitor bus of legacy audio.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask, see table below
+    1      1    bool   Enabled
+    2      2    u16    Monitor volume [0 - 65381]
+    4      1    bool   Mute
+    5      1    bool   Solo
+    6      2    u16    Solo source
+    8      1    bool   Dim
+    9      1    ?      unknown
+    10     2    u16    Dim volume
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Enabled
+    1   Gain
+    2   Mute
+    3   Solo
+    4   Solo source
+    5   Dim
+    6   Dim volume
+    === ==========
+    """
+
+    def __init__(self, enabled=None, volume=None, mute=None, solo=None, solo_source=None, dim=None, dim_volume=None):
+        """
+        :param volume: New volume of the master channel, or None
+        :param afv: Enable AFV for master, following the Fade-to-black, or None
+        """
+        self.enabled = enabled
+        self.volume = volume
+        self.mute = mute
+        self.solo = solo
+        self.solo_source = solo_source
+        self.dim = dim
+        self.dim_volume = dim_volume
+
+    def get_command(self):
+        mask = 0
+        if self.enabled is not None:
+            mask |= 1 << 0
+        if self.volume is not None:
+            mask |= 1 << 1
+        if self.mute is not None:
+            mask |= 1 << 2
+        if self.solo is not None:
+            mask |= 1 << 3
+        if self.solo_source is not None:
+            mask |= 1 << 4
+        if self.dim is not None:
+            mask |= 1 << 5
+        if self.dim_volume is not None:
+            mask |= 1 << 6
+
+        enabled = False if self.enabled is None else self.enabled
+        volume = 0 if self.volume is None else self.volume
+        mute = False if self.mute is None else self.mute
+        solo = False if self.solo is None else self.solo
+        solo_source = 0 if self.solo_source is None else self.solo_source
+        dim = False if self.dim is None else self.dim
+        dim_volume = 0 if self.dim_volume is None else self.dim_volume
+
+        data = struct.pack('>BB H ?? H ?x H', mask, enabled, volume, mute, solo, solo_source, dim, dim_volume)
+        return self._make_command('CAMm', data)
+
+
 class AudioInputCommand(Command):
     """
     Implementation of the `CAMI` command. This sets the settings of a channel strip in legacy audio.

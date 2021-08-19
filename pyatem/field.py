@@ -1186,22 +1186,63 @@ class AudioMixerMasterPropertiesField(FieldBase):
     Offset Size Type   Descriptions
     ====== ==== ====== ===========
     0      2    u16    Program Gain
-    2      6    ?      unknown
+    2      2    ?      unknown
+    4      1    bool   Follow fade to black
+    5      1    ?      unknown
     ====== ==== ====== ===========
 
     After parsing:
     :ivar volume: Master volume for the mixer, unsigned int which maps [? - ?] to +10dB - -100dB (inf)
+    :ivar afv: Wether the master volume follows the fade-to-bloack
     """
 
     CODE = "AMMO"
 
     def __init__(self, raw):
         self.raw = raw
-        field = struct.unpack('>H 6x', raw)
+        field = struct.unpack('>H 2x ?x 2x', raw)
         self.volume = field[0]
+        self.afv = field[1]
 
     def __repr__(self):
-        return '<audio-master-properties: volume={}>'.format(self.volume)
+        return '<audio-master-properties: volume={} afv={}>'.format(self.volume, self.avf)
+
+class AudioMixerMonitorPropertiesField(FieldBase):
+    """
+    Data from the `AMmO`. Settings for the monitor bus on legacy audio units.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    bool   Monitoring enabled
+    1      1    ?      unknown
+    2      2    u16    Volume
+    4      1    bool   Mute
+    5      1    bool   Solo
+    6      2    u16    Solo source index
+    8      1    bool   Dim
+    10     2    u16    Dim volume
+    ====== ==== ====== ===========
+
+    After parsing:
+    :ivar volume: Master volume for the mixer, unsigned int which maps [? - ?] to +10dB - -100dB (inf)
+    """
+
+    CODE = "AMmO"
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>?xH? ?H ?x H', raw)
+        self.enabled = field[0]
+        self.volume = field[1]
+        self.mute = field[2]
+        self.solo = field[3]
+        self.solo_source = field[4]
+        self.dim = field[5]
+        self.dim_volume = field[6]
+
+    def __repr__(self):
+        return '<audio-monitor-properties: volume={}>'.format(self.volume)
 
 
 class AudioMixerInputPropertiesField(FieldBase):

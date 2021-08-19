@@ -4,7 +4,7 @@ from gtk_switcher.adjustmententry import AdjustmentEntry
 from gtk_switcher.dial import Dial
 from gtk_switcher.gtklogadjustment import LogAdjustment
 from pyatem.command import AudioInputCommand, FairlightStripPropertiesCommand, FairlightMasterPropertiesCommand, \
-    AudioMasterPropertiesCommand
+    AudioMasterPropertiesCommand, AudioMonitorPropertiesCommand
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject, Gio, Gdk
@@ -30,6 +30,10 @@ class AudioPage:
         self.audio_monitor = {}
 
         self.master_level = None
+        self.master_afv = None
+        self.monitor_level = None
+        self.monitor_on = None
+        self.monitor_dim = None
 
     def _make_mixer_ui_label(self, index, name):
         label = Gtk.Label(label=name)
@@ -233,6 +237,9 @@ class AudioPage:
                 routing_grid.attach(afv, 1, 0, 1, 1)
                 mon = Gtk.Button(label="Monitor")
                 mon.get_style_context().add_class('bmdbtn')
+                mon.connect('clicked', self.do_channel_monitor)
+                mon.source = input.index
+                mon.channel = c if num_subchannels > 1 else -1
                 routing_grid.attach(mon, 0, 1, 2, 1)
                 self.audio_channels.attach(routing_grid, strip_index + c, 7, 1, 1)
                 self.audio_on[strip_id] = on
@@ -287,6 +294,35 @@ class AudioPage:
             volume_box.pack_start(vu_right, False, True, 0)
             self.audio_channels.attach(volume_frame, strip_index + c, 5, 1, 1)
 
+            # Create monitoring frame
+            self.master_afv = Gtk.Button(label="AFV")
+            self.master_afv.connect('clicked', self.do_master_afv)
+            self.master_afv.set_margin_bottom(8)
+            self.master_afv.get_style_context().add_class('bmdbtn')
+
+            label = Gtk.Label("Monitor")
+            monitoring_wrap = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+            monitoring_frame = Gtk.Frame()
+            monitoring_frame.get_style_context().add_class('view')
+            monitoring_wrap.add(self.master_afv)
+            monitoring_wrap.add(monitoring_frame)
+            self.audio_channels.attach(monitoring_wrap, strip_index + c, 6, 1, 2)
+            monitor_grid = Gtk.Grid()
+            monitoring_frame.add(monitor_grid)
+            monitor_dial = Dial()
+            monitor_dial.set_adjustment(self.monitor_level)
+            monitor_grid.attach(label, 0, 0, 2, 1)
+            monitor_grid.attach(monitor_dial, 0, 1, 2, 1)
+
+            self.monitor_on = Gtk.Button(label="ON")
+            self.monitor_on.get_style_context().add_class('bmdbtn')
+            self.monitor_on.connect('clicked', self.do_monitor_on)
+            self.monitor_dim = Gtk.Button(label="Dim")
+            self.monitor_dim.get_style_context().add_class('bmdbtn')
+            self.monitor_dim.connect('clicked', self.do_monitor_dim)
+            monitor_grid.attach(self.monitor_on, 0, 2, 1, 1)
+            monitor_grid.attach(self.monitor_dim, 1, 2, 1, 1)
+
         self.apply_css(self.audio_channels, self.provider)
         self.audio_channels.show_all()
 
@@ -296,6 +332,8 @@ class AudioPage:
         if data.strip_id not in self.volume_level:
             self.master_level = LogAdjustment(0, 0, 65381, 10, 10, 100)
             self.master_level.connect('value-changed', self.on_master_changed)
+            self.monitor_level = LogAdjustment(0, 0, 65381, 10, 10, 100)
+            self.monitor_level.connect('value-changed', self.on_monitor_level_changed)
             self.make_mixer_ui(self.connection.mixer.mixerstate['audio-input'])
             return
 
@@ -322,6 +360,8 @@ class AudioPage:
         self.mixer = 'fairlight'
         self.master_level = LogAdjustment(0, -10000, 1100, 10, 10, 100, range=30, exp=True)
         self.master_level.connect('value-changed', self.on_master_changed)
+        self.monitor_level = LogAdjustment(0, -10000, 1100, 10, 10, 100, range=30, exp=True)
+        self.monitor_level.connect('value-changed', self.on_monitor_level_changed)
         inputs = self.connection.mixer.mixerstate['fairlight-audio-input']
         self.make_mixer_ui(inputs)
 
@@ -364,6 +404,7 @@ class AudioPage:
     def on_audio_mixer_master_properties_change(self, data):
         self.model_changing = True
         self.master_level.set_value_log(data.volume)
+        self.set_class(self.master_afv, 'active', data.afv)
         self.model_changing = False
 
     def on_volume_changed(self, widget, *args):
@@ -386,6 +427,15 @@ class AudioPage:
         elif self.mixer == 'atem':
             cmd = AudioMasterPropertiesCommand(volume=int(widget.get_value_log()))
             self.connection.mixer.send_commands([cmd])
+
+    def on_monitor_level_changed(self, widget, *args):
+        if self.model_changing:
+            return
+        if self.mixer == 'atem':
+            cmd = AudioMonitorPropertiesCommand(volume=int(widget.get_value_log()))
+            self.connection.mixer.send_commands([cmd])
+        else:
+            pass
 
     def on_pan_changed(self, widget, *args):
         if self.model_changing:
@@ -422,15 +472,55 @@ class AudioPage:
         cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel, state=state)
         self.connection.mixer.send_commands([cmd])
 
+    def do_master_afv(self, widget, *args):
+        if self.mixer == 'atem':
+            cmd = AudioMasterPropertiesCommand(afv=not widget.get_style_context().has_class('active'))
+            self.connection.mixer.send_commands([cmd])
+        else:
+            pass
+
+    def do_monitor_on(self, widget, *args):
+        if self.mixer == 'atem':
+            state = widget.get_style_context().has_class('active')
+            cmd = AudioMonitorPropertiesCommand(mute=state)
+            self.connection.mixer.send_commands([cmd])
+        else:
+            pass
+
+    def do_monitor_dim(self, widget, *args):
+        if self.mixer == 'atem':
+            state = widget.get_style_context().has_class('active')
+            cmd = AudioMonitorPropertiesCommand(dim=not state)
+            self.connection.mixer.send_commands([cmd])
+        else:
+            pass
+
+    def do_channel_monitor(self, widget, *args):
+        if self.mixer == 'atem':
+            state = widget.get_style_context().has_class('active')
+            cmd = AudioMonitorPropertiesCommand(solo=not state, solo_source=widget.source)
+            self.connection.mixer.send_commands([cmd])
+        else:
+            pass
+
     def on_fairlight_master_properties_change(self, data):
         self.model_changing = True
         self.master_level.set_value_log(data.volume)
-        # self.set_class(self.ftb_afv, 'active', data.afv)
+        self.set_class(self.master_afv, 'active', data.afv)
         self.model_changing = False
 
-    def on_audio_master_properties_change(self, data):
-        return
-        self.set_class(self.ftb_afv, 'active', data.afv)
+    def on_audio_monitor_properties_change(self, data):
+        self.model_changing = True
+        self.monitor_level.set_value_log(data.volume)
+        self.set_class(self.monitor_on, 'active', not data.mute)
+        self.set_class(self.monitor_dim, 'active', data.dim)
+        for m in self.audio_monitor:
+            self.audio_monitor[m].set_sensitive(data.enabled)
+            en = (m == str(data.solo_source) + ".0") and data.solo
+            self.set_class(self.audio_monitor[m], 'active', en)
+        self.monitor_on.set_sensitive(data.enabled)
+        self.monitor_dim.set_sensitive(data.enabled)
+        self.model_changing = False
 
     def do_audio_channel_on(self, widget, *args):
         cmd = AudioInputCommand(source=widget.source, on=(not widget.get_style_context().has_class('program')))
