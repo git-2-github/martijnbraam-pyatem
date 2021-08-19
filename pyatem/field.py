@@ -1627,6 +1627,7 @@ class AudioInputField(FieldBase):
         self.strip_id = str(self.index) + '.0'
 
     def plug_name(self):
+        """Return the display name for the connector"""
         lut = {
             0: "Internal",
             1: "SDI",
