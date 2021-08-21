@@ -3,11 +3,16 @@ id = "mini"
 label = "Atem Mini"
 address = "192.168.2.84"
 
+[[hardware]]
+id = "4k"
+label = "4K"
+address = "192.168.2.251"
+
 [[frontend]]
 type = "http-api"
 bind = ":8080"
 auth = false
-hardware = "mini"
+hardware = "mini,4k"
 
 [[frontend]]
 type = "websocket"
@@ -15,7 +20,7 @@ bind = ":8081"
 auth = true
 username = "admin"
 password = "admin"
-hardware = "mini"
+hardware = "mini,4k"
 static-files = "/var/www/mywebapp"
 
 [[frontend]]
@@ -29,4 +34,4 @@ bind = ":8083"
 auth = true
 username = "admin"
 password = "password"
-hardware = "mini"
+hardware = "mini,4k"

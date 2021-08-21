@@ -7,7 +7,6 @@ from urllib.parse import urlparse
 
 import usb.core
 import usb.util
-from hexdump import hexdump
 
 
 class Packet:
@@ -66,7 +65,6 @@ class Packet:
         result = struct.pack('<I', data_len)
         if self.data:
             result += bytes(self.data)
-        hexdump(result)
         return result
 
     def __repr__(self):
