@@ -224,11 +224,11 @@ class AudioPage:
                 on = Gtk.Button(label="ON")
                 on.source = input.index
                 on.channel = c if num_subchannels > 1 else -1
-                on.connect('clicked', self.do_fairlight_channel_on)
+                on.connect('clicked', self.do_channel_on)
                 on.get_style_context().add_class('bmdbtn')
                 routing_grid.attach(on, 0, 0, 1, 1)
                 afv = Gtk.Button(label="AFV")
-                afv.connect('clicked', self.do_fairlight_channel_afv)
+                afv.connect('clicked', self.do_channel_afv)
                 afv.get_style_context().add_class('bmdbtn')
                 afv.source = input.index
                 afv.channel = c if num_subchannels > 1 else -1
@@ -456,20 +456,26 @@ class AudioPage:
                                                   gain=int(widget.get_value_log()))
             self.connection.mixer.send_commands([cmd])
 
-    def do_fairlight_channel_on(self, widget, *args):
-        if widget.get_style_context().has_class('program'):
-            state = 1
+    def do_channel_on(self, widget, *args):
+        if self.mixer == 'atem':
+            cmd = AudioInputCommand(source=widget.source, on=(not widget.get_style_context().has_class('program')))
         else:
-            state = 2
-        cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel, state=state)
+            if widget.get_style_context().has_class('program'):
+                state = 1
+            else:
+                state = 2
+            cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel, state=state)
         self.connection.mixer.send_commands([cmd])
 
-    def do_fairlight_channel_afv(self, widget, *args):
-        if widget.get_style_context().has_class('active'):
-            state = 1
+    def do_channel_afv(self, widget, *args):
+        if self.mixer == 'atem':
+            cmd = AudioInputCommand(source=widget.source, afv=(not widget.get_style_context().has_class('active')))
         else:
-            state = 4
-        cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel, state=state)
+            if widget.get_style_context().has_class('active'):
+                state = 1
+            else:
+                state = 4
+            cmd = FairlightStripPropertiesCommand(source=widget.source, channel=widget.channel, state=state)
         self.connection.mixer.send_commands([cmd])
 
     def do_master_afv(self, widget, *args):
@@ -521,11 +527,3 @@ class AudioPage:
         self.monitor_on.set_sensitive(data.enabled)
         self.monitor_dim.set_sensitive(data.enabled)
         self.model_changing = False
-
-    def do_audio_channel_on(self, widget, *args):
-        cmd = AudioInputCommand(source=widget.source, on=(not widget.get_style_context().has_class('program')))
-        self.connection.mixer.send_commands([cmd])
-
-    def do_audio_channel_afv(self, widget, *args):
-        cmd = AudioInputCommand(source=widget.source, afv=(not widget.get_style_context().has_class('active')))
-        self.connection.mixer.send_commands([cmd])
