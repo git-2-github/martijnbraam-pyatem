@@ -2,6 +2,7 @@ import logging
 import struct
 
 from pyatem.transport import UdpProtocol, Packet, UsbProtocol, TcpProtocol
+from pyatem.command import LockCommand, TransferDownloadRequestCommand, TransferAckCommand
 from pyatem.media import rle_decode
 import pyatem.field as fieldmodule
 
@@ -201,32 +202,42 @@ class AtemProtocol:
             if hasattr(fieldmodule, classname):
                 contents = getattr(fieldmodule, classname)(contents)
 
+        if key == 'CapA':
+            print("CapA", contents)
+            return
+
         if key == 'lock-obtained':
             logging.debug('Got lock for {}'.format(contents.store))
             self.locks[contents.store] = True
             self._transfer_trigger(contents.store)
             return
         elif key == 'lock-state':
-            logging.debug('lock state changed')
+            logging.info(contents)
+            return
         elif key == 'file-transfer-data':
             if contents.transfer == self.transfer_id:
                 self.transfer_packets += 1
                 self.transfer_buffer += contents.data
-                total_size = self.mixerstate['video-mode'].get_pixels() * 4
-                transfer_progress = len(self.transfer_buffer) / total_size
-                self._raise('transfer-progress', transfer_progress)
+                if self.transfer_packets % 20 == 0:
+                    total_size = self.mixerstate['video-mode'].get_pixels() * 4
+                    transfer_progress = len(self.transfer_buffer) / total_size
+                    self._raise('transfer-progress', self.transfer_store, self.transfer_slot, transfer_progress)
                 # The 0 should be the transfer slot, but it seems it's always 0 in practice
                 self.send_commands([TransferAckCommand(self.transfer_id, 0)])
             else:
                 logging.error('Got file transfer data for wrong transfer id')
             return
         elif key == 'file-transfer-error':
+            print(contents)
             self.transfer_requested = False
             if contents.status == 1:
                 # Status is try-again
                 logging.debug('Retrying transfer')
                 self._transfer_trigger(self.transfer_store, retry=True)
-                return
+            elif contents.status == 5:
+                self.locks[self.transfer_store] = False
+                self._transfer_trigger(self.transfer_store, retry=True)
+            return
         elif key == 'file-transfer-data-complete':
             logging.debug('Transfer complete')
             # Remove current item from the transfer queue
@@ -308,6 +319,7 @@ class AtemProtocol:
         self.transport.send_packet(packet)
 
     def download(self, store, index):
+        logging.info("Queue download of {}:{}".format(store, index))
         if store not in self.transfer_queue:
             self.transfer_queue[store] = []
         self.transfer_queue[store].append(index)
@@ -360,7 +372,7 @@ class AtemProtocol:
 
 
 if __name__ == '__main__':
-    from pyatem.command import CutCommand, LockCommand, TransferDownloadRequestCommand, TransferAckCommand
+    from pyatem.command import CutCommand
     import pyatem.mediaconvert
 
     logging.basicConfig(level=logging.INFO)

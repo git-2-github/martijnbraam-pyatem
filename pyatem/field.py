@@ -216,11 +216,15 @@ class VideoModeField(FieldBase):
         return '{}{}{}'.format(self.resolution, pi, self.rate)
 
     def get_pixels(self):
+        w, h = self.get_resolution()
+        return w * h
+
+    def get_resolution(self):
         lut = {
-            525: 525,
-            720: 1280 * 720,
-            1080: 1920 * 1080,
-            2160: 3840 * 2160,
+            525: (525, 525),
+            720: (1280, 720),
+            1080: (1920, 1080),
+            2160: (3840, 2160),
         }
         return lut[self.resolution]
 
@@ -2110,6 +2114,30 @@ class LockObtainedField(FieldBase):
         return '<lock-obtained store={}>'.format(self.store)
 
 
+class LockStateField(FieldBase):
+    """
+    Data from the `LKST`. This updates the state of the locks.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Store id
+    2      1    bool   State
+    3      1    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    CODE = "LKST"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.store, self.state, self.u1 = struct.unpack('>H?B', raw)
+
+    def __repr__(self):
+        return '<lock-state store={} state={}>'.format(self.store, self.state)
+
+
 class FileTransferDataField(FieldBase):
     """
     Data from the `FTDa`. This is an incoming chunk of data for a running file transfer.
@@ -2151,6 +2179,7 @@ class FileTransferErrorField(FieldBase):
     ========== ===========
     1          try-again, Try the transfer again
     2          not-found, The requested store/slot index doesn't contain data
+    5          no-lock, You didn't obtain the lock before doing the transfer
     ========== ===========
 
     """
@@ -2165,8 +2194,14 @@ class FileTransferErrorField(FieldBase):
         errors = {
             1: 'try-again',
             2: 'not-found',
+            5: 'no-lock'
         }
-        return '<file-transfer-error transfer={} status={}>'.format(self.transfer, errors[self.status])
+
+        if self.status in errors:
+            status = errors[self.status]
+        else:
+            status = f'unknown ({self.status})'
+        return '<file-transfer-error transfer={} status={}>'.format(self.transfer, status)
 
 
 class FileTransferDataCompleteField(FieldBase):

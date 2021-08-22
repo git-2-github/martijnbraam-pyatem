@@ -23,10 +23,12 @@ from gi.repository import Handy
 
 
 class AtemConnection(threading.Thread):
-    def __init__(self, callback, disconnected):
+    def __init__(self, callback, disconnected, transfer_progress, download_done):
         threading.Thread.__init__(self)
         self.callback = callback
         self.disconnected = disconnected
+        self.transfer_progress = transfer_progress
+        self.download_done = download_done
         self.atem = None
         self.ip = None
         self.stop = False
@@ -42,19 +44,27 @@ class AtemConnection(threading.Thread):
             self.mixer = AtemProtocol(self.ip)
         self.mixer.on('change', self.do_callback)
         self.mixer.on('disconnected', self.do_disconnected)
+        self.mixer.on('transfer-progress', self.do_transfer_progress)
+        self.mixer.on('download-done', self.do_download_done)
         self.mixer.connect()
         while not self.stop:
             try:
                 self.mixer.loop()
             except Exception as e:
                 traceback.print_stack()
-                print(e)
+                print("EXCEPTION", repr(e))
 
     def do_callback(self, *args, **kwargs):
         GLib.idle_add(self.callback, *args, **kwargs)
 
     def do_disconnected(self):
         GLib.idle_add(self.disconnected)
+
+    def do_transfer_progress(self, store, slot, progress):
+        GLib.idle_add(self.transfer_progress, store, slot, progress)
+
+    def do_download_done(self, store, slot, data):
+        GLib.idle_add(self.download_done, store, slot, data)
 
     def get_id(self):
 
@@ -103,6 +113,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         self.mainstack.set_visible_child_name(args.view)
         self.connectionstack.set_visible_child_name("disconnected")
 
+        self.mainstack.connect('notify::visible-child', self.on_page_changed)
+
         SwitcherPage.__init__(self, builder)
         MediaPage.__init__(self, builder)
         AudioPage.__init__(self, builder)
@@ -121,7 +133,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         self.firmware_version = None
         self.mode = None
 
-        self.connection = AtemConnection(self.on_change, self.on_disconnect)
+        self.connection = AtemConnection(self.on_change, self.on_disconnect, self.on_transfer_progress,
+                                         self.on_download_done)
 
         if args.ip:
             self.connection.ip = args.ip
@@ -284,6 +297,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
             self.on_dsk_state_change(data)
         elif field == 'mediaplayer-slots':
             self.on_mediaplayer_slots_change(data)
+        elif field == 'mediaplayer-file-info':
+            self.on_mediaplayer_file_info_change(data)
         elif field == 'transition-mix':
             self.on_transition_mix_change(data)
         elif field == 'transition-dip':
@@ -325,7 +340,6 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         elif field == 'dkey-properties-base':
             self.on_dkey_properties_base_change(data)
         else:
-            print(field)
             if field == 'time':
                 return
             if not self.debug and self.args.dump is not None and len(self.args.dump) > 0:
@@ -334,6 +348,21 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
                 print(field)
             else:
                 print(data)
+
+    def on_transfer_progress(self, store, slot, progress):
+        if store == 0:
+            # Media transfer
+            self.on_media_transfer_progress(slot, progress)
+
+    def on_download_done(self, store, slot, data):
+        if store == 0:
+            # Media transfer
+            self.on_media_download_done(slot, data)
+
+    def on_page_changed(self, widget, *args):
+        page = widget.get_visible_child_name()
+        if page == 'media':
+            self.on_page_media_open()
 
 #    @field('input-properties')
 #    def on_input_properties_changed(self, data):
