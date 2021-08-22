@@ -3,11 +3,11 @@ import struct
 import logging
 import time
 from queue import Queue, Empty
+import collections
 from urllib.parse import urlparse
 
 import usb.core
 import usb.util
-from hexdump import hexdump
 
 
 class Packet:
@@ -66,7 +66,6 @@ class Packet:
         result = struct.pack('<I', data_len)
         if self.data:
             result += bytes(self.data)
-        hexdump(result)
         return result
 
     def __repr__(self):
@@ -110,6 +109,7 @@ class UdpProtocol:
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.settimeout(5)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024 * 1024 * 16)
 
         self.local_sequence_number = 0
         self.local_ack_number = 0
@@ -121,6 +121,8 @@ class UdpProtocol:
 
         self.enable_ack = False
         self.had_traffic = False
+
+        self.received_packets = collections.deque(maxlen=128)
 
     def _send_packet(self, packet):
         packet.session = self.session_id
@@ -157,6 +159,13 @@ class UdpProtocol:
 
         if self.session_id is None:
             self.session_id = packet.session
+
+        is_retransmissions = packet.flags & UdpProtocol.FLAG_RETRANSMISSION
+        if is_retransmissions:
+            if self.remote_sequence_number in self.received_packets:
+                return True
+
+        self.received_packets.append(self.remote_sequence_number)
 
         if packet.flags & UdpProtocol.FLAG_RELIABLE and self.enable_ack:
             # This packet needs an ACK
@@ -217,6 +226,8 @@ class UdpProtocol:
     def receive_packet(self):
         while True:
             packet = self._receive_packet()
+            if packet is True:
+                continue
             if packet is None and not self.had_traffic:
                 continue
             if packet is None and self.state == UdpProtocol.STATE_SYN_SENT:
