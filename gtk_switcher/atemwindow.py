@@ -219,7 +219,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         self.connection.die()
         self.connection.join(timeout=1)
 
-        self.connection = AtemConnection(self.on_change, self.on_disconnect)
+        self.connection = AtemConnection(self.on_change, self.on_disconnect, self.on_transfer_progress, self.on_download_done)
         self.connection.daemon = True
         self.connection.ip = self.settings.get_string('switcher-ip')
         self.connection.start()

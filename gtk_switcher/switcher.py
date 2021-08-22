@@ -1,7 +1,8 @@
 from gtk_switcher.layout import LayoutView
 from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, TransitionSettingsCommand, WipeSettingsCommand, \
     TransitionPositionCommand, TransitionPreviewCommand, ColorGeneratorCommand, MixSettingsCommand, DipSettingsCommand, \
-    DveSettingsCommand, AudioMasterPropertiesCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, DkeyAutoCommand, DkeyTieCommand, \
+    DveSettingsCommand, AudioMasterPropertiesCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, \
+    DkeyAutoCommand, DkeyTieCommand, \
     DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand, \
     FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand
 from pyatem.field import TransitionSettingsField, InputPropertiesField
@@ -713,6 +714,12 @@ class SwitcherPage:
         self.aux[source.index].set_active_id(str(source.source))
         self.aux[source.index].ignore_change = False
 
+        for me in self.me:
+            if not hasattr(me, 'category'):
+                continue
+            if me.index == source.index:
+                me.source_change(source.source)
+
     def on_input_layout_change(self, changed_input):
         inputs = self.connection.mixer.mixerstate['input-properties']
         external = []
@@ -762,6 +769,11 @@ class SwitcherPage:
                     self.aux[aux_id].add_attribute(renderer, "text", 1)
                     self.grid_aux.attach(self.aux[aux_id], 1, aux_id, 1, 1)
 
+                    aux_me = Gtk.CheckButton()
+                    aux_me.index = i.index
+                    aux_me.connect('toggled', self.on_aux_me_enable_toggled)
+                    self.grid_aux.attach(aux_me, 2, aux_id, 1, 1)
+
                     aux_label = Gtk.Label(label=i.name)
                     aux_label.get_style_context().add_class('dim-label')
                     self.grid_aux.attach(aux_label, 0, aux_id, 1, 1)
@@ -786,3 +798,63 @@ class SwitcherPage:
         self.model_changing = False
         for i in self.has_models:
             i.model_changing = False
+
+    def on_aux_me_enable_toggled(self, widget):
+        from gtk_switcher.mixeffect_aux import AuxMixEffectBlock
+        if widget.get_active():
+            inputs = self.connection.mixer.mixerstate['input-properties']
+            auxsrcs = self.connection.mixer.mixerstate['aux-output-source']
+            auxsrc = auxsrcs[widget.index - 8001]
+            external = []
+            output = []
+            passthrough = []
+            special = []
+            black = []
+            bars = []
+            for i in inputs.values():
+                if i.available_aux:
+                    if i.port_type == InputPropertiesField.PORT_EXTERNAL:
+                        external.append(i)
+                    elif i.port_type == InputPropertiesField.PORT_ME_OUTPUT:
+                        output.append(i)
+                    elif i.port_type == InputPropertiesField.PORT_PASSTHROUGH:
+                        passthrough.append(i)
+                    elif i.port_type == InputPropertiesField.PORT_BLACK:
+                        black.append(None)
+                        black.append(i)
+                    elif i.port_type == InputPropertiesField.PORT_BARS:
+                        bars.append(None)
+                        bars.append(i)
+                    else:
+                        special.append(i)
+
+            row1_ext = external
+            row2_ext = [None] * len(external)
+            if len(external) > 6:
+                num = len(external) // 2
+                row1_ext = external[0:num]
+                row2_ext = external[num:] + [None] * ((2 * num) - len(external))
+
+                row1 = row1_ext + black + [None] + output + passthrough
+                row2 = row2_ext + bars + [None] + special
+            else:
+                row1 = row1_ext + [None] + passthrough + black + bars + [None] + output + special
+                row2 = row2_ext
+
+            name = inputs[widget.index].name
+            aux_me = AuxMixEffectBlock(widget.index, name)
+            aux_me.set_inputs([row1, row2])
+            aux_me.source_change(auxsrc.source)
+            aux_me.connect('source-changed', self.on_aux_me_source_changed)
+            aux_me.index = widget.index - 8001
+            aux_me.category = 'aux'
+            self.apply_css(aux_me, self.provider)
+            self.me.append(aux_me)
+            self.main_blocks.add(aux_me)
+        else:
+            # Remove the UI for this M/E
+            pass
+
+    def on_aux_me_source_changed(self, widget, aux, source):
+        cmd = AuxSourceCommand(aux, source=source)
+        self.connection.mixer.send_commands([cmd])

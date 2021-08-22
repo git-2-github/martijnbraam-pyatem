@@ -5,6 +5,7 @@
     <file>ui/connection.glade</file>
     <file>ui/style.css</file>
     <file>ui/mixeffect.glade</file>
+    <file>ui/mixeffect-aux.glade</file>
     <file>ui/upstream-keyer.glade</file>
     <file>ui/downstream-keyer.glade</file>
     <file>ui/preferences.glade</file>
