@@ -1,6 +1,7 @@
 import logging
 import struct
 
+from pyatem.media import atem_to_image, rle_decode
 from pyatem.transport import UdpProtocol, Packet, UsbProtocol, TcpProtocol
 import pyatem.field as fieldmodule
 
@@ -28,6 +29,7 @@ class AtemProtocol:
         self.transfer_queue = {}
         self.transfer_id = 42
         self.transfer_buffer = b''
+        self.transfer_buffer2 = []
         self.transfer_store = None
         self.transfer_slot = None
         self.transfer_requested = False
@@ -148,7 +150,8 @@ class AtemProtocol:
             'LKOB': 'lock-obtained',
             'FTDa': 'file-transfer-data',
             'LKST': 'lock-state',
-            'FTDE': 'file-transfer-error'
+            'FTDE': 'file-transfer-error',
+            'FTDC': 'file-transfer-data-complete',
         }
 
         fieldname_to_unique = {
@@ -204,12 +207,10 @@ class AtemProtocol:
             self._transfer_trigger(contents.store)
             return
         elif key == 'lock-state':
-            logging.info('lock state changed')
+            logging.debug('lock state changed')
         elif key == 'file-transfer-data':
-            print(contents)
             if contents.transfer == self.transfer_id:
                 self.transfer_packets += 1
-                print("packet", self.transfer_packets)
                 self.transfer_buffer += contents.data
                 total_size = self.mixerstate['video-mode'].get_pixels() * 4
                 transfer_progress = len(self.transfer_buffer) / total_size
@@ -217,23 +218,34 @@ class AtemProtocol:
                 # The 0 should be the transfer slot, but it seems it's always 0 in practice
                 self.send_commands([TransferAckCommand(self.transfer_id, 0)])
             else:
-                print("Hmm")
+                logging.error('Got file transfer data for wrong transfer id')
             return
         elif key == 'file-transfer-error':
+            self.transfer_requested = False
             if contents.status == 1:
                 # Status is try-again
                 logging.debug('Retrying transfer')
                 self._transfer_trigger(self.transfer_store, retry=True)
                 return
-        elif key == 'FTDC':
+        elif key == 'file-transfer-data-complete':
             logging.debug('Transfer complete')
+            # Remove current item from the transfer queue
             queue = self.transfer_queue[self.transfer_store]
             self.transfer_queue[self.transfer_store] = queue[1:]
+
+            # Assemble the buffer
             data = self.transfer_buffer
             self.transfer_buffer = b''
-            self.transfer_id += 1
-            self._transfer_trigger(self.transfer_store)
+            self.transfer_requested = False
+
+            # Decompress the buffer if needed
+            if self.transfer_store == 0:
+                data = rle_decode(data)
+
             self._raise('download-done', self.transfer_store, self.transfer_slot, data)
+
+            # Start next transfer in the queue
+            self._transfer_trigger(self.transfer_store)
             return
 
         if key in fieldname_to_unique:
@@ -352,10 +364,8 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    # testmixer = AtemProtocol('192.168.2.84')
-
-    testmixer = AtemProtocol(usb='auto')
-
+    testmixer = AtemProtocol('192.168.2.84')
+    # testmixer = AtemProtocol(usb='auto')
 
     def changed(key, contents):
         if key == 'time':
@@ -367,11 +377,17 @@ if __name__ == '__main__':
 
 
     def connected():
-        testmixer.download(0, 0)
+        for sid in testmixer.mixerstate['mediaplayer-file-info']:
+            still = testmixer.mixerstate['mediaplayer-file-info'][sid]
+            if not still.is_used:
+                continue
+            print("Fetching {}".format(still.name))
+            testmixer.download(0, still.index)
 
 
     def downloaded(store, slot, data):
-        print(f"Downloaded {store}-{slot}")
+        logging.info('Downloaded {}:{}'.format(store, slot))
+
         with open(f'/workspace/usb-{store}-{slot}.bin', 'wb') as handle:
             handle.write(data)
 

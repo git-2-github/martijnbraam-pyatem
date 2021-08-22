@@ -218,9 +218,9 @@ class VideoModeField(FieldBase):
     def get_pixels(self):
         lut = {
             525: 525,
-            720: 1280*720,
-            1080: 1920*1080,
-            2160: 3840*2160,
+            720: 1280 * 720,
+            1080: 1920 * 1080,
+            2160: 3840 * 2160,
         }
         return lut[self.resolution]
 
@@ -2090,7 +2090,17 @@ class LockObtainedField(FieldBase):
     """
     Data from the `LKOB`. This signals that a datastore lock has been successfully obtained for
     a specific datastore index. Used for data transfers.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Store id
+    2      2    ?      Unknown
+    ====== ==== ====== ===========
+
     """
+
+    CODE = "LKOB"
 
     def __init__(self, raw):
         self.raw = raw
@@ -2103,7 +2113,17 @@ class LockObtainedField(FieldBase):
 class FileTransferDataField(FieldBase):
     """
     Data from the `FTDa`. This is an incoming chunk of data for a running file transfer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Transfer id
+    2      2    u16    Data length
+    ?      ?    bytes  The rest of the packet contains [Data length] bytes of data
+    ====== ==== ====== ===========
     """
+
+    CODE = "FTDa"
 
     def __init__(self, raw):
         self.raw = raw
@@ -2116,8 +2136,26 @@ class FileTransferDataField(FieldBase):
 
 class FileTransferErrorField(FieldBase):
     """
-    Data from the `FTDE`. Somehting went wrong with a file transfer.
+    Data from the `FTDE`. Something went wrong with a file transfer and it has been aborted.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Transfer id
+    2      1    u8     Error code
+    3      1    ?      unknown
+    ====== ==== ====== ===========
+
+    ========== ===========
+    Error code Description
+    ========== ===========
+    1          try-again, Try the transfer again
+    2          not-found, The requested store/slot index doesn't contain data
+    ========== ===========
+
     """
+
+    CODE = "FTDE"
 
     def __init__(self, raw):
         self.raw = raw
@@ -2129,3 +2167,27 @@ class FileTransferErrorField(FieldBase):
             2: 'not-found',
         }
         return '<file-transfer-error transfer={} status={}>'.format(self.transfer, errors[self.status])
+
+
+class FileTransferDataCompleteField(FieldBase):
+    """
+    Data from the `FTDC`. Sent after pushing a file.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Transfer id
+    2      1    u8     ? (always 1)
+    3      1    u8     ? (always 2 or 6)
+    ====== ==== ====== ===========
+
+    """
+
+    CODE = "FTDC"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.transfer, self.u1, self.u2 = struct.unpack('>HBB', raw)
+
+    def __repr__(self):
+        return '<file-transfer-complete transfer={} u1={} u2={}>'.format(self.transfer, self.u1, self.u2)

@@ -3,18 +3,21 @@ import struct
 
 def atem_to_image(data, width, height):
     data = rle_decode(data)
-
-    with open('/workspace/usb-0-0.data', 'wb') as handle:
-        handle.write(data)
-
-
-def is_rle_header(data, offset):
-    if offset >= len(data):
-        return True
-    return
+    return data
 
 
 def rle_decode(data):
+    """
+    ATEM frames are compressed with a custom RLE encoding. Data in the frame is grouped in 8 byte chunks since
+    that is exactly 2 pixels in the 10-bit YCbCr 4:2:2 data. Most of the data is sent without compression but
+    if a 8 byte chunk is fully 0xfe then the following chunk is RLE compressed.
+
+    An RLE compressed part is an 64 bit integer setting the repeat count following the 8-byte block of data
+    to be repeated. This seems mainly useful to compress solid colors.
+
+    :param data:
+    :return:
+    """
     result = bytearray()
     offset = 0
     in_size = len(data)
@@ -32,7 +35,6 @@ def rle_decode(data):
             # Got an RLE block
             offset += 8
             count, = struct.unpack_from('>Q', data, offset)
-            block = data[offset:offset + 8]
             offset += 8
             block = data[offset:offset + 8]
             result += block * count
