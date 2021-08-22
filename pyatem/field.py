@@ -269,6 +269,7 @@ class InputPropertiesField(FieldBase):
     7     passthrough
     128   M/E output
     129   AUX output
+    131   Multiview output
     ===== =========
 
     ===== ===============
@@ -317,6 +318,7 @@ class InputPropertiesField(FieldBase):
     PORT_PASSTHROUGH = 7
     PORT_ME_OUTPUT = 128
     PORT_AUX_OUTPUT = 129
+    PORT_MULTIVIEW_OUTPUT = 131
     CODE = "InPr"
 
     def __init__(self, raw):
