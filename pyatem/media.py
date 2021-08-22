@@ -1,9 +1,17 @@
 import struct
+import pyatem.mediaconvert as mc
 
 
 def atem_to_image(data, width, height):
+    """Decompress and decode an atem frame to RGBA8888"""
     data = rle_decode(data)
+    data = mc.atem_to_rgb(data, width, height)
     return data
+
+
+def atem_to_rgb(data, width, height):
+    """Wrapper for the native function"""
+    return mc.atem_to_rgb(data, width, height)
 
 
 def rle_decode(data):
