@@ -2,6 +2,7 @@ import logging
 import struct
 
 from pyatem.transport import UdpProtocol, Packet, UsbProtocol, TcpProtocol
+from pyatem.media import rle_decode
 import pyatem.field as fieldmodule
 
 
@@ -22,6 +23,17 @@ class AtemProtocol:
         self.inputs = {}
         self.callback_idx = 1
         self.connected = False
+
+        self.locks = {}
+        self.mode = None
+        self.transfer_queue = {}
+        self.transfer_id = 42
+        self.transfer_buffer = b''
+        self.transfer_buffer2 = []
+        self.transfer_store = None
+        self.transfer_slot = None
+        self.transfer_requested = False
+        self.transfer_packets = 0
 
     @classmethod
     def usb_exists(cls):
@@ -135,6 +147,11 @@ class AtemProtocol:
             'MvIn': 'multiviewer-input',
             'VuMC': 'multiviewer-vu',
             'SaMw': 'multiviewer-safe-area',
+            'LKOB': 'lock-obtained',
+            'FTDa': 'file-transfer-data',
+            'LKST': 'lock-state',
+            'FTDE': 'file-transfer-error',
+            'FTDC': 'file-transfer-data-complete',
         }
 
         fieldname_to_unique = {
@@ -183,6 +200,53 @@ class AtemProtocol:
             classname = key.title().replace('-', '') + "Field"
             if hasattr(fieldmodule, classname):
                 contents = getattr(fieldmodule, classname)(contents)
+
+        if key == 'lock-obtained':
+            logging.debug('Got lock for {}'.format(contents.store))
+            self.locks[contents.store] = True
+            self._transfer_trigger(contents.store)
+            return
+        elif key == 'lock-state':
+            logging.debug('lock state changed')
+        elif key == 'file-transfer-data':
+            if contents.transfer == self.transfer_id:
+                self.transfer_packets += 1
+                self.transfer_buffer += contents.data
+                total_size = self.mixerstate['video-mode'].get_pixels() * 4
+                transfer_progress = len(self.transfer_buffer) / total_size
+                self._raise('transfer-progress', transfer_progress)
+                # The 0 should be the transfer slot, but it seems it's always 0 in practice
+                self.send_commands([TransferAckCommand(self.transfer_id, 0)])
+            else:
+                logging.error('Got file transfer data for wrong transfer id')
+            return
+        elif key == 'file-transfer-error':
+            self.transfer_requested = False
+            if contents.status == 1:
+                # Status is try-again
+                logging.debug('Retrying transfer')
+                self._transfer_trigger(self.transfer_store, retry=True)
+                return
+        elif key == 'file-transfer-data-complete':
+            logging.debug('Transfer complete')
+            # Remove current item from the transfer queue
+            queue = self.transfer_queue[self.transfer_store]
+            self.transfer_queue[self.transfer_store] = queue[1:]
+
+            # Assemble the buffer
+            data = self.transfer_buffer
+            self.transfer_buffer = b''
+            self.transfer_requested = False
+
+            # Decompress the buffer if needed
+            if self.transfer_store == 0:
+                data = rle_decode(data)
+
+            self._raise('download-done', self.transfer_store, self.transfer_slot, data)
+
+            # Start next transfer in the queue
+            self._transfer_trigger(self.transfer_store)
+            return
 
         if key in fieldname_to_unique:
             idxes = struct.unpack_from(fieldname_to_unique[key], raw, 0)
@@ -243,36 +307,67 @@ class AtemProtocol:
         packet.data = data
         self.transport.send_packet(packet)
 
+    def download(self, store, index):
+        if store not in self.transfer_queue:
+            self.transfer_queue[store] = []
+        self.transfer_queue[store].append(index)
+        self._transfer_trigger(store)
+
+    def _transfer_trigger(self, store, retry=False):
+        next = None
+
+        # Try the preferred queue
+        if store in self.transfer_queue:
+            if len(self.transfer_queue[store]) > 0:
+                next = (store, self.transfer_queue[store][0])
+
+        # Try any queue
+        if next is None:
+            for store in self.transfer_queue:
+                if len(self.transfer_queue[store]) > 0:
+                    next = (store, self.transfer_queue[store][0])
+                    break
+
+        # All transfers done, clean locks
+        if next is None:
+            for lock in self.locks:
+                if self.locks[lock]:
+                    logging.info('Releasing lock {}'.format(lock))
+                    cmd = LockCommand(lock, False)
+                    self.send_commands([cmd])
+            return
+
+        # Request a lock if needed
+        if next[0] not in self.locks or not self.locks[next[0]]:
+            logging.info('Requesting lock for {}'.format(next[0]))
+            cmd = LockCommand(next[0], True)
+            self.send_commands([cmd])
+            return
+
+        # A transfer request is already running, don't start a new one
+        if self.transfer_requested:
+            logging.info('Request already submitted, do nothing')
+            return
+
+        # Assign a transfer id and start the transfer
+        if not retry:
+            self.transfer_id += 1
+        self.transfer_store, self.transfer_slot = next
+        cmd = TransferDownloadRequestCommand(self.transfer_id, next[0], next[1])
+        logging.info('Requesting download of {}:{}'.format(*next))
+        self.transfer_requested = True
+        self.send_commands([cmd])
+
 
 if __name__ == '__main__':
-    from pyatem.command import CutCommand
+    from pyatem.command import CutCommand, LockCommand, TransferDownloadRequestCommand, TransferAckCommand
 
     logging.basicConfig(level=logging.INFO)
 
-    # testmixer = AtemProtocol('192.168.2.17')
-    testmixer = AtemProtocol(usb='auto')
-
-    waiter = 5
-    waiting = False
-    done = False
-
+    testmixer = AtemProtocol('192.168.2.84')
+    # testmixer = AtemProtocol(usb='auto')
 
     def changed(key, contents):
-        global waiter
-        global waiting
-        global done
-
-        if waiting and not done:
-            waiter -= 1
-            if waiter == 0:
-                logging.debug('SENDING CUT')
-                done = True
-                cmd = CutCommand(index=0)
-                testmixer.send_commands([cmd])
-
-        if key == 'InCm':
-            waiting = True
-
         if key == 'time':
             return
         if isinstance(contents, fieldmodule.FieldBase):
@@ -281,6 +376,29 @@ if __name__ == '__main__':
             print(key)
 
 
+    def connected():
+        for sid in testmixer.mixerstate['mediaplayer-file-info']:
+            still = testmixer.mixerstate['mediaplayer-file-info'][sid]
+            if not still.is_used:
+                continue
+            print("Fetching {}".format(still.name))
+            testmixer.download(0, still.index)
+
+
+    def downloaded(store, slot, data):
+        logging.info('Downloaded {}:{}'.format(store, slot))
+
+        with open(f'/workspace/usb-{store}-{slot}.bin', 'wb') as handle:
+            handle.write(data)
+
+
+    def progress(factor):
+        print(factor * 100)
+
+
+    testmixer.on('connected', connected)
+    testmixer.on('download-done', downloaded)
+    testmixer.on('transfer-progress', progress)
     testmixer.on('change', changed)
 
     testmixer.connect()
