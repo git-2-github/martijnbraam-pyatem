@@ -246,8 +246,12 @@ class AudioPage:
                 self.audio_afv[strip_id] = afv
                 self.audio_monitor[strip_id] = mon
                 if strip_id in self.audio_strip:
-                    self.set_class(afv, 'active', self.audio_strip[strip_id].state & 4)
-                    self.set_class(on, 'program', self.audio_strip[strip_id].state & 2)
+                    if self.mixer == 'atem':
+                        self.set_class(afv, 'active', self.audio_strip[strip_id].state == 2)
+                        self.set_class(on, 'program', self.audio_strip[strip_id].state == 1)
+                    else:
+                        self.set_class(afv, 'active', self.audio_strip[strip_id].state & 4)
+                        self.set_class(on, 'program', self.audio_strip[strip_id].state & 2)
 
             strip_index += num_subchannels
 
