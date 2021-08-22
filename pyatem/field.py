@@ -318,6 +318,7 @@ class InputPropertiesField(FieldBase):
     PORT_PASSTHROUGH = 7
     PORT_ME_OUTPUT = 128
     PORT_AUX_OUTPUT = 129
+    PORT_KEY_MASK = 130
     PORT_MULTIVIEW_OUTPUT = 131
     CODE = "InPr"
 
