@@ -2229,3 +2229,45 @@ class FileTransferDataCompleteField(FieldBase):
 
     def __repr__(self):
         return '<file-transfer-complete transfer={} u1={} u2={}>'.format(self.transfer, self.u1, self.u2)
+
+
+class MacroPropertiesField(FieldBase):
+    """
+    Data from the `MPrp`. This is the metadata about a stored macro
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Macro slot index
+    2      1    bool   is used
+    3      1    bool   has invalid commands
+    4      2    u16    Name length
+    6      2    u16    Description length
+    8      ?    char[] Name
+    ?      ?    char[] Description
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: Macro slot index
+    :ivar is_used: Slot contains data
+    :ivar is_invalid: Slot contains invalid data
+    :ivar name: Name of the macro
+    :ivar description: Description of the macro
+    """
+
+    CODE = "MPrp"
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack_from('>H ?? H H', raw, 0)
+        self.index = field[0]
+        self.is_used = field[1]
+        self.is_invalid = field[2]
+        name_length = field[3]
+        desc_length = field[4]
+        self.name, self.description = struct.unpack_from('>{}s {}s'.format(name_length, desc_length), raw, 8)
+
+    def __repr__(self):
+        return '<macro-properties: index={} used={} name={}>'.format(self.index, self.is_used,
+                                                                     self.name)

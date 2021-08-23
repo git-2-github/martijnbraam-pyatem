@@ -240,6 +240,8 @@ class AtemProtocol:
             return
         elif key == 'file-transfer-data-complete':
             logging.debug('Transfer complete')
+            if contents.transfer != self.transfer_id:
+                return
             # Remove current item from the transfer queue
             queue = self.transfer_queue[self.transfer_store]
             self.transfer_queue[self.transfer_store] = queue[1:]
@@ -350,7 +352,7 @@ class AtemProtocol:
             return
 
         # Request a lock if needed
-        if next[0] not in self.locks or not self.locks[next[0]]:
+        if next[0] != 0xffff and (next[0] not in self.locks or not self.locks[next[0]]):
             logging.info('Requesting lock for {}'.format(next[0]))
             cmd = LockCommand(next[0], True)
             self.send_commands([cmd])
@@ -392,12 +394,17 @@ if __name__ == '__main__':
 
 
     def connected():
+        for mid in testmixer.mixerstate['macro-properties']:
+            macro = testmixer.mixerstate['macro-properties'][mid]
+            if macro.is_used:
+                testmixer.download(0xffff, macro.index)
+        return
         for sid in testmixer.mixerstate['mediaplayer-file-info']:
             still = testmixer.mixerstate['mediaplayer-file-info'][sid]
             if not still.is_used:
                 continue
-            print("Fetching {}".format(still.name))
-            testmixer.download(0, still.index)
+            # print("Fetching {}".format(still.name))
+            # testmixer.download(0, still.index)
 
 
     def downloaded(store, slot, data):

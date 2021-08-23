@@ -1926,10 +1926,14 @@ class TransferDownloadRequestCommand(Command):
         self.slot = slot
 
     def get_command(self):
-        u1 = 0
-        u2 = 0
-        u3 = 0
-        u4 = 0xff
+        # Special case for macro downloads, not sure why
+        if self.store == 0xffff:
+            u1 = 0x03
+        else:
+            u1 = 0x00
+        u2 = 0xd0
+        u3 = 0x9b
+        u4 = 0x8c
         data = struct.pack('>HHI 4B', self.transfer, self.store, self.slot, u1, u2, u3, u4)
         return self._make_command('FTSU', data)
 
