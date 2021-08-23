@@ -402,12 +402,14 @@ if __name__ == '__main__':
 
     def downloaded(store, slot, data):
         logging.info('Downloaded {}:{}'.format(store, slot))
+        with open(f'/workspace/usb-{store}-{slot}.bin', 'wb') as handle:
+            handle.write(data)
         data = pyatem.mediaconvert.atem_to_rgb(data, 1920, 1080)
         with open(f'/workspace/usb-{store}-{slot}.data', 'wb') as handle:
             handle.write(data)
 
 
-    def progress(factor):
+    def progress(store, slot, factor):
         print(factor * 100)
 
 

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 const double bt709_coeff_r = 0.2126;
 const double bt709_coeff_g = 0.7152;
@@ -30,7 +31,7 @@ const double bt709_bi_range = bt709_coeff_bi / cr_middle;
 
 int main() {
     freopen(NULL, "rb", stdin);
-    freopen(NULL, "wb", stdout);
+    //freopen(NULL, "wb", stdout);
     char buffer[8] = { 0 };
     char outbuffer[8] = { 0 };
     int pixel_size = 8;
@@ -50,12 +51,17 @@ int main() {
         float y1f = ((double)(y1 << 6)-y_offset) / y_range;
         float y2f = ((double)(y2 << 6)-y_offset) / y_range;
 
-        float r1f = y1f + crf;
-        float g1f = y1f - cbf * bt709_coeff_bg - crf * bt709_coeff_rg;
-        float b1f = y1f + cbf;
-        float r2f = y2f + crf;
-        float g2f = y2f - cbf * bt709_coeff_bg - crf * bt709_coeff_rg;
-        float b2f = y2f + cbf;
+        // printf("Y: %f Cr: %f Cb: %f\n", y1f, cbf, crf);
+
+        float r1f = fmin(255, y1f + crf);
+        float g1f = fmin(255, y1f - cbf * bt709_coeff_bg - crf * bt709_coeff_rg);
+        float b1f = fmin(255, y1f + cbf);
+        float r2f = fmin(255, y2f + crf);
+        float g2f = fmin(255, y2f - cbf * bt709_coeff_bg - crf * bt709_coeff_rg);
+        float b2f = fmin(255, y2f + cbf);
+
+        //printf("R: %f G: %f B: %f\n", r1f, g1f, b1f);
+        //return 1;
 
         outbuffer[0] = (unsigned char)r1f;
         outbuffer[1] = (unsigned char)g1f;
