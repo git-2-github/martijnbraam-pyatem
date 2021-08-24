@@ -44,6 +44,7 @@ switcher_sources = [
     'dial.py',
     'downstreamkey.py',
     'gtklogadjustment.py',
+    'macroeditor.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)
