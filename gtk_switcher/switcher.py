@@ -45,9 +45,11 @@ class SwitcherPage:
         self.usks = {}
         self.dsks = {}
         self.has_models = []
+        self.menu = None
 
         self.upstream_keyers = builder.get_object('upstream_keyers')
         self.downstream_keyers = builder.get_object('downstream_keyers')
+        self.macro_flow = builder.get_object('macro_flow')
 
         self.usk1_dve_fill = builder.get_object('usk1_dve_fill')
         self.usk1_mask_en = builder.get_object('usk1_mask_en')
@@ -858,3 +860,39 @@ class SwitcherPage:
     def on_aux_me_source_changed(self, widget, aux, source):
         cmd = AuxSourceCommand(aux, source=source)
         self.connection.mixer.send_commands([cmd])
+
+    def on_macro_properties_change(self, data):
+        # Clear the macro flow container
+        for widget in self.macro_flow:
+            self.macro_flow.remove(widget)
+
+        # Create new buttons
+        macros = self.connection.mixer.mixerstate['macro-properties']
+        for index in macros:
+            macro = macros[index]
+            if macro.is_used:
+                button = Gtk.Button(macro.name.decode())
+                button.index = index
+                button.get_style_context().add_class('bmdbtn')
+                button.get_style_context().add_class('macro')
+                button.connect('button-press-event', self.on_macro_context)
+                self.macro_flow.add(button)
+        self.macro_flow.show_all()
+
+    def on_macro_context(self, widget, event, *args):
+        if event.button != 3:
+            return
+
+        self.menu = Gtk.Menu()
+        run_item = Gtk.MenuItem("Run macro")
+        self.menu.append(run_item)
+        edit_item = Gtk.MenuItem("Edit macro")
+        edit_item.index = widget.index
+        edit_item.connect('activate', self.on_macro_edit)
+        self.menu.append(edit_item)
+        self.menu.show_all()
+        self.menu.popup(None, None, None, None, 0, Gtk.get_current_event_time())
+
+    def on_macro_edit(self, widget):
+        self.macro_edit = True
+        self.connection.mixer.download(0xffff, widget.index)

@@ -8,8 +8,8 @@ from hexdump import hexdump
 from gtk_switcher.audio import AudioPage
 from gtk_switcher.camera import CameraPage
 from gtk_switcher.decorators import field, call_fields
+from gtk_switcher.macroeditor import MacroEditorWindow
 from gtk_switcher.media import MediaPage
-from gtk_switcher.midi import MidiConnection, MidiControl
 from gtk_switcher.connectionwindow import ConnectionWindow
 from gtk_switcher.switcher import SwitcherPage
 from pyatem.command import ProgramInputCommand, PreviewInputCommand, AutoCommand, TransitionPositionCommand
@@ -84,7 +84,7 @@ class AtemConnection(threading.Thread):
             print('Exception raise failure')
 
 
-class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
+class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
     def __init__(self, application, args):
         self.application = application
         self.args = args
@@ -119,12 +119,12 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         MediaPage.__init__(self, builder)
         AudioPage.__init__(self, builder)
         CameraPage.__init__(self, builder)
-        MidiControl.__init__(self, builder)
 
         self.status_model = builder.get_object('status_model')
         self.status_mode = builder.get_object('status_mode')
         self.focus_dummy = builder.get_object('focus_dummy')
         self.disable_shortcuts = False
+        self.macro_edit = False
 
         self.apply_css(self.window, self.provider)
 
@@ -197,6 +197,9 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         self.disable_shortcuts = False
         self.focus_dummy.grab_focus()
 
+    def on_context_menu(self, *args):
+        pass
+
     def on_entry_activate(self, *args):
         self.focus_dummy.grab_focus()
 
@@ -219,7 +222,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         self.connection.die()
         self.connection.join(timeout=1)
 
-        self.connection = AtemConnection(self.on_change, self.on_disconnect, self.on_transfer_progress, self.on_download_done)
+        self.connection = AtemConnection(self.on_change, self.on_disconnect, self.on_transfer_progress,
+                                         self.on_download_done)
         self.connection.daemon = True
         self.connection.ip = self.settings.get_string('switcher-ip')
         self.connection.start()
@@ -339,6 +343,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
             self.on_aux_output_source_change(data)
         elif field == 'dkey-properties-base':
             self.on_dkey_properties_base_change(data)
+        elif field == 'macro-properties':
+            self.on_macro_properties_change(data)
         else:
             if field == 'time':
                 return
@@ -358,6 +364,12 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage, MidiControl):
         if store == 0:
             # Media transfer
             self.on_media_download_done(slot, data)
+        if store == 0xffff:
+            # Macro fetch
+            if self.macro_edit:
+                self.macro_edit = False
+
+                MacroEditorWindow(self.window, self.application, self.connection, slot, data)
 
     def on_page_changed(self, widget, *args):
         page = widget.get_visible_child_name()

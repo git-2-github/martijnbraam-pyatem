@@ -1421,6 +1421,78 @@
                                                 <property name="position">4</property>
                                               </packing>
                                             </child>
+                                            <child>
+                                              <object class="GtkExpander" id="expander_macros">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="expanded">True</property>
+                                                <child>
+                                                  <object class="GtkFrame">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="margin-bottom">64</property>
+                                                    <property name="label-xalign">0</property>
+                                                    <property name="shadow-type">in</property>
+                                                    <child>
+                                                      <object class="GtkBox">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="margin-start">12</property>
+                                                        <property name="margin-end">12</property>
+                                                        <property name="margin-top">12</property>
+                                                        <property name="margin-bottom">12</property>
+                                                        <property name="orientation">vertical</property>
+                                                        <child>
+                                                          <placeholder/>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkFlowBox" id="macro_flow">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="homogeneous">True</property>
+                                                            <property name="column-spacing">4</property>
+                                                            <property name="row-spacing">4</property>
+                                                          </object>
+                                                          <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">1</property>
+                                                          </packing>
+                                                        </child>
+                                                        <child>
+                                                          <placeholder/>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                    <child type="label_item">
+                                                      <placeholder/>
+                                                    </child>
+                                                    <style>
+                                                      <class name="view"/>
+                                                    </style>
+                                                  </object>
+                                                </child>
+                                                <child type="label">
+                                                  <object class="GtkLabel">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="margin-bottom">5</property>
+                                                    <property name="label" translatable="yes">Macros</property>
+                                                    <style>
+                                                      <class name="heading"/>
+                                                    </style>
+                                                  </object>
+                                                </child>
+                                                <style>
+                                                  <class name="bmdgroup"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">5</property>
+                                              </packing>
+                                            </child>
                                           </object>
                                         </child>
                                       </object>
