@@ -178,33 +178,35 @@ class VideoModeField(FieldBase):
         self.raw = raw
         self.mode, = struct.unpack('>1B3x', raw)
 
+        # Resolution, Interlaced, Rate, Widescreen
         modes = {
-            0: (525, True, 59.94),
-            1: (625, True, 50),
-            2: (525, True, 59.94),
-            3: (625, True, 50),
-            4: (720, False, 50),
-            5: (720, False, 59.94),
-            6: (1080, True, 50),
-            7: (1080, True, 59.94),
-            8: (1080, False, 23.98),
-            9: (1080, False, 24),
-            10: (1080, False, 25),
-            11: (1080, False, 29.97),
-            12: (1080, False, 50),
-            13: (1080, False, 59.94),
-            14: (2160, False, 23.98),
-            15: (2160, False, 24),
-            16: (2160, False, 25),
-            17: (2160, False, 29.97),
-            26: (1080, False, 30),
-            27: (1080, False, 60),
+            0: (525, True, 59.94, False),
+            1: (625, True, 50, False),
+            2: (525, True, 59.94, True),
+            3: (625, True, 50, True),
+            4: (720, False, 50, True),
+            5: (720, False, 59.94, True),
+            6: (1080, True, 50, True),
+            7: (1080, True, 59.94, True),
+            8: (1080, False, 23.98, True),
+            9: (1080, False, 24, True),
+            10: (1080, False, 25, True),
+            11: (1080, False, 29.97, True),
+            12: (1080, False, 50, True),
+            13: (1080, False, 59.94, True),
+            14: (2160, False, 23.98, True),
+            15: (2160, False, 24, True),
+            16: (2160, False, 25, True),
+            17: (2160, False, 29.97, True),
+            26: (1080, False, 30, True),
+            27: (1080, False, 60, True),
         }
 
         if self.mode in modes:
             self.resolution = modes[self.mode][0]
             self.interlaced = modes[self.mode][1]
             self.rate = modes[self.mode][2]
+            self.widescreen = modes[self.mode][3]
 
     def get_label(self):
         if self.resolution is None:
@@ -213,7 +215,13 @@ class VideoModeField(FieldBase):
         pi = 'p'
         if self.interlaced:
             pi = 'i'
-        return '{}{}{}'.format(self.resolution, pi, self.rate)
+        aspect = ''
+        if self.resolution < 720:
+            if self.widescreen:
+                aspect = ' 16:9'
+            else:
+                aspect = ' 4:3'
+        return '{}{}{}{}'.format(self.resolution, pi, self.rate, aspect)
 
     def get_pixels(self):
         w, h = self.get_resolution()
@@ -221,7 +229,8 @@ class VideoModeField(FieldBase):
 
     def get_resolution(self):
         lut = {
-            525: (525, 525),
+            525: (720, 480),
+            625: (720, 576),
             720: (1280, 720),
             1080: (1920, 1080),
             2160: (3840, 2160),
@@ -1223,7 +1232,7 @@ class AudioMixerMasterPropertiesField(FieldBase):
         self.afv = field[1]
 
     def __repr__(self):
-        return '<audio-master-properties: volume={} afv={}>'.format(self.volume, self.avf)
+        return '<audio-master-properties: volume={} afv={}>'.format(self.volume, self.afv)
 
 
 class AudioMixerMonitorPropertiesField(FieldBase):
