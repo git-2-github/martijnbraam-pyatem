@@ -1962,3 +1962,28 @@ class TransferAckCommand(Command):
     def get_command(self):
         data = struct.pack('>HH', self.transfer, self.slot)
         return self._make_command('FTUA', data)
+
+
+class SendAudioLevelsCommand(Command):
+    """
+    Implementation of the `SALN` command. This is an acknowledgement for FTDa packets.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    bool   Enable sending levels
+    1      3    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, enable):
+        """
+        :param transfer: Unique transfer number
+        :param slot: Slot index
+        """
+        self.enable = enable
+
+    def get_command(self):
+        data = struct.pack('>? 3x', self.enable)
+        return self._make_command('SALN', data)

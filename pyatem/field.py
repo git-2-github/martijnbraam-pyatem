@@ -1,5 +1,6 @@
 import colorsys
 import struct
+import math
 
 from hexdump import hexdump
 
@@ -2280,3 +2281,64 @@ class MacroPropertiesField(FieldBase):
     def __repr__(self):
         return '<macro-properties: index={} used={} name={}>'.format(self.index, self.is_used,
                                                                      self.name)
+
+
+class AudioMeterLevelsField(FieldBase):
+    """
+    Data from the `AMLv`. This contains the realtime audio levels for the audio mixer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Macro slot index
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: Macro slot index
+    :ivar is_used: Slot contains data
+    :ivar is_invalid: Slot contains invalid data
+    :ivar name: Name of the macro
+    :ivar description: Description of the macro
+    """
+
+    CODE = "AMLv"
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack_from('>H2x 4I 4I', raw, 0)
+        self.count = field[0]
+        self.master = (
+                self._level(field[1]),
+                self._level(field[2]),
+                self._level(field[3]),
+                self._level(field[4])
+            )
+        self.monitor = (
+                self._level(field[5]),
+                self._level(field[6]),
+                self._level(field[7]),
+                self._level(field[8])
+            )
+        self.input = {}
+        offset = struct.calcsize('>H2x 4I 4I')
+        sources = struct.unpack_from('>{}H'.format(self.count), raw, offset)
+        offset = int(math.ceil((offset + (2 * self.count)) / 4.0) * 4)
+        field = struct.unpack_from('>{}I'.format(self.count * 4), raw, offset)
+        for i in range(0, self.count * 4, 4):
+            level = (
+                self._level(field[i]),
+                self._level(field[i + 1]),
+                self._level(field[i + 2]),
+                self._level(field[i + 3])
+            )
+            self.input[sources[i // 4]] = level
+
+    def _level(self, value):
+        if value == 0:
+            return -60
+        val = math.log10(value / (128 * 65536)) * 20
+        return val
+
+    def __repr__(self):
+        return '<audio-meter-levels count={}>'.format(self.count)

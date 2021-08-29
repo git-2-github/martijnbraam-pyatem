@@ -153,6 +153,7 @@ class AtemProtocol:
             'LKST': 'lock-state',
             'FTDE': 'file-transfer-error',
             'FTDC': 'file-transfer-data-complete',
+            'AMLv': 'audio-meter-levels'
         }
 
         fieldname_to_unique = {

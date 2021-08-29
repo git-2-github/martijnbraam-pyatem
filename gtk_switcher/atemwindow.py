@@ -345,6 +345,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             self.on_dkey_properties_base_change(data)
         elif field == 'macro-properties':
             self.on_macro_properties_change(data)
+        elif field == 'audio-meter-levels':
+            self.on_audio_meter_levels_change(data)
         else:
             if field == 'time':
                 return
@@ -375,6 +377,10 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         page = widget.get_visible_child_name()
         if page == 'media':
             self.on_page_media_open()
+        if page == 'audio':
+            self.enable_levels()
+        else:
+            self.disable_levels()
 
 #    @field('input-properties')
 #    def on_input_properties_changed(self, data):

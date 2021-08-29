@@ -4,7 +4,7 @@ from gtk_switcher.adjustmententry import AdjustmentEntry
 from gtk_switcher.dial import Dial
 from gtk_switcher.gtklogadjustment import LogAdjustment
 from pyatem.command import AudioInputCommand, FairlightStripPropertiesCommand, FairlightMasterPropertiesCommand, \
-    AudioMasterPropertiesCommand, AudioMonitorPropertiesCommand
+    AudioMasterPropertiesCommand, AudioMonitorPropertiesCommand, SendAudioLevelsCommand
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject, Gio, Gdk
@@ -28,6 +28,7 @@ class AudioPage:
         self.audio_on = {}
         self.audio_afv = {}
         self.audio_monitor = {}
+        self.vu = {}
 
         self.master_level = None
         self.master_afv = None
@@ -189,7 +190,10 @@ class AudioPage:
                 vu_left = Gtk.ProgressBar()
                 vu_right = Gtk.ProgressBar()
                 vu_left.set_orientation(Gtk.Orientation.VERTICAL)
+                vu_left.set_inverted(True)
                 vu_right.set_orientation(Gtk.Orientation.VERTICAL)
+                vu_right.set_inverted(True)
+                self.vu[strip_id] = (vu_left, vu_right)
                 volume_box.pack_start(vu_left, False, True, 0)
                 volume_box.pack_start(vu_right, False, True, 0)
                 self.audio_channels.attach(volume_frame, strip_index + c, 5, 1, 1)
@@ -293,7 +297,10 @@ class AudioPage:
             vu_left = Gtk.ProgressBar()
             vu_right = Gtk.ProgressBar()
             vu_left.set_orientation(Gtk.Orientation.VERTICAL)
+            vu_left.set_inverted(True)
             vu_right.set_orientation(Gtk.Orientation.VERTICAL)
+            vu_right.set_inverted(True)
+            self.vu['master'] = (vu_left, vu_right)
             volume_box.pack_start(vu_left, False, True, 0)
             volume_box.pack_start(vu_right, False, True, 0)
             self.audio_channels.attach(volume_frame, strip_index + c, 5, 1, 1)
@@ -312,10 +319,16 @@ class AudioPage:
             monitoring_wrap.add(monitoring_frame)
             self.audio_channels.attach(monitoring_wrap, strip_index + c, 6, 1, 2)
             monitor_grid = Gtk.Grid()
+            monitor_grid.set_column_spacing(4)
+            monitor_grid.set_row_spacing(4)
+            monitor_grid.set_margin_top(2)
+            monitor_grid.set_margin_bottom(4)
+            monitor_grid.set_margin_start(6)
+            monitor_grid.set_margin_end(6)
             monitoring_frame.add(monitor_grid)
             monitor_dial = Dial()
             monitor_dial.set_adjustment(self.monitor_level)
-            monitor_grid.attach(label, 0, 0, 2, 1)
+            monitor_grid.attach(label, 0, 0, 3, 1)
             monitor_grid.attach(monitor_dial, 0, 1, 2, 1)
 
             self.monitor_on = Gtk.Button(label="ON")
@@ -326,6 +339,17 @@ class AudioPage:
             self.monitor_dim.connect('clicked', self.do_monitor_dim)
             monitor_grid.attach(self.monitor_on, 0, 2, 1, 1)
             monitor_grid.attach(self.monitor_dim, 1, 2, 1, 1)
+            vu_left = Gtk.ProgressBar()
+            vu_right = Gtk.ProgressBar()
+            vu_left.set_orientation(Gtk.Orientation.VERTICAL)
+            vu_left.set_inverted(True)
+            vu_right.set_orientation(Gtk.Orientation.VERTICAL)
+            vu_right.set_inverted(True)
+            vu_box = Gtk.Box()
+            vu_box.pack_start(vu_left, False, False, 0)
+            vu_box.pack_start(vu_right, False, False, 0)
+            self.vu['monitor'] = (vu_left, vu_right)
+            monitor_grid.attach(vu_box, 2, 1, 1, 2)
 
         self.apply_css(self.audio_channels, self.provider)
         self.audio_channels.show_all()
@@ -531,3 +555,25 @@ class AudioPage:
         self.monitor_on.set_sensitive(data.enabled)
         self.monitor_dim.set_sensitive(data.enabled)
         self.model_changing = False
+
+    def enable_levels(self):
+        """ The audio page was opened, request data for the levels """
+        if self.mixer == 'atem':
+            cmd = SendAudioLevelsCommand(True)
+            self.connection.mixer.send_commands([cmd])
+
+    def disable_levels(self):
+        """ The audio page was closed, stop getting the realtime levels """
+        if self.mixer == 'atem':
+            cmd = SendAudioLevelsCommand(False)
+            self.connection.mixer.send_commands([cmd])
+
+    def on_audio_meter_levels_change(self, data):
+        self.vu['master'][0].set_fraction((data.master[0] + 60) / 60)
+        self.vu['master'][1].set_fraction((data.master[1] + 60) / 60)
+        self.vu['monitor'][0].set_fraction((data.monitor[0] + 60) / 60)
+        self.vu['monitor'][1].set_fraction((data.monitor[1] + 60) / 60)
+        for strip in data.input:
+            strip_id = f'{strip}.0'
+            self.vu[strip_id][0].set_fraction((data.input[strip][0] + 60) / 60)
+            self.vu[strip_id][1].set_fraction((data.input[strip][1] + 60) / 60)
