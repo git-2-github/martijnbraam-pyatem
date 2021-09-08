@@ -347,6 +347,11 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             self.on_macro_properties_change(data)
         elif field == 'audio-meter-levels':
             self.on_audio_meter_levels_change(data)
+        elif field == 'fairlight-meter-levels':
+            self.on_fairlight_meter_levels_change(data)
+        elif field == 'fairlight-master-levels':
+            self.on_fairlight_master_levels_change(data)
+
         else:
             if field == 'time':
                 return

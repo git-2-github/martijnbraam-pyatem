@@ -4,7 +4,7 @@ from gtk_switcher.adjustmententry import AdjustmentEntry
 from gtk_switcher.dial import Dial
 from gtk_switcher.gtklogadjustment import LogAdjustment
 from pyatem.command import AudioInputCommand, FairlightStripPropertiesCommand, FairlightMasterPropertiesCommand, \
-    AudioMasterPropertiesCommand, AudioMonitorPropertiesCommand, SendAudioLevelsCommand
+    AudioMasterPropertiesCommand, AudioMonitorPropertiesCommand, SendAudioLevelsCommand, SendFairlightLevelsCommand
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject, Gio, Gdk
@@ -560,13 +560,17 @@ class AudioPage:
         """ The audio page was opened, request data for the levels """
         if self.mixer == 'atem':
             cmd = SendAudioLevelsCommand(True)
-            self.connection.mixer.send_commands([cmd])
+        else:
+            cmd = SendFairlightLevelsCommand(True)
+        self.connection.mixer.send_commands([cmd])
 
     def disable_levels(self):
         """ The audio page was closed, stop getting the realtime levels """
         if self.mixer == 'atem':
             cmd = SendAudioLevelsCommand(False)
-            self.connection.mixer.send_commands([cmd])
+        else:
+            cmd = SendFairlightLevelsCommand(False)
+        self.connection.mixer.send_commands([cmd])
 
     def on_audio_meter_levels_change(self, data):
         self.vu['master'][0].set_fraction((data.master[0] + 60) / 60)
@@ -577,3 +581,11 @@ class AudioPage:
             strip_id = f'{strip}.0'
             self.vu[strip_id][0].set_fraction((data.input[strip][0] + 60) / 60)
             self.vu[strip_id][1].set_fraction((data.input[strip][1] + 60) / 60)
+
+    def on_fairlight_meter_levels_change(self, data):
+        self.vu[data.strip_id][0].set_fraction((data.level[0] + 60) / 60)
+        self.vu[data.strip_id][1].set_fraction((data.level[1] + 60) / 60)
+
+    def on_fairlight_master_levels_change(self, data):
+        self.vu['master'][0].set_fraction((data.level[0] + 60) / 60)
+        self.vu['master'][1].set_fraction((data.level[1] + 60) / 60)

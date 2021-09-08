@@ -1987,3 +1987,28 @@ class SendAudioLevelsCommand(Command):
     def get_command(self):
         data = struct.pack('>? 3x', self.enable)
         return self._make_command('SALN', data)
+
+
+class SendFairlightLevelsCommand(Command):
+    """
+    Implementation of the `SFLN` command. This enables or disables receiving the 10Hz audio level update packets for
+    the Audio page.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    bool   Enable sending levels
+    1      3    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, enable):
+        """
+        :param enable: Enable or disable receiving audio level data
+        """
+        self.enable = enable
+
+    def get_command(self):
+        data = struct.pack('>? 3x', self.enable)
+        return self._make_command('SFLN', data)

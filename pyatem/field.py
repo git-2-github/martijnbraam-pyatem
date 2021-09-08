@@ -2309,17 +2309,17 @@ class AudioMeterLevelsField(FieldBase):
         field = struct.unpack_from('>H2x 4I 4I', raw, 0)
         self.count = field[0]
         self.master = (
-                self._level(field[1]),
-                self._level(field[2]),
-                self._level(field[3]),
-                self._level(field[4])
-            )
+            self._level(field[1]),
+            self._level(field[2]),
+            self._level(field[3]),
+            self._level(field[4])
+        )
         self.monitor = (
-                self._level(field[5]),
-                self._level(field[6]),
-                self._level(field[7]),
-                self._level(field[8])
-            )
+            self._level(field[5]),
+            self._level(field[6]),
+            self._level(field[7]),
+            self._level(field[8])
+        )
         self.input = {}
         offset = struct.calcsize('>H2x 4I 4I')
         sources = struct.unpack_from('>{}H'.format(self.count), raw, offset)
@@ -2342,3 +2342,175 @@ class AudioMeterLevelsField(FieldBase):
 
     def __repr__(self):
         return '<audio-meter-levels count={}>'.format(self.count)
+
+
+class FairlightMeterLevelsField(FieldBase):
+    """
+    Data from the `FMLv`. This contains the realtime audio levels for the fairlight audio mixer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      6    ?      Unknown
+    6      1    u8     is_split, 255 when split or 0 when it isn't
+    7      1    u8     subchannel index
+    8      2    u16    source index
+    10     2    i16    Input level left, -10000 to 0
+    12     2    i16    Input level right, -10000 to 0
+    14     2    i16    Input peak left, -10000 to 0
+    16     2    i16    Input peak right, -10000 to 0
+    18     2    i16    Expander gain reduction, -10000 to 0
+    20     2    i16    Compressor gain reduction, -10000 to 0
+    22     2    i16    Limiter gain reduction, -10000 to 0
+    24     2    i16    Output level left, -10000 to 0
+    26     2    i16    Output level right, -10000 to 0
+    28     2    i16    Output peak left, -10000 to 0
+    30     2    i16    Output peak right, -10000 to 0
+    32     2    i16    Fader level left, -10000 to 0
+    34     2    i16    Fader level right, -10000 to 0
+    36     2    i16    Fader peak left, -10000 to 0
+    38     2    i16    Fader peak right, -10000 to 0
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: Channel source index
+    :ivar is_split: Stereo channel is split into dual mono
+    :ivar subchannel: Channel index after splitting
+    :ivar strip_id: Strip identifier in {source}.{subchannel} format
+    :ivar input: Volume level before dynamics
+    :ivar output: Volume level after dynamics
+    :ivar level: Volume level after fader
+    :ivar expander_gr: Gain reduction by the expander
+    :ivar compressor_gr: Gain reduction by the compressor
+    :ivar limiter_gr: Gain reduction by the limiter
+    """
+
+    CODE = "FMLv"
+    COEFF = 10 ** (40 / 20)
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack_from('>6xBBH 15h', raw, 0)
+        self.index = field[2]
+        self.is_split = field[0]
+        self.subchannel = field[1]
+
+        if self.is_split == 0xff:
+            self.strip_id = f"{self.index}.{self.subchannel}"
+        else:
+            self.strip_id = f"{self.index}.0"
+
+        self.input = (
+            self._level(field[3]),
+            self._level(field[4]),
+            self._level(field[5]),
+            self._level(field[6])
+        )
+
+        self.expander_gr = self._level(field[7])
+        self.compressor_gr = self._level(field[8])
+        self.limiter_gr = self._level(field[9])
+
+        self.output = (
+            self._level(field[10]),
+            self._level(field[11]),
+            self._level(field[12]),
+            self._level(field[13])
+        )
+        self.level = (
+            self._level(field[14]),
+            self._level(field[15]),
+            self._level(field[16]),
+            self._level(field[17])
+        )
+
+    def _level(self, value):
+        if value == 0:
+            return 0
+        value += 10000
+        value /= 10000
+        if value == 0:
+            return -60
+        val = (math.exp((math.log(self.COEFF + 1) * value)) - 1) / self.COEFF
+        val = val * 60 - 60
+        return val
+
+    def __repr__(self):
+        return '<fairlight-meter-levels source={}>'.format(self.strip_id)
+
+
+class FairlightMasterLevelsField(FieldBase):
+    """
+    Data from the `FDLv`. This contains the realtime audio levels for the master channel of the fairlight mixer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    i16    Input level left, -10000 to 0
+    2      2    i16    Input level right, -10000 to 0
+    4      2    i16    Input peak left, -10000 to 0
+    6      2    i16    Input peak right, -10000 to 0
+    8      2    i16    Compressor gain reduction, -10000 to 0
+    10     2    i16    Limiter gain reduction, -10000 to 0
+    12     2    i16    Output level left, -10000 to 0
+    14     2    i16    Output level right, -10000 to 0
+    16     2    i16    Output peak left, -10000 to 0
+    18     2    i16    Output peak right, -10000 to 0
+    20     2    i16    Fader level left, -10000 to 0
+    22     2    i16    Fader level right, -10000 to 0
+    24     2    i16    Fader peak left, -10000 to 0
+    26     2    i16    Fader peak right, -10000 to 0
+    ====== ==== ====== ===========
+
+    After parsing:
+    :ivar input: Volume level before dynamics
+    :ivar output: Volume level after dynamics
+    :ivar level: Volume level after fader
+    :ivar compressor_gr: Gain reduction by the compressor
+    :ivar limiter_gr: Gain reduction by the limiter
+    """
+
+    CODE = "FDLv"
+    COEFF = 10 ** (40 / 20)
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack_from('>14h', raw, 0)
+
+        self.input = (
+            self._level(field[0]),
+            self._level(field[1]),
+            self._level(field[2]),
+            self._level(field[3])
+        )
+
+        self.compressor_gr = self._level(field[4])
+        self.limiter_gr = self._level(field[5])
+
+        self.output = (
+            self._level(field[6]),
+            self._level(field[7]),
+            self._level(field[8]),
+            self._level(field[9])
+        )
+        self.level = (
+            self._level(field[10]),
+            self._level(field[11]),
+            self._level(field[12]),
+            self._level(field[13])
+        )
+
+    def _level(self, value):
+        if value == 0:
+            return 0
+        value += 10000
+        value /= 10000
+        if value == 0:
+            return -60
+        val = (math.exp((math.log(self.COEFF + 1) * value)) - 1) / self.COEFF
+        val = val * 60 - 60
+        return val
+
+    def __repr__(self):
+        return '<fairlight-master-levels>'
