@@ -94,6 +94,12 @@ class MediaPage:
 
         width, height = self.connection.mixer.mixerstate['video-mode'].get_resolution()
         raw = atem_to_rgb(data, width, height)
+
+        # Pad the frame to the right size instead of failing hard when the transfer is corrupted
+        if len(raw) != (width * 4 * height):
+            missing = (width * 4 * height) - len(raw)
+            raw += b'\0' * missing
+
         gdk_raw = GLib.Bytes.new(raw)
         pixbuf = GdkPixbuf.Pixbuf.new_from_bytes(gdk_raw, GdkPixbuf.Colorspace.RGB, True, 8, width, height,
                                                  width * 4)
