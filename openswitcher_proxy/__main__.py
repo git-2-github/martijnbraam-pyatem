@@ -35,7 +35,7 @@ def run(config_path):
     if 'frontend' in config:
         nthreads['frontend'] = {}
         for frontend in config['frontend']:
-            logging.info(f'  frontend: {frontend["type"]} ({frontend["bind"]})')
+            logging.info(f'  frontend: {frontend["type"]}')
             if frontend['type'] == 'status':
                 t = StatusFrontendThread(frontend, nthreads)
             elif frontend['type'] == 'http-api':
@@ -47,7 +47,7 @@ def run(config_path):
                 continue
             t.daemon = True
             threads.append(t)
-            nthreads['frontend'][frontend['bind']] = t
+            nthreads['frontend'][t.name] = t
             t.start()
 
     while True:
