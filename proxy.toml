@@ -30,3 +30,8 @@ auth = true
 username = "admin"
 password = "password"
 hardware = "mini"
+[[frontend]]
+type = "mqtt"
+server = "localhost:1883"
+hardware = "mini"
+auth = false

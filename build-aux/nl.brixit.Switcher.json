@@ -18,7 +18,7 @@
       "name": "hexdump",
       "buildsystem": "simple",
       "build-commands": [
-        "pip3 install --prefix=/app hexdump pyusb"
+        "pip3 install --prefix=/app hexdump pyusb paho-mqtt"
       ],
       "build-options": {
         "build-args": [
