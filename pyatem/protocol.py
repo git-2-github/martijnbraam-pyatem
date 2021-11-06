@@ -208,7 +208,6 @@ class AtemProtocol:
                 contents = getattr(fieldmodule, classname)(contents)
 
         if key == 'CapA':
-            print("CapA", contents)
             return
 
         if key == 'lock-obtained':
