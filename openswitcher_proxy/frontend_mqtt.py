@@ -1,9 +1,11 @@
 import threading
 import logging
 import json
+from functools import partial
 
 from .error import DependencyError
 from .frontend_httpapi import FieldEncoder
+
 try:
     import paho.mqtt.client as mqtt
 except ModuleNotFoundError:
@@ -18,8 +20,8 @@ class MqttFrontendThread(threading.Thread):
         self.name = 'mqtt.' + str(config['host'])
         self.config = config
         self.threadlist = threadlist
-        self.hw_name = self.config['hardware']
-        self.switcher = self.threadlist['hardware'][self.hw_name].switcher
+        self.hw_name = self.config['hardware'].split(',')
+        self.topic = self.config['topic'] if 'topic' in self.config else "atem/{hardware}/{field}"
         self.client = None
         self.status = 'initializing...'
 
@@ -32,15 +34,34 @@ class MqttFrontendThread(threading.Thread):
         self.client.on_message = lambda client, userdata, msg: self.on_mqtt_message(msg)
         logging.info(f'connecting to {host}:{port}')
         self.client.connect(host, port, keepalive=3)
-        self.switcher.on('change', lambda field, value: self.on_switcher_changed(field, value))
-        # FIXME: this is racy, I've seen `RuntimeError: dictionary changed size during iteration` once
-        for field, value in self.switcher.mixerstate.items():
-            self.on_switcher_changed(field, value)
+        for hw in self.hw_name:
+            sw = self.threadlist['hardware'][hw].switcher
+
+            # Hook into the events for the registered switchers and update the mqtt topic
+            sw.on('connected', partial(self.on_switcher_connected, hw))
+            sw.on('disconnected', partial(self.on_switcher_disconnected, hw))
+            sw.on('change', partial(self.on_switcher_changed, hw))
+
+            if self.threadlist['hardware'][hw].status == 'connected':
+                # Hardware is already connected at this point, re-generate the initial data
+                self.on_switcher_connected(hw)
+
         self.client.loop_forever()
 
-    def on_switcher_changed(self, field, value):
+    def on_switcher_changed(self, hw, field, value):
         raw = json.dumps(value, cls=FieldEncoder)
-        self.client.publish(f'atem/{self.hw_name}/{field}', raw)
+        topic = self.topic.format(hardware=hw, field=field)
+        self.client.publish(topic, raw)
+
+    def on_switcher_connected(self, hw):
+        self.on_switcher_changed(hw, 'status', {'upstream': True})
+        sw = self.threadlist['hardware'][hw].switcher
+        items = list(sw.mixerstate.items())
+        for field, value in items:
+            self.on_switcher_changed(hw, field, value)
+
+    def on_switcher_disconnected(self, hw):
+        self.on_switcher_changed(hw, 'status', {'upstream': False})
 
     def on_mqtt_connect(self, flags, rc):
         self.status = 'running'
