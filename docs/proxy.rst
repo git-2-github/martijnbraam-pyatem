@@ -158,3 +158,26 @@ The pyatem library can connect to this frontend by passing an URL to it:
 The hardware list is also send to clients in the connection phase. The protocol is designed so clients can show
 a popup for authentication when it's enabled and show a device selection popup with the labels set in the hardware
 section.
+
+The MQTT frontend
+^^^^^^^^^^^^^^^^^
+
+The MQTT frontend will connect to an MQTT server and will sync the hardware state to a topic.
+
+
+.. code-block:: toml
+
+    [[frontend]]
+    type = "mqtt"
+    connect = "localhost:1883"
+    auth = false
+    hardware = "mini"
+    topic = "atem/{hardware}/{field}"
+
+The proxy will send a new message the the configured MQTT topic every time the state of one of the connected
+switchers changes. There's also a special field generated called `status` that contains the connection state
+to the hardware on the other side of the proxy.
+
+The `topic` setting defines which topic the messages will go to. In this path you can use the `hardware` variable which
+will be the label of the switcher that generated the event and the `field` variable which will be the name of the
+changed field in the same format as the `The HTTP API frontend`_ above.
