@@ -158,6 +158,7 @@ class AtemProtocol:
             'AMLv': 'audio-meter-levels',
             'FMLv': 'fairlight-meter-levels',
             'FDLv': 'fairlight-master-levels',
+            'CCdP': 'camera-control-data-packet',
         }
 
         fieldname_to_unique = {
@@ -197,6 +198,7 @@ class AtemProtocol:
             'multiviewer-input': '>BB',
             'multiviewer-vu': '>BB',
             'multiviewer-safe-area': '>BB',
+            'camera-control-data-packet': '>BBB',
         }
 
         raw = contents

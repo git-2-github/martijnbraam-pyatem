@@ -2604,3 +2604,151 @@ class FairlightMasterLevelsField(FieldBase):
 
     def __repr__(self):
         return '<fairlight-master-levels>'
+
+
+class CameraControlDataPacketField(FieldBase):
+    """
+    Data from the `CCdP`. This contains a single packet for the remote shading unit in the blackmagic cameras. This
+    protocol seems to roughly match up to the official BMD SDI camera control documentation with the bytes packed
+    differently.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Destination, 255 = broadcast to all
+    1      1    u8     Category
+    2      1    u8     Parameter
+    3      1    u8     Data type
+    4      12   ?      padding
+    16     8    ?      variable data, absent for commands.
+    ====== ==== ====== ===========
+
+    ========== ===========
+    Data type  Description
+    ========== ===========
+    0          Boolean, or no data
+    1          Signed byte
+    2          Signed short
+    3          Signed integer
+    4          Signed long
+    5          UTF-8 data
+    128        16-bit Fixed point
+    ========== ===========
+
+    ========== ======== ======== ===========
+    Command    DataType Elements Description
+    ========== ======== ======== ===========
+    0.0        fixed16  1        Focus 0=near 1=far
+    0.1        -        0        Trigger autofocus
+    0.2        fixed16  1        Aperture f-stop
+    0.3        fixed16  1        Aperture normalized 0=closed 1=open
+    0.4        fixed16  1        Aperture by index 0...n
+    0.5        -        0        Trigger auto aperture
+    0.6        boolean  1        Enable optical image stabilisation
+    0.7        int16    1        Zoom, focal length in mm
+    0.8        fixed16  1        Zoom, normalized 0.0...1.0
+    0.9        fixed16  1        Zoom, rate -1.0...1.0
+    1.0        int8     5        Frame rate, M-rate, dimensions, interlaced, colorpsace
+    1.1        int8     1        Gain, absolute iso as ISO/100
+    1.2        int16    2        White balance, temperature 2500...10000, tint -50...50
+    1.3        -        0        Trigger auto whitebalance
+    1.4        -        0        Restore previous auto whitebalance
+    1.5        int32    1        Exposure time in us
+    1.6        int16    1        Exposure by index 0...n
+    1.7        int8     1        Dynamic range mode, 0=film 1=video
+    1.8        int8     1        Sharpening level, 0=off, 1=low, 2=medium, 3=high
+    1.9        int16    1        Recording format
+    1.10       int8     1        Auto exposure mode, 0=manual trigger, 1=iris, 2=shutter, 3=iris+shutter, 4=shutter+iris
+    1.11       int32    1        Shutter angle in degrees*100 100...36000
+    1.12       int32    1        Shutter speed in 1/n, 24...2000
+    1.13       int8     1        Gain in dB, -128...127
+    1.14       int32    1        Gain in iso value
+    2.0        fixed16  1        Mic level 0.0...1.0
+    2.1        fixed16  1        Headphone level 0.0...1.0
+    2.2        fixed16  1        Headphone program mix 0.0...1.0
+    2.3        fixed16  1        Speaker level 0.0...1.0
+    2.4        int8     1        Input type, 0=internal mic, 1=line in, 2=low gain mic in, 3=high gain mic in
+    2.5        fixed16  2        Input levels, one element per channel. 0.0...1.0
+    2.6        boolean  1        Phantom power enabled
+    3.0        uint16   1        Enable overlays, undocumented bitfield
+    3.1        int8     1        Frame guide style, enum
+    3.2        fixed16  1        Frame guide opacity
+    3.3        int8     4        Overlay settings
+    4.0        fixed16  1        Display brightness 0.0...1.0
+    4.1        uint16   1        Display overlay enable, undocumented
+    4.2        fixed16  1        Display zebra level, 0.0...1.0
+    4.3        fixed16  1        Display peaking levle, 0.0...1.0
+    4.4        int8     1        Enable bars with timeout, 0=disable, 1...30=seconds
+    4.5        int8     2        Display focus assist, first element is method and second element is color
+    5.0        fixed16  1        Tally brightness, 0.0...1.0
+    5.1        fixed16  1        Tally front brightness, 0.0...1.0
+    5.2        fixed16  1        Tally rear brightness, 0.0...1.0
+    6.0        int8     1        Reference source, 0=internal, 1=program, 2=external
+    6.1        int32    1        Reference offset in pixels
+    7.0        int32    2        Real time clock value
+    7.1        utf8     1        System language
+    7.2        int32    1        Timezone offset, minute from UTC
+    7.3        int64    2        Location, latitude and longitude
+    8.0        fixed16  4        Primary color corrector lift, RGBY
+    8.1        fixed16  4        Primary color corrector gamma, RGBY
+    8.2        fixed16  4        Primary color corrector gain, RGBY
+    8.3        fixed16  4        Primary color corrector offset, RGBY
+    8.4        fixed16  2        Contrast, pivot 0.0..1.0, adjustment 0.0...2.0
+    8.5        fixed16  1        Luma mix, 0.0...1.0
+    8.6        fixed16  2        Color adjust, hue -1.0...1.0, saturation 0.0...2.0
+    8.7        -        0        Reset color corrector to defaults
+    10.0       int8     2        Codec enum
+    10.1       int8     4        Transport mode
+    11.0       fixed16  2        PTZ Control, pan velocity -1.0...1.0, tilt velocity -1.0...1.0
+    11.1       int8     2        PTZ memory preset. command 0=reset, 1=store, 2=recall. Slot ID 0...5
+    ========== ===========
+
+
+    After parsing:
+    :ivar destination: Command destination address
+    :ivar category: First number of the command
+    :ivar parameter: Second number of the command
+    :ivar datatype: Data type
+    :ivar data: Data attached to the command
+    """
+
+    CODE = "CCdP"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.destination, self.category, self.parameter, self.datatype, *weird = struct.unpack_from('>4B 4B 4B', raw, 0)
+        num_elements = sum(weird)
+        self.length = num_elements
+        self.data = None
+        if len(raw) > 16:
+            dfmt = '>'
+            if self.datatype == 0:  # Boolean
+                dfmt += '?' * num_elements
+            elif self.datatype == 1:  # Signed byte
+                dfmt += 'b' * num_elements
+            elif self.datatype == 2:  # Signed short
+                dfmt += 'h' * num_elements
+            elif self.datatype == 3:  # Signed int
+                dfmt += 'i' * num_elements
+            elif self.datatype == 4:  # Signed long
+                dfmt += 'q' * num_elements
+            elif self.datatype == 5:  # UTF-8
+                pass
+            elif self.datatype == 128:  # Fixed 16
+                dfmt += 'h' * num_elements
+            self.data = struct.unpack_from(dfmt, raw, 16)
+            if self.datatype == 128:
+                self.data = self.unpack_fixed16(self.data)
+
+    def unpack_fixed16(self, raw):
+        result = []
+        for f16 in raw:
+            result.append(f16 / (2 ** 11))
+        return result
+
+    def __repr__(self):
+        return '<camera-control-data-packet dest={} command={}.{} type={} data={}>'.format(self.destination,
+                                                                                           self.category,
+                                                                                           self.parameter,
+                                                                                           self.datatype,
+                                                                                           self.data)
