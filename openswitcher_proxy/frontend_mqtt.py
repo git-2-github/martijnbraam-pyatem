@@ -1,6 +1,8 @@
 import threading
 import logging
 import json
+
+from .error import DependencyError
 from .frontend_httpapi import FieldEncoder
 try:
     import paho.mqtt.client as mqtt
@@ -12,7 +14,7 @@ class MqttFrontendThread(threading.Thread):
     def __init__(self, config, threadlist):
         threading.Thread.__init__(self)
         if mqtt is None:
-            raise NotImplementedError("The paho-mqtt library is not available")
+            raise DependencyError("The paho-mqtt library is not available")
         self.name = 'mqtt.' + str(config['host'])
         self.config = config
         self.threadlist = threadlist

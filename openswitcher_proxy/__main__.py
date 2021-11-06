@@ -4,6 +4,7 @@ import time
 import toml
 import logging
 
+from openswitcher_proxy.error import RecoverableError
 from openswitcher_proxy.frontend_httpapi import HttpApiFrontendThread
 from openswitcher_proxy.frontend_status import StatusFrontendThread
 from openswitcher_proxy.frontend_tcp import TcpFrontendThread
@@ -44,21 +45,24 @@ def run(config_path):
                 connection = 'n/a'
                 logging.error(f'  Frontend is missing bind or host option')
             logging.info(f'  frontend: {frontend["type"]} ({connection})')
-            if frontend['type'] == 'status':
-                t = StatusFrontendThread(frontend, nthreads)
-            elif frontend['type'] == 'http-api':
-                t = HttpApiFrontendThread(frontend, nthreads)
-            elif frontend['type'] == 'tcp':
-                t = TcpFrontendThread(frontend, nthreads)
-            elif frontend['type'] == 'mqtt':
-                t = MqttFrontendThread(frontend, nthreads)
-            else:
-                logging.error(f'  Unknown frontend type "{frontend["type"]}"')
-                continue
-            t.daemon = True
-            threads.append(t)
-            nthreads['frontend'][t.name] = t
-            t.start()
+            try:
+                if frontend['type'] == 'status':
+                    t = StatusFrontendThread(frontend, nthreads)
+                elif frontend['type'] == 'http-api':
+                    t = HttpApiFrontendThread(frontend, nthreads)
+                elif frontend['type'] == 'tcp':
+                    t = TcpFrontendThread(frontend, nthreads)
+                elif frontend['type'] == 'mqtt':
+                    t = MqttFrontendThread(frontend, nthreads)
+                else:
+                    logging.error(f'  Unknown frontend type "{frontend["type"]}"')
+                    continue
+                t.daemon = True
+                threads.append(t)
+                nthreads['frontend'][t.name] = t
+                t.start()
+            except RecoverableError as e:
+                logging.error(f'  Could not initialize the "{frontend["type"]}" frontend. {e}')
 
     while True:
         time.sleep(1)
