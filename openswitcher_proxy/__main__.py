@@ -36,7 +36,14 @@ def run(config_path):
     if 'frontend' in config:
         nthreads['frontend'] = {}
         for frontend in config['frontend']:
-            logging.info(f'  frontend: {frontend["type"]}')
+            if 'host' in frontend:
+                connection = frontend['host']
+            elif 'bind' in frontend:
+                connection = frontend['bind']
+            else:
+                connection = 'n/a'
+                logging.error(f'  Frontend is missing bind or host option')
+            logging.info(f'  frontend: {frontend["type"]} ({connection})')
             if frontend['type'] == 'status':
                 t = StatusFrontendThread(frontend, nthreads)
             elif frontend['type'] == 'http-api':

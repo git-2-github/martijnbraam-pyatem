@@ -13,7 +13,7 @@ class MqttFrontendThread(threading.Thread):
         threading.Thread.__init__(self)
         if mqtt is None:
             raise NotImplementedError("The paho-mqtt library is not available")
-        self.name = 'mqtt.' + str(config['server'])
+        self.name = 'mqtt.' + str(config['host'])
         self.config = config
         self.threadlist = threadlist
         self.hw_name = self.config['hardware']
@@ -23,7 +23,7 @@ class MqttFrontendThread(threading.Thread):
 
     def run(self):
         logging.info('MQTT frontend run')
-        host, port = self.config['server'].split(':')
+        host, port = self.config['host'].split(':')
         port = int(port)
         self.client = mqtt.Client(client_id=f'atem-{self.name}', userdata=self)
         self.client.on_connect = lambda client, userdata, flags, rc: self.on_mqtt_connect(flags, rc)
