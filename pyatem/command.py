@@ -2069,19 +2069,24 @@ class CameraControlCommand(Command):
         data += struct.pack('>11B', *elements)
         if self.data is not None:
             fmt = '>{}'.format(count)
+            if self.datatype == 5:
+                fmt = '>{}s'.format(len(self.data[0]))
             fmtmap = {
                 0: '?',
                 1: 'b',
                 2: 'h',
                 3: 'i',
                 4: 'q',
-                5: 'i',
+                5: '',
                 128: 'h'
             }
             fmt += fmtmap[self.datatype]
             if self.datatype == 128:
                 for i in range(0, len(self.data)):
                     self.data[i] = int(self.data[i] * (2 ** 11))
+            elif self.datatype == 5:
+                for i in range(0, len(self.data)):
+                    self.data[i] = self.data[i].encode()
             packed_data = struct.pack(fmt, *self.data)
             packed_data += b'\0' * (8 - len(packed_data))
             data += packed_data
