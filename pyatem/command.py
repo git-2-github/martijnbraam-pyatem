@@ -2012,3 +2012,77 @@ class SendFairlightLevelsCommand(Command):
     def get_command(self):
         data = struct.pack('>? 3x', self.enable)
         return self._make_command('SFLN', data)
+
+
+class CameraControlCommand(Command):
+    """
+    Implementation of the `CCmd` command. This sends a camera control command to an attached blackmagic design camera.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    int8   Destination
+    1      1    int8   Category
+    2      1    int8   Parameter
+    3      1    int8   Relative 0=off 1=on
+    4      1    int8   Datatype
+    5      4    ?      unknown
+    8      1    int8   Number of elements
+    9      6    ?      unknown
+    ...    ...  ...    data depending on command
+    ====== ==== ====== ===========
+    """
+
+    def __init__(self, destination, category, parameter, relative=False, datatype=None, data=None):
+        """
+        :param destination: Camera index, or 255 for broadcast
+        :param category: Command category
+        :param parameter: Command parameter
+        :param relative: Relative adjustment enable
+        :param datatype: Data type index
+        :param data: Data elements for command
+        """
+        self.destination = destination
+        self.category = category
+        self.parameter = parameter
+        self.relative = relative
+        self.datatype = datatype if datatype is not None else 0
+        self.data = data
+
+    def get_command(self):
+        count = 0
+        if self.data is not None:
+            count = len(self.data)
+        data = struct.pack('>5B', self.destination, self.category, self.parameter, self.relative, self.datatype)
+        elements = [0] * 11
+        countoffset = {
+            0: 0,
+            1: 2,
+            2: 2,
+            3: 4,
+            4: 2,
+            5: 2,
+            128: 2
+        }
+        elements[countoffset[self.datatype]] = count
+        print(elements)
+        data += struct.pack('>11B', *elements)
+        if self.data is not None:
+            fmt = '>{}'.format(count)
+            fmtmap = {
+                0: '?',
+                1: 'b',
+                2: 'h',
+                3: 'i',
+                4: 'q',
+                5: 'i',
+                128: 'h'
+            }
+            fmt += fmtmap[self.datatype]
+            if self.datatype == 128:
+                for i in range(0, len(self.data)):
+                    self.data[i] = int(self.data[i] * (2 ** 11))
+            packed_data = struct.pack(fmt, *self.data)
+            packed_data += b'\0' * (8 - len(packed_data))
+            data += packed_data
+        return self._make_command('CCmd', data)
