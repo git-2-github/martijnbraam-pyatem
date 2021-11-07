@@ -2717,8 +2717,15 @@ class CameraControlDataPacketField(FieldBase):
     def __init__(self, raw):
         self.raw = raw
         self.destination, self.category, self.parameter, self.datatype, *weird = struct.unpack_from('>4B 4B 4B', raw, 0)
+
         num_elements = sum(weird)
+        num_overrides = {
+            (1, 2): 2
+        }
+        if (self.category, self.parameter) in num_overrides:
+            num_elements = num_overrides[(self.category, self.parameter)]
         self.length = num_elements
+
         self.data = None
         if len(raw) > 16:
             dfmt = '>'
