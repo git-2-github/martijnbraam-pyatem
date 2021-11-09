@@ -75,6 +75,13 @@ class Focus(CameraControlData):
     KEYS = ["distance"]
 
 
+class TriggerAutofocus(CameraControlData):
+    CATEGORY = 0
+    PARAMETER = 1
+    DATATYPE = VOID
+    DESCRIPTIONS = []
+
+
 class ApertureFStop(CameraControlData):
     CATEGORY = 0
     PARAMETER = 2
@@ -97,6 +104,13 @@ class ApertureOrdinal(CameraControlData):
     PARAMETER = 3
     DATATYPE = FIXED16
     KEYS = ["aperture"]
+
+
+class TriggerAutoaperture(CameraControlData):
+    CATEGORY = 0
+    PARAMETER = 5
+    DATATYPE = VOID
+    DESCRIPTIONS = []
 
 
 class OIS(CameraControlData):
@@ -152,6 +166,20 @@ class WhiteBalance(CameraControlData):
     DATATYPE = INT16
     KEYS = ["temperature", "tint"]
     DESCRIPTIONS = ["k", ""]
+
+
+class TriggerAutowhitebalance(CameraControlData):
+    CATEGORY = 1
+    PARAMETER = 3
+    DATATYPE = VOID
+    DESCRIPTIONS = []
+
+
+class TriggerRestorewhitebalance(CameraControlData):
+    CATEGORY = 1
+    PARAMETER = 4
+    DATATYPE = VOID
+    DESCRIPTIONS = []
 
 
 class Exposure(CameraControlData):
@@ -466,6 +494,13 @@ class ColorAdjust(CameraControlData):
     DATATYPE = FIXED16
     KEYS = ["hue", "saturation"]
     DESCRIPTIONS = ["", ""]
+
+
+class TriggerColorReset(CameraControlData):
+    CATEGORY = 8
+    PARAMETER = 7
+    DATATYPE = VOID
+    DESCRIPTIONS = []
 
 
 class Codec(CameraControlData):
