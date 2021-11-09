@@ -2,6 +2,8 @@ import math
 import sys
 import inspect
 
+from pyatem.command import CameraControlCommand
+
 _cache = {}
 
 VOID = 0
@@ -21,9 +23,15 @@ class CameraControlData:
     DESCRIPTIONS = [""]
     KEYS = [""]
 
-    def __init__(self):
+    def __init__(self, destination=None, **kwargs):
         self.data = None
-        self.destination = None
+        self.destination = destination
+
+        if len(kwargs) > 0:
+            self.data = [0] * len(self.DESCRIPTIONS)
+            for key in kwargs:
+                offset = self.KEYS.index(key)
+                self.data[offset] = kwargs[key]
 
     @classmethod
     def from_data(cls, data):
@@ -44,6 +52,10 @@ class CameraControlData:
             instance.decode()
             return instance
         return None
+
+    def to_command(self, relative=False):
+        cmd = CameraControlCommand(self.destination, self.CATEGORY, self.PARAMETER, relative, self.DATATYPE, self.data)
+        return cmd
 
     def decode(self):
         pass
