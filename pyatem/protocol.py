@@ -382,6 +382,7 @@ class AtemProtocol:
 if __name__ == '__main__':
     from pyatem.command import CutCommand
     import pyatem.mediaconvert
+    from pyatem.cameracontrol import CameraControlData
 
     logging.basicConfig(level=logging.INFO)
 
@@ -393,6 +394,11 @@ if __name__ == '__main__':
     def changed(key, contents):
         if key == 'time':
             return
+        if isinstance(contents, fieldmodule.CameraControlDataPacketField):
+            parsed = CameraControlData.from_data(contents)
+            if parsed:
+                print(parsed)
+                return
         if isinstance(contents, fieldmodule.FieldBase):
             print(contents)
         else:
@@ -403,7 +409,8 @@ if __name__ == '__main__':
         for mid in testmixer.mixerstate['macro-properties']:
             macro = testmixer.mixerstate['macro-properties'][mid]
             if macro.is_used:
-                testmixer.download(0xffff, macro.index)
+                # testmixer.download(0xffff, macro.index)
+                pass
         return
         for sid in testmixer.mixerstate['mediaplayer-file-info']:
             still = testmixer.mixerstate['mediaplayer-file-info'][sid]
