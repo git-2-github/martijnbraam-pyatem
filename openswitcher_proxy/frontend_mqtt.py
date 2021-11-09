@@ -24,6 +24,7 @@ class MqttFrontendThread(threading.Thread):
         self.topic = self.config['topic'] if 'topic' in self.config else "atem/{hardware}/{field}"
         self.client = None
         self.status = 'initializing...'
+        self.error = None
 
     def run(self):
         logging.info('MQTT frontend run')
@@ -33,7 +34,14 @@ class MqttFrontendThread(threading.Thread):
         self.client.on_connect = lambda client, userdata, flags, rc: self.on_mqtt_connect(flags, rc)
         self.client.on_message = lambda client, userdata, msg: self.on_mqtt_message(msg)
         logging.info(f'connecting to {host}:{port}')
-        self.client.connect(host, port, keepalive=3)
+        try:
+            self.client.connect(host, port, keepalive=3)
+        except Exception as e:
+            logging.error(f'Could not connect to the MQTT server at {host}:{port}')
+            logging.error(e)
+            self.error = f'could not connect to {host}:{port}'
+            self.status = 'error'
+            return
         for hw in self.hw_name:
             sw = self.threadlist['hardware'][hw].switcher
 
@@ -74,4 +82,6 @@ class MqttFrontendThread(threading.Thread):
         logging.debug(f'MQTT: msg: {msg.topic} {msg.payload}')
 
     def get_status(self):
+        if self.status == 'error':
+            return f'{self.status}, {self.error}'
         return self.status
