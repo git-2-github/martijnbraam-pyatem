@@ -2056,13 +2056,13 @@ class CameraControlCommand(Command):
         data = struct.pack('>5B', self.destination, self.category, self.parameter, self.relative, self.datatype)
         elements = [0] * 11
         countoffset = {
-            0: 0,
+            0: 2,
             1: 2,
             2: 2,
             3: 4,
             4: 2,
             5: 2,
-            128: 2
+            128: 4
         }
         elements[countoffset[self.datatype]] = count
         print(elements)
