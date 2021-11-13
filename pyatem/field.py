@@ -627,7 +627,7 @@ class TallySourceField(FieldBase):
             offset += 3
 
     def __repr__(self):
-        return '<tally-index: num={}, val={}>'.format(self.num, self.tally)
+        return '<tally-source: num={}, val={}>'.format(self.num, self.tally)
 
 
 class KeyOnAirField(FieldBase):
