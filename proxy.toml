@@ -36,3 +36,4 @@ type = "mqtt"
 host = "localhost:1883"
 hardware = "mini"
 auth = false
+allow-writes = false
