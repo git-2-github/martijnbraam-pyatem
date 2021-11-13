@@ -416,6 +416,8 @@ class TcpProtocol:
         self._send_packet(self.list_to_packets([(b'*SW*', b'')]))
 
     def send_auth(self):
+        if self.username is None or self.password is None:
+            raise ValueError("Proxy requests AUTH but username or password is not set")
         self._send_packet(self.list_to_packets([
             (b'*USR', self.username.encode()),
             (b'*PWD', self.password.encode()),

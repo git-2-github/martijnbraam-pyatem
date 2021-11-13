@@ -51,7 +51,7 @@ class AtemConnection(threading.Thread):
             try:
                 self.mixer.loop()
             except Exception as e:
-                traceback.print_stack()
+                traceback.print_exc()
                 print("EXCEPTION", repr(e))
 
     def do_callback(self, *args, **kwargs):

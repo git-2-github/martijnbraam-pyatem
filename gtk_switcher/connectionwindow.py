@@ -100,9 +100,17 @@ class Handler:
                 address = part.hostname
                 if part.port:
                     address += ':' + str(part.port)
-                self.ipaddress.set_text(part.hostname)
-                self.username.set_text(part.username)
-                self.password.set_text(part.password)
+                self.ipaddress.set_text(address)
+
+                if part.username is None:
+                    self.username.set_text("")
+                else:
+                    self.username.set_text(part.username)
+
+                if part.password is None:
+                    self.password.set_text("")
+                else:
+                    self.password.set_text(part.password)
                 self.device.set_text(part.path[1:])
 
                 self.connection_tcp.set_active(True)
