@@ -357,13 +357,12 @@ class AudioPage:
     def on_audio_input_change(self, data):
         self.mixer = 'atem'
 
-        if data.strip_id not in self.volume_level:
+        if len(self.volume_level) == 0:
             self.master_level = LogAdjustment(0, 0, 65381, 10, 10, 100)
             self.master_level.connect('value-changed', self.on_master_changed)
             self.monitor_level = LogAdjustment(0, 0, 65381, 10, 10, 100)
             self.monitor_level.connect('value-changed', self.on_monitor_level_changed)
             self.make_mixer_ui(self.connection.mixer.mixerstate['audio-input'])
-            return
 
         self.audio_strip[data.strip_id] = data
         if data.strip_id not in self.volume_level:
