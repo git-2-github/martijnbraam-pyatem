@@ -26,6 +26,23 @@
   <url type="bugtracker">https://todo.sr.ht/~martijnbraam/OpenAtem</url>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="0.4.0" date="2021-11-14">
+      <description>
+        <p>
+          This release has support for the audio mixer in the atem and fairlight audio mixers. The connection
+          system has also been reworked to be able to connect to USB devices in an easier way and support
+          connecting to an openswitcher proxy daemon.
+        </p>
+        <ul>
+          <li>Add openswitcher-proxy component</li>
+          <li>Add level metering in the fairlight mixer</li>
+          <li>Implement the atem audio mixer</li>
+          <li>Remove the broken midi support in the gtk application</li>
+          <li>Add first support for fetching the media files from the hardware</li>
+          <li>Add the option to add a mini M/E for an AUX output</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.3.0" date="2021-06-27">
       <description>
         <p>
