@@ -189,3 +189,16 @@ messages back. If this is not set the subscribe topic will be the same as the `t
 
 The `allow-writes` setting defaults to false. If this setting is changed to true it will make the proxy subscribe to
 a topic and allow changing the switcher state my sending MQTT messages to that topic.
+
+.. code-block:: shell-session
+
+   # Switch to input 4 using MQTT
+   $ mosquitto_pub -t atem/mini/program-input -m '{"index":0, "source": 4}'
+
+   # Switch to a named input on the hardware
+   $ mosquitto_pub -t atem/mini/program-input -m '{"index":0, "source": "PC"}'
+
+   # Receive all MQTT messages from the proxy
+   $ mosquitto_sub -F '\e[92m%t \e[96m%p\e[0m' -t "atem/#"
+
+The MQTT module uses the MQTTv5 protocol
