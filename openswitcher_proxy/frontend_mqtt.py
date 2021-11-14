@@ -26,6 +26,7 @@ class MqttFrontendThread(threading.Thread):
         self.client = None
         self.status = 'initializing...'
         self.error = None
+        self.readonly = not self.config.get('allow-writes', False)
 
     def run(self):
         logging.info('MQTT frontend run')
@@ -75,10 +76,11 @@ class MqttFrontendThread(threading.Thread):
     def on_mqtt_connect(self, flags, rc):
         self.status = 'running'
         logging.info(f'MQTT: connected ({rc})')
-        self.client.subscribe(f'atem/+/set/#')
+        if not self.readonly:
+            self.client.subscribe(f'atem/+/set/#')
 
     def on_mqtt_message(self, msg):
-        if not self.config.get('allow-writes', False):
+        if self.readonly:
             logging.error('MQTT writes disabled')
             return
         parts = msg.topic.split('/')
@@ -119,4 +121,7 @@ class MqttFrontendThread(threading.Thread):
     def get_status(self):
         if self.status == 'error':
             return f'{self.status}, {self.error}'
-        return self.status
+        if self.readonly:
+            return self.status + ' (readonly)'
+        else:
+            return self.status + ' (writable)'
