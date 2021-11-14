@@ -172,7 +172,9 @@ The MQTT frontend will connect to an MQTT server and will sync the hardware stat
     connect = "localhost:1883"
     auth = false
     hardware = "mini"
+    allow-writes = false
     topic = "atem/{hardware}/{field}"
+    topic-subscribe = "atem/{hardware}/set/{field}"
 
 The proxy will send a new message the the configured MQTT topic every time the state of one of the connected
 switchers changes. There's also a special field generated called `status` that contains the connection state
@@ -181,3 +183,9 @@ to the hardware on the other side of the proxy.
 The `topic` setting defines which topic the messages will go to. In this path you can use the `hardware` variable which
 will be the label of the switcher that generated the event and the `field` variable which will be the name of the
 changed field in the same format as the `The HTTP API frontend`_ above.
+
+The `topic-subscribe` is an optional setting that sets the path the proxy will subscribe to the MQTT broker to receive
+messages back. If this is not set the subscribe topic will be the same as the `topic` setting used to send messages.
+
+The `allow-writes` setting defaults to false. If this setting is changed to true it will make the proxy subscribe to
+a topic and allow changing the switcher state my sending MQTT messages to that topic.

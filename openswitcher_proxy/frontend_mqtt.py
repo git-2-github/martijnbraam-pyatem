@@ -1,7 +1,9 @@
+import re
 import threading
 import logging
 import json
 from functools import partial
+from json import JSONDecodeError
 
 from .error import DependencyError
 from .frontend_httpapi import FieldEncoder
@@ -9,6 +11,7 @@ import pyatem.command as commandmodule
 
 try:
     import paho.mqtt.client as mqtt
+    from paho.mqtt.subscribeoptions import SubscribeOptions
 except ModuleNotFoundError:
     mqtt = None
 
@@ -27,13 +30,18 @@ class MqttFrontendThread(threading.Thread):
         self.status = 'initializing...'
         self.error = None
         self.readonly = not self.config.get('allow-writes', False)
+        self.subscribe = self.config['topic-subscribe'] if 'topic-subscribe' in self.config else self.topic
+
+        regex = self.subscribe.replace('{hardware}', r'(?P<hardware>[^/]+)')
+        regex = regex.replace('{field}', r'(?P<field>.+)')
+        self.topic_re = re.compile(regex)
 
     def run(self):
         logging.info('MQTT frontend run')
         host, port = self.config['host'].split(':')
         port = int(port)
-        self.client = mqtt.Client(client_id=f'atem-{self.name}', userdata=self)
-        self.client.on_connect = lambda client, userdata, flags, rc: self.on_mqtt_connect(flags, rc)
+        self.client = mqtt.Client(client_id=f'atem-{self.name}', userdata=self, protocol=mqtt.MQTTv5)
+        self.client.on_connect = lambda client, userdata, flags, rc, props: self.on_mqtt_connect(flags, rc, props)
         self.client.on_message = lambda client, userdata, msg: self.on_mqtt_message(msg)
         logging.info(f'connecting to {host}:{port}')
         try:
@@ -73,33 +81,39 @@ class MqttFrontendThread(threading.Thread):
     def on_switcher_disconnected(self, hw):
         self.on_switcher_changed(hw, 'status', {'upstream': False})
 
-    def on_mqtt_connect(self, flags, rc):
+    def on_mqtt_connect(self, flags, rc, properties):
         self.status = 'running'
         logging.info(f'MQTT: connected ({rc})')
         if not self.readonly:
-            self.client.subscribe(f'atem/+/set/#')
+            sub = self.subscribe.replace('{hardware}', '+').replace('{field}', '#')
+            logging.info(f'Subscribing to topic {sub}')
+            self.client.subscribe((sub, SubscribeOptions(noLocal=True)))
 
     def on_mqtt_message(self, msg):
         if self.readonly:
             logging.error('MQTT writes disabled')
             return
-        parts = msg.topic.split('/')
-        if len(parts) != 4:
+
+        match = self.topic_re.match(msg.topic)
+        if not match:
             logging.error(f'MQTT: malformed command topic: {msg.topic}')
-            return
-        hw = parts[1]
-        if parts[0] != 'atem' or parts[2] != 'set':
-            logging.error(f'MQTT: malformed command topic: {msg.topic}')
-            return
+
+        hw = match.group('hardware')
+        fieldname = match.group('field')
+
         if hw not in self.hw_name:
             logging.error(f'MQTT: not handling writes for "{hw}"')
             return
-        fieldname = parts[3]
+
         classname = fieldname.title().replace('-', '') + "Command"
         if not hasattr(commandmodule, classname):
             logging.error(f'MQTT: unrecognized command {fieldname}')
             return
-        arguments = json.loads(msg.payload)
+        try:
+            arguments = json.loads(msg.payload)
+        except JSONDecodeError as e:
+            logging.error('received malformed payload, need a JSON dict')
+            return
         if not isinstance(arguments, dict):
             logging.error(f'MQTT: mailformed payload, needs a JSON dict')
             return
