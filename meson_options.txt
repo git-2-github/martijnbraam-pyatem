@@ -1,0 +1,2 @@
+option('with_proxy', type : 'boolean', value : true)
+option('with_gtk_app', type : 'boolean', value : true)

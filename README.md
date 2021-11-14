@@ -10,21 +10,28 @@ Installation
 
 Install the pyatem protocol module::
 
+    setup.py build
     sudo setup.py install
 
-Build and install the gtk application::
+Build and install the gtk application and proxy::
 
     meson build
-    cd build
-    ninja
-    sudo ninja install
+    meson compile -C build
+    sudo meson install -C build
 
 Run the application::
 
     switcher-control
 
+There is also the `openswitcher-install.sh` script which will install the library, proxy and gtk application in
+/usr/local for a quick installation of all components.
+
 Developing
 ----------
+
+To work on the `pyatem` library the quickest way to get up and running is using the `openswitcher-develop.sh` script
+that will install the `pyatem` library in devel mode where the files are symlinked to the git repository. It will also
+install the proxy and gtk application in /usr/local which will use the symlinked library.
 
 Development happens on matrix on #openatem:brixit.nl
 
@@ -38,6 +45,10 @@ reading the mixer state.
 It can be run by starting the module::
 
     python3 -m openswitcher_proxy --config /etc/myconfigfile.toml
+
+Or if the software installed it can be started using the launcher script::
+
+    openswitcher-proxy --config /etc/myconfigfile.toml
 
 The default config location is /etc/openswitcher/proxy.conf if not specified. Here's an example config:
 

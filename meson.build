@@ -5,7 +5,13 @@ project('switcher',
 
 dependency('libhandy-1', version: '>=1.0.0')
 
-subdir('data')
-subdir('gtk_switcher')
+if get_option('with_gtk_app')
+    subdir('data')
+    subdir('gtk_switcher')
+endif
+
+if get_option('with_proxy')
+    subdir('openswitcher_proxy')
+endif
 
 meson.add_install_script('build-aux/meson/postinstall.py')
