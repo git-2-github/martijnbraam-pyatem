@@ -72,7 +72,6 @@ def decode_macroscript(script):
 
 
 if __name__ == '__main__':
-    import hexdump
 
     with open('/workspace/usb-65535-0.bin', 'rb') as handle:
         raw_macro = handle.read()

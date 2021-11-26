@@ -2,7 +2,7 @@ import colorsys
 import struct
 import math
 
-from hexdump import hexdump
+from pyatem.hexdump import hexdump
 
 
 class FieldBase:
@@ -125,7 +125,7 @@ class MediaplayerSlotsField(FieldBase):
 
     def __repr__(self):
         return '<mediaplayer-slots: stills={} clips={}>'.format(self.stills, self.clips)
-
+hexdump()
 
 class VideoModeField(FieldBase):
     """

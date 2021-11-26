@@ -3,7 +3,7 @@ import threading
 import traceback
 
 import gi
-from hexdump import hexdump
+from pyatem.hexdump import hexdump
 
 from gtk_switcher.audio import AudioPage
 from gtk_switcher.camera import CameraPage

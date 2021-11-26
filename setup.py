@@ -19,7 +19,4 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Operating System :: POSIX :: Linux',
     ],
-    install_requires=[
-        'hexdump',
-    ],
 )
