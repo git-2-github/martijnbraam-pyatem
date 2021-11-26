@@ -3,7 +3,7 @@ PyATEM
 
 Library implementing the ATEM video switcher protocol and a GTK3.0 application
 
-![Screenshot of the control application](https://brixit.nl/openatem.png)
+![Screenshot of the control application](https://brixitcdn.net/metainfo/openswitcher.png)
 
 Installation
 ------------
