@@ -2,7 +2,7 @@ from setuptools import setup, Extension
 
 setup(
     name='pyatem',
-    version='0.4.1',
+    version='0.4.2',
     packages=['pyatem'],
     ext_modules=[Extension('pyatem.mediaconvert', ['pyatem/mediaconvertmodule.c'])],
     url='https://git.sr.ht/~martijnbraam/pyatem',

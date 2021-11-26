@@ -29,8 +29,8 @@ There is also the `openswitcher-install.sh` script which will install the librar
 External dependencies
 ---------------------
 
-The only external dependency for pyatem is the python bindings for libusb. It contains a native compiled module so it
-also requires a toolchain and python-dev headers at build time.
+The only external dependency for pyatem is pyusb for the USB protocol support. It contains a native compiled module so
+it also requires a toolchain and python-dev headers at build time.
 
 OpenSwitcher depends on the python bindings from gtk3.
 

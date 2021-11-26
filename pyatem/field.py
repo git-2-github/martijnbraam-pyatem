@@ -125,7 +125,7 @@ class MediaplayerSlotsField(FieldBase):
 
     def __repr__(self):
         return '<mediaplayer-slots: stills={} clips={}>'.format(self.stills, self.clips)
-hexdump()
+
 
 class VideoModeField(FieldBase):
     """
