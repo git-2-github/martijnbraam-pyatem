@@ -26,6 +26,19 @@ Run the application::
 There is also the `openswitcher-install.sh` script which will install the library, proxy and gtk application in
 /usr/local for a quick installation of all components.
 
+External dependencies
+---------------------
+
+The only external dependency for pyatem is the python bindings for libusb. It contains a native compiled module so it
+also requires a toolchain and python-dev headers at build time.
+
+OpenSwitcher depends on the python bindings from gtk3.
+
+OpenSwitcher-proxy only depends on pyatem for the core functionality but it might need more dependencies when loading
+specific frontends or backends:
+
+* MQTT Frontend: paho-mqtt
+
 Developing
 ----------
 

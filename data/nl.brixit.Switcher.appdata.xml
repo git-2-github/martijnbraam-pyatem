@@ -31,6 +31,14 @@
   <url type="bugtracker">https://todo.sr.ht/~martijnbraam/OpenAtem</url>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="0.4.1" date="2021-11-26">
+      <description>
+        <p>
+          Drop the external hexdump dependency and move hexdump.py into pyatem since this library is unmaintained
+          and the source repository is gone.
+        </p>
+      </description>
+    </release>
     <release version="0.4.0" date="2021-11-14">
       <description>
         <p>
