@@ -244,8 +244,10 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.connectionstack.set_visible_child_name("disconnected")
         print("Disconnected from mixer")
 
-    def on_change(self, field, data):
+    def on_bypass_firmware_clicked(self, widget, *args):
         self.connectionstack.set_visible_child_name("connected")
+
+    def on_change(self, field, data):
         global _callbacks
         if self.args.dump is not None and field in self.args.dump:
             if isinstance(data, bytes):
@@ -261,6 +263,12 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
 
         if field == 'firmware-version':
             self.firmware_version = data
+            if data.major < 2:
+                self.connectionstack.set_visible_child_name("firmware")
+            elif data.minor < 28:
+                self.connectionstack.set_visible_child_name("firmware")
+            else:
+                self.connectionstack.set_visible_child_name("connected")
             print("Firmware: {}".format(data.version))
         elif field == 'input-properties':
             self.on_input_layout_change(data)
