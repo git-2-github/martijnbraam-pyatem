@@ -14,6 +14,42 @@ def atem_to_rgb(data, width, height):
     return mc.atem_to_rgb(data, width, height)
 
 
+def rle_encode(data):
+    """
+    See rle_decode for format description
+    :param data:
+    :return:
+    """
+    result = bytearray()
+    lastblock = None
+    lastcount = 0
+    offset = 0
+    while True:
+        block = data[offset:offset + 8]
+        offset += 8
+        if len(block) < 8:
+            break
+        if block != lastblock:
+            if lastcount > 2:
+                result += b'\xfe\xfe\xfe\xfe\xfe\xfe\xfe\xfe'
+                result += struct.pack('>Q', lastcount)
+                result += lastblock
+            elif lastcount > 0:
+                result += lastblock * lastcount
+
+            result += block
+            lastblock = block
+            lastcount = 0
+            continue
+        lastcount += 1
+        lastblock = block
+    if lastcount > 0:
+        result += b'\xfe\xfe\xfe\xfe\xfe\xfe\xfe\xfe'
+        result += struct.pack('>Q', lastcount)
+        result += lastblock
+    return result
+
+
 def rle_decode(data):
     """
     ATEM frames are compressed with a custom RLE encoding. Data in the frame is grouped in 8 byte chunks since
