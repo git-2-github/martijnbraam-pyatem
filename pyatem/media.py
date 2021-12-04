@@ -14,7 +14,7 @@ def atem_to_rgb(data, width, height):
     return mc.atem_to_rgb(data, width, height)
 
 
-def rle_encode(data):
+def rle_encode_slow(data):
     """
     See rle_decode for format description
     :param data:
@@ -48,6 +48,10 @@ def rle_encode(data):
         result += struct.pack('>Q', lastcount)
         result += lastblock
     return result
+
+
+def rle_encode(data):
+    return mc.rle_encode(data)
 
 
 def rle_decode(data):
@@ -91,6 +95,11 @@ def rle_decode(data):
 
 
 if __name__ == '__main__':
+    with open('/workspace/test.bin', 'wb') as handle:
+        handle.write(
+            rle_decode(b'\xfe\xfe\xfe\xfe\xfe\xfe\xfe\xfe\x00\x00\x00\x00\x00\x0f\xd2\x00:\x96d\xfa:\x9e\xfc\xfa'))
+    exit(0)
+
     with open('/workspace/usb-0-0.bin', 'rb') as handle:
         raw = handle.read()
     atem_to_image(raw, 1920, 1080)
