@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from pyatem.media import rle_decode, rle_encode
+from pyatem.hexdump import hexdump
+from pyatem.media import rle_decode, rle_encode, atem_to_image, image_to_atem, rgb_to_atem
 from pyatem.mediaconvert import atem_to_rgb
 
 
@@ -15,6 +16,13 @@ class Test(TestCase):
         for index in range(0, len(result) - 8, 4):
             pixel = result[index:index + 4]
             self.assertEqual(self.RED_PIXEL_8888, pixel, msg='index {}'.format(index))
+
+    def test_image_to_atem(self):
+        frame = atem_to_image(self.FRAME_1080_RED, 1920, 1080)
+        result = rgb_to_atem(frame, 1920, 1080)
+        compressed = rle_encode(result)
+        hexdump(compressed)
+        test = atem_to_rgb(result, 1920, 1080)
 
     def test_rle_decode_solid_color(self):
         result = rle_decode(self.FRAME_1080_RED)

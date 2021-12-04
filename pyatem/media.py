@@ -9,9 +9,20 @@ def atem_to_image(data, width, height):
     return data
 
 
+def image_to_atem(data, width, height):
+    """Convert a frame to atem format and compress it"""
+    data = mc.rgb_to_atem(data, width, height)
+    return rle_encode(data)
+
+
 def atem_to_rgb(data, width, height):
     """Wrapper for the native function"""
     return mc.atem_to_rgb(data, width, height)
+
+
+def rgb_to_atem(data, width, height):
+    """Wrapper for the native function"""
+    return mc.rgb_to_atem(data, width, height)
 
 
 def rle_encode_slow(data):
