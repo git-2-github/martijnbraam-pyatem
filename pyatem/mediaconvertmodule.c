@@ -85,6 +85,62 @@ method_atem_to_rgb(PyObject *self, PyObject *args)
     return res;
 }
 
+static PyObject *
+method_rgb_to_atem(PyObject *self, PyObject *args)
+{
+    Py_buffer input_buffer;
+    Py_ssize_t data_length;
+    unsigned int width, height;
+    PyObject *res;
+
+    /* Parse arguments */
+    if (!PyArg_ParseTuple(args, "y*II", &input_buffer, &width, &height)) {
+        return NULL;
+    }
+
+    data_length = input_buffer.len;
+    char *buffer;
+    buffer = input_buffer.buf;
+
+    char *outbuffer = (char *) malloc(data_length);
+    if (outbuffer == NULL) {
+        return PyErr_NoMemory();
+    }
+
+    char *writepointer = outbuffer;
+
+    int pixel_size = 8;
+    for (int i = 0; i < data_length; i += pixel_size) {
+        buffer += pixel_size;
+        // Convert RGBA 8888 to 10-bit BT.709 Y'CbCrA
+        float y16a = y_offset + bt709_coeff_r * buffer[0] + bt709_coeff_g * buffer[1] + bt709_coeff_b * buffer[2];
+        float y16b = y_offset + bt709_coeff_r * buffer[4] + bt709_coeff_g * buffer[5] + bt709_coeff_b * buffer[6];
+        float cr16 = 0;
+        float cb16 = 0;
+
+        unsigned short y10a = (int)y16a >> 6;
+        unsigned short y10b = (int)y16b >> 6;
+        unsigned short cr10 = (int)cr16 >> 6;
+        unsigned short cb10 = (int)cb16 >> 6;
+        unsigned short a10a = ((buffer[3] << 2) * 219 / 255) + (16 << 2);
+        unsigned short a10b = ((buffer[7] << 2) * 219 / 255) + (16 << 2);
+
+        writepointer[0] = (unsigned char) (a10a >> 4);
+        writepointer[1] = (unsigned char) (((a10a & 0x0f) << 4) | (cb10 >> 6));
+        writepointer[2] = (unsigned char) (((cb10 & 0x3f) << 2) | (y10b >> 8));
+        writepointer[3] = (unsigned char) (y10a & 0xff);
+        writepointer[4] = (unsigned char) (a10b >> 4);
+        writepointer[5] = (unsigned char) (((a10b & 0x0f) << 4) | (cr10 >> 6));
+        writepointer[6] = (unsigned char) (((cr10 & 0x3f) << 2) | (y10b >> 8));
+        writepointer[7] = (unsigned char) (y10b & 0xff);
+        writepointer += pixel_size;
+    }
+
+    res = Py_BuildValue("y#", outbuffer, data_length);
+    free(outbuffer);
+    return res;
+}
+
 
 static PyObject *
 method_rle_encode(PyObject *self, PyObject *args)
@@ -107,7 +163,7 @@ method_rle_encode(PyObject *self, PyObject *args)
     }
 
     unsigned long long block_counter = 0;
-    ssize_t lastblock = -1;
+    ssize_t lastblock = 0;
     ssize_t wp = 0;
     for (int i = 0; i < input_buffer.len; i += 8) {
         if (memcmp(&data[i], &data[lastblock], 8) == 0) {
@@ -127,8 +183,7 @@ method_rle_encode(PyObject *self, PyObject *args)
             // Block value
             memcpy(&buffer[wp], &data[lastblock], 8);
             wp += 8;
-        }
-        if (block_counter > 0) {
+        } else if (block_counter > 0) {
             // Only two repeats, the RLE header would make the compressed chunk longer
             // write the 2 blocks without compression instead
             for (unsigned long long j = 0; j < block_counter; j++) {
@@ -166,6 +221,7 @@ method_rle_encode(PyObject *self, PyObject *args)
 
 static PyMethodDef MediaConvertMethods[] = {
     {"atem_to_rgb", method_atem_to_rgb, METH_VARARGS, "Convert an Atem YCbCrA frame to RGB8888"},
+    {"rgb_to_atem", method_rgb_to_atem, METH_VARARGS, "Convert an RGB8888 frame to Atem YCbCrA"},
     {"rle_encode",  method_rle_encode,  METH_VARARGS, "Compress data using the custom Atem RLE encoding"},
     {NULL,          NULL,               0,            NULL},
 };
