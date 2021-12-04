@@ -1,4 +1,5 @@
 #define PY_SSIZE_T_CLEAN
+#define RLE_HEADER 0xFEFEFEFEFEFEFEFE
 
 #include <Python.h>
 
@@ -19,6 +20,12 @@ const int cr_middle = 224 / 2;
 const double bt709_ri_range = bt709_coeff_ri / cr_middle;
 const double bt709_bi_range = bt709_coeff_bi / cr_middle;
 
+void
+beputu64(uint64_t *dest, uint64_t v)
+{
+    uint8_t *buf = (uint8_t *)dest;
+    for (int i = 0; i < 8; i++) buf[i] = (v >> ((7 - i) * 8)) & 0xff;
+}
 
 static PyObject *
 method_atem_to_rgb(PyObject *self, PyObject *args)
@@ -118,10 +125,10 @@ method_rgb_to_atem(PyObject *self, PyObject *args)
         float cr16 = 0;
         float cb16 = 0;
 
-        unsigned short y10a = (int)y16a >> 6;
-        unsigned short y10b = (int)y16b >> 6;
-        unsigned short cr10 = (int)cr16 >> 6;
-        unsigned short cb10 = (int)cb16 >> 6;
+        unsigned short y10a = ((int) y16a) >> 6;
+        unsigned short y10b = ((int) y16b) >> 6;
+        unsigned short cr10 = ((int) cr16) >> 6;
+        unsigned short cb10 = ((int) cb16) >> 6;
         unsigned short a10a = ((buffer[3] << 2) * 219 / 255) + (16 << 2);
         unsigned short a10b = ((buffer[7] << 2) * 219 / 255) + (16 << 2);
 
@@ -153,69 +160,40 @@ method_rle_encode(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    char *data;
-    data = input_buffer.buf;
-
-    unsigned char *buffer = (unsigned char *) malloc(input_buffer.len);
-
-    if (buffer == NULL) {
-        return PyErr_NoMemory();
-    }
-
-    unsigned long long block_counter = 0;
-    ssize_t lastblock = 0;
-    ssize_t wp = 0;
-    for (int i = 0; i < input_buffer.len; i += 8) {
-        if (memcmp(&data[i], &data[lastblock], 8) == 0) {
-            // Block is same as previous, increment counter only
-            block_counter++;
-            continue;
-        }
-        if (block_counter > 2) {
-            // RLE header
-            memset(&buffer[wp], 0xfe, 8);
-            wp += 8;
-
-            // Block repeat count
-            for (int h = 0; h < 8; h++) buffer[wp + h] = (block_counter >> ((7 - h) * 8)) & 0xff;
-            wp += 8;
-
-            // Block value
-            memcpy(&buffer[wp], &data[lastblock], 8);
-            wp += 8;
-        } else if (block_counter > 0) {
-            // Only two repeats, the RLE header would make the compressed chunk longer
-            // write the 2 blocks without compression instead
-            for (unsigned long long j = 0; j < block_counter; j++) {
-                memcpy(&buffer[wp], &data[lastblock], 8);
-                wp += 8;
+    Py_ssize_t c = 0, i, w;
+    uint64_t *data = input_buffer.buf;
+    uint64_t *buf = malloc(input_buffer.len);
+    for (i = 0, w = 0, c = 0; i < input_buffer.len / 8; ++i) {
+        assert(data[i] != RLE_HEADER);
+        if (i != 0 && data[i - 1] == data[i]) {
+            ++c;
+            if (i + 1 < input_buffer.len) {
+                continue;
             }
         }
-
-        // Write the current block to the result
-        memcpy(&buffer[wp], &data[i], 8);
-        wp += 8;
-
-        // Reset for next iteration
-        lastblock = i;
-        block_counter = 0;
+        if (c > 2) {
+            buf[w++] = RLE_HEADER;
+            beputu64(&buf[w++], c);
+            buf[w++] = data[i - 1];
+        } else if (c > 0) {
+            for (Py_ssize_t j = 0; j < c; ++j) {
+                buf[w++] = data[i - 1];
+            }
+        } else {
+            buf[w++] = data[i];
+        }
+        c = 0;
     }
-    if (block_counter > 0) {
-        // RLE header
-        memset(&buffer[wp], 0xfe, 8);
-        wp += 8;
-
-        // Block repeat count
-        for (int h = 0; h < 8; h++) buffer[wp + h] = (block_counter >> ((7 - h) * 8)) & 0xff;
-        wp += 8;
-
-        // Block value
-        memcpy(&buffer[wp], &data[lastblock], 8);
-        wp += 8;
+    if (c > 0 && input_buffer.len > 1) {
+        buf[w++] = RLE_HEADER;
+        beputu64(&buf[w++], c);
+        buf[w++] = data[i - 1];
+    } else if (input_buffer.len == 1) {
+        buf[0] = data[0];
     }
 
-    res = Py_BuildValue("y#", buffer, wp);
-    free(buffer);
+    res = Py_BuildValue("y#", buf, w * 8);
+    free(buf);
     return res;
 }
 
