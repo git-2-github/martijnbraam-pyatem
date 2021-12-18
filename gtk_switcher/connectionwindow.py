@@ -1,8 +1,10 @@
+import time
 from urllib.parse import urlparse, quote
 
 import gi
 
 from gtk_switcher.preferences import PreferencesWindow
+from pyatem import locate
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject, Gio, GdkPixbuf
@@ -45,6 +47,7 @@ class Handler:
         self.username = builder.get_object('username')
         self.password = builder.get_object('password')
         self.device = builder.get_object('device')
+        self.avahi_list = builder.get_object('avahi_list')
 
         self.connection_udp = builder.get_object('connection_udp')
         self.connection_usb = builder.get_object('connection_usb')
@@ -54,6 +57,41 @@ class Handler:
         self.settings.connect('changed::switcher-ip', self.on_switcher_ip_changed)
 
         self.on_switcher_ip_changed(self.settings, 'switcher-ip')
+        locate.listen(self.on_discovered)
+
+    def on_discovered(self, name, subtitle, proto, address):
+        GLib.idle_add(self.on_discovered_ui, name, subtitle, proto, address)
+
+    def on_discovered_ui(self, name, subtitle, proto, address):
+        label = Gtk.Label(address[0])
+        label.address = address
+        label.proto = proto
+        ar = Handy.ActionRow()
+        ar.set_title(name)
+        ar.set_subtitle(subtitle)
+        ar.add(label)
+        time.sleep(0.1)
+        self.avahi_list.add(ar)
+        time.sleep(0.1)
+        self.avahi_list.show_all()
+
+    def on_lost(self, address):
+        print('lost', address)
+
+    def on_avahi_activate(self, widget, row):
+        label = list(row)[0]
+        if label.proto == 'udp':
+            self.connection_udp.set_active(True)
+            self.ipaddress.set_text(str(label.address[0]))
+        elif label.proto == 'tcp':
+            self.connection_tcp.set_active(True)
+            self.ipaddress.set_text(f'{label.address[0]}:{label.address[1]}')
+        elif label.proto == 'usb':
+            self.ipaddress.set_text('')
+            self.connection_usb.set_active(True)
+
+    def on_destroy(self, *args):
+        locate.stop()
 
     def on_save_clicked(self, *args):
         if self.connection_udp.get_active():
