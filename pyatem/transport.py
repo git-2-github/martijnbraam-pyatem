@@ -268,10 +268,10 @@ class UdpProtocol:
 class UsbProtocol:
     STATE_INIT = 0
 
-    PRODUCTS = [
-        0xbe49,  # Atem Mini
-        0xbe55,  # Atem Mini Pro
-    ]
+    PRODUCTS = {
+        0xbe49: "Atem Mini",
+        0xbe55: "Atem Mini Pro",
+    }
 
     def __init__(self, port=None):
         port = port or "auto"
@@ -288,7 +288,7 @@ class UsbProtocol:
 
     @classmethod
     def find_device(cls):
-        for prod in UsbProtocol.PRODUCTS:
+        for prod in UsbProtocol.PRODUCTS.keys():
             device = usb.core.find(idVendor=0x1edb, idProduct=prod)
             if device is not None:
                 return device
