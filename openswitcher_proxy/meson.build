@@ -31,3 +31,10 @@ proxy_sources = [
 ]
 
 install_data(proxy_sources, install_dir: moduledir)
+
+install_data(
+    'cli-switch.py',
+    install_dir: get_option('bindir'),
+    install_mode: 'rwxr-xr-x',
+    rename: ['atemswitch']
+)
