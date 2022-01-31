@@ -2878,5 +2878,39 @@ class StreamingServiceField(FieldBase):
         self.max = field[4]
 
     def __repr__(self):
-        return '<streaming-service {} url={} key={} min={} max={}>'.format(self.name, self.url, self.min,
-                                                                           self.max)
+        return '<streaming-service {} url={} min={} max={}>'.format(self.name, self.url, self.min,
+                                                                    self.max)
+
+
+class StreamingStatusField(FieldBase):
+    """
+    Data from the `StRS`. The displayed status of the live stream
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    i16    Status
+    2      2    ?      unknown
+    ====== ==== ====== ===========
+
+    ====== =====
+    Status Value
+    ====== =====
+    -1     unknown
+    0      nothing?
+    1      idle
+    2      connecting
+    4      on-air
+    22     stopping
+    36     stopping
+    ====== =====
+    """
+
+    CODE = "StRS"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.status, = struct.unpack('>h 2x', raw)
+
+    def __repr__(self):
+        return '<streaming-status status={}>'.format(self.status)
