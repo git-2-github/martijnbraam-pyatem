@@ -639,14 +639,15 @@ class SwitcherPage:
             del self.disks[data.index]
         else:
             self.disks[data.index] = data
-            for row in self.model_disks:
+            for i, row in enumerate(self.model_disks):
                 if row[0] == str(data.index):
+                    self.model_disks[i][1] = data.volumename
                     break
             else:
                 self.model_disks.append([str(data.index), data.volumename])
 
         self.stream_recorder_disk1.set_active_id(str(self.stream_recorder_disk[0]))
-        self.stream_recorder_disk2.set_active_id(str(self.stream_recorder_disk[0]))
+        self.stream_recorder_disk2.set_active_id(str(self.stream_recorder_disk[1]))
         self.stream_recorder_disk1.set_sensitive(self.stream_recorder_disk[0] is not None)
         self.stream_recorder_disk2.set_sensitive(self.stream_recorder_disk[1] is not None)
         self.on_update_recording_buttons()
