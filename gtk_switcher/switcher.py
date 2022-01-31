@@ -61,6 +61,8 @@ class SwitcherPage:
         self.usk1_mask_right = builder.get_object('usk1_mask_right')
 
         self.expander_stream_recorder = builder.get_object('expander_stream_recorder')
+        self.expander_livestream = builder.get_object('expander_livestream')
+        self.expander_encoder = builder.get_object('expander_encoder')
         self.stream_recorder_filename = builder.get_object('stream_recorder_filename')
         self.stream_recorder_disk2 = builder.get_object('stream_recorder_disk2')
         self.stream_recorder_disk1 = builder.get_object('stream_recorder_disk1')
@@ -79,6 +81,14 @@ class SwitcherPage:
         self.audio_rate_max = builder.get_object('audio_rate_max')
         self.video_rate_min = builder.get_object('video_rate_min')
         self.video_rate_max = builder.get_object('video_rate_max')
+
+        self.stream_live_clock = builder.get_object('stream_live_clock')
+        self.stream_live_status = builder.get_object('stream_live_status')
+        self.stream_live_platform = builder.get_object('stream_live_platform')
+        self.stream_live_server = builder.get_object('stream_live_server')
+        self.stream_live_key = builder.get_object('stream_live_key')
+        self.stream_live_start = builder.get_object('stream_live_start')
+        self.stream_live_stop = builder.get_object('stream_live_stop')
 
         self.disks = {}
         self.aux = {}
@@ -925,9 +935,16 @@ class SwitcherPage:
         self.connection.mixer.download(0xffff, widget.index)
 
     def on_streaming_service_change(self, data):
+        self.expander_livestream.show()
+        self.expander_encoder.show()
         self.video_rate_min.set_text(str(int(data.min / 1000)))
         self.video_rate_max.set_text(str(int(data.max / 1000)))
 
+        self.stream_live_platform.set_text(data.name)
+        self.stream_live_server.set_text(data.url)
+        self.stream_live_key.set_text(data.key)
+
     def on_streaming_audio_bitrate_change(self, data):
+        self.expander_encoder.show()
         self.audio_rate_min.set_text(str(int(data.min / 1000)))
         self.audio_rate_max.set_text(str(int(data.max / 1000)))
