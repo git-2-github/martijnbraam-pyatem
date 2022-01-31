@@ -37,3 +37,16 @@ host = "localhost:1883"
 hardware = "mini"
 auth = false
 allow-writes = false
+
+[[frontend]]
+type = "midi"
+bind = "any"
+
+"*/NOTE-ON/64" = { hardware = "mini", field = "program-input", index = 0, source = 1 }
+"*/NOTE-ON/65" = { hardware = "mini", field = "program-input", index = 0, source = 2 }
+"*/NOTE-ON/66" = { hardware = "mini", field = "program-input", index = 0, source = 3 }
+"*/NOTE-ON/67" = { hardware = "mini", field = "program-input", index = 0, source = 4 }
+"*/NOTE-ON/32" = { hardware = "mini", field = "preview-input", index = 0, source = 1 }
+"*/NOTE-ON/33" = { hardware = "mini", field = "preview-input", index = 0, source = 2 }
+"*/NOTE-ON/34" = { hardware = "mini", field = "preview-input", index = 0, source = 3 }
+"*/NOTE-ON/35" = { hardware = "mini", field = "preview-input", index = 0, source = 4 }
