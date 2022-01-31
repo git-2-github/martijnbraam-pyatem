@@ -184,3 +184,14 @@ entry.adjustmententry {
     margin-bottom: 3px;
     min-height: 0;
 }
+
+headerbar.recording {
+    background: linear-gradient(to top, #991c2a, #a51d2d);
+    box-shadow: inset 0 1px #b32c3c;
+}
+
+
+headerbar.recording {
+    background: linear-gradient(to top, #991c2a, #a51d2d);
+    box-shadow: inset 0 1px #b32c3c;
+}

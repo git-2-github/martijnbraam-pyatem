@@ -167,7 +167,7 @@
         <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="HdyHeaderBar">
+          <object class="HdyHeaderBar" id="headerbar">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="title" translatable="yes">Mixer control</property>
@@ -2458,9 +2458,6 @@
               </packing>
             </child>
             <child>
-              <placeholder/>
-            </child>
-            <child>
               <object class="HdyStatusPage" id="firmware_page">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -2482,7 +2479,7 @@ OpenSwitcher requires at least firmware 8.0+ to correctly function with most har
               <packing>
                 <property name="name">firmware</property>
                 <property name="title" translatable="yes">firmware</property>
-                <property name="position">3</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>

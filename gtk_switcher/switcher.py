@@ -677,6 +677,7 @@ class SwitcherPage:
             if active:
                 self.stream_recorder_start_time = datetime.now().timestamp()
 
+        self.set_class(self.headerbar, 'recording', active)
         self.stream_recorder_active = active
 
         self.stream_recorder_status.set_text(status)

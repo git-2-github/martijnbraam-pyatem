@@ -108,6 +108,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
 
         self.window = builder.get_object("main_window")
         self.window.set_application(self.application)
+        self.headerbar = builder.get_object("headerbar")
 
         # Load requested view
         self.mainstack = builder.get_object("mainstack")
