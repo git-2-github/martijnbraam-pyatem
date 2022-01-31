@@ -89,6 +89,7 @@ class AtemProtocol:
             '_pin': 'product-name',
             '_top': 'topology',
             'Time': 'time',
+            'TCCc': 'time-config',
             '_MeC': 'mixer-effect-config',
             '_mpl': 'mediaplayer-slots',
             'VidM': 'video-mode',

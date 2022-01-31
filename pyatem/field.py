@@ -45,6 +45,67 @@ class FirmwareVersionField(FieldBase):
         return '<firmware-version {}>'.format(self.version)
 
 
+class TimeField(FieldBase):
+    """
+    Data from the `Time` field. This contains the value of the internal clock of the hardware.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Hours
+    1      1    u8     Minutes
+    2      1    u8     Seconds
+    3      1    u8     Frames
+    4      1    u8     Is dropframe
+    5      3    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar hours: Timecode hour field
+    :ivar minutes: Timecode minute field
+    :ivar seconds: Timecode seconds field
+    :ivar frames: Timecode frames field
+    :ivar dropframe: Is dropframe
+    """
+    CODE = "Time"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.hours, self.minutes, self.seconds, self.frames, self.dropframe = struct.unpack('>BBBB?3x', raw)
+
+    def total_seconds(self):
+        return self.seconds + (60 * self.minutes) + (60 * 60 * self.hours)
+
+    def __repr__(self):
+        return '<time {}>'.format(f'{self.hours}:{self.minutes}:{self.seconds}:{self.frames}')
+
+
+class TimeConfigField(FieldBase):
+    """
+    Data from the `TCCc` field. This contains the freerun/time of day setting for the timecode mode.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mode [0=freerun, 1=time-of-day]
+    1      3    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar mode: Timecode mode
+    """
+    CODE = "TCCc"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.mode = struct.unpack('>Bxxx', raw)
+
+    def __repr__(self):
+        return '<time-config mode={}>'.format(self.mode)
+
+
 class ProductNameField(FieldBase):
     """
     Data from the `_pin` field. This stores the product name of the mixer

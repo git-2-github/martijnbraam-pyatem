@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from gtk_switcher.layout import LayoutView
 from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, TransitionSettingsCommand, WipeSettingsCommand, \
     TransitionPositionCommand, TransitionPreviewCommand, ColorGeneratorCommand, MixSettingsCommand, DipSettingsCommand, \
@@ -70,6 +72,8 @@ class SwitcherPage:
         self.stream_recorder_clock = builder.get_object('stream_recorder_clock')
         self.stream_recorder_status = builder.get_object('stream_recorder_status')
         self.stream_recorder_disk = [None, None]
+        self.stream_recorder_active = False
+        self.stream_recorder_start_time = None
         self.disks = {}
         self.aux = {}
 
@@ -669,11 +673,26 @@ class SwitcherPage:
             status = 'REC'
             active = True
 
+        if active != self.stream_recorder_active:
+            if active:
+                self.stream_recorder_start_time = datetime.now().timestamp()
+
+        self.stream_recorder_active = active
+
         self.stream_recorder_status.set_text(status)
         self.set_class(self.stream_recorder_status, 'program', active)
         self.set_class(self.stream_recorder_clock, 'program', active)
 
-        print(data)
+    def on_stream_recording_duration_change(self, data):
+        # This does not get called nearly often enough
+        self.stream_recorder_clock.set_text(f'{data.hours}:{data.minutes}:{data.seconds}')
+        seconds = data.seconds + (60 * data.minutes) + (60 * 60 * data.hours)
+        self.stream_recorder_start_time = datetime.now().timestamp() - seconds
+
+    def on_clock_stream_recorder(self):
+        if self.stream_recorder_active:
+            length = timedelta(seconds=int(datetime.now().timestamp() - self.stream_recorder_start_time))
+            self.stream_recorder_clock.set_text(str(length))
 
     def on_update_recording_buttons(self):
         has_usable_disks = False

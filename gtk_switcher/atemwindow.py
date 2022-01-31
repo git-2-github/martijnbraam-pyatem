@@ -1,6 +1,8 @@
 import ctypes
 import threading
+import time
 import traceback
+from datetime import datetime
 
 import gi
 from pyatem.hexdump import hexdump
@@ -126,6 +128,9 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.disable_shortcuts = False
         self.macro_edit = False
 
+        self.timecode_mode = 0
+        self.timecode_offset = 0
+
         self.apply_css(self.window, self.provider)
 
         self.window.show_all()
@@ -162,6 +167,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                           self.on_cutbus_keyboard_change)
 
         self.window.add_accel_group(accel)
+
+        GLib.timeout_add_seconds(1, self.on_clock)
 
         Gtk.main()
 
@@ -270,6 +277,10 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             else:
                 self.connectionstack.set_visible_child_name("connected")
             print("Firmware: {}".format(data.version))
+        elif field == 'time':
+            self.on_time_sync(data)
+        elif field == 'time-config':
+            self.on_timecode_config_change(data)
         elif field == 'input-properties':
             self.on_input_layout_change(data)
             self.on_camera_layout_change(data)
@@ -347,6 +358,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             self.on_stream_recording_disks_change(data)
         elif field == 'recording-status':
             self.on_stream_recording_status_change(data)
+        elif field == 'recording-duration':
+            self.on_stream_recording_duration_change(data)
         elif field == 'aux-output-source':
             self.on_aux_output_source_change(data)
         elif field == 'dkey-properties-base':
@@ -369,6 +382,22 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                 print(field)
             else:
                 print(data)
+
+    def on_time_sync(self, data):
+        seconds = data.total_seconds()
+        if self.timecode_mode == 0:
+            self.timecode_offset = seconds - datetime.now().timestamp()
+        else:
+            t = time.localtime()
+            tod = 3600 * t.tm_hour + 60 * t.tm_min + t.tm_sec
+            self.timecode_offset = tod - seconds
+
+    def on_timecode_config_change(self, data):
+        self.timecode_mode = data.mode
+
+    def on_clock(self):
+        self.on_clock_stream_recorder()
+        return True
 
     def on_transfer_progress(self, store, slot, progress):
         if store == 0:
