@@ -2826,3 +2826,57 @@ class CameraControlDataPacketField(FieldBase):
                                                                                            self.parameter,
                                                                                            self.datatype,
                                                                                            self.data)
+
+
+class StreamingAudioBitrateField(FieldBase):
+    """
+    Data from the `STAB`. This is the audio bitrate for the internal encoder used for recording and streaming
+    This is always 128k for min and max on tested devices.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      4    u32    Min bitrate
+    4      4    u32    Max bitrate
+    ====== ==== ====== ===========
+
+    """
+
+    CODE = "STAB"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.min, self.max = struct.unpack('>II', raw)
+
+    def __repr__(self):
+        return '<streaming-audio-bitrate min={} max={}>'.format(self.min, self.max)
+
+
+class StreamingServiceField(FieldBase):
+    """
+    Data from the `SRSU`. This is the audio bitrate for the internal encoder used for recording and streaming
+    This is always 128k for min and max on tested devices.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      4    u32    Min bitrate
+    4      4    u32    Max bitrate
+    ====== ==== ====== ===========
+
+    """
+
+    CODE = "SRSU"
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack_from('>64s512s512sII', raw, 0)
+        self.name = self._get_string(field[0])
+        self.url = self._get_string(field[1])
+        self.key = self._get_string(field[2])
+        self.min = field[3]
+        self.max = field[4]
+
+    def __repr__(self):
+        return '<streaming-service {} url={} key={} min={} max={}>'.format(self.name, self.url, self.min,
+                                                                           self.max)

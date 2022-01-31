@@ -140,7 +140,7 @@ class AtemProtocol:
             'RTMD': 'recording-disk',
             'RTMS': 'recording-status',
             'RMSu': 'recording-settings',
-            'SRSU': 'streaming-services',
+            'SRSU': 'streaming-service',
             'STAB': 'streaming-audio-bitrate',
             'StRS': 'streaming-status',
             'SRST': 'streaming-time',
