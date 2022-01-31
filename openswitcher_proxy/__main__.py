@@ -6,6 +6,7 @@ import logging
 
 from openswitcher_proxy.error import RecoverableError
 from openswitcher_proxy.frontend_httpapi import HttpApiFrontendThread
+from openswitcher_proxy.frontend_midi import MidiFrontendThread
 from openswitcher_proxy.frontend_status import StatusFrontendThread
 from openswitcher_proxy.frontend_tcp import TcpFrontendThread
 from openswitcher_proxy.frontend_mqtt import MqttFrontendThread
@@ -54,6 +55,8 @@ def run(config_path):
                     t = TcpFrontendThread(frontend, nthreads)
                 elif frontend['type'] == 'mqtt':
                     t = MqttFrontendThread(frontend, nthreads)
+                elif frontend['type'] == 'midi':
+                    t = MidiFrontendThread(frontend, nthreads)
                 else:
                     logging.error(f'  Unknown frontend type "{frontend["type"]}"')
                     continue
