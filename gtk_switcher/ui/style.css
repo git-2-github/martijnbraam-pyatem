@@ -180,6 +180,11 @@ entry.mini {
     background: rgba(0, 0, 0, 0.5);
 }
 
+entry.short {
+    margin: 0;
+    min-width: 0;
+}
+
 entry.adjustmententry {
     margin-bottom: 3px;
     min-height: 0;

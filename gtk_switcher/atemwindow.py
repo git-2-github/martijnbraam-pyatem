@@ -373,6 +373,10 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             self.on_fairlight_meter_levels_change(data)
         elif field == 'fairlight-master-levels':
             self.on_fairlight_master_levels_change(data)
+        elif field == 'streaming-service':
+            self.on_streaming_service_change(data)
+        elif field == 'streaming-audio-bitrate':
+            self.on_streaming_audio_bitrate_change(data)
 
         else:
             if field == 'time':

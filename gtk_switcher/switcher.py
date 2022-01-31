@@ -74,6 +74,12 @@ class SwitcherPage:
         self.stream_recorder_disk = [None, None]
         self.stream_recorder_active = False
         self.stream_recorder_start_time = None
+
+        self.audio_rate_min = builder.get_object('audio_rate_min')
+        self.audio_rate_max = builder.get_object('audio_rate_max')
+        self.video_rate_min = builder.get_object('video_rate_min')
+        self.video_rate_max = builder.get_object('video_rate_max')
+
         self.disks = {}
         self.aux = {}
 
@@ -917,3 +923,11 @@ class SwitcherPage:
     def on_macro_edit(self, widget):
         self.macro_edit = True
         self.connection.mixer.download(0xffff, widget.index)
+
+    def on_streaming_service_change(self, data):
+        self.video_rate_min.set_text(str(int(data.min / 1000)))
+        self.video_rate_max.set_text(str(int(data.max / 1000)))
+
+    def on_streaming_audio_bitrate_change(self, data):
+        self.audio_rate_min.set_text(str(int(data.min / 1000)))
+        self.audio_rate_max.set_text(str(int(data.max / 1000)))
