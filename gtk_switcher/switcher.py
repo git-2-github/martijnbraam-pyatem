@@ -89,6 +89,7 @@ class SwitcherPage:
         self.stream_live_key = builder.get_object('stream_live_key')
         self.stream_live_start = builder.get_object('stream_live_start')
         self.stream_live_stop = builder.get_object('stream_live_stop')
+        self.live_stats = builder.get_object('live_stats')
 
         self.disks = {}
         self.aux = {}
@@ -948,3 +949,14 @@ class SwitcherPage:
         self.expander_encoder.show()
         self.audio_rate_min.set_text(str(int(data.min / 1000)))
         self.audio_rate_max.set_text(str(int(data.max / 1000)))
+
+    def on_streaming_status_change(self, data):
+        active = data.status == 4
+        self.set_class(self.headerbar, 'streaming', active)
+        if active:
+            self.live_stats.show()
+        else:
+            self.live_stats.hide()
+
+    def on_streaming_stats_change(self, data):
+        self.live_stats.set_text('{:.2f} Mbps'.format(data.bitrate / 1000 / 1000))

@@ -377,6 +377,10 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             self.on_streaming_service_change(data)
         elif field == 'streaming-audio-bitrate':
             self.on_streaming_audio_bitrate_change(data)
+        elif field == 'streaming-stats':
+            self.on_streaming_stats_change(data)
+        elif field == 'streaming-status':
+            self.on_streaming_status_change(data)
 
         else:
             if field == 'time':

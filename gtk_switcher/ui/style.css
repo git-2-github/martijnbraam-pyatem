@@ -195,8 +195,15 @@ headerbar.recording {
     box-shadow: inset 0 1px #b32c3c;
 }
 
-
 headerbar.streaming {
     background: linear-gradient(to top, #991c2a, #a51d2d);
     box-shadow: inset 0 1px #b32c3c;
+}
+
+headerbar.streaming button:not(.radio) {
+    background: #bf1f32;
+}
+
+headerbar.streaming button.radio:checked {
+    background: #8d1926;
 }

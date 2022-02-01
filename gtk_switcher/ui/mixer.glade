@@ -191,6 +191,20 @@
                 <signal name="clicked" handler="on_preferences_button_clicked" swapped="no"/>
               </object>
             </child>
+            <child>
+              <object class="GtkLabel" id="live_stats">
+                <property name="can-focus">False</property>
+                <property name="no-show-all">True</property>
+                <property name="label" translatable="yes">n/a</property>
+                <style>
+                  <class name="heading"/>
+                </style>
+              </object>
+              <packing>
+                <property name="pack-type">end</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
