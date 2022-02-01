@@ -2914,3 +2914,26 @@ class StreamingStatusField(FieldBase):
 
     def __repr__(self):
         return '<streaming-status status={}>'.format(self.status)
+
+
+class StreamingStatsField(FieldBase):
+    """
+    Data from the `SRSS`. The displayed status of the live stream
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      4    u32    Bitrate
+    4      2    u16    Cache used
+    ====== ==== ====== ===========
+
+    """
+
+    CODE = "SRSS"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.bitrate, self.cache = struct.unpack('>IHxx', raw)
+
+    def __repr__(self):
+        return '<streaming-stats bitrate={} cache={}>'.format(self.bitrate, self.cache)
