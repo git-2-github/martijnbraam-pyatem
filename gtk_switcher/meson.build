@@ -45,6 +45,7 @@ switcher_sources = [
     'downstreamkey.py',
     'gtklogadjustment.py',
     'macroeditor.py',
+    'stream_data.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)

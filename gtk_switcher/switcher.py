@@ -6,8 +6,9 @@ from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, Transiti
     DveSettingsCommand, AudioMasterPropertiesCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, \
     DkeyAutoCommand, DkeyTieCommand, \
     DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand, \
-    FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand
+    FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand, StreamingServiceSet, RecordingSettingsSetCommand
 from pyatem.field import TransitionSettingsField, InputPropertiesField
+import gtk_switcher.stream_data
 
 import gi
 
@@ -82,6 +83,7 @@ class SwitcherPage:
         self.video_rate_min = builder.get_object('video_rate_min')
         self.video_rate_max = builder.get_object('video_rate_max')
 
+        self.stream_presets = builder.get_object('stream_presets')
         self.stream_live_clock = builder.get_object('stream_live_clock')
         self.stream_live_status = builder.get_object('stream_live_status')
         self.stream_live_platform = builder.get_object('stream_live_platform')
@@ -90,6 +92,12 @@ class SwitcherPage:
         self.stream_live_start = builder.get_object('stream_live_start')
         self.stream_live_stop = builder.get_object('stream_live_stop')
         self.live_stats = builder.get_object('live_stats')
+
+        action_streampreset = Gio.SimpleAction.new("streampreset", GLib.VariantType.new("a{sv}"))
+        action_streampreset.connect("activate", self.load_livestream_preset)
+        self.application.add_action(action_streampreset)
+
+        self.create_livestream_presets()
 
         self.disks = {}
         self.aux = {}
@@ -649,6 +657,7 @@ class SwitcherPage:
         self.model_changing = True
         self.stream_recorder_filename.set_text(data.filename)
         self.stream_recorder_disk = [data.disk1, data.disk2]
+        print('disks', self.stream_recorder_disk)
         self.stream_recorder_disk1.set_active_id(str(data.disk1))
         self.stream_recorder_disk2.set_active_id(str(data.disk2))
         self.on_update_recording_buttons()
@@ -960,3 +969,60 @@ class SwitcherPage:
 
     def on_streaming_stats_change(self, data):
         self.live_stats.set_text('{:.2f} Mbps'.format(data.bitrate / 1000 / 1000))
+
+    def create_livestream_presets(self):
+        hardcoded = gtk_switcher.stream_data.services
+
+        menu = Gio.Menu()
+        for provider in hardcoded:
+            section = Gio.Menu()
+            for preset in hardcoded[provider]:
+                item = Gio.MenuItem()
+                item.set_label(preset.name)
+                item.service = preset
+                item.set_action_and_target_value('app.streampreset', preset.variant())
+                section.append_item(item)
+
+            menu.append_section(provider, section)
+        self.stream_presets.set_menu_model(menu)
+
+    def load_livestream_preset(self, action, data):
+        data = dict(data)
+        cmd = StreamingServiceSet(name=data['name'], url=data['url'])
+        self.connection.mixer.send_commands([cmd])
+
+    def on_stream_live_platform_activate(self, widget, *args):
+        cmd = StreamingServiceSet(name=widget.get_text())
+        self.connection.mixer.send_commands([cmd])
+
+    def on_stream_live_server_activate(self, widget, *args):
+        cmd = StreamingServiceSet(url=widget.get_text())
+        self.connection.mixer.send_commands([cmd])
+
+    def on_stream_live_key_activate(self, widget, *args):
+        cmd = StreamingServiceSet(key=widget.get_text())
+        self.connection.mixer.send_commands([cmd])
+
+    def on_stream_live_start_clicked(self, *args):
+        pass
+
+    def on_stream_live_stop_clicked(self, *args):
+        pass
+
+    def on_stream_recorder_disk1_changed(self, widget, *args):
+        if self.model_changing:
+            return
+        disk_id = int(widget.get_active_id())
+        cmd = RecordingSettingsSetCommand(disk1=disk_id)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_stream_recorder_disk2_changed(self, widget, *args):
+        if self.model_changing:
+            return
+        disk_id = int(widget.get_active_id())
+        cmd = RecordingSettingsSetCommand(disk2=disk_id)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_stream_recorder_filename_activate(self, widget, *args):
+        cmd = RecordingSettingsSetCommand(filename=widget.get_text())
+        self.connection.mixer.send_commands([cmd])

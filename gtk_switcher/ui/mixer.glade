@@ -127,6 +127,12 @@
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkPopoverMenu" id="stream_presetsa">
+    <property name="can-focus">False</property>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
   <object class="GtkAdjustment" id="wipe_softness_adj">
     <property name="upper">10000</property>
     <property name="step-increment">1</property>
@@ -1807,6 +1813,8 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="width-chars">7</property>
+                                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
                                                             <style>
                                                             <class name="short"/>
                                                             </style>
@@ -1821,6 +1829,8 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="width-chars">7</property>
+                                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
                                                             <style>
                                                             <class name="short"/>
                                                             </style>
@@ -1850,6 +1860,8 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="width-chars">7</property>
+                                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
                                                             <style>
                                                             <class name="short"/>
                                                             </style>
@@ -1864,6 +1876,8 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="width-chars">7</property>
+                                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
                                                             <style>
                                                             <class name="short"/>
                                                             </style>
@@ -2029,6 +2043,9 @@
                                                             <object class="GtkEntry" id="stream_recorder_filename">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
+                                                            <signal name="activate" handler="on_stream_recorder_filename_activate" swapped="no"/>
+                                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
                                                             </object>
                                                             <packing>
                                                             <property name="left-attach">1</property>
@@ -2069,6 +2086,7 @@
                                                             <object class="GtkCheckButton" id="stream_recorder_trigger_cameras">
                                                             <property name="label" translatable="yes">Record in all cameras</property>
                                                             <property name="visible">True</property>
+                                                            <property name="sensitive">False</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">False</property>
                                                             <property name="draw-indicator">True</property>
@@ -2151,6 +2169,7 @@
                                                             <property name="model">model_disks</property>
                                                             <property name="entry-text-column">1</property>
                                                             <property name="id-column">0</property>
+                                                            <signal name="changed" handler="on_stream_recorder_disk1_changed" swapped="no"/>
                                                             <child>
                                                             <object class="GtkCellRendererText"/>
                                                             <attributes>
@@ -2170,6 +2189,13 @@
                                                             <property name="model">model_disks</property>
                                                             <property name="entry-text-column">1</property>
                                                             <property name="id-column">0</property>
+                                                            <signal name="changed" handler="on_stream_recorder_disk2_changed" swapped="no"/>
+                                                            <child>
+                                                            <object class="GtkCellRendererText"/>
+                                                            <attributes>
+                                                            <attribute name="text">1</attribute>
+                                                            </attributes>
+                                                            </child>
                                                             </object>
                                                             <packing>
                                                             <property name="left-attach">1</property>
@@ -2356,6 +2382,7 @@
                                                             <property name="sensitive">False</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
+                                                            <signal name="clicked" handler="on_stream_live_stop_clicked" swapped="no"/>
                                                             </object>
                                                             <packing>
                                                             <property name="expand">False</property>
@@ -2369,6 +2396,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
+                                                            <signal name="clicked" handler="on_stream_live_start_clicked" swapped="no"/>
                                                             </object>
                                                             <packing>
                                                             <property name="expand">False</property>
@@ -2388,34 +2416,6 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">end</property>
-                                                            <property name="label" translatable="yes">Preset</property>
-                                                            <style>
-                                                            <class name="dim-label"/>
-                                                            </style>
-                                                            </object>
-                                                            <packing>
-                                                            <property name="left-attach">0</property>
-                                                            <property name="top-attach">1</property>
-                                                            </packing>
-                                                            </child>
-                                                            <child>
-                                                            <object class="GtkComboBox" id="stream_live_preset">
-                                                            <property name="visible">True</property>
-                                                            <property name="can-focus">False</property>
-                                                            <property name="model">model_disks</property>
-                                                            <property name="entry-text-column">1</property>
-                                                            <property name="id-column">0</property>
-                                                            </object>
-                                                            <packing>
-                                                            <property name="left-attach">1</property>
-                                                            <property name="top-attach">1</property>
-                                                            </packing>
-                                                            </child>
-                                                            <child>
-                                                            <object class="GtkLabel">
-                                                            <property name="visible">True</property>
-                                                            <property name="can-focus">False</property>
-                                                            <property name="halign">end</property>
                                                             <property name="label" translatable="yes">Platform</property>
                                                             <style>
                                                             <class name="dim-label"/>
@@ -2423,18 +2423,6 @@
                                                             </object>
                                                             <packing>
                                                             <property name="left-attach">0</property>
-                                                            <property name="top-attach">2</property>
-                                                            </packing>
-                                                            </child>
-                                                            <child>
-                                                            <object class="GtkLabel" id="stream_live_platform">
-                                                            <property name="visible">True</property>
-                                                            <property name="can-focus">False</property>
-                                                            <property name="halign">start</property>
-                                                            <property name="label" translatable="yes">n/a</property>
-                                                            </object>
-                                                            <packing>
-                                                            <property name="left-attach">1</property>
                                                             <property name="top-attach">2</property>
                                                             </packing>
                                                             </child>
@@ -2454,16 +2442,6 @@
                                                             </packing>
                                                             </child>
                                                             <child>
-                                                            <object class="GtkEntry" id="stream_live_key">
-                                                            <property name="visible">True</property>
-                                                            <property name="can-focus">True</property>
-                                                            </object>
-                                                            <packing>
-                                                            <property name="left-attach">1</property>
-                                                            <property name="top-attach">4</property>
-                                                            </packing>
-                                                            </child>
-                                                            <child>
                                                             <object class="GtkLabel">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
@@ -2479,16 +2457,116 @@
                                                             </packing>
                                                             </child>
                                                             <child>
-                                                            <object class="GtkLabel" id="stream_live_server">
+                                                            <object class="GtkEntry" id="stream_live_server">
                                                             <property name="visible">True</property>
-                                                            <property name="can-focus">False</property>
-                                                            <property name="halign">start</property>
-                                                            <property name="label" translatable="yes">n/a</property>
+                                                            <property name="can-focus">True</property>
+                                                            <signal name="activate" handler="on_stream_live_server_activate" swapped="no"/>
+                                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
                                                             </object>
                                                             <packing>
                                                             <property name="left-attach">1</property>
                                                             <property name="top-attach">3</property>
                                                             </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="spacing">5</property>
+                                                            <child>
+                                                            <object class="GtkEntry" id="stream_live_platform">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <signal name="activate" handler="on_stream_live_platform_activate" swapped="no"/>
+                                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="expand">True</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">0</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkMenuButton" id="stream_presets">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="focus-on-click">False</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="popover">stream_presetsa</property>
+                                                            <child>
+                                                            <object class="GtkImage">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="icon-name">open-menu-symbolic</property>
+                                                            </object>
+                                                            </child>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">2</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="spacing">5</property>
+                                                            <child>
+                                                            <object class="GtkEntry" id="stream_live_key">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="visibility">False</property>
+                                                            <property name="caps-lock-warning">False</property>
+                                                            <property name="input-purpose">password</property>
+                                                            <signal name="activate" handler="on_stream_live_key_activate" swapped="no"/>
+                                                            <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
+                                                            <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="expand">True</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">0</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkToggleButton">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <child>
+                                                            <object class="GtkImage">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="icon-name">view-conceal-symbolic</property>
+                                                            </object>
+                                                            </child>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">4</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
                                                             </child>
                                                             <child>
                                                             <placeholder/>
