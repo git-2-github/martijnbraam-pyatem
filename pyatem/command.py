@@ -1802,6 +1802,109 @@ class RecorderStatusCommand(Command):
         return self._make_command('RcTM', data)
 
 
+class RecordingSettingsSetCommand(Command):
+    """
+    Implementation of the `CRMS` command. This sets the parameters for the stream recorder.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask
+    1      128  str    Filename
+    132    4    u32    Disk 1 id
+    136    4    i32    Disk 2 id
+    140    1    bool   Record in all cameras
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, filename=None, disk1=None, disk2=None, record_in_camera=None):
+        """
+        :param filename: Filename for recording, or None
+        :param disk1: ID for disk 1, or None
+        :param disk2: ID for disk 2, or None
+        :param record_in_camera: Trigger recording on attached cameras, or None
+        """
+        self.filename = filename
+        self.disk1 = disk1
+        self.disk2 = disk2
+        self.record_in_camera = record_in_camera
+
+    def get_command(self):
+        mask = 0
+        if self.filename is not None:
+            mask |= 1 << 0
+        if self.disk1 is not None:
+            mask |= 1 << 1
+        if self.disk2 is not None:
+            mask |= 1 << 2
+        if self.record_in_camera is not None:
+            mask |= 1 << 3
+
+        filename = self.filename.encode() if self.filename is not None else b''
+        ric = self.record_in_camera if self.record_in_camera is not None else False
+
+        data = struct.pack('>B 128s xxx II ?xxx', mask, filename, self.disk1 or 0, self.disk2 or 0, ric)
+        return self._make_command('CRMS', data)
+
+
+class StreamingServiceSet(Command):
+    """
+    Implementation of the `CRSS` command. This sets the parameters for the live stream output.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask
+    1      64   str    Service name
+    65     512  str    Url
+    577    512  str    Streaming key
+    1092   4    u32    Minimum bitrate (Bps)
+    1096   4    u32    Maximum bitrate (Bps)
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, name=None, url=None, key=None, bitrate_min=None, bitrate_max=None):
+        """
+        :param name: New streaming service name, or None
+        :param url: RTMP url, or None
+        :param key: Stream key, or None
+        :param bitrate_min: Minimum bitrate, or None
+        :param bitrate_max: Maximum bitrate, or None
+        """
+        self.name = name
+        self.url = url
+        self.key = key
+        self.bitrate_min = bitrate_min
+        self.bitrate_max = bitrate_max
+
+    def get_command(self):
+        if self.bitrate_min is None and self.bitrate_max is not None:
+            return ValueError("Both min and max bitrate required")
+        if self.bitrate_max is None and self.bitrate_min is not None:
+            return ValueError("Both min and max bitrate required")
+        mask = 0
+        if self.name is not None:
+            mask |= 1 << 0
+        if self.url is not None:
+            mask |= 1 << 1
+        if self.key is not None:
+            mask |= 1 << 2
+        if self.bitrate_min is not None:
+            mask |= 1 << 3
+
+        name = self.name.encode() if self.name is not None else b''
+        url = self.url.encode() if self.url is not None else b''
+        key = self.key.encode() if self.key is not None else b''
+
+        data = struct.pack('>B 64s 512s 512s 3x II', mask, name, url, key,
+                           self.bitrate_min or 0, self.bitrate_max or 0)
+        dl = len(data)
+        print(dl)
+        return self._make_command('CRSS', data)
+
+
 class MultiviewPropertiesCommand(Command):
     """
     Implementation of the `CMvP` command. This sets the layout of a multiview output and can set a flag for
