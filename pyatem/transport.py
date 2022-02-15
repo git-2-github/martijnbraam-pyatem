@@ -383,7 +383,15 @@ class TcpProtocol:
         try:
             header = self.sock.recv(2)
             datalength, = struct.unpack('!H', header)
-            data = self.sock.recv(datalength)
+            data_left = datalength
+            data = b''
+            while data_left > 0:
+                block = self.sock.recv(data_left)
+                if len(block) == 0:
+                    print("Connection closed")
+                    return
+                data_left -= len(block)
+                data += block
         except:
             return None
 
