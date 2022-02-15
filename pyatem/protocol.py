@@ -55,8 +55,14 @@ class AtemProtocol:
             self.connected = False
             return
         self.connected = True
-        for fieldname, data in self.decode_packet(packet.data):
-            self.save_field_data(fieldname, data)
+        try:
+            for fieldname, data in self.decode_packet(packet.data):
+                self.save_field_data(fieldname, data)
+        except ConnectionError:
+            print("Encountered protocol corruption, closing connection")
+            self._raise('disconnected')
+            self.mixerstate = {}
+            self.connected = False
 
     def on(self, event, callback):
         if event not in self.callbacks:
@@ -79,6 +85,12 @@ class AtemProtocol:
         offset = 0
         while offset < len(data):
             datalen, cmd = struct.unpack_from('!H2x 4s', data, offset)
+
+            # A zero length header is not possible, this occurs when the transport layer has corruption, mark the
+            # connection closed to restart and recover state
+            if datalen == 0:
+                raise ConnectionError()
+
             raw = data[offset + 8:offset + datalen]
             yield (cmd, raw)
             offset += datalen
@@ -235,7 +247,7 @@ class AtemProtocol:
                 logging.error('Got file transfer data for wrong transfer id')
             return
         elif key == 'file-transfer-error':
-            print(contents)
+            print("file-transfer-error", contents)
             self.transfer_requested = False
             if contents.status == 1:
                 # Status is try-again
