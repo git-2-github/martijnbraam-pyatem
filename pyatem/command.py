@@ -1900,8 +1900,6 @@ class StreamingServiceSet(Command):
 
         data = struct.pack('>B 64s 512s 512s 3x II', mask, name, url, key,
                            self.bitrate_min or 0, self.bitrate_max or 0)
-        dl = len(data)
-        print(dl)
         return self._make_command('CRSS', data)
 
 
@@ -2168,7 +2166,6 @@ class CameraControlCommand(Command):
             128: 4
         }
         elements[countoffset[self.datatype]] = count
-        print(elements)
         data += struct.pack('>11B', *elements)
         if self.data is not None:
             fmt = '>{}'.format(count)
