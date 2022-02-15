@@ -83,7 +83,10 @@ class TCPHandler(socketserver.BaseRequestHandler):
         self.send_fields(buffer)
 
     def receive(self):
-        header = self.request.recv(2)
+        try:
+            header = self.request.recv(2)
+        except ConnectionResetError:
+            raise ValueError("Client disconnected")
         if len(header) == 0:
             raise ValueError("Client disconnected")
         datalength, = struct.unpack('!H', header)
