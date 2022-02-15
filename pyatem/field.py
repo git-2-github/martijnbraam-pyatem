@@ -2667,8 +2667,13 @@ class FairlightMasterLevelsField(FieldBase):
         return '<fairlight-master-levels>'
 
 
-class CameraControlDataPacketField(FieldBase):
+class CameraControlDataPacketFieldDisabled(FieldBase):
     """
+
+    !! This parser is not production ready !!
+    The packet length is somewhat inconsistent which can cause the TCP protocol to fail due to the alignment in the
+    protocol breaking
+
     Data from the `CCdP`. This contains a single packet for the remote shading unit in the blackmagic cameras. This
     protocol seems to roughly match up to the official BMD SDI camera control documentation with the bytes packed
     differently.
