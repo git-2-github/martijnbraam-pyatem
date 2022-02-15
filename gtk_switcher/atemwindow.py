@@ -34,6 +34,7 @@ class AtemConnection(threading.Thread):
         self.atem = None
         self.ip = None
         self.stop = False
+        self.connected = False
 
     def run(self):
         # Don't run if the ip isn't set yet
@@ -49,6 +50,7 @@ class AtemConnection(threading.Thread):
         self.mixer.on('transfer-progress', self.do_transfer_progress)
         self.mixer.on('download-done', self.do_download_done)
         self.mixer.connect()
+        self.connected = True
         while not self.stop:
             try:
                 self.mixer.loop()
@@ -60,6 +62,7 @@ class AtemConnection(threading.Thread):
         GLib.idle_add(self.callback, *args, **kwargs)
 
     def do_disconnected(self):
+        self.connected = False
         GLib.idle_add(self.disconnected)
 
     def do_transfer_progress(self, store, slot, progress):
@@ -269,128 +272,135 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         # Call all the registered decorators
         call_fields(field, self, data)
 
-        if field == 'firmware-version':
-            self.firmware_version = data
-            if data.major < 2:
-                self.connectionstack.set_visible_child_name("firmware")
-            elif data.minor < 28:
-                self.connectionstack.set_visible_child_name("firmware")
-            else:
-                self.connectionstack.set_visible_child_name("connected")
-            print("Firmware: {}".format(data.version))
-        elif field == 'time':
-            self.on_time_sync(data)
-        elif field == 'time-config':
-            self.on_timecode_config_change(data)
-        elif field == 'input-properties':
-            self.on_input_layout_change(data)
-            self.on_camera_layout_change(data)
-        elif field == 'program-bus-input':
-            self.on_program_input_change(data)
-        elif field == 'preview-bus-input':
-            self.on_preview_input_change(data)
-        elif field == 'transition-position':
-            self.on_transition_position_change(data)
-        elif field == 'transition-settings':
-            self.on_transition_settings_change(data)
-        elif field == 'transition-preview':
-            self.on_transition_preview_change(data)
-        elif field == 'key-on-air':
-            self.on_key_on_air_change(data)
-        elif field == 'color-generator':
-            self.on_color_change(data)
-        elif field == 'fade-to-black':
-            self.on_ftb_change(data)
-        elif field == 'fade-to-black-state':
-            self.on_ftb_state_change(data)
-        elif field == 'mixer-effect-config':
-            self.on_mixer_effect_config_change(data)
-        elif field == 'topology':
-            self.on_topology_change(data)
-        elif field == 'product-name':
-            self.status_model.set_text(data.name)
-            print("Mixer model: {}".format(data.name))
-        elif field == 'video-mode':
-            self.mode = data
-            for me in self.me:
-                me.set_mode(data)
-            self.status_mode.set_text(data.get_label())
-        elif field == 'dkey-properties':
-            self.on_dsk_change(data)
-        elif field == 'dkey-state':
-            self.on_dsk_state_change(data)
-        elif field == 'mediaplayer-slots':
-            self.on_mediaplayer_slots_change(data)
-        elif field == 'mediaplayer-file-info':
-            self.on_mediaplayer_file_info_change(data)
-        elif field == 'transition-mix':
-            self.on_transition_mix_change(data)
-        elif field == 'transition-dip':
-            self.on_transition_dip_change(data)
-        elif field == 'transition-wipe':
-            self.on_transition_wipe_change(data)
-        elif field == 'transition-dve':
-            self.on_transition_dve_change(data)
-        elif field == 'fairlight-master-properties':
-            self.on_fairlight_master_properties_change(data)
-        elif field == 'fairlight-audio-input':
-            self.on_fairlight_audio_input_change(data)
-        elif field == 'audio-input':
-            self.on_audio_input_change(data)
-        elif field == 'fairlight-strip-properties':
-            self.on_fairlight_strip_properties_change(data)
-        elif field == 'fairlight-tally':
-            self.on_fairlight_tally_change(data)
-        elif field == 'audio-mixer-tally':
-            self.on_audio_mixer_tally_change(data)
-        elif field == 'audio-mixer-master-properties':
-            self.on_audio_mixer_master_properties_change(data)
-        elif field == 'audio-mixer-monitor-properties':
-            self.on_audio_monitor_properties_change(data)
-        elif field == 'key-properties-base':
-            self.on_key_properties_base_change(data)
-        elif field == 'key-properties-luma':
-            self.on_key_properties_luma_change(data)
-        elif field == 'key-properties-dve':
-            self.on_key_properties_dve_change(data)
-        elif field == 'recording-settings':
-            self.on_stream_recording_setting_change(data)
-        elif field == 'recording-disk':
-            self.on_stream_recording_disks_change(data)
-        elif field == 'recording-status':
-            self.on_stream_recording_status_change(data)
-        elif field == 'recording-duration':
-            self.on_stream_recording_duration_change(data)
-        elif field == 'aux-output-source':
-            self.on_aux_output_source_change(data)
-        elif field == 'dkey-properties-base':
-            self.on_dkey_properties_base_change(data)
-        elif field == 'macro-properties':
-            self.on_macro_properties_change(data)
-        elif field == 'audio-meter-levels':
-            self.on_audio_meter_levels_change(data)
-        elif field == 'fairlight-meter-levels':
-            self.on_fairlight_meter_levels_change(data)
-        elif field == 'fairlight-master-levels':
-            self.on_fairlight_master_levels_change(data)
-        elif field == 'streaming-service':
-            self.on_streaming_service_change(data)
-        elif field == 'streaming-audio-bitrate':
-            self.on_streaming_audio_bitrate_change(data)
-        elif field == 'streaming-stats':
-            self.on_streaming_stats_change(data)
-        elif field == 'streaming-status':
-            self.on_streaming_status_change(data)
+        try:
+            if field == 'firmware-version':
+                self.firmware_version = data
+                if data.major < 2:
+                    self.connectionstack.set_visible_child_name("firmware")
+                elif data.minor < 28:
+                    self.connectionstack.set_visible_child_name("firmware")
+                else:
+                    self.connectionstack.set_visible_child_name("connected")
+                print("Firmware: {}".format(data.version))
+            elif field == 'time':
+                self.on_time_sync(data)
+            elif field == 'time-config':
+                self.on_timecode_config_change(data)
+            elif field == 'input-properties':
+                self.on_input_layout_change(data)
+                self.on_camera_layout_change(data)
+            elif field == 'program-bus-input':
+                self.on_program_input_change(data)
+            elif field == 'preview-bus-input':
+                self.on_preview_input_change(data)
+            elif field == 'transition-position':
+                self.on_transition_position_change(data)
+            elif field == 'transition-settings':
+                self.on_transition_settings_change(data)
+            elif field == 'transition-preview':
+                self.on_transition_preview_change(data)
+            elif field == 'key-on-air':
+                self.on_key_on_air_change(data)
+            elif field == 'color-generator':
+                self.on_color_change(data)
+            elif field == 'fade-to-black':
+                self.on_ftb_change(data)
+            elif field == 'fade-to-black-state':
+                self.on_ftb_state_change(data)
+            elif field == 'mixer-effect-config':
+                self.on_mixer_effect_config_change(data)
+            elif field == 'topology':
+                self.on_topology_change(data)
+            elif field == 'product-name':
+                self.status_model.set_text(data.name)
+                print("Mixer model: {}".format(data.name))
+            elif field == 'video-mode':
+                self.mode = data
+                for me in self.me:
+                    me.set_mode(data)
+                self.status_mode.set_text(data.get_label())
+            elif field == 'dkey-properties':
+                self.on_dsk_change(data)
+            elif field == 'dkey-state':
+                self.on_dsk_state_change(data)
+            elif field == 'mediaplayer-slots':
+                self.on_mediaplayer_slots_change(data)
+            elif field == 'mediaplayer-file-info':
+                self.on_mediaplayer_file_info_change(data)
+            elif field == 'transition-mix':
+                self.on_transition_mix_change(data)
+            elif field == 'transition-dip':
+                self.on_transition_dip_change(data)
+            elif field == 'transition-wipe':
+                self.on_transition_wipe_change(data)
+            elif field == 'transition-dve':
+                self.on_transition_dve_change(data)
+            elif field == 'fairlight-master-properties':
+                self.on_fairlight_master_properties_change(data)
+            elif field == 'fairlight-audio-input':
+                self.on_fairlight_audio_input_change(data)
+            elif field == 'audio-input':
+                self.on_audio_input_change(data)
+            elif field == 'fairlight-strip-properties':
+                self.on_fairlight_strip_properties_change(data)
+            elif field == 'fairlight-tally':
+                self.on_fairlight_tally_change(data)
+            elif field == 'audio-mixer-tally':
+                self.on_audio_mixer_tally_change(data)
+            elif field == 'audio-mixer-master-properties':
+                self.on_audio_mixer_master_properties_change(data)
+            elif field == 'audio-mixer-monitor-properties':
+                self.on_audio_monitor_properties_change(data)
+            elif field == 'key-properties-base':
+                self.on_key_properties_base_change(data)
+            elif field == 'key-properties-luma':
+                self.on_key_properties_luma_change(data)
+            elif field == 'key-properties-dve':
+                self.on_key_properties_dve_change(data)
+            elif field == 'recording-settings':
+                self.on_stream_recording_setting_change(data)
+            elif field == 'recording-disk':
+                self.on_stream_recording_disks_change(data)
+            elif field == 'recording-status':
+                self.on_stream_recording_status_change(data)
+            elif field == 'recording-duration':
+                self.on_stream_recording_duration_change(data)
+            elif field == 'aux-output-source':
+                self.on_aux_output_source_change(data)
+            elif field == 'dkey-properties-base':
+                self.on_dkey_properties_base_change(data)
+            elif field == 'macro-properties':
+                self.on_macro_properties_change(data)
+            elif field == 'audio-meter-levels':
+                self.on_audio_meter_levels_change(data)
+            elif field == 'fairlight-meter-levels':
+                self.on_fairlight_meter_levels_change(data)
+            elif field == 'fairlight-master-levels':
+                self.on_fairlight_master_levels_change(data)
+            elif field == 'streaming-service':
+                self.on_streaming_service_change(data)
+            elif field == 'streaming-audio-bitrate':
+                self.on_streaming_audio_bitrate_change(data)
+            elif field == 'streaming-stats':
+                self.on_streaming_stats_change(data)
+            elif field == 'streaming-status':
+                self.on_streaming_status_change(data)
 
-        else:
-            if field == 'time':
-                return
-            if not self.debug and self.args.dump is not None and len(self.args.dump) > 0:
-                return
-            if isinstance(data, bytes):
-                print(field)
             else:
-                print(data)
+                if field == 'time':
+                    return
+                if not self.debug and self.args.dump is not None and len(self.args.dump) > 0:
+                    return
+                if isinstance(data, bytes):
+                    print(field)
+                else:
+                    print(data)
+        except Exception as e:
+            # When the connection breaks on initial sync the UI events are queued but no mixer state is present
+            # catch the exceptions and bring the software into the disconnected state cleanly
+            if self.connection.connected:
+                raise
+            print(f"Exception while disconnected: {e}")
 
     def on_time_sync(self, data):
         seconds = data.total_seconds()
