@@ -785,7 +785,7 @@ class SwitcherPage:
         self.model_aux.clear()
         self.model_key.clear()
 
-        for i in inputs.values():
+        for i in list(inputs.values()):
             if i.port_type == InputPropertiesField.PORT_EXTERNAL:
                 external.append(i)
             if i.port_type == InputPropertiesField.PORT_COLOR:
