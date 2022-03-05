@@ -1,5 +1,6 @@
 import ipaddress
 import logging
+import sys
 
 try:
     from zeroconf import ServiceBrowser, Zeroconf
@@ -50,6 +51,7 @@ def listen(on_add, on_remove=None):
         on_add(UsbProtocol.PRODUCTS[pid], 'USB protocol', 'usb', ('USB', 0))
 
     if not has_zeroconf:
+        sys.stderr.write("zeroconf discovery unavailable without pyzeroconf\n")
         return
     zeroconf = Zeroconf()
     listener = AtemListener(on_add, on_remove)
