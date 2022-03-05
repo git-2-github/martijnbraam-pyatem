@@ -818,10 +818,26 @@ class SwitcherPage:
                     self.aux[aux_id].add_attribute(renderer, "text", 1)
                     self.grid_aux.attach(self.aux[aux_id], 1, aux_id, 1, 1)
 
-                    aux_me = Gtk.CheckButton()
+                    aux_me = Gtk.CheckButton.new_with_label("Show as bus")
                     aux_me.index = i.index
                     aux_me.connect('toggled', self.on_aux_me_enable_toggled)
-                    self.grid_aux.attach(aux_me, 2, aux_id, 1, 1)
+
+                    aux_btn = Gtk.MenuButton()
+                    hamburger = Gtk.Image.new_from_icon_name('open-menu-symbolic', Gtk.IconSize.BUTTON)
+                    aux_btn.set_image(hamburger)
+
+                    popover = Gtk.PopoverMenu()
+                    aux_btn.set_popover(popover)
+                    popover_box = Gtk.Box()
+                    popover_box.set_margin_top(8)
+                    popover_box.set_margin_bottom(8)
+                    popover_box.set_margin_start(8)
+                    popover_box.set_margin_end(8)
+                    popover_box.add(aux_me)
+                    popover.add(popover_box)
+                    popover_box.add(aux_me)
+                    popover_box.show_all()
+                    self.grid_aux.attach(aux_btn, 2, aux_id, 1, 1)
 
                     aux_label = Gtk.Label(label=i.name)
                     aux_label.get_style_context().add_class('dim-label')
@@ -901,8 +917,14 @@ class SwitcherPage:
             self.me.append(aux_me)
             self.main_blocks.add(aux_me)
         else:
-            # Remove the UI for this M/E
-            pass
+            for me in self.me:
+                if not hasattr(me, 'category'):
+                    continue
+                if me.category != 'aux':
+                    continue
+                if me.index == widget.index - 8001:
+                    self.me.remove(me)
+                    me.destroy()
 
     def on_aux_me_source_changed(self, widget, aux, source):
         cmd = AuxSourceCommand(aux, source=source)
