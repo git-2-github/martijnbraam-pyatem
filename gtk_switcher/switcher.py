@@ -822,20 +822,24 @@ class SwitcherPage:
                     aux_me.index = i.index
                     aux_me.connect('toggled', self.on_aux_me_enable_toggled)
 
+                    aux_follow_mon = Gtk.CheckButton.new_with_label("Follow audio monitor bus")
+                    aux_follow_mon.index = i.index
+                    aux_follow_mon.connect('toggled', self.on_aux_me_follow_toggled)
+
                     aux_btn = Gtk.MenuButton()
                     hamburger = Gtk.Image.new_from_icon_name('open-menu-symbolic', Gtk.IconSize.BUTTON)
                     aux_btn.set_image(hamburger)
 
                     popover = Gtk.PopoverMenu()
                     aux_btn.set_popover(popover)
-                    popover_box = Gtk.Box()
+                    popover_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
                     popover_box.set_margin_top(8)
                     popover_box.set_margin_bottom(8)
                     popover_box.set_margin_start(8)
                     popover_box.set_margin_end(8)
                     popover_box.add(aux_me)
+                    popover_box.add(aux_follow_mon)
                     popover.add(popover_box)
-                    popover_box.add(aux_me)
                     popover_box.show_all()
                     self.grid_aux.attach(aux_btn, 2, aux_id, 1, 1)
 
@@ -863,6 +867,13 @@ class SwitcherPage:
         self.model_changing = False
         for i in self.has_models:
             i.model_changing = False
+
+    def on_aux_me_follow_toggled(self, widget):
+        aux_id = widget.index - 8001
+        if widget.get_active():
+            self.aux_follow_audio.add(aux_id)
+        else:
+            self.aux_follow_audio.remove(aux_id)
 
     def on_aux_me_enable_toggled(self, widget):
         from gtk_switcher.mixeffect_aux import AuxMixEffectBlock

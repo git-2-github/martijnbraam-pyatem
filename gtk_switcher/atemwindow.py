@@ -140,6 +140,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.timecode_mode = 0
         self.timecode_offset = 0
 
+        self.aux_follow_audio = set()
+
         self.apply_css(self.window, self.provider)
 
         self.window.show_all()
@@ -372,6 +374,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                 self.on_stream_recording_duration_change(data)
             elif field == 'aux-output-source':
                 self.on_aux_output_source_change(data)
+                if data.index in self.aux_follow_audio:
+                    self.on_aux_monitor_source_change(data)
             elif field == 'dkey-properties-base':
                 self.on_dkey_properties_base_change(data)
             elif field == 'macro-properties':

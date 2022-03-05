@@ -4,7 +4,8 @@ from gtk_switcher.adjustmententry import AdjustmentEntry
 from gtk_switcher.dial import Dial
 from gtk_switcher.gtklogadjustment import LogAdjustment
 from pyatem.command import AudioInputCommand, FairlightStripPropertiesCommand, FairlightMasterPropertiesCommand, \
-    AudioMasterPropertiesCommand, AudioMonitorPropertiesCommand, SendAudioLevelsCommand, SendFairlightLevelsCommand
+    AudioMasterPropertiesCommand, AudioMonitorPropertiesCommand, SendAudioLevelsCommand, SendFairlightLevelsCommand, \
+    AuxSourceCommand
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject, Gio, Gdk
@@ -528,7 +529,22 @@ class AudioPage:
         else:
             pass
 
+    def on_aux_monitor_source_change(self, data):
+        strip_id = f'{data.source}.0'
+        if strip_id in self.audio_monitor:
+            for mon in self.audio_monitor:
+                self.set_class(self.audio_monitor[mon], 'active', mon == strip_id)
+
     def do_channel_monitor(self, widget, *args):
+        # When aux-follow-monitor is enabled send the monitor commands as aux switching commands to
+        # the hardware for the selected aux outputs, this will make the aux sdi out have monitor
+        # audio for ATEM devices without any real monitor outputs, which is a lot of them
+        if len(self.aux_follow_audio) > 0:
+            cmd = []
+            for bus in self.aux_follow_audio:
+                cmd.append(AuxSourceCommand(bus, source=widget.source))
+            self.connection.mixer.send_commands(cmd)
+
         if self.mixer == 'atem':
             state = widget.get_style_context().has_class('active')
             cmd = AudioMonitorPropertiesCommand(solo=not state, solo_source=widget.source)
