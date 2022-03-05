@@ -1,4 +1,5 @@
 import ctypes
+import sys
 import threading
 import time
 import traceback
@@ -49,7 +50,11 @@ class AtemConnection(threading.Thread):
         self.mixer.on('disconnected', self.do_disconnected)
         self.mixer.on('transfer-progress', self.do_transfer_progress)
         self.mixer.on('download-done', self.do_download_done)
-        self.mixer.connect()
+        try:
+            self.mixer.connect()
+        except ConnectionError as e:
+            sys.stderr.write(f"Could not connect to {self.ip}: {e}")
+            return
         self.connected = True
         while not self.stop:
             try:
