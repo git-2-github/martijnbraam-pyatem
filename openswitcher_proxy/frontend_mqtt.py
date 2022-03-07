@@ -105,6 +105,10 @@ class MqttFrontendThread(threading.Thread):
             logging.error(f'MQTT: not handling writes for "{hw}"')
             return
 
+        if self.threadlist['hardware'][hw].status != "connected":
+            logging.error(f'MQTT: writing to disconnected device "{hw}"')
+            return
+
         classname = fieldname.title().replace('-', '') + "Command"
         if not hasattr(commandmodule, classname):
             logging.error(f'MQTT: unrecognized command {fieldname}')
@@ -122,15 +126,22 @@ class MqttFrontendThread(threading.Thread):
                 arguments[key] = int(arguments[key])
             except:
                 pass
+
+        source_name_fault = False
         if 'source' in arguments:
             inputs = self.threadlist['hardware'][hw].switcher.inputs
+            if not isinstance(arguments['source'], int) and arguments['source'] not in inputs:
+                source_name_fault = True
             if arguments['source'] in inputs:
                 arguments['source'] = inputs[arguments['source']]
         try:
             cmd = getattr(commandmodule, classname)(**arguments)
             self.threadlist['hardware'][hw].switcher.send_commands([cmd])
         except Exception as e:
-            logging.error(f'MQTT: cannot write {fieldname}: {str(e)}')
+            if source_name_fault:
+                logging.error(f'MQTT: invalid source name: {arguments["source"]}')
+            else:
+                logging.error(f'MQTT: cannot write {fieldname}: {str(e)}')
 
     def get_status(self):
         if self.status == 'error':
