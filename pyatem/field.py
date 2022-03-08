@@ -175,7 +175,8 @@ class MediaplayerSlotsField(FieldBase):
 
     After parsing:
 
-    :ivar name: User friendly product name
+    :ivar stills: Number of still slots
+    :ivar clips: Number of clip slots
     """
 
     CODE = "_mpl"
@@ -2126,6 +2127,12 @@ class MultiviewerPropertiesField(FieldBase):
     2   Bottom left small
     4   Bottom right small
     === ==========
+
+    After parsing:
+    :ivar index: Multiviewer index, 0-indexed
+    :ivar layout: Layout number from the enum above
+    :ivar flip: Swap the program/preview window
+
     """
 
     CODE = "MvPr"
@@ -2195,6 +2202,12 @@ class MultiviewerInputField(FieldBase):
     only on those which show a video input or the Program output. The safe area
     overlay appears to only work on full-sized Preview.
 
+    After parsing:
+    :ivar index: Multiviewer index, 0-indexed
+    :ivar window: Window number inside the multiview
+    :ivar source: Source index for this window
+    :ivar vu: True if VU meter overlays can be enabled
+    :ivar safearea: True if safe area overlays can be enabled
     """
 
     CODE = "MvIn"
@@ -2219,6 +2232,11 @@ class MultiviewerVuField(FieldBase):
     2      1    bool   VU enabled
     3      1    ?      unknown
     ====== ==== ====== ===========
+
+    After parsing:
+    :ivar index: Multiviewer index, 0-indexed
+    :ivar window: Window number inside the multiview
+    :ivar enabled: True if the VU meter overlay is enabled for this window
     """
 
     CODE = "VuMC"
@@ -2244,6 +2262,11 @@ class MultiviewerSafeAreaField(FieldBase):
     2      1    bool   safe area enabled
     3      1    ?      unknown
     ====== ==== ====== ===========
+
+    After parsing:
+    :ivar index: Multiviewer index, 0-indexed
+    :ivar window: Window number inside the multiview
+    :ivar enabled: True if the safe area meter overlay is enabled for this window
     """
 
     CODE = "SaMw"
@@ -2268,7 +2291,9 @@ class LockObtainedField(FieldBase):
     2      2    ?      Unknown
     ====== ==== ====== ===========
 
-    """
+    After parsing:
+    :ivar store: Store index
+=    """
 
     CODE = "LKOB"
 
@@ -2292,6 +2317,9 @@ class LockStateField(FieldBase):
     3      1    ?      unknown
     ====== ==== ====== ===========
 
+    After parsing:
+    :ivar store: Store index
+    :ivar state: True if a lock is held
     """
 
     CODE = "LKST"
@@ -2315,6 +2343,11 @@ class FileTransferDataField(FieldBase):
     2      2    u16    Data length
     ?      ?    bytes  The rest of the packet contains [Data length] bytes of data
     ====== ==== ====== ===========
+
+    After parsing:
+    :ivar transfer: Transfer index
+    :ivar size: Length of the transfer chunk
+    :ivar data: Contents of the transfer chunk
     """
 
     CODE = "FTDa"
@@ -2348,6 +2381,9 @@ class FileTransferErrorField(FieldBase):
     5          no-lock, You didn't obtain the lock before doing the transfer
     ========== ===========
 
+    After parsing:
+    :ivar transfer: Transfer index
+    :ivar status: Status id from the enum above
     """
 
     CODE = "FTDE"
@@ -2382,6 +2418,8 @@ class FileTransferDataCompleteField(FieldBase):
     3      1    u8     ? (always 2 or 6)
     ====== ==== ====== ===========
 
+    After parsing:
+    :ivar transfer: Transfer index that has completed
     """
 
     CODE = "FTDC"
@@ -2443,16 +2481,29 @@ class AudioMeterLevelsField(FieldBase):
     ====== ==== ====== ===========
     Offset Size Type   Description
     ====== ==== ====== ===========
-    0      2    u16    Macro slot index
+    0      2    u16    Number of input channels
+    2      2    ?      padding
+    4      4    u32    Master left level
+    8      4    u32    Master right level
+    12     4    u32    Master left peak
+    16     4    u32    Master right peak
+    20     4    u32    Monitor left level
+    24     4    u32    Monitor right level
+    28     4    u32    Monitor left peak
+    32     4    u32    Monitor right peak
+    ?      4    u32    Input left level [These 4 repeat for the number of channels above]
+    ?      4    u32    Input right level
+    ?      4    u32    Input left peak
+    ?      4    u32    Input right peak
+
     ====== ==== ====== ===========
 
     After parsing:
-
-    :ivar index: Macro slot index
-    :ivar is_used: Slot contains data
-    :ivar is_invalid: Slot contains invalid data
-    :ivar name: Name of the macro
-    :ivar description: Description of the macro
+    The levels are tuples in the format (left level, right level, left peak, right peak).
+    :ivar count: Number of channels
+    :ivar master: Master levels
+    :ivar monitor: Monitor levels
+    :ivar input: All input levels as a dict, the key is the channel number and the value a level tuple
     """
 
     CODE = "AMLv"
