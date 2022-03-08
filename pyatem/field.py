@@ -2021,7 +2021,7 @@ class RecordingSettingsField(FieldBase):
 
 class RecordingStatusField(FieldBase):
     """
-    Data from the `RTMS`. The status for the stream recorder.
+    Data from the `RTMS`. The status for the stream recorder and total space left in the target device.
 
     ====== ==== ====== ===========
     Offset Size Type   Descriptions
@@ -2066,7 +2066,9 @@ class RecordingStatusField(FieldBase):
 
 class RecordingDurationField(FieldBase):
     """
-    Data from the `RTMR`. The status for the stream recorder.
+    Data from the `RTMR`. The current recording duration, this does not update very often. The dropped
+    frames field signifies that the disk cannot keep up with writing the data and triggers the warning in the
+    UI.
 
     ====== ==== ====== ===========
     Offset Size Type   Descriptions
@@ -2859,14 +2861,20 @@ class StreamingAudioBitrateField(FieldBase):
 
 class StreamingServiceField(FieldBase):
     """
-    Data from the `SRSU`. This is the audio bitrate for the internal encoder used for recording and streaming
-    This is always 128k for min and max on tested devices.
+    Data from the `SRSU`. This the settings for the live stream output, it also sets the video bitrate for
+    the internal encoder which is shared with the recorder component so this influences recording quality.
+
+    The ATEM Software Control application only uses the rtsp URL to display the streaming service name and
+    has a preset list of rtsp urls for various streaming services.
 
     ====== ==== ====== ===========
     Offset Size Type   Descriptions
     ====== ==== ====== ===========
-    0      4    u32    Min bitrate
-    4      4    u32    Max bitrate
+    0      64   char[] Service display name
+    65     512  char[] Target rtsp url
+    557    512  char[] Stream key/secret
+    1089   4    u32    Video bitrate minimum
+    1093   4    u32    Video bitrate maximum
     ====== ==== ====== ===========
 
     """
