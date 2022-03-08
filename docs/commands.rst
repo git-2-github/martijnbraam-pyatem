@@ -10,4 +10,5 @@ These decribe the packets sent from the client to the switcher
    commands/hardware
    commands/switcher
    commands/fairlightmixer
+   commands/filetransfer
    commands/encoder

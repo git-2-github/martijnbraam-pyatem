@@ -11,4 +11,5 @@ These decribe the packets sent from the switcher to the client.
    fields/switcher
    fields/audiomixer
    fields/fairlightmixer
+   fields/filetransfer
    fields/encoder
