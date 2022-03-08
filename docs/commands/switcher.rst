@@ -39,6 +39,10 @@ Transitions
    :members:
    :special-members:
 
+.. autoclass:: pyatem.command.TransitionPositionCommand
+   :members:
+   :special-members:
+
 Transition settings
 -------------------
 
@@ -136,3 +140,18 @@ Upstream keyers
    :members:
    :special-members:
 
+.. autoclass:: pyatem.command.KeyerKeyframeSetCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.KeyerKeyframeRunCommand
+   :members:
+   :special-members:
+
+
+Fade to black
+-------------
+
+.. autoclass:: pyatem.command.FadeToBlackConfigCommand
+   :members:
+   :special-members:

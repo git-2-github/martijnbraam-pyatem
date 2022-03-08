@@ -91,3 +91,9 @@ Video Tally
 .. autoclass:: pyatem.field.TallySourceField
    :members:
 
+Fade to black
+-------------
+
+.. autoclass:: pyatem.field.FadeToBlackField
+   :members:
+

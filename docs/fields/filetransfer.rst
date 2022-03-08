@@ -25,3 +25,12 @@ Data transfer
 
 .. autoclass:: pyatem.field.FileTransferErrorField
    :members:
+
+Pool settings
+-------------
+
+.. autoclass:: pyatem.field.MediaplayerFileInfoField
+   :members:
+
+.. autoclass:: pyatem.field.MacroPropertiesField
+   :members:

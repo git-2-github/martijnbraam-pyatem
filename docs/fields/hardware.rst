@@ -25,6 +25,15 @@ Hardware contents
 .. autoclass:: pyatem.field.MediaplayerSlotsField
    :members:
 
+Timecode
+--------
+
+.. autoclass:: pyatem.field.TimeField
+   :members:
+
+.. autoclass:: pyatem.field.TimeConfigField
+   :members:
+
 
 Multiviewer routing
 -------------------

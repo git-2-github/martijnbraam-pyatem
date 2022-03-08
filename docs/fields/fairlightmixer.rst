@@ -21,3 +21,21 @@ mixers of the previous models. These mostly use new datastructures to represent 
 
 .. autoclass:: pyatem.field.AtemEqBandPropertiesField
    :members:
+
+Level meters
+------------
+
+.. autoclass:: pyatem.field.FairlightMeterLevelsField
+   :members:
+
+.. autoclass:: pyatem.field.FairlightMasterLevelsField
+   :members:
+
+Monitoring
+----------
+
+.. autoclass:: pyatem.field.FairlightHeadphonesField
+   :members:
+
+.. autoclass:: pyatem.field.FairlightSoloField
+   :members:

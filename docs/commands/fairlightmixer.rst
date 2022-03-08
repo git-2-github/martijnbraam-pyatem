@@ -11,3 +11,10 @@ mixers of the previous models. These mostly use new commands to control the mixe
 .. autoclass:: pyatem.command.FairlightStripPropertiesCommand
    :members:
    :special-members:
+
+Level meters
+------------
+
+.. autoclass:: pyatem.command.SendFairlightLevelsCommand
+   :members:
+   :special-members:
