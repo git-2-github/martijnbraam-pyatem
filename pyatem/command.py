@@ -1848,7 +1848,7 @@ class RecordingSettingsSetCommand(Command):
         return self._make_command('CRMS', data)
 
 
-class StreamingServiceSet(Command):
+class StreamingServiceSetCommand(Command):
     """
     Implementation of the `CRSS` command. This sets the parameters for the live stream output.
 

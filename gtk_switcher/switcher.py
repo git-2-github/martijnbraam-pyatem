@@ -6,7 +6,7 @@ from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, Transiti
     DveSettingsCommand, AudioMasterPropertiesCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, \
     DkeyAutoCommand, DkeyTieCommand, \
     DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand, \
-    FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand, StreamingServiceSet, RecordingSettingsSetCommand
+    FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand, StreamingServiceSetCommand, RecordingSettingsSetCommand
 from pyatem.field import TransitionSettingsField, InputPropertiesField
 import gtk_switcher.stream_data
 
@@ -1021,19 +1021,19 @@ class SwitcherPage:
 
     def load_livestream_preset(self, action, data):
         data = dict(data)
-        cmd = StreamingServiceSet(name=data['name'], url=data['url'])
+        cmd = StreamingServiceSetCommand(name=data['name'], url=data['url'])
         self.connection.mixer.send_commands([cmd])
 
     def on_stream_live_platform_activate(self, widget, *args):
-        cmd = StreamingServiceSet(name=widget.get_text())
+        cmd = StreamingServiceSetCommand(name=widget.get_text())
         self.connection.mixer.send_commands([cmd])
 
     def on_stream_live_server_activate(self, widget, *args):
-        cmd = StreamingServiceSet(url=widget.get_text())
+        cmd = StreamingServiceSetCommand(url=widget.get_text())
         self.connection.mixer.send_commands([cmd])
 
     def on_stream_live_key_activate(self, widget, *args):
-        cmd = StreamingServiceSet(key=widget.get_text())
+        cmd = StreamingServiceSetCommand(key=widget.get_text())
         self.connection.mixer.send_commands([cmd])
 
     def on_stream_live_start_clicked(self, *args):

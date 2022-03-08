@@ -151,3 +151,4 @@ gtk_switcher/atem.gresource
 /repo
 /test.py
 /deploy.sh
+/undocumented.py
