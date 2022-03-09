@@ -332,8 +332,10 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_ftb_afv_clicked(self, widget, *args):
-        # TODO: how to distingish between atem and fairlight?
-        cmd = FairlightMasterPropertiesCommand(afv=not widget.get_style_context().has_class('active'))
+        if self.mixer == 'atem':
+            cmd = AudioMasterPropertiesCommand(afv=not widget.get_style_context().has_class('active'))
+        else:
+            cmd = FairlightMasterPropertiesCommand(afv=not widget.get_style_context().has_class('active'))
         self.connection.mixer.send_commands([cmd])
 
     def on_rate_focus(self, *args):

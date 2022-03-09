@@ -433,6 +433,7 @@ class AudioPage:
         self.model_changing = True
         self.master_level.set_value_log(data.volume)
         self.set_class(self.master_afv, 'active', data.afv)
+        self.set_class(self.ftb_afv, 'active', data.afv)
         self.model_changing = False
 
     def on_volume_changed(self, widget, *args):
@@ -509,9 +510,9 @@ class AudioPage:
     def do_master_afv(self, widget, *args):
         if self.mixer == 'atem':
             cmd = AudioMasterPropertiesCommand(afv=not widget.get_style_context().has_class('active'))
-            self.connection.mixer.send_commands([cmd])
         else:
-            pass
+            cmd = FairlightMasterPropertiesCommand(afv=not widget.get_style_context().has_class('active'))
+        self.connection.mixer.send_commands([cmd])
 
     def do_monitor_on(self, widget, *args):
         if self.mixer == 'atem':
@@ -556,6 +557,7 @@ class AudioPage:
         self.model_changing = True
         self.master_level.set_value_log(data.volume)
         self.set_class(self.master_afv, 'active', data.afv)
+        self.set_class(self.ftb_afv, 'active', data.afv)
         self.model_changing = False
 
     def on_audio_monitor_properties_change(self, data):
