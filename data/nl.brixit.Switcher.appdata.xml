@@ -31,6 +31,21 @@
   <url type="bugtracker">https://todo.sr.ht/~martijnbraam/OpenAtem</url>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="0.5.0" date="2022-03-08">
+      <description>
+        <ul>
+          <li>Locate ATEM hardware in the local network automatically</li>
+          <li>Fixed volume names in the recorder</li>
+          <li>Make the headerbar red while recording or transmitting</li>
+          <li>Show the bitrate in the header</li>
+          <li>Inplement more live streaming controls</li>
+          <li>Fix TCP fragmentation bug for the proxy protocol</li>
+          <li>Add aux bus configuration on the output tab</li>
+          <li>Implement aux-follow-monitor to make an aux output act like an audio
+  monitor output for the audio tab</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.4.1" date="2021-11-26">
       <description>
         <p>
