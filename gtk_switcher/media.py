@@ -20,6 +20,8 @@ class MediaPage:
         self.media_slot_progress = {}
         self.media_queue = []
 
+        self.media_context = None
+
     def on_mediaplayer_slots_change(self, data):
         for child in self.media_flow:
             child.destroy()
@@ -85,6 +87,44 @@ class MediaPage:
         self.media_slot_progress[index].show()
         self.media_slot_progress[index].set_fraction(progress)
 
+    def on_media_save(self, widget, target):
+        frame = target.frame
+
+        dialog = Gtk.FileChooserDialog(title="Saving frame", action=Gtk.FileChooserAction.SAVE)
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL,
+            Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_SAVE,
+            Gtk.ResponseType.OK,
+        )
+
+        for fmt in GdkPixbuf.Pixbuf.get_formats():
+            if fmt.is_writable():
+                f = Gtk.FileFilter()
+                f.set_name(fmt.description)
+                f.fname = fmt.name
+                for ext in fmt.get_extensions():
+                    f.add_pattern(f"*.{ext}")
+                dialog.add_filter(f)
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            filter = dialog.get_filter()
+            frame.savev(dialog.get_filename(), filter.fname)
+        dialog.destroy()
+
+    def on_media_context_menu(self, widget, event):
+        print("Button", event.button)
+        if event.button != 3:
+            return
+        self.media_context = Gtk.Menu.new()
+
+        item = Gtk.MenuItem.new_with_label("Save image")
+        item.connect('activate', self.on_media_save, widget)
+        self.media_context.append(item)
+        self.media_context.show_all()
+        self.media_context.popup_at_pointer()
+
     def on_media_download_done(self, index, data):
         if index not in self.media_slot:
             return
@@ -105,7 +145,13 @@ class MediaPage:
                                                  width * 4)
         aw = 184
         thumb = pixbuf.scale_simple(aw, int(aw * height / width), GdkPixbuf.InterpType.BILINEAR)
-        self.media_slot_box[index].add(Gtk.Image.new_from_pixbuf(thumb))
+        thumb_img = Gtk.Image.new_from_pixbuf(thumb)
+        eventbox = Gtk.EventBox()
+        eventbox.add(thumb_img)
+        eventbox.frame = pixbuf
+        eventbox.connect('button-press-event', self.on_media_context_menu)
+
+        self.media_slot_box[index].add(eventbox)
         self.media_slot_box[index].show_all()
         self.media_slot_progress[index].hide()
 
