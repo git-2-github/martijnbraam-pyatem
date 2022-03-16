@@ -71,7 +71,10 @@ class PreferencesWindow:
             self.make_multiviewer()
 
     def update_multiviewer_input(self, input):
-        pass
+        state = self.connection.mixer.mixerstate
+
+        if 'multiviewer-properties' in state and 'multiviewer-input' in state:
+            self.make_multiviewer()
 
     def make_multiviewer(self, *args):
         state = self.connection.mixer.mixerstate
