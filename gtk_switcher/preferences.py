@@ -67,7 +67,7 @@ class PreferencesWindow:
     def load_preferences(self):
         state = self.connection.mixer.mixerstate
 
-        if 'multiviewer-properties' in state:
+        if 'multiviewer-properties' in state and 'multiviewer-input' in state:
             self.make_multiviewer()
 
     def update_multiviewer_input(self, input):
