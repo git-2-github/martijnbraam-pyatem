@@ -31,6 +31,17 @@
   <url type="bugtracker">https://todo.sr.ht/~martijnbraam/OpenAtem</url>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="0.5.1" date="2022-03-17">
+      <description>
+        <ul>
+          <li>Implemented the live stream start/stop buttons</li>
+          <li>Added option to save images from the media window</li>
+          <li>Fix crash when opening the preferences before the initial sync is finished</li>
+          <li>Fix the AFV setting for fade-to-black</li>
+        </ul>
+      </description>
+    </release>
+
     <release version="0.5.0" date="2022-03-08">
       <description>
         <ul>
@@ -42,7 +53,8 @@
           <li>Fix TCP fragmentation bug for the proxy protocol</li>
           <li>Add aux bus configuration on the output tab</li>
           <li>Implement aux-follow-monitor to make an aux output act like an audio
-  monitor output for the audio tab</li>
+            monitor output for the audio tab
+          </li>
         </ul>
       </description>
     </release>
