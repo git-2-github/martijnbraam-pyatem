@@ -143,7 +143,24 @@ class AuxSourceCommand(Command):
 
 
 class TransitionPositionCommand(Command):
+    """
+    Implementation of the `CTPs` command. This sets the state and position for the transition T-bar control.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    ?      unknown
+    2      2    u16    Position [0-10000]
+    ====== ==== ====== ===========
+
+    """
+
     def __init__(self, index, position):
+        """
+        :param index: 0-indexed M/E number to control the transition of
+        :param position: New position for the T-bar [0-10000]
+        """
         self.index = index
         self.position = position
 
@@ -155,8 +172,18 @@ class TransitionPositionCommand(Command):
 
 class TransitionSettingsCommand(Command):
     """
-    Implementation of the `CTTp` command. This is equivalent to pressing the buttons on the preview bus on a control
-    panel.
+    Implementation of the `CTTp` command. This is setting the transition style for the M/E unit between the
+    Mix, Dip, Wipe, String and DVE transition style.
+
+    The style argument takes one of the values from the TransitionSettingsField constants:
+    TransitionSettingsField.STYLE_MXI
+    TransitionSettingsField.STYLE_DIP
+    TransitionSettingsField.STYLE_WIPE
+    TransitionSettingsField.STYLE_STING
+    TransitionSettingsField.STYLE_DVE
+
+    The next_transition argument is a bitfield that sets the state of the "Next Transition" buttons, the row
+    with the BKGD button.
 
     ====== ==== ====== ===========
     Offset Size Type   Description
@@ -167,13 +194,23 @@ class TransitionSettingsCommand(Command):
     3      1    u8     Next transition
     ====== ==== ====== ===========
 
+    ===== =============
+    bit   Next transition button
+    ===== =============
+    0     BKGD
+    1     Key 1
+    2     Key 2
+    3     Key 3
+    4     Key 4
+    ===== =============
+
     """
 
     def __init__(self, index, style=None, next_transition=None):
         """
         :param index: 0-indexed M/E number to control the preview bus of
         :param style: Set new transition style, or None
-        :param style: Set next transition layers, or None
+        :param next_transition: Set next transition active layers, or None
         """
 
         self.index = index
