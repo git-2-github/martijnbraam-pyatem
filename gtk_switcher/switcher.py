@@ -6,7 +6,8 @@ from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, Transiti
     DveSettingsCommand, AudioMasterPropertiesCommand, FairlightMasterPropertiesCommand, DkeyRateCommand, \
     DkeyAutoCommand, DkeyTieCommand, \
     DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand, \
-    FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand, StreamingServiceSetCommand, RecordingSettingsSetCommand
+    FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand, StreamingServiceSetCommand, \
+    RecordingSettingsSetCommand, StreamingStatusSetCommand
 from pyatem.field import TransitionSettingsField, InputPropertiesField
 import gtk_switcher.stream_data
 
@@ -92,6 +93,9 @@ class SwitcherPage:
         self.stream_live_start = builder.get_object('stream_live_start')
         self.stream_live_stop = builder.get_object('stream_live_stop')
         self.live_stats = builder.get_object('live_stats')
+        self.stream_live_active = False
+        self.stream_live_start_time = None
+
 
         action_streampreset = Gio.SimpleAction.new("streampreset", GLib.VariantType.new("a{sv}"))
         action_streampreset.connect("activate", self.load_livestream_preset)
@@ -723,6 +727,11 @@ class SwitcherPage:
             length = timedelta(seconds=int(datetime.now().timestamp() - self.stream_recorder_start_time))
             self.stream_recorder_clock.set_text(str(length))
 
+    def on_clock_stream_live(self):
+        if self.stream_live_active:
+            length = timedelta(seconds=int(datetime.now().timestamp() - self.stream_live_start_time))
+            self.stream_live_clock.set_text(str(length))
+
     def on_update_recording_buttons(self):
         has_usable_disks = False
         for index in self.disks:
@@ -995,12 +1004,34 @@ class SwitcherPage:
         self.audio_rate_max.set_text(str(int(data.max / 1000)))
 
     def on_streaming_status_change(self, data):
+        starting = data.status == 2
         active = data.status == 4
         self.set_class(self.headerbar, 'streaming', active)
         if active:
             self.live_stats.show()
         else:
             self.live_stats.hide()
+
+        self.stream_live_start.set_sensitive(not starting and not active)
+        self.stream_live_stop.set_sensitive(starting or active)
+
+        status = {
+            1: ("OFF", False, False),
+            2: ("starting...", True, False),
+            4: ("ON AIR", False, True),
+            34: ("stopping...", True, False),
+            36: ("stopping...", True, False),
+        }
+        if data.status in status:
+            self.stream_live_status.set_text(status[data.status][0])
+            self.set_class(self.stream_live_status, 'active', status[data.status][1])
+            self.set_class(self.stream_live_status, 'program', status[data.status][2])
+
+        if active != self.stream_live_active:
+            if active:
+                self.stream_live_start_time = datetime.now().timestamp()
+
+        self.stream_live_active = active
 
     def on_streaming_stats_change(self, data):
         self.live_stats.set_text('{:.2f} Mbps'.format(data.bitrate / 1000 / 1000))
@@ -1039,10 +1070,12 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_stream_live_start_clicked(self, *args):
-        pass
+        cmd = StreamingStatusSetCommand(True)
+        self.connection.mixer.send_commands([cmd])
 
     def on_stream_live_stop_clicked(self, *args):
-        pass
+        cmd = StreamingStatusSetCommand(False)
+        self.connection.mixer.send_commands([cmd])
 
     def on_stream_recorder_disk1_changed(self, widget, *args):
         if self.model_changing:

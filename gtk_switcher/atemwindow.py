@@ -425,6 +425,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
 
     def on_clock(self):
         self.on_clock_stream_recorder()
+        self.on_clock_stream_live()
         return True
 
     def on_transfer_progress(self, store, slot, progress):
