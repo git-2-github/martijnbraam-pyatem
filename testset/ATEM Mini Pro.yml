@@ -1,0 +1,95 @@
+prepare:
+  - cmd: cut
+    index: 0
+  - cmd: transition-position
+    index: 0
+    position: 5000
+  - cmd: transition-position
+    index: 0
+    position: 0
+  - cmd: program-input
+    index: 0
+    source: 4
+  - cmd: preview-input
+    index: 0
+    source: 1
+  - cmd: aux-source
+    index: 0
+    source: 1
+  - cmd: transition-settings
+    index: 0
+    style: 0
+  - cmd: program-input
+    index: 0
+    source: 1
+
+tests:
+  - send:
+      cmd: program-input
+      index: 0
+    expect:
+      field: program-bus-input
+      index: 0
+    parameter:
+      source: [ 2,3,4,0,1000,2001,2002,3010,1 ]
+
+  - send:
+      cmd: preview-input
+      index: 0
+    expect:
+      field: preview-bus-input
+      index: 0
+    parameter:
+      source: [ 2,3,4,0,1000,2001,2002,3010,1,2 ]
+
+  - send:
+      cmd: aux-source
+      index: 0
+    expect:
+      field: aux-output-source
+      index: 0
+    parameter:
+      source: [ 2,3,4,10010,10011,9001,11001,1 ]
+
+  - send:
+      cmd: cut
+      index: 0
+    expect:
+      field: program-bus-input
+      index: 0
+      source: 2
+
+  - send:
+      cmd: auto
+      index: 0
+    expect:
+      field: program-bus-input
+      index: 0
+      source: 1
+
+  - send:
+      cmd: transition-preview
+      index: 0
+    expect:
+      field: transition-preview
+      index: 0
+    parameter:
+      enabled: [ yes, no ]
+
+  - send:
+      cmd: transition-settings
+      index: 0
+    expect:
+      field: transition-settings
+      index: 0
+    parameter:
+      style: [ 1, 2, 3, 0 ]
+
+  - send:
+      cmd: transition-position
+      index: 0
+    expect:
+      field: transition-position
+      index: 0
+    parameter:
+      position: [ 10, 5000, 9998, 10000 ]
