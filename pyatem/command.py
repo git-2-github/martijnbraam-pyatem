@@ -1940,6 +1940,30 @@ class StreamingServiceSetCommand(Command):
         return self._make_command('CRSS', data)
 
 
+class StreamingStatusSetCommand(Command):
+    """
+    Implementation of the `StrR` command. This starts and stops the live stream
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    bool   Stream enable
+    1      3    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, streaming):
+        """
+        :param streaming: True to start streaming, False to stop streaming
+        """
+        self.streaming = streaming
+
+    def get_command(self):
+        data = struct.pack('>?xxx', self.streaming)
+        return self._make_command('StrR', data)
+
+
 class MultiviewPropertiesCommand(Command):
     """
     Implementation of the `CMvP` command. This sets the layout of a multiview output and can set a flag for

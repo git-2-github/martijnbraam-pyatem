@@ -12,6 +12,9 @@ Live streaming
    :members:
    :special-members:
 
+.. autoclass:: pyatem.command.StreamingStatusSetCommand
+   :members:
+   :special-members:
 
 Recording
 ---------
