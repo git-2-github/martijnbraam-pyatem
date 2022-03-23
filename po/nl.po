@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-23 20:47+0100\n"
+"POT-Creation-Date: 2022-03-24 00:27+0100\n"
 "PO-Revision-Date: 2022-03-23 19:44+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -20,9 +20,8 @@ msgstr ""
 #. Window title
 #: gtk_switcher/ui/mixer.glade:168 gtk_switcher/ui/mixer.glade:179
 #: gtk_switcher/ui/mixer.glade:187
-#, fuzzy
 msgid "Switcher control"
-msgstr "Switcher"
+msgstr "Switcher control"
 
 #: gtk_switcher/ui/mixer.glade:371
 msgid "Color 1"
@@ -170,7 +169,6 @@ msgstr "Encoder uitgang"
 
 #. Stream recorder filename
 #: gtk_switcher/ui/mixer.glade:1962
-#, fuzzy
 msgctxt "streamrecorder"
 msgid "Filename"
 msgstr "Bestandsnaam"
@@ -180,13 +178,11 @@ msgid "STOP"
 msgstr ""
 
 #: gtk_switcher/ui/mixer.glade:2060
-#, fuzzy
 msgctxt "streamrecorder"
 msgid "Disk 1"
 msgstr "Schijf 1"
 
 #: gtk_switcher/ui/mixer.glade:2075
-#, fuzzy
 msgctxt "streamrecorder"
 msgid "Disk 2"
 msgstr "Schijf 2"
@@ -197,21 +193,18 @@ msgstr "In alle cameras opnemen"
 
 #. Switch disk button
 #: gtk_switcher/ui/mixer.glade:2117
-#, fuzzy
 msgctxt "streamrecorder"
 msgid "Switch"
 msgstr "Wissel"
 
 #. button
 #: gtk_switcher/ui/mixer.glade:2131
-#, fuzzy
 msgctxt "streamrecorder"
 msgid "Stop"
 msgstr "Stoppen"
 
 #. Button
 #: gtk_switcher/ui/mixer.glade:2146
-#, fuzzy
 msgctxt "streamrecorder"
 msgid "Record"
 msgstr "Opnemen"
@@ -226,14 +219,12 @@ msgstr "UIT"
 
 #. Stop livestream button
 #: gtk_switcher/ui/mixer.glade:2380
-#, fuzzy
 msgctxt "livestream"
 msgid "Off"
 msgstr "Uit"
 
 #. Start livestream button
 #: gtk_switcher/ui/mixer.glade:2395
-#, fuzzy
 msgctxt "livestream"
 msgid "On air"
 msgstr "On air"
@@ -268,31 +259,26 @@ msgid "Media"
 msgstr "Media"
 
 #: gtk_switcher/ui/mixer.glade:2792
-#, fuzzy
 msgctxt "audio_mixer"
 msgid "Input"
 msgstr "Ingang"
 
 #: gtk_switcher/ui/mixer.glade:2808
-#, fuzzy
 msgctxt "audio_mixer"
 msgid "Equalizer"
 msgstr "Equalizer"
 
 #: gtk_switcher/ui/mixer.glade:2824
-#, fuzzy
 msgctxt "audio_mixer"
 msgid "Dynamics"
 msgstr "Dynamics"
 
 #: gtk_switcher/ui/mixer.glade:2840
-#, fuzzy
 msgctxt "audio_mixer"
 msgid "dB"
 msgstr "dB"
 
 #: gtk_switcher/ui/mixer.glade:2856
-#, fuzzy
 msgctxt "audio_mixer"
 msgid "Pan"
 msgstr "Pan"
@@ -382,6 +368,7 @@ msgstr ""
 
 #: gtk_switcher/ui/mixeffect.glade:359 gtk_switcher/ui/mixeffect.glade:379
 #: gtk_switcher/ui/mixeffect.glade:399 gtk_switcher/ui/mixeffect.glade:419
+#: gtk_switcher/mixeffect.py:529
 msgid ""
 "ON\n"
 "AIR"
@@ -417,11 +404,12 @@ msgstr ""
 msgid "CUT"
 msgstr ""
 
-#: gtk_switcher/ui/mixeffect.glade:643
+#: gtk_switcher/ui/mixeffect.glade:643 gtk_switcher/mixeffect.py:538
 msgid "AUTO"
 msgstr ""
 
 #: gtk_switcher/ui/mixeffect.glade:669 gtk_switcher/ui/mixeffect.glade:985
+#: gtk_switcher/mixeffect.py:510
 msgid "rate"
 msgstr ""
 
@@ -496,13 +484,11 @@ msgstr "Hardware instellingen"
 #: gtk_switcher/ui/downstream-keyer.glade:37
 #: gtk_switcher/ui/upstream-keyer.glade:153
 #: gtk_switcher/ui/upstream-keyer.glade:446
-#, fuzzy
 msgid "Fill source"
 msgstr "Fill bron"
 
 #: gtk_switcher/ui/downstream-keyer.glade:71
 #: gtk_switcher/ui/upstream-keyer.glade:187
-#, fuzzy
 msgid "Key source"
 msgstr "Key bron"
 
@@ -670,7 +656,6 @@ msgid "Preferences"
 msgstr "Instellingen"
 
 #: gtk_switcher/ui/preferences.glade:108
-#, fuzzy
 msgid "Video"
 msgstr "Video"
 
@@ -691,7 +676,6 @@ msgid "SDI output standard"
 msgstr "SDI uitgang standaard"
 
 #: gtk_switcher/ui/preferences.glade:230
-#, fuzzy
 msgid "Media pool"
 msgstr "Media lijst"
 
@@ -746,3 +730,44 @@ msgstr "Gebruik RS-422 poort voor"
 #: gtk_switcher/ui/preferences.glade:808
 msgid "Control app"
 msgstr "Bedieningssoftware"
+
+#: gtk_switcher/mixeffect.py:501
+msgid "TIE"
+msgstr ""
+
+#: gtk_switcher/switcher.py:176
+msgid "Layout editor M/E {}"
+msgstr "Layout bewerken M/E {}"
+
+#: gtk_switcher/switcher.py:468 gtk_switcher/switcher.py:478
+#: gtk_switcher/switcher.py:496 gtk_switcher/layout.py:292
+#: gtk_switcher/layout.py:293
+msgid "Downstream keyer {}"
+msgstr ""
+
+#: gtk_switcher/switcher.py:547
+msgid "Upstream keyer {}"
+msgstr ""
+
+#: gtk_switcher/switcher.py:587 gtk_switcher/switcher.py:630
+#: gtk_switcher/switcher.py:633 gtk_switcher/layout.py:258
+#: gtk_switcher/layout.py:259 gtk_switcher/layout.py:287
+#: gtk_switcher/layout.py:288
+msgid "Upstream key {}"
+msgstr "Upstream key {}"
+
+#: gtk_switcher/switcher.py:833
+msgid "Show as bus"
+msgstr "Als bus weergeven"
+
+#: gtk_switcher/switcher.py:837
+msgid "Follow audio monitor bus"
+msgstr "Volg audio monitor bus"
+
+#: gtk_switcher/switcher.py:979
+msgid "Run macro"
+msgstr "Macro uitvoeren"
+
+#: gtk_switcher/switcher.py:981
+msgid "Edit macro"
+msgstr "Macro bewerken"

@@ -255,8 +255,8 @@ class LayoutView(Gtk.Frame):
             self.on_region_update(self.selected, pos_x=new_x, pos_y=new_y, size_x=new_w, size_y=new_h)
 
     def on_region_update(self, label, pos_x=None, pos_y=None, size_x=None, size_y=None, exec=True):
-        if label.startswith("Upstream key"):
-            keyer = int(label[13:]) - 1
+        if label.startswith(_("Upstream key {}").format("")):
+            keyer = int(label.replace(_("Upstream key {}").format(""), "")) - 1
             x, y = self._pos_to_atem(pos_x, pos_y)
             w = None
             h = None
@@ -284,13 +284,13 @@ class LayoutView(Gtk.Frame):
         if bottom is not None:
             mb = int(bottom * 18000)
 
-        if label.startswith("Upstream key"):
-            keyer = int(label[13:]) - 1
+        if label.startswith(_("Upstream key {}").format("")):
+            keyer = int(label.replace(_("Upstream key {}").format(""), "")) - 1
 
             cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_top=mt, mask_bottom=mb, mask_left=ml,
                                           mask_right=mr)
-        elif label.startswith("Downstream key"):
-            keyer = int(label[17:]) - 1
+        elif label.startswith(_("Downstream keyer {}").format("")):
+            keyer = int(label.replace(_("Downstream keyer {}").format(""), "")) - 1
             if ml is not None:
                 ml = ml - 16000
             if mr is not None:

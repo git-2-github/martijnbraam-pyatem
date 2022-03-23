@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-23 20:47+0100\n"
+"POT-Creation-Date: 2022-03-24 00:27+0100\n"
 "PO-Revision-Date: 2022-03-23 20:47+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -319,7 +319,9 @@ msgid ""
 "application.\n"
 "OpenSwitcher requires at least firmware 8.0+ to correctly function with most "
 "hardware."
-msgstr "OpenSwitcher, çoğu yazılımla doğru şekilde çalışması için en az 8.0+ ürün yazılımı gerektirir"
+msgstr ""
+"OpenSwitcher, çoğu yazılımla doğru şekilde çalışması için en az 8.0+ ürün "
+"yazılımı gerektirir"
 
 #: gtk_switcher/ui/mixer.glade:3037
 msgid "Continue anyway"
@@ -363,6 +365,7 @@ msgstr "KEY 4"
 
 #: gtk_switcher/ui/mixeffect.glade:359 gtk_switcher/ui/mixeffect.glade:379
 #: gtk_switcher/ui/mixeffect.glade:399 gtk_switcher/ui/mixeffect.glade:419
+#: gtk_switcher/mixeffect.py:529
 msgid ""
 "ON\n"
 "AIR"
@@ -398,11 +401,12 @@ msgstr ""
 msgid "CUT"
 msgstr "CUT"
 
-#: gtk_switcher/ui/mixeffect.glade:643
+#: gtk_switcher/ui/mixeffect.glade:643 gtk_switcher/mixeffect.py:538
 msgid "AUTO"
 msgstr "AUTO"
 
 #: gtk_switcher/ui/mixeffect.glade:669 gtk_switcher/ui/mixeffect.glade:985
+#: gtk_switcher/mixeffect.py:510
 msgid "rate"
 msgstr "Hız"
 
@@ -424,7 +428,7 @@ msgstr "FTB"
 
 #: gtk_switcher/ui/connection.glade:21
 msgid "Connection settings"
-msgstr "Bağlantı ayarları"
+msgstr "Bağlantı Ayarları"
 
 #: gtk_switcher/ui/connection.glade:58
 msgid "Switcher connection"
@@ -440,11 +444,11 @@ msgstr "Bağlantı tipi"
 
 #: gtk_switcher/ui/connection.glade:133
 msgid "ATEM network connection"
-msgstr "ATEM Ağ Bağlantısı"
+msgstr "ATEM AĞ Bağlantısı"
 
 #: gtk_switcher/ui/connection.glade:149
 msgid "ATEM usb connection"
-msgstr "ATEM Usb Bağlantısı"
+msgstr "ATEM USB Bağlantısı"
 
 #: gtk_switcher/ui/connection.glade:166
 msgid "OpenSwitcher proxy"
@@ -618,7 +622,7 @@ msgstr "Kenarlık Opaklığı"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1202
 msgid "Lock keyframes"
-msgstr "Kilitle"
+msgstr "KİLİTLE"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1219
 msgid "Set A"
@@ -723,3 +727,44 @@ msgstr "RS-422 kontrol portu seçenekleri"
 #: gtk_switcher/ui/preferences.glade:808
 msgid "Control app"
 msgstr "Kontrol uygulaması"
+
+#: gtk_switcher/mixeffect.py:501
+msgid "TIE"
+msgstr ""
+
+#: gtk_switcher/switcher.py:176
+msgid "Layout editor M/E {}"
+msgstr ""
+
+#: gtk_switcher/switcher.py:468 gtk_switcher/switcher.py:478
+#: gtk_switcher/switcher.py:496 gtk_switcher/layout.py:292
+#: gtk_switcher/layout.py:293
+msgid "Downstream keyer {}"
+msgstr ""
+
+#: gtk_switcher/switcher.py:547
+msgid "Upstream keyer {}"
+msgstr ""
+
+#: gtk_switcher/switcher.py:587 gtk_switcher/switcher.py:630
+#: gtk_switcher/switcher.py:633 gtk_switcher/layout.py:258
+#: gtk_switcher/layout.py:259 gtk_switcher/layout.py:287
+#: gtk_switcher/layout.py:288
+msgid "Upstream key {}"
+msgstr ""
+
+#: gtk_switcher/switcher.py:833
+msgid "Show as bus"
+msgstr ""
+
+#: gtk_switcher/switcher.py:837
+msgid "Follow audio monitor bus"
+msgstr ""
+
+#: gtk_switcher/switcher.py:979
+msgid "Run macro"
+msgstr ""
+
+#: gtk_switcher/switcher.py:981
+msgid "Edit macro"
+msgstr ""

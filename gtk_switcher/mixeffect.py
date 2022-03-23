@@ -498,7 +498,7 @@ class MixEffectBlock(Gtk.Grid):
             child.destroy()
 
         for i in range(0, data.downstream_keyers):
-            tie_label = Gtk.Label(label="TIE")
+            tie_label = Gtk.Label(label=_("TIE"))
             tie = Gtk.Button()
             tie.add(tie_label)
             tie.dsk_tie = i
@@ -507,7 +507,7 @@ class MixEffectBlock(Gtk.Grid):
             tie.connect('clicked', self.do_dsk_tie_clicked)
             self.dsks.attach(tie, i, 0, 1, 1)
 
-            rate_label = Gtk.Label(label="rate")
+            rate_label = Gtk.Label(label=_("rate"))
             rate_label.get_style_context().add_class('dim-label')
             rate_label.get_style_context().add_class('rate')
             rate_entry = Gtk.Entry()
@@ -526,7 +526,7 @@ class MixEffectBlock(Gtk.Grid):
             rate_box.pack_start(rate_entry, 1, 1, 1)
             self.dsks.attach(rate_box, i, 1, 1, 1)
 
-            air_label = Gtk.Label(label="ON\nAIR")
+            air_label = Gtk.Label(label=_("ON\nAIR"))
             air = Gtk.Button()
             air.add(air_label)
             air.dsk_onair = i
@@ -535,7 +535,7 @@ class MixEffectBlock(Gtk.Grid):
             air.connect('clicked', self.do_dsk_onair_clicked)
             self.dsks.attach(air, i, 2, 1, 1)
 
-            auto_label = Gtk.Label(label="AUTO")
+            auto_label = Gtk.Label(label=_("AUTO"))
             auto = Gtk.Button()
             auto.add(auto_label)
             auto.dsk_auto = i

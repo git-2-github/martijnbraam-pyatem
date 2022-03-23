@@ -1,3 +1,4 @@
+import gettext
 from datetime import datetime, timedelta
 
 from gtk_switcher.layout import LayoutView
@@ -172,7 +173,7 @@ class SwitcherPage:
 
         layout = LayoutView(index, self.connection)
         self.layout[index] = layout
-        layout_exp = Gtk.Expander(label="Layout editor M/E {}".format(index + 1))
+        layout_exp = Gtk.Expander(label=_("Layout editor M/E {}").format(index + 1))
         layout_exp.set_margin_start(12)
         layout_exp.set_margin_end(12)
         layout_exp.add(layout)
@@ -464,7 +465,7 @@ class SwitcherPage:
         self.me[0].set_dsk(data)
         if data.index in self.dsks:
             self.dsks[data.index].on_key_properties_change(data)
-            label = "Downstream keyer {}".format(data.index + 1)
+            label = _("Downstream keyer {}").format(data.index + 1)
 
             top = 9000 - data.top
             bottom = data.bottom + 9000
@@ -474,7 +475,7 @@ class SwitcherPage:
 
     def on_dsk_state_change(self, data):
         self.me[0].set_dsk_state(data)
-        label = "Downstream keyer {}".format(data.index + 1)
+        label = _("Downstream keyer {}").format(data.index + 1)
         self.layout[0].region_onair(label, data.on_air)
 
     def on_topology_change(self, data):
@@ -492,7 +493,7 @@ class SwitcherPage:
         for i in range(0, data.downstream_keyers):
             exp = Gtk.Expander()
             exp.get_style_context().add_class('bmdgroup')
-            label = "Downstream keyer {}".format(i + 1)
+            label = _("Downstream keyer {}").format(i + 1)
             frame_label = Gtk.Label(label)
             frame_label.get_style_context().add_class("heading")
             exp.set_label_widget(frame_label)
@@ -543,7 +544,7 @@ class SwitcherPage:
                 self.usk_count += 1
                 exp = Gtk.Expander()
                 exp.get_style_context().add_class('bmdgroup')
-                frame_label = Gtk.Label("Upstream keyer {}".format(self.usk_count))
+                frame_label = Gtk.Label(_("Upstream keyer {}").format(self.usk_count))
                 frame_label.get_style_context().add_class("heading")
                 exp.set_label_widget(frame_label)
                 exp.set_expanded(True)
@@ -583,7 +584,7 @@ class SwitcherPage:
             print("Got key-on-air for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
             return
         self.me[data.index].set_key_on_air(data)
-        self.layout[data.index].region_onair('Upstream key {}'.format(data.keyer + 1), data.enabled)
+        self.layout[data.index].region_onair(_('Upstream key {}').format(data.keyer + 1), data.enabled)
 
     def on_transition_preview_change(self, data):
         if data.index > len(self.me) - 1:
@@ -626,10 +627,10 @@ class SwitcherPage:
         self.usks[data.keyer].on_key_properties_dve_change(data)
         width = 16.0 * data.size_x / 1000
         height = 9.0 * data.size_y / 1000
-        self.layout[data.index].update_region('Upstream key {}'.format(data.keyer + 1),
+        self.layout[data.index].update_region(_('Upstream key {}').format(data.keyer + 1),
                                               data.pos_x / 1000, data.pos_y / 1000, width, height)
 
-        self.layout[data.index].update_mask('Upstream key {}'.format(data.keyer + 1),
+        self.layout[data.index].update_mask(_('Upstream key {}').format(data.keyer + 1),
                                             data.mask_top, data.mask_bottom, data.mask_left, data.mask_right)
 
     def on_program_input_change(self, data):
@@ -829,11 +830,11 @@ class SwitcherPage:
                     self.aux[aux_id].add_attribute(renderer, "text", 1)
                     self.grid_aux.attach(self.aux[aux_id], 1, aux_id, 1, 1)
 
-                    aux_me = Gtk.CheckButton.new_with_label("Show as bus")
+                    aux_me = Gtk.CheckButton.new_with_label(_("Show as bus"))
                     aux_me.index = i.index
                     aux_me.connect('toggled', self.on_aux_me_enable_toggled)
 
-                    aux_follow_mon = Gtk.CheckButton.new_with_label("Follow audio monitor bus")
+                    aux_follow_mon = Gtk.CheckButton.new_with_label(_("Follow audio monitor bus"))
                     aux_follow_mon.index = i.index
                     aux_follow_mon.connect('toggled', self.on_aux_me_follow_toggled)
 
@@ -975,9 +976,9 @@ class SwitcherPage:
             return
 
         self.menu = Gtk.Menu()
-        run_item = Gtk.MenuItem("Run macro")
+        run_item = Gtk.MenuItem(_("Run macro"))
         self.menu.append(run_item)
-        edit_item = Gtk.MenuItem("Edit macro")
+        edit_item = Gtk.MenuItem(_("Edit macro"))
         edit_item.index = widget.index
         edit_item.connect('activate', self.on_macro_edit)
         self.menu.append(edit_item)
@@ -1016,11 +1017,11 @@ class SwitcherPage:
         self.stream_live_stop.set_sensitive(starting or active)
 
         status = {
-            1: ("OFF", False, False),
-            2: ("starting...", True, False),
-            4: ("ON AIR", False, True),
-            34: ("stopping...", True, False),
-            36: ("stopping...", True, False),
+            1: (gettext.pgettext("livestream", "OFF"), False, False),
+            2: (gettext.pgettext("livestream", "starting..."), True, False),
+            4: (gettext.pgettext("livestream", "ON AIR"), False, True),
+            34: (gettext.pgettext("livestream", "stopping..."), True, False),
+            36: (gettext.pgettext("livestream", "stopping..."), True, False),
         }
         if data.status in status:
             self.stream_live_status.set_text(status[data.status][0])
