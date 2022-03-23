@@ -1,4 +1,5 @@
 import argparse
+import locale
 import os
 import gi
 
@@ -34,7 +35,12 @@ def main(version):
     parser.add_argument('--dump', help='dump data for specific packets', nargs='*')
     parser.add_argument('--view', choices=['switcher', 'media', 'audio', 'camera'], default='switcher',
                         help='default view to open when launching')
+    parser.add_argument('--locale', help="Set application locale, ex: nl_NL.utf8")
     args = parser.parse_args()
+
+    locale.textdomain("openswitcher")
+    if args.locale:
+        locale.setlocale(locale.LC_ALL, args.locale)
 
     if os.path.isfile('atem.gresource'):
         print("Using resources from cwd")
@@ -46,4 +52,5 @@ def main(version):
 
 
 if __name__ == '__main__':
+    locale.bindtextdomain("openswitcher", os.getenv('LOCALEDIR', '.'))
     main('')

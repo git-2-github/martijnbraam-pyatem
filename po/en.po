@@ -1,0 +1,420 @@
+# English translations for openswitcher package.
+# Copyright (C) 2022 THE openswitcher'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the openswitcher package.
+# Automatically generated, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: openswitcher\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-23 19:44+0100\n"
+"PO-Revision-Date: 2022-03-23 19:44+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: gtk_switcher/ui/mixer.glade:168 gtk_switcher/ui/mixer.glade:179
+msgid "Mixer control"
+msgstr "Mixer control"
+
+#: gtk_switcher/ui/mixer.glade:204
+msgid "n/a"
+msgstr "n/a"
+
+#: gtk_switcher/ui/mixer.glade:371
+msgid "Color 1"
+msgstr "Color 1"
+
+#: gtk_switcher/ui/mixer.glade:386
+msgid "Color 2"
+msgstr "Color 2"
+
+#: gtk_switcher/ui/mixer.glade:413
+msgid "Color Generators"
+msgstr "Color Generators"
+
+#: gtk_switcher/ui/mixer.glade:502 gtk_switcher/ui/mixer.glade:542
+#: gtk_switcher/ui/mixer.glade:618 gtk_switcher/ui/mixer.glade:1250
+msgid "Rate"
+msgstr "Rate"
+
+#: gtk_switcher/ui/mixer.glade:527
+msgid "Mix"
+msgstr "Mix"
+
+#: gtk_switcher/ui/mixer.glade:557
+msgid "Dip source"
+msgstr "Dip source"
+
+#: gtk_switcher/ui/mixer.glade:602
+msgid "Dip"
+msgstr "Dip"
+
+#: gtk_switcher/ui/mixer.glade:929
+msgid "Symmetry"
+msgstr "Symmetry"
+
+#: gtk_switcher/ui/mixer.glade:959
+msgid "X"
+msgstr "X"
+
+#: gtk_switcher/ui/mixer.glade:974
+msgid "Y"
+msgstr "Y"
+
+#: gtk_switcher/ui/mixer.glade:1030
+msgid "Softness"
+msgstr "Softness"
+
+#: gtk_switcher/ui/mixer.glade:1045
+msgid "Width"
+msgstr "Width"
+
+#: gtk_switcher/ui/mixer.glade:1090
+msgid "Fill"
+msgstr "Fill"
+
+#: gtk_switcher/ui/mixer.glade:1139
+msgid "Reverse"
+msgstr "Reverse"
+
+#: gtk_switcher/ui/mixer.glade:1159
+msgid "Flip flop"
+msgstr "Flip flop"
+
+#: gtk_switcher/ui/mixer.glade:1195
+msgid "Wipe"
+msgstr "Wipe"
+
+#: gtk_switcher/ui/mixer.glade:1234
+msgid "Sting"
+msgstr "Sting"
+
+#: gtk_switcher/ui/mixer.glade:1285 gtk_switcher/ui/mixeffect.glade:585
+msgid "DVE"
+msgstr "DVE"
+
+#: gtk_switcher/ui/mixer.glade:1313
+msgid "Transitions"
+msgstr "Transitions"
+
+#: gtk_switcher/ui/mixer.glade:1376
+msgid "Audio follow video"
+msgstr "Audio follow video"
+
+#: gtk_switcher/ui/mixer.glade:1388
+msgid "AFV"
+msgstr "AFV"
+
+#: gtk_switcher/ui/mixer.glade:1428
+msgid "Fade to black"
+msgstr "Fade to black"
+
+#: gtk_switcher/ui/mixer.glade:1500
+msgid "Macros"
+msgstr "Macros"
+
+#: gtk_switcher/ui/mixer.glade:1523
+msgid "Palettes"
+msgstr "Palettes"
+
+#: gtk_switcher/ui/mixer.glade:1543
+msgid "Media Player"
+msgstr "Media Player"
+
+#: gtk_switcher/ui/mixer.glade:1599
+msgid "Model"
+msgstr "Model"
+
+#: gtk_switcher/ui/mixer.glade:1614
+msgid "Video mode"
+msgstr "Video mode"
+
+#: gtk_switcher/ui/mixer.glade:1629 gtk_switcher/ui/mixer.glade:3005
+msgid "Not connected"
+msgstr "Not connected"
+
+#: gtk_switcher/ui/mixer.glade:1664
+msgid "Hardware status"
+msgstr "Hardware status"
+
+#: gtk_switcher/ui/mixer.glade:1738
+msgid "AUX Outputs"
+msgstr "AUX Outputs"
+
+#: gtk_switcher/ui/mixer.glade:1786
+msgid "Preset"
+msgstr "Preset"
+
+#: gtk_switcher/ui/mixer.glade:1801
+msgid "Audio bitrate"
+msgstr "Audio bitrate"
+
+#: gtk_switcher/ui/mixer.glade:1848
+msgid "Video bitrate"
+msgstr "Video bitrate"
+
+#: gtk_switcher/ui/mixer.glade:1913
+msgid "Encoder output"
+msgstr "Encoder output"
+
+#: gtk_switcher/ui/mixer.glade:1962
+msgid "Filename"
+msgstr "Filename"
+
+#: gtk_switcher/ui/mixer.glade:1994 gtk_switcher/ui/mixer.glade:2311
+msgid "00:00:00"
+msgstr "00:00:00"
+
+#: gtk_switcher/ui/mixer.glade:2012
+msgid "STOP"
+msgstr "STOP"
+
+#: gtk_switcher/ui/mixer.glade:2060
+msgid "Disk 1"
+msgstr "Disk 1"
+
+#: gtk_switcher/ui/mixer.glade:2075
+msgid "Disk 2"
+msgstr "Disk 2"
+
+#: gtk_switcher/ui/mixer.glade:2087
+msgid "Record in all cameras"
+msgstr "Record in all cameras"
+
+#: gtk_switcher/ui/mixer.glade:2117
+msgid "Switch"
+msgstr "Switch"
+
+#: gtk_switcher/ui/mixer.glade:2131
+msgid "Stop"
+msgstr "Stop"
+
+#: gtk_switcher/ui/mixer.glade:2146
+msgid "Record"
+msgstr "Record"
+
+#: gtk_switcher/ui/mixer.glade:2243
+msgid "Stream recorder"
+msgstr "Stream recorder"
+
+#: gtk_switcher/ui/mixer.glade:2329
+msgid "OFF"
+msgstr "OFF"
+
+#: gtk_switcher/ui/mixer.glade:2380
+msgid "Off"
+msgstr "Off"
+
+#: gtk_switcher/ui/mixer.glade:2395
+msgid "On air"
+msgstr "On air"
+
+#: gtk_switcher/ui/mixer.glade:2419
+msgid "Platform"
+msgstr "Platform"
+
+#: gtk_switcher/ui/mixer.glade:2434
+msgid "Server"
+msgstr "Server"
+
+#: gtk_switcher/ui/mixer.glade:2449
+msgid "Key"
+msgstr "Key"
+
+#: gtk_switcher/ui/mixer.glade:2606
+msgid "Live stream"
+msgstr "Live stream"
+
+#: gtk_switcher/ui/mixer.glade:2632
+msgid "Output"
+msgstr "Output"
+
+#: gtk_switcher/ui/mixer.glade:2664
+msgid "Switcher"
+msgstr "Switcher"
+
+#: gtk_switcher/ui/mixer.glade:2757
+msgid "Media"
+msgstr "Media"
+
+#: gtk_switcher/ui/mixer.glade:2792
+msgid "Input"
+msgstr "Input"
+
+#: gtk_switcher/ui/mixer.glade:2808
+msgid "Equalizer"
+msgstr "Equalizer"
+
+#: gtk_switcher/ui/mixer.glade:2824
+msgid "Dynamics"
+msgstr "Dynamics"
+
+#: gtk_switcher/ui/mixer.glade:2840
+msgid "dB"
+msgstr "dB"
+
+#: gtk_switcher/ui/mixer.glade:2856
+msgid "Pan"
+msgstr "Pan"
+
+#: gtk_switcher/ui/mixer.glade:2952
+msgid "Audio"
+msgstr "Audio"
+
+#: gtk_switcher/ui/mixer.glade:2990
+msgid "Camera"
+msgstr "Camera"
+
+#: gtk_switcher/ui/mixer.glade:2997
+msgid "page0"
+msgstr "page0"
+
+#: gtk_switcher/ui/mixer.glade:3006
+msgid ""
+"There is no connection to the hardware. The connection might be interrupted "
+"or a new connection needs to be made in the Preferences window"
+msgstr ""
+"There is no connection to the hardware. The connection might be interrupted "
+"or a new connection needs to be made in the Preferences window"
+
+#: gtk_switcher/ui/mixer.glade:3009
+msgid "Open preferences"
+msgstr "Open preferences"
+
+#: gtk_switcher/ui/mixer.glade:3023
+msgid "Disconnected"
+msgstr "Disconnected"
+
+#: gtk_switcher/ui/mixer.glade:3032
+msgid "Firmware outdated"
+msgstr "Firmware outdated"
+
+#: gtk_switcher/ui/mixer.glade:3033
+msgid ""
+"The firmware on the connected device is not new enough for this "
+"application.\n"
+"OpenSwitcher requires at least firmware 8.0+ to correctly function with most "
+"hardware."
+msgstr ""
+"The firmware on the connected device is not new enough for this "
+"application.\n"
+"OpenSwitcher requires at least firmware 8.0+ to correctly function with most "
+"hardware."
+
+#: gtk_switcher/ui/mixer.glade:3037
+msgid "Continue anyway"
+msgstr "Continue anyway"
+
+#: gtk_switcher/ui/mixer.glade:3048
+msgid "firmware"
+msgstr "firmware"
+
+#: gtk_switcher/ui/mixeffect.glade:34
+msgid "Program"
+msgstr "Program"
+
+#: gtk_switcher/ui/mixeffect.glade:68 gtk_switcher/ui/mixeffect.glade:166
+msgid "CAM1"
+msgstr "CAM1"
+
+#: gtk_switcher/ui/mixeffect.glade:132
+msgid "Preview"
+msgstr "Preview"
+
+#: gtk_switcher/ui/mixeffect.glade:230
+msgid "Next transition"
+msgstr "Next transition"
+
+#: gtk_switcher/ui/mixeffect.glade:264
+msgid "BKGD"
+msgstr "BKGD"
+
+#: gtk_switcher/ui/mixeffect.glade:283
+msgid "KEY 1"
+msgstr "KEY 1"
+
+#: gtk_switcher/ui/mixeffect.glade:302
+msgid "KEY 2"
+msgstr "KEY 2"
+
+#: gtk_switcher/ui/mixeffect.glade:321
+msgid "KEY 3"
+msgstr "KEY 3"
+
+#: gtk_switcher/ui/mixeffect.glade:340
+msgid "KEY 4"
+msgstr "KEY 4"
+
+#: gtk_switcher/ui/mixeffect.glade:359 gtk_switcher/ui/mixeffect.glade:379
+#: gtk_switcher/ui/mixeffect.glade:399 gtk_switcher/ui/mixeffect.glade:419
+msgid ""
+"ON\n"
+"AIR"
+msgstr ""
+"ON\n"
+"AIR"
+
+#: gtk_switcher/ui/mixeffect.glade:474
+msgid "Transition style"
+msgstr "Transition style"
+
+#: gtk_switcher/ui/mixeffect.glade:508
+msgid "MIX"
+msgstr "MIX"
+
+#: gtk_switcher/ui/mixeffect.glade:528
+msgid "DIP"
+msgstr "DIP"
+
+#: gtk_switcher/ui/mixeffect.glade:547
+msgid "WIPE"
+msgstr "WIPE"
+
+#: gtk_switcher/ui/mixeffect.glade:566
+msgid "STING"
+msgstr "STING"
+
+#: gtk_switcher/ui/mixeffect.glade:604
+msgid ""
+"PREV\n"
+"TRANS"
+msgstr ""
+"PREV\n"
+"TRANS"
+
+#: gtk_switcher/ui/mixeffect.glade:624
+msgid "CUT"
+msgstr "CUT"
+
+#: gtk_switcher/ui/mixeffect.glade:643
+msgid "AUTO"
+msgstr "AUTO"
+
+#: gtk_switcher/ui/mixeffect.glade:669 gtk_switcher/ui/mixeffect.glade:985
+msgid "rate"
+msgstr "rate"
+
+#: gtk_switcher/ui/mixeffect.glade:688 gtk_switcher/ui/mixeffect.glade:1004
+msgid "1:00"
+msgstr "1:00"
+
+#: gtk_switcher/ui/mixeffect.glade:746
+msgid "Transition"
+msgstr "Transition"
+
+#: gtk_switcher/ui/mixeffect.glade:846
+msgid "Downstream key"
+msgstr "Downstream key"
+
+#: gtk_switcher/ui/mixeffect.glade:925
+msgid "Fade to Black"
+msgstr "Fade to Black"
+
+#: gtk_switcher/ui/mixeffect.glade:959
+msgid "FTB"
+msgstr "FTB"

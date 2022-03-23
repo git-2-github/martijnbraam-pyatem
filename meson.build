@@ -3,11 +3,14 @@ project('switcher',
     meson_version: '>= 0.50.0',
     default_options: ['warning_level=2'])
 
+i18n = import('i18n')
+
 dependency('libhandy-1', version: '>=1.0.0')
 
 if get_option('with_gtk_app')
     subdir('data')
     subdir('gtk_switcher')
+    subdir('po')
 endif
 
 if get_option('with_proxy')
