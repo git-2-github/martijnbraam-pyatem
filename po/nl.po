@@ -427,7 +427,7 @@ msgstr ""
 
 #: gtk_switcher/ui/mixeffect.glade:746
 msgid "Transition"
-msgstr ""
+msgstr "Overgang"
 
 #: gtk_switcher/ui/mixeffect.glade:846
 msgid "Downstream key"
@@ -435,7 +435,7 @@ msgstr ""
 
 #: gtk_switcher/ui/mixeffect.glade:925
 msgid "Fade to Black"
-msgstr ""
+msgstr "Vervagen"
 
 #: gtk_switcher/ui/mixeffect.glade:959
 msgid "FTB"
@@ -443,77 +443,73 @@ msgstr ""
 
 #: gtk_switcher/ui/connection.glade:21
 msgid "Connection settings"
-msgstr ""
+msgstr "Verbindingsinstellingen"
 
 #: gtk_switcher/ui/connection.glade:58
 msgid "Switcher connection"
-msgstr ""
+msgstr "Switcher verbinding"
 
 #: gtk_switcher/ui/connection.glade:91
 msgid "IP Address"
-msgstr ""
+msgstr "IP Adres"
 
 #: gtk_switcher/ui/connection.glade:116
 msgid "Connection type"
-msgstr ""
+msgstr "Verbindingstype"
 
 #: gtk_switcher/ui/connection.glade:133
 msgid "ATEM network connection"
-msgstr ""
+msgstr "ATEM netwerkverbinding"
 
 #: gtk_switcher/ui/connection.glade:149
 msgid "ATEM usb connection"
-msgstr ""
+msgstr "ATEM USB verbinding"
 
 #: gtk_switcher/ui/connection.glade:166
-#, fuzzy
 msgid "OpenSwitcher proxy"
-msgstr "Switcher"
+msgstr "OpenSwitcher proxy"
 
 #: gtk_switcher/ui/connection.glade:192
-#, fuzzy
 msgid "Username"
-msgstr "Bestandsnaam"
+msgstr "Gebruikersnaam"
 
 #: gtk_switcher/ui/connection.glade:207
 msgid "Password"
-msgstr ""
+msgstr "Wachtwoord"
 
 #: gtk_switcher/ui/connection.glade:244
 msgid "Device"
-msgstr ""
+msgstr "Apparaat"
 
 #: gtk_switcher/ui/connection.glade:295
 msgid "No atem hardware detected"
-msgstr ""
+msgstr "Geen ATEM hardware gevonden"
 
 #: gtk_switcher/ui/connection.glade:323
-#, fuzzy
 msgid "Connect"
-msgstr "Verbroken"
+msgstr "Verbinden"
 
 #: gtk_switcher/ui/connection.glade:342
-#, fuzzy
 msgid "Hardware settings"
-msgstr "Hardware status"
+msgstr "Hardware instellingen"
 
 #: gtk_switcher/ui/downstream-keyer.glade:37
 #: gtk_switcher/ui/upstream-keyer.glade:153
 #: gtk_switcher/ui/upstream-keyer.glade:446
 #, fuzzy
 msgid "Fill source"
-msgstr "Dip bron"
+msgstr "Fill bron"
 
 #: gtk_switcher/ui/downstream-keyer.glade:71
 #: gtk_switcher/ui/upstream-keyer.glade:187
 #, fuzzy
 msgid "Key source"
-msgstr "Dip bron"
+msgstr "Key bron"
 
 #: gtk_switcher/ui/downstream-keyer.glade:128
 #: gtk_switcher/ui/upstream-keyer.glade:244
 msgid "Pre multiplied"
-msgstr ""
+msgstr "Voorvermenigvuldigd"
 
 #: gtk_switcher/ui/downstream-keyer.glade:149
 #: gtk_switcher/ui/upstream-keyer.glade:265
@@ -530,47 +526,46 @@ msgstr ""
 #: gtk_switcher/ui/upstream-keyer.glade:323
 #: gtk_switcher/ui/upstream-keyer.glade:335
 msgid "Invert"
-msgstr ""
+msgstr "Omkeren"
 
 #: gtk_switcher/ui/downstream-keyer.glade:268
 #: gtk_switcher/ui/upstream-keyer.glade:1046
 msgid "Use mask"
-msgstr ""
+msgstr "Gebruik masker"
 
 #: gtk_switcher/ui/downstream-keyer.glade:280
 #: gtk_switcher/ui/upstream-keyer.glade:1058
 msgid "Mask"
-msgstr ""
+msgstr "Masker"
 
 #: gtk_switcher/ui/downstream-keyer.glade:300
 #: gtk_switcher/ui/upstream-keyer.glade:1078
 msgid "Top"
-msgstr ""
+msgstr "Bovenkant"
 
 #: gtk_switcher/ui/downstream-keyer.glade:315
 #: gtk_switcher/ui/upstream-keyer.glade:1093
 msgid "Bottom"
-msgstr ""
+msgstr "Onderkant"
 
 #: gtk_switcher/ui/downstream-keyer.glade:330
 #: gtk_switcher/ui/upstream-keyer.glade:1108
 msgid "Left"
-msgstr ""
+msgstr "Links"
 
 #: gtk_switcher/ui/downstream-keyer.glade:345
 #: gtk_switcher/ui/upstream-keyer.glade:1123
 msgid "Right"
-msgstr ""
+msgstr "Rechts"
 
 #: gtk_switcher/ui/upstream-keyer.glade:354
 msgid "Luma"
-msgstr ""
+msgstr "Luma"
 
 #: gtk_switcher/ui/upstream-keyer.glade:369
 #: gtk_switcher/ui/upstream-keyer.glade:407
-#, fuzzy
 msgid "Keyer mode"
-msgstr "Video mode"
+msgstr "Keyer mode"
 
 #: gtk_switcher/ui/upstream-keyer.glade:391
 msgid "Chroma"
@@ -578,181 +573,176 @@ msgstr ""
 
 #: gtk_switcher/ui/upstream-keyer.glade:429
 msgid "Pattern"
-msgstr ""
+msgstr "Patroon"
 
 #: gtk_switcher/ui/upstream-keyer.glade:480
-#, fuzzy
 msgid "Position"
-msgstr "Overgangen"
+msgstr "Positie"
 
 #: gtk_switcher/ui/upstream-keyer.glade:495
 msgid "Size"
-msgstr ""
+msgstr "Grootte"
 
 #: gtk_switcher/ui/upstream-keyer.glade:603
 #: gtk_switcher/ui/upstream-keyer.glade:615
 msgid "Shadow"
-msgstr ""
+msgstr "Schaduw"
 
 #: gtk_switcher/ui/upstream-keyer.glade:636
 msgid "Angle"
-msgstr ""
+msgstr "Hoek"
 
 #: gtk_switcher/ui/upstream-keyer.glade:651
 msgid "Altitude"
-msgstr ""
+msgstr "Hoogte"
 
 #: gtk_switcher/ui/upstream-keyer.glade:706
 #: gtk_switcher/ui/upstream-keyer.glade:718
 msgid "Border"
-msgstr ""
+msgstr "Rand"
 
 #: gtk_switcher/ui/upstream-keyer.glade:739
-#, fuzzy
 msgid "Color"
-msgstr "Kleur 1"
+msgstr "Kleur"
 
 #: gtk_switcher/ui/upstream-keyer.glade:758
 msgid "Pick a border color"
-msgstr ""
+msgstr "Kies een rand kleur"
 
 #: gtk_switcher/ui/upstream-keyer.glade:799
 msgid "Bevel soften"
-msgstr ""
+msgstr "Rand vervagen"
 
 #: gtk_switcher/ui/upstream-keyer.glade:814
 msgid "Bevel position"
-msgstr ""
+msgstr "Rand positie"
 
 #: gtk_switcher/ui/upstream-keyer.glade:829
 msgid "Inner soften"
-msgstr ""
+msgstr "Binnenkant vervagen"
 
 #: gtk_switcher/ui/upstream-keyer.glade:844
 msgid "Outer soften"
-msgstr ""
+msgstr "Buitenkant vervagen"
 
 #: gtk_switcher/ui/upstream-keyer.glade:859
 msgid "Inner width"
-msgstr ""
+msgstr "Binnendikte"
 
 #: gtk_switcher/ui/upstream-keyer.glade:874
 msgid "Outer width"
-msgstr ""
+msgstr "Buitendikte"
 
 #: gtk_switcher/ui/upstream-keyer.glade:973
 msgid "Border opacity"
-msgstr ""
+msgstr "Rand doorzichtigheid"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1202
 msgid "Lock keyframes"
-msgstr ""
+msgstr "Slot"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1219
 msgid "Set A"
-msgstr ""
+msgstr "Kies A"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1238
 msgid "Set B"
-msgstr ""
+msgstr "Kies B"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1257
 msgid "Run full"
-msgstr ""
+msgstr "Naar volledig"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1275
 msgid "Run A"
-msgstr ""
+msgstr "Naar A"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1293
 msgid "Run B"
-msgstr ""
+msgstr "Naar B"
 
 #: gtk_switcher/ui/mixeffect-aux.glade:28
 msgid "AUX"
-msgstr ""
+msgstr "AUX"
 
 #: gtk_switcher/ui/preferences.glade:25 gtk_switcher/ui/preferences.glade:36
-#, fuzzy
 msgid "Preferences"
-msgstr "Open instellingen"
+msgstr "Instellingen"
 
 #: gtk_switcher/ui/preferences.glade:108
 #, fuzzy
 msgid "Video"
-msgstr "Video mode"
+msgstr "Video"
 
 #: gtk_switcher/ui/preferences.glade:142
 msgid "Video standard"
-msgstr ""
+msgstr "Video standaard"
 
 #: gtk_switcher/ui/preferences.glade:157
 msgid "Multiview video standard"
-msgstr ""
+msgstr "Multiview video standaard"
 
 #: gtk_switcher/ui/preferences.glade:172
 msgid "Down convert as"
-msgstr ""
+msgstr "Naar beneden schalen naar"
 
 #: gtk_switcher/ui/preferences.glade:187
 msgid "SDI output standard"
-msgstr ""
+msgstr "SDI uitgang standaard"
 
 #: gtk_switcher/ui/preferences.glade:230
 #, fuzzy
 msgid "Media pool"
-msgstr "Media"
+msgstr "Media lijst"
 
 #: gtk_switcher/ui/preferences.glade:264
 msgid "Clip 1 length"
-msgstr ""
+msgstr "Clip 1 lengte"
 
 #: gtk_switcher/ui/preferences.glade:279
 msgid "Clip 2 length"
-msgstr ""
+msgstr "Clip 2 lengte"
 
 #: gtk_switcher/ui/preferences.glade:316
-#, fuzzy
 msgid "Camera Control"
-msgstr "Camera"
+msgstr "Camera bediening"
 
 #: gtk_switcher/ui/preferences.glade:350
 msgid "Camera control monitoring output"
-msgstr ""
+msgstr "Camera bediening voorbeeld uitgang"
 
 #: gtk_switcher/ui/preferences.glade:381
 msgid "General"
-msgstr ""
+msgstr "Algemeen"
 
 #: gtk_switcher/ui/preferences.glade:423
 msgid "Multiview layout"
-msgstr ""
+msgstr "Multiview layout"
 
 #: gtk_switcher/ui/preferences.glade:439
-#, fuzzy
 msgid "Audio meters"
-msgstr "Audio bitrate"
+msgstr "Audio meters"
 
 #: gtk_switcher/ui/preferences.glade:628
 msgid "Multiview"
-msgstr ""
+msgstr "Multiview"
 
 #: gtk_switcher/ui/preferences.glade:649
 msgid "Labels"
-msgstr ""
+msgstr "Labels"
 
 #: gtk_switcher/ui/preferences.glade:670
 msgid "HyperDeck"
-msgstr ""
+msgstr "HyperDeck"
 
 #: gtk_switcher/ui/preferences.glade:685 gtk_switcher/ui/preferences.glade:768
 msgid "Remote"
-msgstr ""
+msgstr "Afstandbediening"
 
 #: gtk_switcher/ui/preferences.glade:719
 msgid "Use RS-422 port for"
-msgstr ""
+msgstr "Gebruik RS-422 poort voor"
 
 #: gtk_switcher/ui/preferences.glade:808
 msgid "Control app"
-msgstr ""
+msgstr "Bedieningssoftware"

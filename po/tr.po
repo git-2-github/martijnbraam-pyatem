@@ -13,7 +13,7 @@ msgstr ""
 "Language-Team: none\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
@@ -21,193 +21,193 @@ msgstr ""
 #: gtk_switcher/ui/mixer.glade:168 gtk_switcher/ui/mixer.glade:179
 #: gtk_switcher/ui/mixer.glade:187
 msgid "Switcher control"
-msgstr ""
+msgstr "Anahtarlayıcı kontrolü"
 
 #: gtk_switcher/ui/mixer.glade:371
 msgid "Color 1"
-msgstr ""
+msgstr "Renk 1"
 
 #: gtk_switcher/ui/mixer.glade:386
 msgid "Color 2"
-msgstr ""
+msgstr "Renk 2"
 
 #: gtk_switcher/ui/mixer.glade:413
 msgid "Color Generators"
-msgstr ""
+msgstr "Renk Üreteçleri"
 
 #: gtk_switcher/ui/mixer.glade:502 gtk_switcher/ui/mixer.glade:542
 #: gtk_switcher/ui/mixer.glade:618 gtk_switcher/ui/mixer.glade:1250
 msgid "Rate"
-msgstr ""
+msgstr "Oran"
 
 #: gtk_switcher/ui/mixer.glade:527
 msgid "Mix"
-msgstr ""
+msgstr "Miks"
 
 #: gtk_switcher/ui/mixer.glade:557
 msgid "Dip source"
-msgstr ""
+msgstr "Dip Kaynağı"
 
 #: gtk_switcher/ui/mixer.glade:602
 msgid "Dip"
-msgstr ""
+msgstr "Dip"
 
 #: gtk_switcher/ui/mixer.glade:929
 msgctxt "wipe_transition"
 msgid "Symmetry"
-msgstr ""
+msgstr "Simetri"
 
 #: gtk_switcher/ui/mixer.glade:959
 msgctxt "wipe_transition"
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: gtk_switcher/ui/mixer.glade:974
 msgctxt "wipe_transition"
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: gtk_switcher/ui/mixer.glade:1030
 msgctxt "wipe_transition"
 msgid "Softness"
-msgstr ""
+msgstr "Yumuşaklık"
 
 #: gtk_switcher/ui/mixer.glade:1045
 msgid "Width"
-msgstr ""
+msgstr "Genişlik"
 
 #. Fill video source
 #: gtk_switcher/ui/mixer.glade:1090
 msgid "Fill"
-msgstr ""
+msgstr "Fill"
 
 #: gtk_switcher/ui/mixer.glade:1139
 msgid "Reverse"
-msgstr ""
+msgstr "Ters"
 
 #: gtk_switcher/ui/mixer.glade:1159
 msgid "Flip flop"
-msgstr ""
+msgstr "Ters çevir"
 
 #: gtk_switcher/ui/mixer.glade:1195
 msgid "Wipe"
-msgstr ""
+msgstr "Wipe"
 
 #: gtk_switcher/ui/mixer.glade:1234
 msgid "Sting"
-msgstr ""
+msgstr "Sting"
 
 #: gtk_switcher/ui/mixer.glade:1285 gtk_switcher/ui/mixeffect.glade:585
 #: gtk_switcher/ui/upstream-keyer.glade:1012
 msgid "DVE"
-msgstr ""
+msgstr "DVE"
 
 #: gtk_switcher/ui/mixer.glade:1313
 msgid "Transitions"
-msgstr ""
+msgstr "Geçişler"
 
 #: gtk_switcher/ui/mixer.glade:1376
 msgid "Audio follow video"
-msgstr ""
+msgstr "Ses Takipli Video"
 
 #: gtk_switcher/ui/mixer.glade:1388
 msgid "AFV"
-msgstr ""
+msgstr "AFV"
 
 #: gtk_switcher/ui/mixer.glade:1428
 msgid "Fade to black"
-msgstr ""
+msgstr "Karartma"
 
 #: gtk_switcher/ui/mixer.glade:1500
 msgid "Macros"
-msgstr ""
+msgstr "Makrolar"
 
 #: gtk_switcher/ui/mixer.glade:1523
 msgid "Palettes"
-msgstr ""
+msgstr "Paletler"
 
 #: gtk_switcher/ui/mixer.glade:1543
 msgid "Media Player"
-msgstr ""
+msgstr "Media Player"
 
 #. Hardware model
 #: gtk_switcher/ui/mixer.glade:1599
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 #: gtk_switcher/ui/mixer.glade:1614
 msgid "Video mode"
-msgstr ""
+msgstr "Video modu"
 
 #: gtk_switcher/ui/mixer.glade:1629 gtk_switcher/ui/mixer.glade:3005
 msgid "Not connected"
-msgstr ""
+msgstr "Bağlı değil"
 
 #: gtk_switcher/ui/mixer.glade:1664
 msgid "Hardware status"
-msgstr ""
+msgstr "Donanım Durumu"
 
 #: gtk_switcher/ui/mixer.glade:1738
 msgid "AUX Outputs"
-msgstr ""
+msgstr "AUX Çıkışları"
 
 #: gtk_switcher/ui/mixer.glade:1786
 msgid "Preset"
-msgstr ""
+msgstr "Ön ayar"
 
 #: gtk_switcher/ui/mixer.glade:1801
 msgid "Audio bitrate"
-msgstr ""
+msgstr "Ses bit hızı"
 
 #: gtk_switcher/ui/mixer.glade:1848
 msgid "Video bitrate"
-msgstr ""
+msgstr "Video bit hızı"
 
 #: gtk_switcher/ui/mixer.glade:1913
 msgid "Encoder output"
-msgstr ""
+msgstr "Enkoder çıkışı"
 
 #. Stream recorder filename
 #: gtk_switcher/ui/mixer.glade:1962
 msgctxt "streamrecorder"
 msgid "Filename"
-msgstr ""
+msgstr "Dosya adı"
 
 #: gtk_switcher/ui/mixer.glade:2012
 msgid "STOP"
-msgstr ""
+msgstr "DURDUR"
 
 #: gtk_switcher/ui/mixer.glade:2060
 msgctxt "streamrecorder"
 msgid "Disk 1"
-msgstr ""
+msgstr "Disk 1"
 
 #: gtk_switcher/ui/mixer.glade:2075
 msgctxt "streamrecorder"
 msgid "Disk 2"
-msgstr ""
+msgstr "Disk 2"
 
 #: gtk_switcher/ui/mixer.glade:2087
 msgid "Record in all cameras"
-msgstr ""
+msgstr "Tüm kameralarda kaydet"
 
 #. Switch disk button
 #: gtk_switcher/ui/mixer.glade:2117
 msgctxt "streamrecorder"
 msgid "Switch"
-msgstr ""
+msgstr "DEĞİŞTİR"
 
 #. button
 #: gtk_switcher/ui/mixer.glade:2131
 msgctxt "streamrecorder"
 msgid "Stop"
-msgstr ""
+msgstr "Durdur"
 
 #. Button
 #: gtk_switcher/ui/mixer.glade:2146
 msgctxt "streamrecorder"
 msgid "Record"
-msgstr ""
+msgstr "KAYDET"
 
 #: gtk_switcher/ui/mixer.glade:2243
 msgid "Stream recorder"
