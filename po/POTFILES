@@ -1,2 +1,7 @@
 gtk_switcher/ui/mixer.glade
 gtk_switcher/ui/mixeffect.glade
+gtk_switcher/ui/connection.glade
+gtk_switcher/ui/downstream-keyer.glade
+gtk_switcher/ui/upstream-keyer.glade
+gtk_switcher/ui/mixeffect-aux.glade
+gtk_switcher/ui/preferences.glade

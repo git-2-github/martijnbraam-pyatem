@@ -165,7 +165,7 @@
   </object>
   <object class="HdyWindow" id="main_window">
     <property name="can-focus">False</property>
-    <property name="title" translatable="yes">Mixer control</property>
+    <property name="title" translatable="yes" comments="Window title">Switcher control</property>
     <signal name="destroy" handler="on_main_window_destroy" swapped="no"/>
     <child>
       <object class="GtkBox">
@@ -176,7 +176,7 @@
           <object class="HdyHeaderBar" id="headerbar">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="title" translatable="yes">Mixer control</property>
+            <property name="title" translatable="yes" comments="Window title">Switcher control</property>
             <property name="show-close-button">True</property>
             <property name="centering-policy">strict</property>
             <child type="title">
@@ -184,7 +184,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="stack">mainstack</property>
-                <property name="title">Mixer control</property>
+                <property name="title" translatable="yes" comments="Window title">Switcher control</property>
               </object>
             </child>
             <child>
@@ -201,7 +201,7 @@
               <object class="GtkLabel" id="live_stats">
                 <property name="can-focus">False</property>
                 <property name="no-show-all">True</property>
-                <property name="label" translatable="yes">n/a</property>
+                <property name="label">n/a</property>
                 <style>
                   <class name="heading"/>
                 </style>
@@ -926,7 +926,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">end</property>
-                                                            <property name="label" translatable="yes">Symmetry</property>
+                                                            <property name="label" translatable="yes" context="wipe_transition">Symmetry</property>
                                                             <style>
                                                             <class name="dim-label"/>
                                                             </style>
@@ -956,7 +956,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">end</property>
-                                                            <property name="label" translatable="yes">X</property>
+                                                            <property name="label" translatable="yes" context="wipe_transition">X</property>
                                                             <style>
                                                             <class name="dim-label"/>
                                                             </style>
@@ -971,7 +971,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">end</property>
-                                                            <property name="label" translatable="yes">Y</property>
+                                                            <property name="label" translatable="yes" context="wipe_transition">Y</property>
                                                             <style>
                                                             <class name="dim-label"/>
                                                             </style>
@@ -1027,7 +1027,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">end</property>
-                                                            <property name="label" translatable="yes">Softness</property>
+                                                            <property name="label" translatable="yes" context="wipe_transition">Softness</property>
                                                             <style>
                                                             <class name="dim-label"/>
                                                             </style>
@@ -1087,7 +1087,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">end</property>
-                                                            <property name="label" translatable="yes">Fill</property>
+                                                            <property name="label" translatable="yes" comments="Fill video source">Fill</property>
                                                             <style>
                                                             <class name="dim-label"/>
                                                             </style>
@@ -1596,7 +1596,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">end</property>
-                                                            <property name="label" translatable="yes">Model</property>
+                                                            <property name="label" translatable="yes" comments="Hardware model">Model</property>
                                                             <style>
                                                             <class name="dim-label"/>
                                                             </style>
@@ -1959,7 +1959,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">end</property>
-                                                            <property name="label" translatable="yes">Filename</property>
+                                                            <property name="label" translatable="yes" context="streamrecorder" comments="Stream recorder filename">Filename</property>
                                                             <style>
                                                             <class name="dim-label"/>
                                                             </style>
@@ -1991,7 +1991,7 @@
                                                             <object class="GtkLabel" id="stream_recorder_clock">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
-                                                            <property name="label" translatable="yes">00:00:00</property>
+                                                            <property name="label">00:00:00</property>
                                                             <attributes>
                                                             <attribute name="size" value="15360"/>
                                                             </attributes>
@@ -2057,7 +2057,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">end</property>
-                                                            <property name="label" translatable="yes">Disk 1</property>
+                                                            <property name="label" translatable="yes" context="streamrecorder">Disk 1</property>
                                                             <style>
                                                             <class name="dim-label"/>
                                                             </style>
@@ -2072,7 +2072,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">end</property>
-                                                            <property name="label" translatable="yes">Disk 2</property>
+                                                            <property name="label" translatable="yes" context="streamrecorder">Disk 2</property>
                                                             <style>
                                                             <class name="dim-label"/>
                                                             </style>
@@ -2114,7 +2114,7 @@
                                                             <property name="spacing">8</property>
                                                             <child>
                                                             <object class="GtkButton" id="stream_recorder_switch">
-                                                            <property name="label" translatable="yes">Switch</property>
+                                                            <property name="label" translatable="yes" context="streamrecorder" comments="Switch disk button">Switch</property>
                                                             <property name="visible">True</property>
                                                             <property name="sensitive">False</property>
                                                             <property name="can-focus">True</property>
@@ -2128,7 +2128,7 @@
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="stream_recorder_stop">
-                                                            <property name="label" translatable="yes">Stop</property>
+                                                            <property name="label" translatable="yes" context="streamrecorder" comments="button">Stop</property>
                                                             <property name="visible">True</property>
                                                             <property name="sensitive">False</property>
                                                             <property name="can-focus">True</property>
@@ -2143,7 +2143,7 @@
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="stream_recorder_start">
-                                                            <property name="label" translatable="yes">Record</property>
+                                                            <property name="label" translatable="yes" context="streamrecorder" comments="Button">Record</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2308,7 +2308,7 @@
                                                             <object class="GtkLabel" id="stream_live_clock">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
-                                                            <property name="label" translatable="yes">00:00:00</property>
+                                                            <property name="label">00:00:00</property>
                                                             <attributes>
                                                             <attribute name="size" value="15360"/>
                                                             </attributes>
@@ -2377,7 +2377,7 @@
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="stream_live_stop">
-                                                            <property name="label" translatable="yes">Off</property>
+                                                            <property name="label" translatable="yes" context="livestream" comments="Stop livestream button">Off</property>
                                                             <property name="visible">True</property>
                                                             <property name="sensitive">False</property>
                                                             <property name="can-focus">True</property>
@@ -2392,7 +2392,7 @@
                                                             </child>
                                                             <child>
                                                             <object class="GtkButton" id="stream_live_start">
-                                                            <property name="label" translatable="yes">On air</property>
+                                                            <property name="label" translatable="yes" context="livestream" comments="Start livestream button">On air</property>
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
@@ -2789,7 +2789,7 @@
                                     <property name="can-focus">False</property>
                                     <property name="halign">end</property>
                                     <property name="valign">start</property>
-                                    <property name="label" translatable="yes">Input</property>
+                                    <property name="label" translatable="yes" context="audio_mixer">Input</property>
                                     <style>
                                       <class name="dim-label"/>
                                     </style>
@@ -2805,7 +2805,7 @@
                                     <property name="can-focus">False</property>
                                     <property name="halign">end</property>
                                     <property name="valign">start</property>
-                                    <property name="label" translatable="yes">Equalizer</property>
+                                    <property name="label" translatable="yes" context="audio_mixer">Equalizer</property>
                                     <style>
                                       <class name="dim-label"/>
                                     </style>
@@ -2821,7 +2821,7 @@
                                     <property name="can-focus">False</property>
                                     <property name="halign">end</property>
                                     <property name="valign">start</property>
-                                    <property name="label" translatable="yes">Dynamics</property>
+                                    <property name="label" translatable="yes" context="audio_mixer">Dynamics</property>
                                     <style>
                                       <class name="dim-label"/>
                                     </style>
@@ -2837,7 +2837,7 @@
                                     <property name="can-focus">False</property>
                                     <property name="halign">end</property>
                                     <property name="valign">start</property>
-                                    <property name="label" translatable="yes">dB</property>
+                                    <property name="label" translatable="yes" context="audio_mixer">dB</property>
                                     <style>
                                       <class name="dim-label"/>
                                     </style>
@@ -2853,7 +2853,7 @@
                                     <property name="can-focus">False</property>
                                     <property name="halign">end</property>
                                     <property name="valign">start</property>
-                                    <property name="label" translatable="yes">Pan</property>
+                                    <property name="label" translatable="yes" context="audio_mixer">Pan</property>
                                     <style>
                                       <class name="dim-label"/>
                                     </style>
