@@ -38,7 +38,7 @@ msgstr "Renk Üreteçleri"
 #: gtk_switcher/ui/mixer.glade:502 gtk_switcher/ui/mixer.glade:542
 #: gtk_switcher/ui/mixer.glade:618 gtk_switcher/ui/mixer.glade:1250
 msgid "Rate"
-msgstr "Oran"
+msgstr "Hız"
 
 #: gtk_switcher/ui/mixer.glade:527
 msgid "Mix"
@@ -404,7 +404,7 @@ msgstr "AUTO"
 
 #: gtk_switcher/ui/mixeffect.glade:669 gtk_switcher/ui/mixeffect.glade:985
 msgid "rate"
-msgstr "oran"
+msgstr "Hız"
 
 #: gtk_switcher/ui/mixeffect.glade:746
 msgid "Transition"
@@ -428,7 +428,7 @@ msgstr "Bağlantı ayarları"
 
 #: gtk_switcher/ui/connection.glade:58
 msgid "Switcher connection"
-msgstr "Switcher bağlantısı"
+msgstr "ATEM Bağlantısı"
 
 #: gtk_switcher/ui/connection.glade:91
 msgid "IP Address"
@@ -448,7 +448,7 @@ msgstr "ATEM Usb Bağlantısı"
 
 #: gtk_switcher/ui/connection.glade:166
 msgid "OpenSwitcher proxy"
-msgstr "OpenSwitcher proxy'si"
+msgstr "OpenSwitcher Proxy'si"
 
 #: gtk_switcher/ui/connection.glade:192
 msgid "Username"
@@ -464,7 +464,7 @@ msgstr "Cihaz"
 
 #: gtk_switcher/ui/connection.glade:295
 msgid "No atem hardware detected"
-msgstr "Hiçbir öğe donanımı algılanmadı"
+msgstr "Hiçbir Atem donanımı algılanmadı"
 
 #: gtk_switcher/ui/connection.glade:323
 msgid "Connect"
@@ -510,7 +510,7 @@ msgstr "Ters çevir"
 #: gtk_switcher/ui/downstream-keyer.glade:268
 #: gtk_switcher/ui/upstream-keyer.glade:1046
 msgid "Use mask"
-msgstr ""
+msgstr "Maske kullan"
 
 #: gtk_switcher/ui/downstream-keyer.glade:280
 #: gtk_switcher/ui/upstream-keyer.glade:1058
@@ -618,7 +618,7 @@ msgstr "Kenarlık Opaklığı"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1202
 msgid "Lock keyframes"
-msgstr "Anahtar kareleri kilitle"
+msgstr "Kilitle"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1219
 msgid "Set A"
@@ -634,11 +634,11 @@ msgstr "TAM"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1275
 msgid "Run A"
-msgstr "Run A"
+msgstr "A'ya Git"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1293
 msgid "Run B"
-msgstr "Run B"
+msgstr "B'ye Git"
 
 #: gtk_switcher/ui/mixeffect-aux.glade:28
 msgid "AUX"
