@@ -211,107 +211,107 @@ msgstr "KAYDET"
 
 #: gtk_switcher/ui/mixer.glade:2243
 msgid "Stream recorder"
-msgstr ""
+msgstr "Stream recorder"
 
 #: gtk_switcher/ui/mixer.glade:2329
 msgid "OFF"
-msgstr ""
+msgstr "KAPAT"
 
 #. Stop livestream button
 #: gtk_switcher/ui/mixer.glade:2380
 msgctxt "livestream"
 msgid "Off"
-msgstr ""
+msgstr "Kapat"
 
 #. Start livestream button
 #: gtk_switcher/ui/mixer.glade:2395
 msgctxt "livestream"
 msgid "On air"
-msgstr ""
+msgstr "ON AIR"
 
 #: gtk_switcher/ui/mixer.glade:2419
 msgid "Platform"
-msgstr ""
+msgstr "Platform"
 
 #: gtk_switcher/ui/mixer.glade:2434
 msgid "Server"
-msgstr ""
+msgstr "Sunucu"
 
 #: gtk_switcher/ui/mixer.glade:2449 gtk_switcher/ui/downstream-keyer.glade:116
 #: gtk_switcher/ui/upstream-keyer.glade:232
 msgid "Key"
-msgstr ""
+msgstr "Yayın anahtarı"
 
 #: gtk_switcher/ui/mixer.glade:2606
 msgid "Live stream"
-msgstr ""
+msgstr "Canlı Yayın"
 
 #: gtk_switcher/ui/mixer.glade:2632
 msgid "Output"
-msgstr ""
+msgstr "Çıkış"
 
 #: gtk_switcher/ui/mixer.glade:2664 gtk_switcher/ui/preferences.glade:788
 msgid "Switcher"
-msgstr ""
+msgstr "Switcher"
 
 #: gtk_switcher/ui/mixer.glade:2757
 msgid "Media"
-msgstr ""
+msgstr "Medya"
 
 #: gtk_switcher/ui/mixer.glade:2792
 msgctxt "audio_mixer"
 msgid "Input"
-msgstr ""
+msgstr "Giriş"
 
 #: gtk_switcher/ui/mixer.glade:2808
 msgctxt "audio_mixer"
 msgid "Equalizer"
-msgstr ""
+msgstr "Ekolayzer"
 
 #: gtk_switcher/ui/mixer.glade:2824
 msgctxt "audio_mixer"
 msgid "Dynamics"
-msgstr ""
+msgstr "Dinamik Efektler"
 
 #: gtk_switcher/ui/mixer.glade:2840
 msgctxt "audio_mixer"
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: gtk_switcher/ui/mixer.glade:2856
 msgctxt "audio_mixer"
 msgid "Pan"
-msgstr ""
+msgstr "Pan"
 
 #: gtk_switcher/ui/mixer.glade:2952 gtk_switcher/ui/preferences.glade:401
 msgid "Audio"
-msgstr ""
+msgstr "Ses"
 
 #: gtk_switcher/ui/mixer.glade:2990
 msgid "Camera"
-msgstr ""
+msgstr "Kamera"
 
 #: gtk_switcher/ui/mixer.glade:2997
 msgid "page0"
-msgstr ""
+msgstr "sayfa0"
 
 #: gtk_switcher/ui/mixer.glade:3006
 msgid ""
 "There is no connection to the hardware. The connection might be interrupted "
 "or a new connection needs to be made in the Preferences window"
-msgstr ""
+msgstr "veya Tercihler penceresinde yeni bir bağlantı yapılması gerekiyor"
 
 #: gtk_switcher/ui/mixer.glade:3009
 msgid "Open preferences"
-msgstr ""
+msgstr "Tercihleri aç"
 
 #: gtk_switcher/ui/mixer.glade:3023
 msgid "Disconnected"
-msgstr ""
+msgstr "Bağlantı kesildi"
 
 #: gtk_switcher/ui/mixer.glade:3032
 msgid "Firmware outdated"
-msgstr ""
+msgstr "Firmware güncel değil"
 
 #: gtk_switcher/ui/mixer.glade:3033
 msgid ""
@@ -319,47 +319,47 @@ msgid ""
 "application.\n"
 "OpenSwitcher requires at least firmware 8.0+ to correctly function with most "
 "hardware."
-msgstr ""
+msgstr "OpenSwitcher, çoğu yazılımla doğru şekilde çalışması için en az 8.0+ ürün yazılımı gerektirir"
 
 #: gtk_switcher/ui/mixer.glade:3037
 msgid "Continue anyway"
-msgstr ""
+msgstr "Yoksay devam et"
 
 #: gtk_switcher/ui/mixer.glade:3048
 msgid "firmware"
-msgstr ""
+msgstr "firmware"
 
 #: gtk_switcher/ui/mixeffect.glade:34
 msgid "Program"
-msgstr ""
+msgstr "Program"
 
 #: gtk_switcher/ui/mixeffect.glade:132
 msgid "Preview"
-msgstr ""
+msgstr "Önizleme"
 
 #: gtk_switcher/ui/mixeffect.glade:230
 msgid "Next transition"
-msgstr ""
+msgstr "Sonraki Geçiş"
 
 #: gtk_switcher/ui/mixeffect.glade:264
 msgid "BKGD"
-msgstr ""
+msgstr "BKGD"
 
 #: gtk_switcher/ui/mixeffect.glade:283
 msgid "KEY 1"
-msgstr ""
+msgstr "KEY 1"
 
 #: gtk_switcher/ui/mixeffect.glade:302
 msgid "KEY 2"
-msgstr ""
+msgstr "KEY 2"
 
 #: gtk_switcher/ui/mixeffect.glade:321
 msgid "KEY 3"
-msgstr ""
+msgstr "KEY 3"
 
 #: gtk_switcher/ui/mixeffect.glade:340
 msgid "KEY 4"
-msgstr ""
+msgstr "KEY 4"
 
 #: gtk_switcher/ui/mixeffect.glade:359 gtk_switcher/ui/mixeffect.glade:379
 #: gtk_switcher/ui/mixeffect.glade:399 gtk_switcher/ui/mixeffect.glade:419
@@ -370,23 +370,23 @@ msgstr ""
 
 #: gtk_switcher/ui/mixeffect.glade:474
 msgid "Transition style"
-msgstr ""
+msgstr "Geçiş Tarzı"
 
 #: gtk_switcher/ui/mixeffect.glade:508
 msgid "MIX"
-msgstr ""
+msgstr "MIKS"
 
 #: gtk_switcher/ui/mixeffect.glade:528
 msgid "DIP"
-msgstr ""
+msgstr "DIP"
 
 #: gtk_switcher/ui/mixeffect.glade:547
 msgid "WIPE"
-msgstr ""
+msgstr "WIPE"
 
 #: gtk_switcher/ui/mixeffect.glade:566
 msgid "STING"
-msgstr ""
+msgstr "STING"
 
 #: gtk_switcher/ui/mixeffect.glade:604
 msgid ""
@@ -396,116 +396,116 @@ msgstr ""
 
 #: gtk_switcher/ui/mixeffect.glade:624
 msgid "CUT"
-msgstr ""
+msgstr "CUT"
 
 #: gtk_switcher/ui/mixeffect.glade:643
 msgid "AUTO"
-msgstr ""
+msgstr "AUTO"
 
 #: gtk_switcher/ui/mixeffect.glade:669 gtk_switcher/ui/mixeffect.glade:985
 msgid "rate"
-msgstr ""
+msgstr "oran"
 
 #: gtk_switcher/ui/mixeffect.glade:746
 msgid "Transition"
-msgstr ""
+msgstr "Geçiş"
 
 #: gtk_switcher/ui/mixeffect.glade:846
 msgid "Downstream key"
-msgstr ""
+msgstr "Downstream key"
 
 #: gtk_switcher/ui/mixeffect.glade:925
 msgid "Fade to Black"
-msgstr ""
+msgstr "Karartma"
 
 #: gtk_switcher/ui/mixeffect.glade:959
 msgid "FTB"
-msgstr ""
+msgstr "FTB"
 
 #: gtk_switcher/ui/connection.glade:21
 msgid "Connection settings"
-msgstr ""
+msgstr "Bağlantı ayarları"
 
 #: gtk_switcher/ui/connection.glade:58
 msgid "Switcher connection"
-msgstr ""
+msgstr "Switcher bağlantısı"
 
 #: gtk_switcher/ui/connection.glade:91
 msgid "IP Address"
-msgstr ""
+msgstr "IP Adresi"
 
 #: gtk_switcher/ui/connection.glade:116
 msgid "Connection type"
-msgstr ""
+msgstr "Bağlantı tipi"
 
 #: gtk_switcher/ui/connection.glade:133
 msgid "ATEM network connection"
-msgstr ""
+msgstr "ATEM Ağ Bağlantısı"
 
 #: gtk_switcher/ui/connection.glade:149
 msgid "ATEM usb connection"
-msgstr ""
+msgstr "ATEM Usb Bağlantısı"
 
 #: gtk_switcher/ui/connection.glade:166
 msgid "OpenSwitcher proxy"
-msgstr ""
+msgstr "OpenSwitcher proxy'si"
 
 #: gtk_switcher/ui/connection.glade:192
 msgid "Username"
-msgstr ""
+msgstr "Kullanıcı adı"
 
 #: gtk_switcher/ui/connection.glade:207
 msgid "Password"
-msgstr ""
+msgstr "Şifre"
 
 #: gtk_switcher/ui/connection.glade:244
 msgid "Device"
-msgstr ""
+msgstr "Cihaz"
 
 #: gtk_switcher/ui/connection.glade:295
 msgid "No atem hardware detected"
-msgstr ""
+msgstr "Hiçbir öğe donanımı algılanmadı"
 
 #: gtk_switcher/ui/connection.glade:323
 msgid "Connect"
-msgstr ""
+msgstr "Bağlan"
 
 #: gtk_switcher/ui/connection.glade:342
 msgid "Hardware settings"
-msgstr ""
+msgstr "Donanım Ayarları"
 
 #: gtk_switcher/ui/downstream-keyer.glade:37
 #: gtk_switcher/ui/upstream-keyer.glade:153
 #: gtk_switcher/ui/upstream-keyer.glade:446
 msgid "Fill source"
-msgstr ""
+msgstr "Fill Kaynağı"
 
 #: gtk_switcher/ui/downstream-keyer.glade:71
 #: gtk_switcher/ui/upstream-keyer.glade:187
 msgid "Key source"
-msgstr ""
+msgstr "Key Kaynağı"
 
 #: gtk_switcher/ui/downstream-keyer.glade:128
 #: gtk_switcher/ui/upstream-keyer.glade:244
 msgid "Pre multiplied"
-msgstr ""
+msgstr "Önceden Çarpımlı Key"
 
 #: gtk_switcher/ui/downstream-keyer.glade:149
 #: gtk_switcher/ui/upstream-keyer.glade:265
 msgid "Clip"
-msgstr ""
+msgstr "Klip"
 
 #: gtk_switcher/ui/downstream-keyer.glade:164
 #: gtk_switcher/ui/upstream-keyer.glade:280
 msgid "Gain"
-msgstr ""
+msgstr "Kazanç"
 
 #: gtk_switcher/ui/downstream-keyer.glade:207
 #: gtk_switcher/ui/downstream-keyer.glade:219
 #: gtk_switcher/ui/upstream-keyer.glade:323
 #: gtk_switcher/ui/upstream-keyer.glade:335
 msgid "Invert"
-msgstr ""
+msgstr "Ters çevir"
 
 #: gtk_switcher/ui/downstream-keyer.glade:268
 #: gtk_switcher/ui/upstream-keyer.glade:1046
@@ -515,211 +515,211 @@ msgstr ""
 #: gtk_switcher/ui/downstream-keyer.glade:280
 #: gtk_switcher/ui/upstream-keyer.glade:1058
 msgid "Mask"
-msgstr ""
+msgstr "Mask"
 
 #: gtk_switcher/ui/downstream-keyer.glade:300
 #: gtk_switcher/ui/upstream-keyer.glade:1078
 msgid "Top"
-msgstr ""
+msgstr "Üst"
 
 #: gtk_switcher/ui/downstream-keyer.glade:315
 #: gtk_switcher/ui/upstream-keyer.glade:1093
 msgid "Bottom"
-msgstr ""
+msgstr "Alt"
 
 #: gtk_switcher/ui/downstream-keyer.glade:330
 #: gtk_switcher/ui/upstream-keyer.glade:1108
 msgid "Left"
-msgstr ""
+msgstr "Sol"
 
 #: gtk_switcher/ui/downstream-keyer.glade:345
 #: gtk_switcher/ui/upstream-keyer.glade:1123
 msgid "Right"
-msgstr ""
+msgstr "Sağ"
 
 #: gtk_switcher/ui/upstream-keyer.glade:354
 msgid "Luma"
-msgstr ""
+msgstr "Luma"
 
 #: gtk_switcher/ui/upstream-keyer.glade:369
 #: gtk_switcher/ui/upstream-keyer.glade:407
 msgid "Keyer mode"
-msgstr ""
+msgstr "Anahtar modu"
 
 #: gtk_switcher/ui/upstream-keyer.glade:391
 msgid "Chroma"
-msgstr ""
+msgstr "Chroma"
 
 #: gtk_switcher/ui/upstream-keyer.glade:429
 msgid "Pattern"
-msgstr ""
+msgstr "Desen"
 
 #: gtk_switcher/ui/upstream-keyer.glade:480
 msgid "Position"
-msgstr ""
+msgstr "Konum"
 
 #: gtk_switcher/ui/upstream-keyer.glade:495
 msgid "Size"
-msgstr ""
+msgstr "Boyut"
 
 #: gtk_switcher/ui/upstream-keyer.glade:603
 #: gtk_switcher/ui/upstream-keyer.glade:615
 msgid "Shadow"
-msgstr ""
+msgstr "Gölge"
 
 #: gtk_switcher/ui/upstream-keyer.glade:636
 msgid "Angle"
-msgstr ""
+msgstr "Açı"
 
 #: gtk_switcher/ui/upstream-keyer.glade:651
 msgid "Altitude"
-msgstr ""
+msgstr "Yükseklik"
 
 #: gtk_switcher/ui/upstream-keyer.glade:706
 #: gtk_switcher/ui/upstream-keyer.glade:718
 msgid "Border"
-msgstr ""
+msgstr "Kenarlık"
 
 #: gtk_switcher/ui/upstream-keyer.glade:739
 msgid "Color"
-msgstr ""
+msgstr "Renk"
 
 #: gtk_switcher/ui/upstream-keyer.glade:758
 msgid "Pick a border color"
-msgstr ""
+msgstr "Bir kenarlık rengi seçin"
 
 #: gtk_switcher/ui/upstream-keyer.glade:799
 msgid "Bevel soften"
-msgstr ""
+msgstr "Eğim Yumuşatma"
 
 #: gtk_switcher/ui/upstream-keyer.glade:814
 msgid "Bevel position"
-msgstr ""
+msgstr "Eğim Konumu"
 
 #: gtk_switcher/ui/upstream-keyer.glade:829
 msgid "Inner soften"
-msgstr ""
+msgstr "İç Yumuşatma"
 
 #: gtk_switcher/ui/upstream-keyer.glade:844
 msgid "Outer soften"
-msgstr ""
+msgstr "Dış Yumuşatma"
 
 #: gtk_switcher/ui/upstream-keyer.glade:859
 msgid "Inner width"
-msgstr ""
+msgstr "İç Genişlik"
 
 #: gtk_switcher/ui/upstream-keyer.glade:874
 msgid "Outer width"
-msgstr ""
+msgstr "Dış Genişlik"
 
 #: gtk_switcher/ui/upstream-keyer.glade:973
 msgid "Border opacity"
-msgstr ""
+msgstr "Kenarlık Opaklığı"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1202
 msgid "Lock keyframes"
-msgstr ""
+msgstr "Anahtar kareleri kilitle"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1219
 msgid "Set A"
-msgstr ""
+msgstr "A'yı Ayarla"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1238
 msgid "Set B"
-msgstr ""
+msgstr "B'yi Ayarla"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1257
 msgid "Run full"
-msgstr ""
+msgstr "TAM"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1275
 msgid "Run A"
-msgstr ""
+msgstr "Run A"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1293
 msgid "Run B"
-msgstr ""
+msgstr "Run B"
 
 #: gtk_switcher/ui/mixeffect-aux.glade:28
 msgid "AUX"
-msgstr ""
+msgstr "AUX"
 
 #: gtk_switcher/ui/preferences.glade:25 gtk_switcher/ui/preferences.glade:36
 msgid "Preferences"
-msgstr ""
+msgstr "Tercihler"
 
 #: gtk_switcher/ui/preferences.glade:108
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: gtk_switcher/ui/preferences.glade:142
 msgid "Video standard"
-msgstr ""
+msgstr "Video standardı ayarı"
 
 #: gtk_switcher/ui/preferences.glade:157
 msgid "Multiview video standard"
-msgstr ""
+msgstr "Çoklu görüntü standardı ayarı"
 
 #: gtk_switcher/ui/preferences.glade:172
 msgid "Down convert as"
-msgstr ""
+msgstr "Aşağı dönüşüm formatı"
 
 #: gtk_switcher/ui/preferences.glade:187
 msgid "SDI output standard"
-msgstr ""
+msgstr "SDI çıkış ayarı"
 
 #: gtk_switcher/ui/preferences.glade:230
 msgid "Media pool"
-msgstr ""
+msgstr "Medya Havuzu"
 
 #: gtk_switcher/ui/preferences.glade:264
 msgid "Clip 1 length"
-msgstr ""
+msgstr "Klip 1 uzunluğu"
 
 #: gtk_switcher/ui/preferences.glade:279
 msgid "Clip 2 length"
-msgstr ""
+msgstr "Klip 2 uzunluğu"
 
 #: gtk_switcher/ui/preferences.glade:316
 msgid "Camera Control"
-msgstr ""
+msgstr "Kamera Kontrolü"
 
 #: gtk_switcher/ui/preferences.glade:350
 msgid "Camera control monitoring output"
-msgstr ""
+msgstr "Kamera kontrolünü izlemek için"
 
 #: gtk_switcher/ui/preferences.glade:381
 msgid "General"
-msgstr ""
+msgstr "Genel"
 
 #: gtk_switcher/ui/preferences.glade:423
 msgid "Multiview layout"
-msgstr ""
+msgstr "Çoklu görüntü düzeni"
 
 #: gtk_switcher/ui/preferences.glade:439
 msgid "Audio meters"
-msgstr ""
+msgstr "Ses Göstergeleri"
 
 #: gtk_switcher/ui/preferences.glade:628
 msgid "Multiview"
-msgstr ""
+msgstr "Çoklu Görüntü"
 
 #: gtk_switcher/ui/preferences.glade:649
 msgid "Labels"
-msgstr ""
+msgstr "Etiketler"
 
 #: gtk_switcher/ui/preferences.glade:670
 msgid "HyperDeck"
-msgstr ""
+msgstr "HyperDeck"
 
 #: gtk_switcher/ui/preferences.glade:685 gtk_switcher/ui/preferences.glade:768
 msgid "Remote"
-msgstr ""
+msgstr "Uzaktan Kontrol"
 
 #: gtk_switcher/ui/preferences.glade:719
 msgid "Use RS-422 port for"
-msgstr ""
+msgstr "RS-422 kontrol portu seçenekleri"
 
 #: gtk_switcher/ui/preferences.glade:808
 msgid "Control app"
-msgstr ""
+msgstr "Kontrol uygulaması"
