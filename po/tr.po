@@ -299,11 +299,11 @@ msgstr "sayfa0"
 msgid ""
 "There is no connection to the hardware. The connection might be interrupted "
 "or a new connection needs to be made in the Preferences window"
-msgstr "veya Tercihler penceresinde yeni bir bağlantı yapılması gerekiyor"
+msgstr "Tercihler penceresinde yeni bir bağlantı yapılması gerekiyor"
 
 #: gtk_switcher/ui/mixer.glade:3009
 msgid "Open preferences"
-msgstr "Tercihleri aç"
+msgstr "Tercihler"
 
 #: gtk_switcher/ui/mixer.glade:3023
 msgid "Disconnected"
@@ -412,7 +412,7 @@ msgstr "Hız"
 
 #: gtk_switcher/ui/mixeffect.glade:746
 msgid "Transition"
-msgstr "Geçiş"
+msgstr "GEÇİŞ"
 
 #: gtk_switcher/ui/mixeffect.glade:846
 msgid "Downstream key"
@@ -468,7 +468,7 @@ msgstr "Cihaz"
 
 #: gtk_switcher/ui/connection.glade:295
 msgid "No atem hardware detected"
-msgstr "Hiçbir Atem donanımı algılanmadı"
+msgstr "Hiçbir Atem Donanımı Algılanmadı !"
 
 #: gtk_switcher/ui/connection.glade:323
 msgid "Connect"
@@ -556,7 +556,7 @@ msgstr "Chroma"
 
 #: gtk_switcher/ui/upstream-keyer.glade:429
 msgid "Pattern"
-msgstr "Desen"
+msgstr "Şekil"
 
 #: gtk_switcher/ui/upstream-keyer.glade:480
 msgid "Position"
@@ -730,41 +730,41 @@ msgstr "Kontrol uygulaması"
 
 #: gtk_switcher/mixeffect.py:501
 msgid "TIE"
-msgstr ""
+msgstr "BAĞLA"
 
 #: gtk_switcher/switcher.py:176
 msgid "Layout editor M/E {}"
-msgstr ""
+msgstr "Düzen düzenleyici M/E {}"
 
 #: gtk_switcher/switcher.py:468 gtk_switcher/switcher.py:478
 #: gtk_switcher/switcher.py:496 gtk_switcher/layout.py:292
 #: gtk_switcher/layout.py:293
 msgid "Downstream keyer {}"
-msgstr ""
+msgstr "Downstream Key {}"
 
 #: gtk_switcher/switcher.py:547
 msgid "Upstream keyer {}"
-msgstr ""
+msgstr "Upstream Key {}"
 
 #: gtk_switcher/switcher.py:587 gtk_switcher/switcher.py:630
 #: gtk_switcher/switcher.py:633 gtk_switcher/layout.py:258
 #: gtk_switcher/layout.py:259 gtk_switcher/layout.py:287
 #: gtk_switcher/layout.py:288
 msgid "Upstream key {}"
-msgstr ""
+msgstr "Upstream Key {}"
 
 #: gtk_switcher/switcher.py:833
 msgid "Show as bus"
-msgstr ""
+msgstr "Veriyolu olarak göster"
 
 #: gtk_switcher/switcher.py:837
 msgid "Follow audio monitor bus"
-msgstr ""
+msgstr "Ses monitör veriyolunu takip edin"
 
 #: gtk_switcher/switcher.py:979
 msgid "Run macro"
-msgstr ""
+msgstr "Makroyu çalıştır"
 
 #: gtk_switcher/switcher.py:981
 msgid "Edit macro"
-msgstr ""
+msgstr "Makroyu düzenle"
