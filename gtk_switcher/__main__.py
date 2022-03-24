@@ -38,8 +38,6 @@ def main(version):
                         help='default view to open when launching')
     args = parser.parse_args()
 
-    locale.textdomain("openswitcher")
-
     if os.path.isfile('atem.gresource'):
         print("Using resources from cwd")
         resource = Gio.resource_load("atem.gresource")
