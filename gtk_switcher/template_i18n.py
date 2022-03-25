@@ -12,7 +12,6 @@ class TemplateLocale(Gtk.Template):
             print("Localize is not needed")
             return super(TemplateLocale, self).__call__(cls)
 
-        print(f"Localize {self.resource_path}")
         element = Gio.resources_lookup_data(self.resource_path, Gio.ResourceLookupFlags.NONE).get_data().decode('utf-8')
         tree = ET.fromstring(element)
         for node in tree.iter():
@@ -23,7 +22,5 @@ class TemplateLocale(Gtk.Template):
                 node.text = _(context + node.text)
         self.string = ET.tostring(tree, encoding='unicode', method='xml')
         self.resource_path = None
-
-        print(self.string)
 
         return Gtk.Template.__call__(self, cls)
