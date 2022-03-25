@@ -3,7 +3,7 @@ from gi.repository import Gtk, GObject, Gio, GLib
 import xml.etree.ElementTree as ET
 import os
 
-_PERFORM_MANUAL_TRANSLATION = platform.system() == "Windows" and not os.environ['LANGUAGE'].startswith("en")
+_PERFORM_MANUAL_TRANSLATION = platform.system() == "Windows"
 
 class TemplateLocale(Gtk.Template):
 
