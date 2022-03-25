@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-03-24 00:27+0100\n"
-"PO-Revision-Date: 2022-03-23 20:47+0100\n"
+"PO-Revision-Date: 2022-03-25 23:50+0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: tr\n"
@@ -79,15 +79,15 @@ msgstr "Genişlik"
 #. Fill video source
 #: gtk_switcher/ui/mixer.glade:1090
 msgid "Fill"
-msgstr "Fill"
+msgstr "Fill Kaynağı"
 
 #: gtk_switcher/ui/mixer.glade:1139
 msgid "Reverse"
-msgstr "Ters"
+msgstr "Yön"
 
 #: gtk_switcher/ui/mixer.glade:1159
 msgid "Flip flop"
-msgstr "Ters çevir"
+msgstr "Ters Düz"
 
 #: gtk_switcher/ui/mixer.glade:1195
 msgid "Wipe"
@@ -175,7 +175,7 @@ msgstr "Dosya adı"
 
 #: gtk_switcher/ui/mixer.glade:2012
 msgid "STOP"
-msgstr "DURDUR"
+msgstr "DUR"
 
 #: gtk_switcher/ui/mixer.glade:2060
 msgctxt "streamrecorder"
@@ -201,7 +201,7 @@ msgstr "DEĞİŞTİR"
 #: gtk_switcher/ui/mixer.glade:2131
 msgctxt "streamrecorder"
 msgid "Stop"
-msgstr "Durdur"
+msgstr "DURDUR"
 
 #. Button
 #: gtk_switcher/ui/mixer.glade:2146
@@ -221,7 +221,7 @@ msgstr "KAPAT"
 #: gtk_switcher/ui/mixer.glade:2380
 msgctxt "livestream"
 msgid "Off"
-msgstr "Kapat"
+msgstr "KAPAT"
 
 #. Start livestream button
 #: gtk_switcher/ui/mixer.glade:2395
@@ -231,7 +231,7 @@ msgstr "ON AIR"
 
 #: gtk_switcher/ui/mixer.glade:2419
 msgid "Platform"
-msgstr "Platform"
+msgstr "Yayıncı"
 
 #: gtk_switcher/ui/mixer.glade:2434
 msgid "Server"
@@ -240,7 +240,7 @@ msgstr "Sunucu"
 #: gtk_switcher/ui/mixer.glade:2449 gtk_switcher/ui/downstream-keyer.glade:116
 #: gtk_switcher/ui/upstream-keyer.glade:232
 msgid "Key"
-msgstr "Yayın anahtarı"
+msgstr "Key"
 
 #: gtk_switcher/ui/mixer.glade:2606
 msgid "Live stream"
@@ -299,11 +299,13 @@ msgstr "sayfa0"
 msgid ""
 "There is no connection to the hardware. The connection might be interrupted "
 "or a new connection needs to be made in the Preferences window"
-msgstr "Tercihler penceresinde yeni bir bağlantı yapılması gerekiyor"
+msgstr ""
+"Donanım bağlantısı yok. Tercihler penceresinde bağlantı kesilebilir veya "
+"yeni bir bağlantı yapılması gerekebilir."
 
 #: gtk_switcher/ui/mixer.glade:3009
 msgid "Open preferences"
-msgstr "Tercihler"
+msgstr "Ayarlar"
 
 #: gtk_switcher/ui/mixer.glade:3023
 msgid "Disconnected"
@@ -320,8 +322,9 @@ msgid ""
 "OpenSwitcher requires at least firmware 8.0+ to correctly function with most "
 "hardware."
 msgstr ""
-"OpenSwitcher, çoğu yazılımla doğru şekilde çalışması için en az 8.0+ ürün "
-"yazılımı gerektirir"
+"Bağlı cihazdaki üretici yazılımı bu uygulama için yeterince yeni değil.\n"
+"OpenSwitcher, çoğu donanımla doğru şekilde çalışması için en az 8.0+ donanım "
+"yazılımı gerektirir."
 
 #: gtk_switcher/ui/mixer.glade:3037
 msgid "Continue anyway"
@@ -412,7 +415,7 @@ msgstr "Hız"
 
 #: gtk_switcher/ui/mixeffect.glade:746
 msgid "Transition"
-msgstr "GEÇİŞ"
+msgstr "Geçiş"
 
 #: gtk_switcher/ui/mixeffect.glade:846
 msgid "Downstream key"
@@ -492,12 +495,12 @@ msgstr "Key Kaynağı"
 #: gtk_switcher/ui/downstream-keyer.glade:128
 #: gtk_switcher/ui/upstream-keyer.glade:244
 msgid "Pre multiplied"
-msgstr "Önceden Çarpımlı Key"
+msgstr "Ön Çarpımlı Key"
 
 #: gtk_switcher/ui/downstream-keyer.glade:149
 #: gtk_switcher/ui/upstream-keyer.glade:265
 msgid "Clip"
-msgstr "Klip"
+msgstr "Kırpılma sınırı"
 
 #: gtk_switcher/ui/downstream-keyer.glade:164
 #: gtk_switcher/ui/upstream-keyer.glade:280
@@ -690,7 +693,7 @@ msgstr "Kamera Kontrolü"
 
 #: gtk_switcher/ui/preferences.glade:350
 msgid "Camera control monitoring output"
-msgstr "Kamera kontrolünü izlemek için"
+msgstr "Kamera kontrol izleme çıkışı"
 
 #: gtk_switcher/ui/preferences.glade:381
 msgid "General"
