@@ -1,11 +1,13 @@
 import gi
 
+from gtk_switcher.template_i18n import TemplateLocale
+
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, GObject
 
 
-@Gtk.Template(resource_path='/nl/brixit/switcher/ui/mixeffect-aux.glade')
+@TemplateLocale(resource_path='/nl/brixit/switcher/ui/mixeffect-aux.glade')
 class AuxMixEffectBlock(Gtk.Grid):
     __gtype_name__ = 'AuxMixEffectBlock'
 

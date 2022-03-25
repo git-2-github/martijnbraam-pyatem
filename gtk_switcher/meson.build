@@ -47,6 +47,7 @@ switcher_sources = [
     'gtklogadjustment.py',
     'macroeditor.py',
     'stream_data.py',
+    'template_i18n.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)

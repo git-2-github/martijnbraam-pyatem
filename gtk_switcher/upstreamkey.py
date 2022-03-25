@@ -1,11 +1,12 @@
 from gi.repository import Gtk, GObject, Gdk
 
+from gtk_switcher.template_i18n import TemplateLocale
 from pyatem.command import KeyFillCommand, KeyPropertiesDveCommand, KeyTypeCommand, KeyCutCommand, \
     KeyPropertiesLumaCommand, KeyerKeyframeSetCommand, KeyerKeyframeRunCommand
 from pyatem.field import TransitionSettingsField, KeyPropertiesDveField, KeyPropertiesLumaField
 
 
-@Gtk.Template(resource_path='/nl/brixit/switcher/ui/upstream-keyer.glade')
+@TemplateLocale(resource_path='/nl/brixit/switcher/ui/upstream-keyer.glade')
 class UpstreamKeyer(Gtk.Frame):
     __gtype_name__ = 'UpstreamKeyer'
 

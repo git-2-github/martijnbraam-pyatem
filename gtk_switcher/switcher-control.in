@@ -14,6 +14,7 @@ sys.path.insert(1, pkgdatadir)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 locale.bindtextdomain("openswitcher", localedir)
 gettext.install("openswitcher", localedir)
+locale.textdomain("openswitcher")
 
 if __name__ == '__main__':
     import gi

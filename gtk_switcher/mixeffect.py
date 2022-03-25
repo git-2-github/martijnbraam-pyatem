@@ -1,9 +1,10 @@
 from gi.repository import Gtk, GObject
 
+from gtk_switcher.template_i18n import TemplateLocale
 from pyatem.field import TransitionSettingsField
 
 
-@Gtk.Template(resource_path='/nl/brixit/switcher/ui/mixeffect.glade')
+@TemplateLocale(resource_path='/nl/brixit/switcher/ui/mixeffect.glade')
 class MixEffectBlock(Gtk.Grid):
     __gtype_name__ = 'MixEffectBlock'
 

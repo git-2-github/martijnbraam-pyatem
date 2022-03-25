@@ -50,5 +50,6 @@ def main(version):
 if __name__ == '__main__':
     locale.bindtextdomain("openswitcher", os.getenv('LOCALEDIR', '.'))
     gettext.install("openswitcher", os.getenv('LOCALEDIR', '.'))
+    locale.textdomain("openswitcher")
 
     main('')
