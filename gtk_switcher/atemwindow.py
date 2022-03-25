@@ -107,6 +107,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.settings.connect('changed::switcher-ip', self.on_switcher_ip_changed)
 
         builder = Gtk.Builder()
+        builder.set_translation_domain("openswitcher")
         builder.add_from_resource('/nl/brixit/switcher/ui/mixer.glade')
         builder.connect_signals(self)
         css = Gio.resources_lookup_data("/nl/brixit/switcher/ui/style.css", 0)

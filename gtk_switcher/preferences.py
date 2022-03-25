@@ -18,6 +18,7 @@ class PreferencesWindow:
         self.model_changing = False
 
         builder = Gtk.Builder()
+        builder.set_translation_domain("openswitcher")
         builder.add_from_resource('/nl/brixit/switcher/ui/preferences.glade')
         builder.connect_signals(self)
         css = Gio.resources_lookup_data("/nl/brixit/switcher/ui/style.css", 0)

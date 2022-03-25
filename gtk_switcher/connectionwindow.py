@@ -16,6 +16,7 @@ from gi.repository import Handy
 class ConnectionWindow:
     def __init__(self, parent, connection, application):
         builder = Gtk.Builder()
+        builder.set_translation_domain("openswitcher")
         builder.add_from_resource('/nl/brixit/switcher/ui/connection.glade')
         builder.connect_signals(Handler(builder, parent, application, connection))
 
