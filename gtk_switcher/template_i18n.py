@@ -9,10 +9,11 @@ class TemplateLocale(Gtk.Template):
 
     def __call__(self, cls):
         if not _PERFORM_MANUAL_TRANSLATION:
+            print("Localize is not needed")
             return super(TemplateLocale, self).__call__(cls)
 
-        element = Gio.resources_lookup_data(self.resource_path, Gio.ResourceLookupFlags.NONE) \
-            .get_data().decode('utf-8')
+        print(f"Localize {self.resource_path}")
+        element = Gio.resources_lookup_data(self.resource_path, Gio.ResourceLookupFlags.NONE).get_data().decode('utf-8')
         tree = ET.fromstring(element)
         for node in tree.iter():
             context = ''
@@ -20,6 +21,9 @@ class TemplateLocale(Gtk.Template):
                 context = node.attrib['context'] + "\x04"
             if 'translatable' in node.attrib:
                 node.text = _(context + node.text)
-        as_str = ET.tostring(tree, encoding='unicode', method='xml')
-        self.string = as_str
-        return super(TemplateLocale, self).__call__(cls)
+        self.string = ET.tostring(tree, encoding='unicode', method='xml')
+        self.resource_path = None
+
+        print(self.string)
+
+        return Gtk.Template.__call__(self, cls)
