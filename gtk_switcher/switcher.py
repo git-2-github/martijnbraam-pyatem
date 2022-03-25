@@ -145,12 +145,17 @@ class SwitcherPage:
         self.slider_held = False
 
     def add_mixeffect(self):
-        from gtk_switcher.mixeffect import MixEffectBlock
-        index = len(self.me)
-        me = MixEffectBlock(index)
-        self.me.append(me)
-        me.set_dsk(False)
-        self.main_blocks.add(me)
+        try:
+            from gtk_switcher.mixeffect import MixEffectBlock
+            index = len(self.me)
+            me = MixEffectBlock(index)
+            self.me.append(me)
+            me.set_dsk(False)
+            self.main_blocks.add(me)
+        except Exception as e:
+            print("Error initializing new M/E")
+            print(e)
+            print("---")
 
         me.connect('program-changed', self.on_me_program_changed)
         me.connect('preview-changed', self.on_me_preview_changed)
