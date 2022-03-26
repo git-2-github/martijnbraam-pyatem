@@ -1,6 +1,7 @@
 import logging
 import struct
 
+from pyatem.transfer import TransferTask
 from pyatem.transport import UdpProtocol, Packet, UsbProtocol, TcpProtocol
 from pyatem.command import LockCommand, TransferDownloadRequestCommand, TransferAckCommand
 from pyatem.media import rle_decode
@@ -31,8 +32,7 @@ class AtemProtocol:
         self.transfer_id = 42
         self.transfer_buffer = b''
         self.transfer_buffer2 = []
-        self.transfer_store = None
-        self.transfer_slot = None
+        self.transfer = None
         self.transfer_requested = False
         self.transfer_packets = 0
 
@@ -243,15 +243,15 @@ class AtemProtocol:
             logging.info(contents)
             return
         elif key == 'file-transfer-data':
-            if contents.transfer == self.transfer_id:
+            if contents.transfer == self.transfer.tid:
                 self.transfer_packets += 1
                 self.transfer_buffer += contents.data
                 if self.transfer_packets % 20 == 0:
                     total_size = self.mixerstate['video-mode'].get_pixels() * 4
                     transfer_progress = len(self.transfer_buffer) / total_size
-                    self._raise('transfer-progress', self.transfer_store, self.transfer_slot, transfer_progress)
+                    self._raise('transfer-progress', self.transfer.store, self.transfer.slot, transfer_progress)
                 # The 0 should be the transfer slot, but it seems it's always 0 in practice
-                self.send_commands([TransferAckCommand(self.transfer_id, 0)])
+                self.send_commands([TransferAckCommand(self.transfer.tid, 0)])
             else:
                 logging.error('Got file transfer data for wrong transfer id')
             return
@@ -261,18 +261,18 @@ class AtemProtocol:
             if contents.status == 1:
                 # Status is try-again
                 logging.debug('Retrying transfer')
-                self._transfer_trigger(self.transfer_store, retry=True)
+                self._transfer_trigger(self.transfer.store, retry=True)
             elif contents.status == 5:
-                self.locks[self.transfer_store] = False
-                self._transfer_trigger(self.transfer_store, retry=True)
+                self.locks[self.transfer.store] = False
+                self._transfer_trigger(self.transfer.store, retry=True)
             return
         elif key == 'file-transfer-data-complete':
             logging.debug('Transfer complete')
-            if contents.transfer != self.transfer_id:
+            if contents.transfer != self.transfer.tid:
                 return
             # Remove current item from the transfer queue
-            queue = self.transfer_queue[self.transfer_store]
-            self.transfer_queue[self.transfer_store] = queue[1:]
+            queue = self.transfer_queue[self.transfer.store]
+            self.transfer_queue[self.transfer.store] = queue[1:]
 
             # Assemble the buffer
             data = self.transfer_buffer
@@ -280,13 +280,13 @@ class AtemProtocol:
             self.transfer_requested = False
 
             # Decompress the buffer if needed
-            if self.transfer_store == 0:
+            if self.transfer.store == 0:
                 data = rle_decode(data)
 
-            self._raise('download-done', self.transfer_store, self.transfer_slot, data)
+            self._raise('download-done', self.transfer.store, self.transfer.slot, data)
 
             # Start next transfer in the queue
-            self._transfer_trigger(self.transfer_store)
+            self._transfer_trigger(self.transfer.store)
             return
 
         if key in fieldname_to_unique:
@@ -352,7 +352,16 @@ class AtemProtocol:
         logging.info("Queue download of {}:{}".format(store, index))
         if store not in self.transfer_queue:
             self.transfer_queue[store] = []
-        self.transfer_queue[store].append(index)
+        self.transfer_queue[store].append(TransferTask(store, index))
+        self._transfer_trigger(store)
+
+    def upload(self, store, index, data):
+        logging.info("Queue upload of {}:{}".format(store, index))
+        if store not in self.transfer_queue:
+            self.transfer_queue[store] = []
+        task = TransferTask(store, index, upload=True)
+        task.data = data
+        self.transfer_queue[store].append(task)
         self._transfer_trigger(store)
 
     def _transfer_trigger(self, store, retry=False):
@@ -361,13 +370,13 @@ class AtemProtocol:
         # Try the preferred queue
         if store in self.transfer_queue:
             if len(self.transfer_queue[store]) > 0:
-                next = (store, self.transfer_queue[store][0])
+                next = self.transfer_queue[store][0]
 
         # Try any queue
         if next is None:
             for store in self.transfer_queue:
                 if len(self.transfer_queue[store]) > 0:
-                    next = (store, self.transfer_queue[store][0])
+                    next = self.transfer_queue[store][0]
                     break
 
         # All transfers done, clean locks
@@ -380,9 +389,9 @@ class AtemProtocol:
             return
 
         # Request a lock if needed
-        if next[0] != 0xffff and (next[0] not in self.locks or not self.locks[next[0]]):
-            logging.info('Requesting lock for {}'.format(next[0]))
-            cmd = LockCommand(next[0], True)
+        if next.store != 0xffff and (next.store not in self.locks or not self.locks[next.store]):
+            logging.info('Requesting lock for {}'.format(next.store))
+            cmd = LockCommand(next.store, True)
             self.send_commands([cmd])
             return
 
@@ -394,9 +403,14 @@ class AtemProtocol:
         # Assign a transfer id and start the transfer
         if not retry:
             self.transfer_id += 1
-        self.transfer_store, self.transfer_slot = next
-        cmd = TransferDownloadRequestCommand(self.transfer_id, next[0], next[1])
-        logging.info('Requesting download of {}:{}'.format(*next))
+        self.transfer = next
+        self.transfer.tid = self.transfer_id
+
+        if self.transfer.upload:
+            pass
+        else:
+            cmd = TransferDownloadRequestCommand(self.transfer.tid, self.transfer.store, self.transfer.slot)
+            logging.info('Requesting download of {}:{}'.format(next.store, next.slot))
         self.transfer_requested = True
         self.send_commands([cmd])
 
