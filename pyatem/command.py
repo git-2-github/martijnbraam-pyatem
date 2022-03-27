@@ -2105,6 +2105,118 @@ class TransferDownloadRequestCommand(Command):
         return self._make_command('FTSU', data)
 
 
+class TransferUploadRequestCommand(Command):
+    """
+    Implementation of the `FTSD` command. This requests an upload from the client to the switcher.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Tranfer id
+    2      2    u16    Store
+    4      2    ?      unknown
+    6      2    u16    Slot
+    8      2    u32    Data length
+    12     2    u16    Mode bitfield
+    14     2    ?      unknown
+    ====== ==== ====== ===========
+
+    === ==========
+    bit Mode
+    === ==========
+    0   Unknown
+    1   Write RLE
+    256 Write uncompressed
+    512 Pre-erase
+    === ==========
+
+    """
+
+    MODE_WRITE_RLE = 1
+    MODE_WRITE = 256
+    MODE_ERASE = 512
+
+    def __init__(self, transfer, store, slot, length, mode):
+        """
+        :param transfer: Unique transfer number
+        :param store: Store index
+        :param slot: Slot index
+        """
+        self.transfer = transfer
+        self.store = store
+        self.slot = slot
+        self.length = length
+        self.mode = mode
+
+    def get_command(self):
+        data = struct.pack('>HHxxHIHxx', self.transfer, self.store, self.slot, self.length, self.mode)
+        return self._make_command('FTSD', data)
+
+
+class TransferDataCommand(Command):
+    """
+    Implementation of the `FTDa` command. This is a chunk of data being sent from the client to the hardware.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Tranfer id
+    2      2    u16    Size
+    4      ?    u8[]   Chunk of data
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, transfer, data):
+        """
+        :param transfer: Unique transfer number
+        :param data: Chunk of data to send
+        """
+        self.transfer = transfer
+        self.data = data
+
+    def get_command(self):
+        data = struct.pack('>HH', self.transfer, len(self.data))
+        return self._make_command('FTDa', data + self.data)
+
+
+class TransferFileDataCommand(Command):
+    """
+    Implementation of the `FTFD` command. This is the file metadata for the uploaded file and should be sent to the
+    hardware after all the FTDa commands have been sent. It contains the name and MD5 hash of the uploaded data.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Tranfer id
+    2      64   str    Name
+    66     128  str    Description
+    194    16   u8[]   MD5 hash
+    210    2    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, transfer, hash, name=None, description=None):
+        """
+        :param transfer: Unique transfer number
+        :param name: Filename
+        :param description: File description
+        :param hash: Data MD5 hash
+        """
+        self.transfer = transfer
+        self.name = name
+        self.description = description
+        self.hash = hash
+
+    def get_command(self):
+        name = self.name.encode() if self.name is not None else b''
+        description = self.description.encode() if self.description is not None else b''
+
+        data = struct.pack('>H 64s 128s 16s 2x', self.transfer, name, description, self.hash)
+        return self._make_command('FTFD', data)
+
+
 class TransferAckCommand(Command):
     """
     Implementation of the `FTUA` command. This is an acknowledgement for FTDa packets.

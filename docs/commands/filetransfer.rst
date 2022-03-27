@@ -18,7 +18,18 @@ Transfer
    :members:
    :special-members:
 
+.. autoclass:: pyatem.command.TransferUploadRequestCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.TransferDataCommand
+   :members:
+   :special-members:
+
 .. autoclass:: pyatem.command.TransferAckCommand
    :members:
    :special-members:
 
+.. autoclass:: pyatem.command.TransferFileDataCommand
+   :members:
+   :special-members:
