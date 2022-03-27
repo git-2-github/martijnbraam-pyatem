@@ -1,9 +1,10 @@
 import logging
 import struct
 
-from pyatem.transfer import TransferTask
+from pyatem.transfer import TransferTask, TransferQueueFlushed
 from pyatem.transport import UdpProtocol, Packet, UsbProtocol, TcpProtocol
-from pyatem.command import LockCommand, TransferDownloadRequestCommand, TransferAckCommand
+from pyatem.command import LockCommand, TransferDownloadRequestCommand, TransferAckCommand, \
+    TransferUploadRequestCommand, TransferDataCommand, TransferFileDataCommand
 from pyatem.media import rle_decode
 import pyatem.field as fieldmodule
 
@@ -35,6 +36,7 @@ class AtemProtocol:
         self.transfer = None
         self.transfer_requested = False
         self.transfer_packets = 0
+        self.transfer_budget = []
 
     @classmethod
     def usb_exists(cls):
@@ -55,6 +57,9 @@ class AtemProtocol:
             self.connected = False
             return
         self.connected = True
+        if isinstance(packet, TransferQueueFlushed):
+            self._queue_flushed()
+            return
         try:
             for fieldname, data in self.decode_packet(packet.data):
                 self.save_field_data(fieldname, data)
@@ -177,6 +182,7 @@ class AtemProtocol:
             'LKST': 'lock-state',
             'FTDE': 'file-transfer-error',
             'FTDC': 'file-transfer-data-complete',
+            'FTCD': 'file-transfer-continue-data',
             'AMLv': 'audio-meter-levels',
             'FMLv': 'fairlight-meter-levels',
             'FDLv': 'fairlight-master-levels',
@@ -242,6 +248,10 @@ class AtemProtocol:
         elif key == 'lock-state':
             logging.info(contents)
             return
+        elif key == 'file-transfer-continue-data':
+            self.transfer_budget = contents
+            self._queue_chunks()
+            return
         elif key == 'file-transfer-data':
             if contents.transfer == self.transfer.tid:
                 self.transfer_packets += 1
@@ -274,16 +284,19 @@ class AtemProtocol:
             queue = self.transfer_queue[self.transfer.store]
             self.transfer_queue[self.transfer.store] = queue[1:]
 
-            # Assemble the buffer
-            data = self.transfer_buffer
-            self.transfer_buffer = b''
-            self.transfer_requested = False
+            if self.transfer.upload:
+                self._raise('upload-done', self.transfer.store, self.transfer.slot)
+            else:
+                # Assemble the buffer
+                data = self.transfer_buffer
+                self.transfer_buffer = b''
+                self.transfer_requested = False
 
-            # Decompress the buffer if needed
-            if self.transfer.store == 0:
-                data = rle_decode(data)
+                # Decompress the buffer if needed
+                if self.transfer.store == 0:
+                    data = rle_decode(data)
 
-            self._raise('download-done', self.transfer.store, self.transfer.slot, data)
+                self._raise('download-done', self.transfer.store, self.transfer.slot, data)
 
             # Start next transfer in the queue
             self._transfer_trigger(self.transfer.store)
@@ -355,14 +368,59 @@ class AtemProtocol:
         self.transfer_queue[store].append(TransferTask(store, index))
         self._transfer_trigger(store)
 
-    def upload(self, store, index, data):
+    def upload(self, store, index, data, compress=False, name=None, description=None):
         logging.info("Queue upload of {}:{}".format(store, index))
         if store not in self.transfer_queue:
             self.transfer_queue[store] = []
         task = TransferTask(store, index, upload=True)
         task.data = data
+        task.name = name
+        task.description = description
+        task.calculate_hash()
+        if compress:
+            task.compress()
         self.transfer_queue[store].append(task)
         self._transfer_trigger(store)
+
+    def _queue_chunks(self):
+        # Can't transfer without a chunk size
+        if self.transfer_budget is None:
+            return
+
+        # Only queue chunks if an upload is planned
+        if self.transfer is None:
+            return
+
+        if not self.transfer.upload:
+            return
+
+        chunk_size = self.transfer_budget.size
+        for i in range(0, self.transfer_budget.count):
+            if len(self.transfer.data) == 0:
+                break
+
+            chunk = self.transfer.data[0:chunk_size]
+            self.transfer.data = self.transfer.data[chunk_size:]
+
+            self.transfer_budget.count -= 1
+            if self.transfer_budget.count == 0:
+                logging.debug('Transfer budget ran out')
+                self.transfer_budget = None
+
+            cmd = TransferDataCommand(self.transfer.tid, chunk)
+            packet = Packet()
+            packet.flags = UdpProtocol.FLAG_RELIABLE
+            packet.data = cmd.get_command()
+            self.transport.queue_packet(packet)
+        self.transport.queue_trigger()
+
+    def _queue_flushed(self):
+        if len(self.transfer.data):
+            self._queue_chunks()
+            return
+        cmd = TransferFileDataCommand(self.transfer.tid, self.transfer.hash,
+                                      name=self.transfer.name, description=self.transfer.description)
+        self.send_commands([cmd])
 
     def _transfer_trigger(self, store, retry=False):
         next = None
@@ -407,7 +465,9 @@ class AtemProtocol:
         self.transfer.tid = self.transfer_id
 
         if self.transfer.upload:
-            pass
+            cmd = TransferUploadRequestCommand(self.transfer.tid, self.transfer.store, self.transfer.slot,
+                                               self.transfer.data_length, 1)
+            logging.info('Requesting upload to {}:{}'.format(next.store, next.slot))
         else:
             cmd = TransferDownloadRequestCommand(self.transfer.tid, self.transfer.store, self.transfer.slot)
             logging.info('Requesting download of {}:{}'.format(next.store, next.slot))

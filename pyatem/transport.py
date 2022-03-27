@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 import usb.core
 import usb.util
 
+from pyatem.transfer import TransferQueueFlushed
+
 
 class Packet:
     def __init__(self):
@@ -123,6 +125,8 @@ class UdpProtocol:
         self.had_traffic = False
 
         self.received_packets = collections.deque(maxlen=128)
+        self.queue = collections.deque(maxlen=1024)
+        self.queue_enabled = False
 
     def _send_packet(self, packet):
         packet.session = self.session_id
@@ -257,12 +261,29 @@ class UdpProtocol:
                         self._send_packet(ack)
 
                     # TODO: Implement other control packets, like request for retransmission
+
+                    # Send queued up bulk traffic after the ack
+                    if self.queue_trigger():
+                        return TransferQueueFlushed()
                 else:
                     # Data packet for the upper layer
                     return packet
 
     def send_packet(self, packet):
         self._send_packet(packet)
+
+    def queue_packet(self, packet):
+        self.queue.append(packet)
+
+    def queue_trigger(self):
+        if len(self.queue) > 0:
+            self.queue_enabled = True
+            p = self.queue.popleft()
+            self._send_packet(p)
+        elif self.queue_enabled:
+            self.queue_enabled = False
+            return True
+        return False
 
 
 class UsbProtocol:
