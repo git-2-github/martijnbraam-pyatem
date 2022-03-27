@@ -26,6 +26,9 @@ Data transfer
 .. autoclass:: pyatem.field.FileTransferErrorField
    :members:
 
+.. autoclass:: pyatem.field.FileTransferContinueDataField
+   :members:
+
 Pool settings
 -------------
 

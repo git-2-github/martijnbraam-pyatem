@@ -2549,6 +2549,37 @@ class FileTransferDataCompleteField(FieldBase):
         return '<file-transfer-complete transfer={} u1={} u2={}>'.format(self.transfer, self.u1, self.u2)
 
 
+class FileTransferContinueDataField(FieldBase):
+    """
+    Data from the `FTCD`. This is an field telling the client what chunk size to use to continue the upload
+    of data to the hardware.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      2    u16    Transfer id
+    2      4    ?      unknown
+    6      2    u16    Chunk size
+    8      2    u16    Chunk count
+    10     2    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+    :ivar transfer: Transfer index
+    :ivar size: Length of the transfer chunk
+    :ivar count: Contents of the transfer chunk
+    """
+
+    CODE = "FTCD"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.transfer, self.size, self.count = struct.unpack('>H 4x HH 2x', raw)
+
+    def __repr__(self):
+        return '<file-transfer-continue transfer={} size={} count={}>'.format(self.transfer, self.size, self.count)
+
+
 class MacroPropertiesField(FieldBase):
     """
     Data from the `MPrp`. This is the metadata about a stored macro
