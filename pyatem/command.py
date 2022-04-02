@@ -1901,9 +1901,19 @@ class StreamingServiceSetCommand(Command):
     1      64   str    Service name
     65     512  str    Url
     577    512  str    Streaming key
+    1089   3    ?      padding bytes
     1092   4    u32    Minimum bitrate (Bps)
     1096   4    u32    Maximum bitrate (Bps)
     ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Service name
+    1   Url
+    2   Key
+    3   Min/Max bitrate
+    === ==========
 
     """
 
