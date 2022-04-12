@@ -26,6 +26,8 @@ class AtemListener:
 
     def add_service(self, zeroconf, type, name):
         info = zeroconf.get_service_info(type, name)
+        if info is None:
+            return
         if info.properties[b'class'] != b'AtemSwitcher':
             return
 
