@@ -223,6 +223,14 @@ class VideoModeField(FieldBase):
     15  4k24
     16  4k25
     17  4k29.97
+    18  4k50
+    19  4k59.94
+    20  8k23.98
+    21  8k24
+    22  8k25
+    23  8k29.97
+    24  8k50
+    25  8k59.94
     26  1080p30
     27  1080p60
     === ==========
@@ -261,6 +269,14 @@ class VideoModeField(FieldBase):
             15: (2160, False, 24, True),
             16: (2160, False, 25, True),
             17: (2160, False, 29.97, True),
+            18: (2160, False, 50, True),
+            19: (2160, False, 59.94, True),
+            20: (4320, False, 23.98, True),
+            21: (4320, False, 24, True),
+            22: (4320, False, 25, True),
+            23: (4320, False, 29.97, True),
+            24: (4320, False, 50, True),
+            25: (4320, False, 59.94, True),
             26: (1080, False, 30, True),
             27: (1080, False, 60, True),
         }
@@ -297,11 +313,112 @@ class VideoModeField(FieldBase):
             720: (1280, 720),
             1080: (1920, 1080),
             2160: (3840, 2160),
+            4320: (7680, 4320),
         }
         return lut[self.resolution]
 
     def __repr__(self):
         return '<video-mode: mode={}: {}>'.format(self.mode, self.get_label())
+
+
+class VideoModeCapabilityField(FieldBase):
+    """
+    Data from the `_VMC` field. This describes all the video modes supported by the hardware and
+    the associated multiview and downconvert modes.
+
+    The first 2 bytes is the number of modes supported, then there's a 13 byte block that's repeated for every
+    mode that has the mode number, the possible multiview modes in this mode and the possible downconvert modes.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Number of video modes
+    2      2    ?      padding
+    4      1    u8     Video mode N
+    5      3    ?      padding
+    8      4    u32    Multiview modes bitfield
+    12     4    u32    Downconvert modes bitfield
+    13     1    bool   Requires reconfiguration
+    ====== ==== ====== ===========
+
+    The `Video mode` is an enum of these values:
+
+    === ==========
+    Key Video mode
+    === ==========
+    0   NTSC (525i59.94)
+    1   PAL (625i50)
+    2   NTSC widescreen (525i59.94)
+    3   PAL widescreen (625i50)
+    4   720p50
+    5   720p59.94
+    6   1080i50
+    7   1080i59.94
+    8   1080p23.98
+    9   1080p24
+    10  1080p25
+    11  1080p29.97
+    12  1080p50
+    13  1080p59.94
+    14  4k23.98
+    15  4k24
+    16  4k25
+    17  4k29.97
+    18  4k50
+    19  4k59.94
+    20  8k23.98
+    21  8k24
+    22  8k25
+    23  8k29.97
+    24  8k50
+    25  8k59.94
+    26  1080p30
+    27  1080p60
+    === ==========
+
+    The multiview and downconvert bitfields are the same values as the resultion numbers but the
+    key is the bit instead.
+
+    After parsing:
+
+    :ivar mode: mode number
+    :ivar resolution: vertical resolution of the mode
+    :ivar interlaced: the current mode is interlaced
+    :ivar rate: refresh rate of the mode
+    """
+
+    CODE = "_VMC"
+
+    def __init__(self, raw):
+        self.raw = raw
+        count, = struct.unpack_from('>H', raw, 0)
+        self.modes = []
+        for i in range(0, count):
+            vidm, multiview, downscale, reconfig = struct.unpack_from('>B3x I I ?', raw, 4 + (i * 13))
+            self.modes.append({
+                'modenum': vidm,
+                'mode': self._int_to_mode(vidm),
+                'multiview': self._bitfield_to_modes(multiview),
+                'downscale': self._bitfield_to_modes(downscale),
+                'reconfigure': reconfig,
+            })
+
+    def _bitfield_to_modes(self, bitfield):
+        result = []
+        for i in range(0, 32):
+            if bitfield & (2 ** i):
+                result.append(self._int_to_mode(i))
+        return result
+
+    def _int_to_mode(self, mode):
+        return VideoModeField(struct.pack('>1B3x', mode))
+
+    def __repr__(self):
+        modenames = []
+        for mode in self.modes:
+            modenames.append(mode['mode'].get_label())
+        lst = ' '.join(modenames)
+        return '<video-mode-capability: {}>'.format(lst)
 
 
 class InputPropertiesField(FieldBase):
