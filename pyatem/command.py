@@ -2252,3 +2252,53 @@ class CameraControlCommand(Command):
             packed_data += b'\0' * (8 - len(packed_data))
             data += packed_data
         return self._make_command('CCmd', data)
+
+
+class VideoModeCommand(Command):
+    """
+    Implementation of the `CVdM` command. This sets the main video mode for the hardware
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    bool   Preview enabled
+    2      2    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, mode):
+        """
+        :param mode: The new video mode ID
+        """
+        self.mode = mode
+
+    def get_command(self):
+        data = struct.pack('>B3x', self.mode)
+        return self._make_command('CVdM', data)
+
+
+class AutoInputVideoModeCommand(Command):
+    """
+    Implementation of the `AiVM` command. This enables or disables automatic video mode detection based on the video
+    signal.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    bool   Enable
+    1      3    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, enable):
+        """
+        :param enable: Set auto mode enabled or disabled
+        """
+        self.enable = enable
+
+    def get_command(self):
+        data = struct.pack('>?3x', self.enable)
+        return self._make_command('AiVM', data)

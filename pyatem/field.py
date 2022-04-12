@@ -3118,3 +3118,32 @@ class StreamingStatsField(FieldBase):
 
     def __repr__(self):
         return '<streaming-stats bitrate={} cache={}>'.format(self.bitrate, self.cache)
+
+
+class AutoInputVideoModeField(FieldBase):
+    """
+    Data from the `AiVM`. This field only exists for hardware that can auto-detect a video mode from the input signal.
+    This defines wether the auto detection is enabled and shows if it has actually detected a signal
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    bool   Enabled
+    1      1    bool   Detected
+    2      2    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar enabled: Auto mode detection is enabled
+    :ivar detected: A video mode has been detected from an input
+    """
+
+    CODE = "AiVM"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.enabled, self.detected = struct.unpack('>??2x', raw)
+
+    def __repr__(self):
+        return '<auto-input-video-mode: enabled={} detected={}>'.format(self.enabled, self.detected)
