@@ -224,6 +224,7 @@
                                                 <property name="model">model_video_mode</property>
                                                 <property name="entry-text-column">1</property>
                                                 <property name="id-column">0</property>
+                                                <signal name="changed" handler="on_video_mode_selection_changed" swapped="no"/>
                                                 <child>
                                                   <object class="GtkCellRendererText"/>
                                                   <attributes>

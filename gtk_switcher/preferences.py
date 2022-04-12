@@ -90,6 +90,8 @@ class PreferencesWindow:
             automode = False
 
         old_video_mode = self.video_mode.get_active_id()
+        old_multiview_mode = self.multiview_mode.get_active_id()
+        old_downscale_mode = self.downconvert_mode.get_active_id()
 
         self.current_video_mode.set_text(current_mode.get_label())
         self.model_video_mode.clear()
@@ -99,9 +101,11 @@ class PreferencesWindow:
         if has_auto:
             self.model_video_mode.append(['auto', 'Auto'])
 
+        cmi = {'multiview': [], 'downscale': []}
         for mode in self.connection.mixer.mixerstate['video-mode-capability'].modes:
             self.model_video_mode.append([str(mode['modenum']), mode['mode'].get_label()])
             if mode['modenum'] == current_mode.mode:
+                cmi = mode
                 for mv_mode in mode['multiview']:
                     self.model_multiview_mode.append([str(mv_mode.mode), mv_mode.get_label()])
                 for dc_mode in mode['downscale']:
@@ -112,8 +116,35 @@ class PreferencesWindow:
                 self.video_mode.set_active_id('auto')
             else:
                 self.video_mode.set_active_id(str(current_mode.mode))
+
+            if len(cmi['multiview']) == 1:
+                self.multiview_mode.set_active_id(str(cmi['multiview'][0].mode))
+
+            if len(cmi['downscale']) == 1:
+                self.downconvert_mode.set_active_id(str(cmi['downscale'][0].mode))
+
         else:
             self.video_mode.set_active_id(old_video_mode)
+            self.multiview_mode.set_active_id(old_multiview_mode)
+            self.downconvert_mode.set_active_id(old_downscale_mode)
+
+    def on_video_mode_selection_changed(self, widget):
+        self.model_multiview_mode.clear()
+        self.model_downconvert_mode.clear()
+        current_mode = None
+        for mode in self.connection.mixer.mixerstate['video-mode-capability'].modes:
+            if str(mode['modenum']) == self.video_mode.get_active_id():
+                current_mode = mode
+                for mv_mode in mode['multiview']:
+                    self.model_multiview_mode.append([str(mv_mode.mode), mv_mode.get_label()])
+                for dc_mode in mode['downscale']:
+                    self.model_downconvert_mode.append([str(dc_mode.mode), dc_mode.get_label()])
+
+        if current_mode:
+            if len(current_mode['multiview']) == 1:
+                self.multiview_mode.set_active_id(str(current_mode['multiview'][0].mode))
+            if len(current_mode['downscale']) == 1:
+                self.downconvert_mode.set_active_id(str(current_mode['downscale'][0].mode))
 
     def load_preferences(self):
         state = self.connection.mixer.mixerstate
