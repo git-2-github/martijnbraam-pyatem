@@ -1,6 +1,6 @@
 import gi
 
-from pyatem.command import MultiviewInputCommand
+from pyatem.command import MultiviewInputCommand, VideoModeCommand, AutoInputVideoModeCommand
 from pyatem.field import InputPropertiesField
 
 gi.require_version('Gtk', '3.0')
@@ -37,6 +37,17 @@ class PreferencesWindow:
         # Load requested view
         self.mainstack = builder.get_object("mainstack")
         self.settingsstack = builder.get_object("settingsstack")
+
+        self.video_mode = builder.get_object('video_mode')
+        self.current_video_mode = builder.get_object('current_video_mode')
+        self.model_video_mode = builder.get_object('model_video_mode')
+        self.multiview_mode = builder.get_object('multiview_mode')
+        self.current_multiview_mode = builder.get_object('current_multiview_mode')
+        self.model_multiview_mode = builder.get_object('model_multiview_mode')
+        self.downconvert_mode = builder.get_object('downconvert_mode')
+        self.current_downconvert_mode = builder.get_object('current_downconvert_mode')
+        self.model_downconvert_mode = builder.get_object('model_downconvert_mode')
+
         self.multiview_layout = builder.get_object("multiview_layout")
         self.multiview_tl = builder.get_object("multiview_tl")
         self.multiview_tr = builder.get_object("multiview_tr")
@@ -52,6 +63,7 @@ class PreferencesWindow:
         self.load_preferences()
         self.connection.mixer.on('change:multiviewer-properties:*', self.make_multiviewer)
         self.connection.mixer.on('change:multiviewer-input:*', self.update_multiviewer_input)
+        self.connection.mixer.on('change:video-mode', self.update_mode_models)
         self.window.show_all()
 
     def load_models(self):
@@ -64,6 +76,44 @@ class PreferencesWindow:
             if i.available_aux:
                 self.model_aux.append([str(i.index), i.name])
         self.model_changing = False
+
+        self.update_mode_models(None, update_active=True)
+
+    def update_mode_models(self, arg, update_active=False):
+        current_mode = self.connection.mixer.mixerstate['video-mode']
+        if 'auto-input-video-mode' in self.connection.mixer.mixerstate:
+            am = self.connection.mixer.mixerstate['auto-input-video-mode']
+            has_auto = True
+            automode = am.enabled
+        else:
+            has_auto = False
+            automode = False
+
+        old_video_mode = self.video_mode.get_active_id()
+
+        self.current_video_mode.set_text(current_mode.get_label())
+        self.model_video_mode.clear()
+        self.model_multiview_mode.clear()
+        self.model_downconvert_mode.clear()
+
+        if has_auto:
+            self.model_video_mode.append(['auto', 'Auto'])
+
+        for mode in self.connection.mixer.mixerstate['video-mode-capability'].modes:
+            self.model_video_mode.append([str(mode['modenum']), mode['mode'].get_label()])
+            if mode['modenum'] == current_mode.mode:
+                for mv_mode in mode['multiview']:
+                    self.model_multiview_mode.append([str(mv_mode.mode), mv_mode.get_label()])
+                for dc_mode in mode['downscale']:
+                    self.model_downconvert_mode.append([str(dc_mode.mode), dc_mode.get_label()])
+
+        if update_active:
+            if automode:
+                self.video_mode.set_active_id('auto')
+            else:
+                self.video_mode.set_active_id(str(current_mode.mode))
+        else:
+            self.video_mode.set_active_id(old_video_mode)
 
     def load_preferences(self):
         state = self.connection.mixer.mixerstate
@@ -210,3 +260,17 @@ class PreferencesWindow:
 
         if isinstance(widget, Gtk.Container):
             widget.forall(self.apply_css, provider)
+
+    def on_set_video_mode_clicked(self, widget):
+        cmds = []
+        if 'auto-input-video-mode' in self.connection.mixer.mixerstate:
+            am = self.connection.mixer.mixerstate['auto-input-video-mode']
+            if am.enabled and self.video_mode.get_active_id() != 'auto':
+                cmds.append(AutoInputVideoModeCommand(False))
+            if not am.enabled and self.video_mode.get_active_id() == 'auto':
+                cmd = AutoInputVideoModeCommand(True)
+                self.connection.mixer.send_commands([cmd])
+                return
+
+        cmds.append(VideoModeCommand(int(self.video_mode.get_active_id())))
+        self.connection.mixer.send_commands(cmds)
