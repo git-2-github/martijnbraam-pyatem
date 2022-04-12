@@ -4,6 +4,13 @@ Video switching fields
 .. autoclass:: pyatem.field.VideoModeField
    :members:
 
+.. autoclass:: pyatem.field.VideoModeCapabilityField
+   :members:
+
+.. autoclass:: pyatem.field.AutoInputVideoModeField
+   :members:
+
+
 Program / Preview bus
 ---------------------
 

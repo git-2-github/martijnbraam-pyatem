@@ -1,6 +1,14 @@
 Video switching commands
 ========================
 
+.. autoclass:: pyatem.command.VideoModeCommand
+   :members:
+   :special-members:
+
+.. autoclass:: pyatem.command.AutoInputVideoModeCommand
+   :members:
+   :special-members:
+
 
 Program / Preview bus
 ---------------------
