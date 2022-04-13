@@ -37,6 +37,27 @@ class AudioPage:
         self.monitor_on = None
         self.monitor_dim = None
 
+    def clear_audio_state(self):
+        self.mixer = 'atem'
+        self.volume_level = {}
+        self.input_gain = {}
+        self.pan = {}
+        self.delay = {}
+        self.audio_tally = {}
+        self.audio_strip = {}
+        self.audio_on = {}
+        self.audio_afv = {}
+        self.audio_monitor = {}
+        self.vu = {}
+
+        self.master_level = None
+        self.master_afv = None
+        self.monitor_level = None
+        self.monitor_on = None
+        self.monitor_dim = None
+
+        self.unrealize_audio()
+
     def _make_mixer_ui_label(self, index, name):
         label = Gtk.Label(label=name)
         label.get_style_context().add_class('dim-label')
@@ -44,10 +65,13 @@ class AudioPage:
         label.set_valign(Gtk.Align.START)
         self.audio_channels.attach(label, 0, index, 1, 1)
 
-    def make_mixer_ui(self, inputs):
-        # Clear the existing channels
+    def unrealize_audio(self):
         for child in self.audio_channels:
             child.destroy()
+
+    def make_mixer_ui(self, inputs):
+        # Clear the existing channels
+        self.unrealize_audio()
 
         # Create row of labels again
         if self.mixer == "fairlight":
@@ -140,6 +164,8 @@ class AudioPage:
 
                 # Create the controls
                 if self.mixer == 'fairlight':
+                    if len(self.input_gain) == 0:
+                        return
                     input_frame = Gtk.Frame()
                     input_frame.get_style_context().add_class('view')
                     dial = Dial()
@@ -370,7 +396,7 @@ class AudioPage:
             self.volume_level[data.strip_id] = LogAdjustment(0, 65381, 0, 10, 10, 100)
             self.pan[data.strip_id] = Gtk.Adjustment(0, -10000, 10000, 10, 10, 100)
             self.volume_level[data.strip_id].connect('value-changed', self.on_volume_changed)
-            self.pan[data.strip_id].source = input.index
+            self.pan[data.strip_id].source = data.index
             self.pan[data.strip_id].connect('value-changed', self.on_pan_changed)
 
         self.model_changing = True
@@ -590,6 +616,8 @@ class AudioPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_audio_meter_levels_change(self, data):
+        if 'master' not in self.vu:
+            return
         self.vu['master'][0].set_fraction((data.master[0] + 60) / 60)
         self.vu['master'][1].set_fraction((data.master[1] + 60) / 60)
         self.vu['monitor'][0].set_fraction((data.monitor[0] + 60) / 60)
@@ -600,9 +628,13 @@ class AudioPage:
             self.vu[strip_id][1].set_fraction((data.input[strip][1] + 60) / 60)
 
     def on_fairlight_meter_levels_change(self, data):
+        if data.strip_id not in self.vu:
+            return
         self.vu[data.strip_id][0].set_fraction((data.level[0] + 60) / 60)
         self.vu[data.strip_id][1].set_fraction((data.level[1] + 60) / 60)
 
     def on_fairlight_master_levels_change(self, data):
+        if 'master' not in self.vu:
+            return
         self.vu['master'][0].set_fraction((data.level[0] + 60) / 60)
         self.vu['master'][1].set_fraction((data.level[1] + 60) / 60)

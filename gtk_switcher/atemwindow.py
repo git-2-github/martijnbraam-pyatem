@@ -240,6 +240,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         print("Closing old connection...")
         self.connection.die()
         self.connection.join(timeout=1)
+        time.sleep(0.1)
+        self.clear_audio_state()
         print("Starting new connection to {}".format(self.settings.get_string('switcher-ip')))
         self.connection = AtemConnection(self.on_change, self.on_disconnect, self.on_transfer_progress,
                                          self.on_download_done)
