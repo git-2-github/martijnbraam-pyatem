@@ -1770,6 +1770,7 @@
                                             <child>
                                               <object class="GtkExpander" id="expander_encoder">
                                                 <property name="can-focus">True</property>
+                                                <property name="no-show-all">True</property>
                                                 <property name="expanded">True</property>
                                                 <child>
                                                   <object class="GtkFrame">
