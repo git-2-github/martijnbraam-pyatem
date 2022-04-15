@@ -63,7 +63,7 @@ Offset  Length  Note
 4+n     4       (optional) Chunk length of the second chunk. These chunks and data blocks repeat
 ======  ======  =====
 
-The contents of the ATEM messages are what's defined as `High level protocol`_ on the UDP page. All further parsing
+The contents of the ATEM messages are what's defined as :ref:`high-level-protocol` on the UDP page. All further parsing
 is exactly the same as the UDP protocl.
 
 For sending commands to the ATEM the inverse can be done. Prepend a 32 bit length header to the normal ATEM command
