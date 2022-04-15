@@ -88,6 +88,8 @@ packet should have the ACK flag set, the acknowledgement number set to the remov
 sequence number of this packet should be set to `0x61`. This is the only packet where the client sets a value in
 the remote sequence number field of the header.
 
+.. _High level protocol:
+
 The higher level protocol
 -------------------------
 

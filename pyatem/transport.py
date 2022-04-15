@@ -331,9 +331,7 @@ class UsbProtocol:
         return packet
 
     def connect(self):
-        self.handle.ctrl_transfer(0xa1, 2, 0x0000, 2, 1)
         self.handle.ctrl_transfer(0x21, 0, 0x0000, 2, [])
-        self.handle.ctrl_transfer(0xa1, 2, 0x0000, 2, 1)
 
     def receive_packet(self):
         while True:
