@@ -10,6 +10,7 @@ a few parts since the skaarhoj documentation has been last updated.
    :caption: Contents:
 
    udptransport
+   usbtransport
    fields
    commands
    python
