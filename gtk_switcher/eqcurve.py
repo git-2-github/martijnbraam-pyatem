@@ -42,12 +42,26 @@ class BiQuad:
 
 class HighPass(BiQuad):
     def __init__(self, frequency):
-        w0 = (2 * math.pi * frequency) / 40000
+        w0 = (2 * math.pi * frequency) / 48000
         s0 = math.sin(w0)
         c0 = math.cos(w0)
         self.b0 = s0
         self.b1 = 0
         self.b2 = -s0
+        self.a0 = 1 - c0 + s0
+        self.a1 = 2 * (1 - c0)
+        self.a2 = 1 - c0 - s0
+        self.normalize()
+
+
+class LowPass(BiQuad):
+    def __init__(self, frequency):
+        w0 = (2 * math.pi * frequency) / 48000
+        s0 = math.sin(w0)
+        c0 = math.cos(w0)
+        self.b0 = 1 - c0
+        self.b1 = (1 - c0) * 2
+        self.b2 = 1 - c0
         self.a0 = 1 - c0 + s0
         self.a1 = 2 * (1 - c0)
         self.a2 = 1 - c0 - s0
@@ -67,6 +81,52 @@ class Peaking(BiQuad):
         self.a0 = 1 + alpha / A
         self.a1 = -2 * math.cos(w0)
         self.a2 = 1 - alpha / A
+        self.normalize()
+
+
+class Notch(BiQuad):
+    def __init__(self, frequency):
+        w0 = (2 * math.pi * frequency) / 48000
+        q = 7
+        alpha = math.sin(w0) / (2 * q)
+        self.b0 = 1
+        self.b1 = -2 * math.cos(w0)
+        self.b2 = 1
+        self.a0 = 1 + alpha
+        self.a1 = -2 * math.cos(w0)
+        self.a2 = 1 - alpha
+        self.normalize()
+
+
+class HighShelf(BiQuad):
+    def __init__(self, frequency, gain):
+        A = math.pow(10, gain / 40)
+        w0 = (2 * math.pi * frequency) / 48000
+        s0 = math.sin(w0)
+        c0 = math.cos(w0)
+        beta = math.sqrt(A + A)
+        self.b0 = A * ((A + 1) + (A - 1) * c0 + beta * s0)
+        self.b1 = -2 * A * ((A - 1) + (A + 1) * c0)
+        self.b2 = A * ((A + 1) + (A - 1) * c0 - beta * s0)
+        self.a0 = (A + 1) - (A - 1) * c0 + beta * s0
+        self.a1 = 2 * ((A - 1) - (A + 1) * c0)
+        self.a2 = (A + 1) - (A - 1) * c0 - beta * s0
+        self.normalize()
+
+
+class LowShelf(BiQuad):
+    def __init__(self, frequency, gain):
+        A = math.pow(10, gain / 40)
+        w0 = (2 * math.pi * frequency) / 48000
+        s0 = math.sin(w0)
+        c0 = math.cos(w0)
+        beta = math.sqrt(A + A)
+        self.b0 = A * ((A + 1) - (A - 1) * c0 + beta * s0)
+        self.b1 = 2 * A * ((A - 1) - (A + 1) * c0)
+        self.b2 = A * ((A + 1) - (A - 1) * c0 - beta * s0)
+        self.a0 = (A + 1) + (A - 1) * c0 + beta * s0
+        self.a1 = -2 * ((A - 1) + (A + 1) * c0)
+        self.a2 = (A + 1) + (A - 1) * c0 - beta * s0
         self.normalize()
 
 
@@ -122,19 +182,23 @@ class EqCurve(Gtk.Frame):
                 continue
 
             if band.band_filter == 0x01:
-                pass
+                # Low shelf
+                biquads.append(LowShelf(band.band_frequency, band.band_gain / 100))
             elif band.band_filter == 0x02:
-                pass
+                # Low pass
+                biquads.append(LowPass(band.band_frequency))
             elif band.band_filter == 0x04:
                 # Bell
                 biquads.append(Peaking(band.band_frequency, band.band_gain / 100, band.band_q / 100))
             elif band.band_filter == 0x08:
-                pass
+                # Notch
+                biquads.append(Notch(band.band_frequency))
             elif band.band_filter == 0x10:
                 # High pass band
                 biquads.append(HighPass(band.band_frequency))
             elif band.band_filter == 0x20:
-                pass
+                # High shelf
+                biquads.append(HighShelf(band.band_frequency, band.band_gain / 100))
 
         db = 0.0
         for band in biquads:
