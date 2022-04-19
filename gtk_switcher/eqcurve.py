@@ -170,6 +170,24 @@ class EqCurve(Gtk.Frame):
 
         return 10 * (2400 ** frac)
 
+    def _x_to_f_aligned(self, width, x):
+        """
+        This is hack to shift the sampling frequency slightly so it corresponds to the peak of the nearest filter
+        if there is a filter in the exact range covered by the pixel. This fixes aliasing in the display for very
+        steep filters and is a lot more efficient than oversampling the whole frequency range.
+        """
+        lower = self._x_to_f(width, max(0, x - 1))
+        upper = self._x_to_f(width, min(width, x + 1))
+        for band_idx in self.bands:
+            if not self.bands[band_idx].band_enabled:
+                continue
+            bf = self.bands[band_idx].band_frequency
+            if lower <= bf <= upper:
+                old = self._x_to_f(width, x)
+                print(f"Shift {old} to {bf}")
+                return bf
+        return self._x_to_f(width, x)
+
     def _y_to_db(self, height, y):
         fract = (y / height) * 2 - 1
         return height - (fract * 20)
@@ -228,7 +246,7 @@ class EqCurve(Gtk.Frame):
 
         last = self._db_to_y(height, self.calculate_filter(5))
         for i in range(0, width):
-            f = self._x_to_f(width, i)
+            f = self._x_to_f_aligned(width, i)
             gain = self.calculate_filter(f)
             y = self._db_to_y(height, gain)
             Gtk.render_line(context, cr, i - 1, last, i, y)
