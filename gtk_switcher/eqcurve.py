@@ -45,12 +45,14 @@ class HighPass(BiQuad):
         w0 = (2 * math.pi * frequency) / 48000
         s0 = math.sin(w0)
         c0 = math.cos(w0)
-        self.b0 = s0
-        self.b1 = 0
-        self.b2 = -s0
-        self.a0 = 1 - c0 + s0
-        self.a1 = 2 * (1 - c0)
-        self.a2 = 1 - c0 - s0
+        q = 0.7071
+        alpha = s0 / (2 * q)
+        self.b0 = (1 + c0) / 2
+        self.b1 = -(1 + c0)
+        self.b2 = (1 + c0) / 2
+        self.a0 = 1 + alpha
+        self.a1 = -2 * c0
+        self.a2 = 1 - alpha
         self.normalize()
 
 
@@ -59,12 +61,14 @@ class LowPass(BiQuad):
         w0 = (2 * math.pi * frequency) / 48000
         s0 = math.sin(w0)
         c0 = math.cos(w0)
-        self.b0 = 1 - c0
-        self.b1 = (1 - c0) * 2
-        self.b2 = 1 - c0
-        self.a0 = 1 - c0 + s0
-        self.a1 = 2 * (1 - c0)
-        self.a2 = 1 - c0 - s0
+        q = 0.7071
+        alpha = s0 / (2 * q)
+        self.b0 = (1 - c0) / 2
+        self.b1 = 1 - c0
+        self.b2 = (1 - c0) / 2
+        self.a0 = 1 + alpha
+        self.a1 = -2 * c0
+        self.a2 = 1 - alpha
         self.normalize()
 
 
