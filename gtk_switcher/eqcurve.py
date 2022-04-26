@@ -166,9 +166,12 @@ class EqCurve(Gtk.Frame):
         self.da.queue_draw()
 
     def _x_to_f(self, width, x):
-        frac = x / width + 0.00001
+        frac = (x + 1) / (width + 1)
 
-        return 10 * (2400 ** frac)
+        log_min = math.log(19, 2)
+        log_max = math.log(24000, 2)
+        log_delta = log_max - log_min
+        return 2 ** (log_min + (log_delta * frac))
 
     def _x_to_f_aligned(self, width, x):
         """
@@ -181,10 +184,12 @@ class EqCurve(Gtk.Frame):
         for band_idx in self.bands:
             if not self.bands[band_idx].band_enabled:
                 continue
+            if self.bands[band_idx].band_filter not in [0x04, 0x08]:
+                continue
+            if self.bands[band_idx].band_gain == 0:
+                continue
             bf = self.bands[band_idx].band_frequency
             if lower <= bf <= upper:
-                old = self._x_to_f(width, x)
-                print(f"Shift {old} to {bf}")
                 return bf
         return self._x_to_f(width, x)
 
@@ -244,7 +249,7 @@ class EqCurve(Gtk.Frame):
         context.save()
         context.add_class('eq-window-curve')
 
-        last = self._db_to_y(height, self.calculate_filter(5))
+        last = self._db_to_y(height, self.calculate_filter(19))
         for i in range(0, width):
             f = self._x_to_f_aligned(width, i)
             gain = self.calculate_filter(f)
