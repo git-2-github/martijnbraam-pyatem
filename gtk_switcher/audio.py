@@ -2,6 +2,7 @@ import gi
 
 from gtk_switcher.adjustmententry import AdjustmentEntry
 from gtk_switcher.dial import Dial
+from gtk_switcher.eqwindow import EqWindow
 from gtk_switcher.gtklogadjustment import LogAdjustment
 from gtk_switcher.eqcurve import EqCurve
 from pyatem.command import AudioInputCommand, FairlightStripPropertiesCommand, FairlightMasterPropertiesCommand, \
@@ -189,11 +190,18 @@ class AudioPage:
                     self.audio_channels.attach(input_frame, strip_index + c, 2, 1, 1)
 
                     eq_frame = EqCurve()
+                    eq_frame.connect('button-release-event', self.on_open_eq_overlay)
+                    eq_frame.strip_id = strip_id
                     if 'atem-eq-band-properties' in self.connection.mixer.mixerstate and strip_id in \
                             self.connection.mixer.mixerstate['atem-eq-band-properties']:
                         for band_id in self.connection.mixer.mixerstate['atem-eq-band-properties'][strip_id]:
                             band = self.connection.mixer.mixerstate['atem-eq-band-properties'][strip_id][band_id]
                             eq_frame.update_band(band)
+                    if 'fairlight-strip-properties' in self.connection.mixer.mixerstate and strip_id in \
+                            self.connection.mixer.mixerstate['fairlight-strip-properties']:
+                        strip = self.connection.mixer.mixerstate['fairlight-strip-properties'][strip_id]
+                        eq_frame.set_enabled(strip.eq_enable)
+
                     eq_frame.get_style_context().add_class('view')
                     eq_frame.set_size_request(0, 64)
                     self.eq[strip_id] = eq_frame
@@ -462,6 +470,8 @@ class AudioPage:
         if data.strip_id in self.audio_on:
             self.set_class(self.audio_on[data.strip_id], 'program', data.state & 2)
             self.set_class(self.audio_afv[data.strip_id], 'active', data.state & 4)
+
+        self.eq[data.strip_id].set_enabled(data.eq_enable)
         self.model_changing = False
 
     def on_audio_mixer_master_properties_change(self, data):
@@ -652,3 +662,6 @@ class AudioPage:
             return
         self.vu['master'][0].set_fraction((data.level[0] + 60) / 60)
         self.vu['master'][1].set_fraction((data.level[1] + 60) / 60)
+
+    def on_open_eq_overlay(self, widget, *args):
+        EqWindow(widget.strip_id, self.window, self.connection, self.provider)

@@ -209,9 +209,33 @@ headerbar.streaming button.radio:checked {
 }
 
 .eq-window-lines {
+    color: rgba(128, 128, 128, 0.2);
+}
+
+.eq-window-lines.zero {
     color: rgba(128, 128, 128, 0.3);
 }
 
 .eq-window-curve {
-    color: #15539e;
+    color: #1b6acb;
+}
+
+.eq-window-curve.disabled {
+    color: rgba(128, 128, 128, 0.5);
+}
+
+.eq-window-handle {
+    border: 1px solid @borders;
+    border-radius: 50%;
+    background: @content_view_bg;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.eq-window-handle.active {
+    border: 1px solid #1b6acb;
+    color: white;
+}
+
+.eq-window:not(.mini) {
+    background: @content_view_bg;
 }

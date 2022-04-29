@@ -140,7 +140,7 @@ class EqCurve(Gtk.Frame):
     def __init__(self):
         super(Gtk.Frame, self).__init__()
         self.connection = None
-        self.set_size_request(640, 480)
+        self.set_size_request(900, 240)
 
         self.da = Gtk.DrawingArea()
         self.add(self.da)
@@ -156,22 +156,43 @@ class EqCurve(Gtk.Frame):
 
         self.da.connect("draw", self.on_draw)
         # self.da.connect("button-press-event", self.on_mouse_down)
-        # self.da.connect("button-release-event", self.on_mouse_up)
+        self.da.connect("button-release-event", self.on_mouse_up)
         # self.da.connect("motion-notify-event", self.on_mouse_move)
         self.show_all()
         self.bands = {}
+        self.mini = True
+        self.enabled = True
 
     def update_band(self, bandupdate):
         self.bands[bandupdate.band_index] = bandupdate
+        self.da.queue_draw()
+
+    def set_enabled(self, enabled):
+        self.enabled = enabled
         self.da.queue_draw()
 
     def _x_to_f(self, width, x):
         frac = (x + 1) / (width + 1)
 
         log_min = math.log(19, 2)
-        log_max = math.log(24000, 2)
+        log_max = math.log(19000, 2)
         log_delta = log_max - log_min
         return 2 ** (log_min + (log_delta * frac))
+
+    def _f_to_x(self, width, f):
+        start = 0
+        end = width
+        while True:
+            middle = start + ((end - start) / 2)
+            pf = self._x_to_f(width, middle)
+            distance = abs(pf - f)
+            if distance < 3 or abs(end - start) < 2:
+                break
+            if pf < f:
+                start = middle
+            else:
+                end = middle
+        return middle
 
     def _x_to_f_aligned(self, width, x):
         """
@@ -238,22 +259,63 @@ class EqCurve(Gtk.Frame):
 
         context.save()
         context.add_class('eq-window')
+        if self.mini:
+            context.add_class('mini')
         Gtk.render_background(context, cr, 0, 0, width, height)
 
         context.restore()
         context.save()
         context.add_class('eq-window-lines')
-
+        context.add_class('zero')
         Gtk.render_line(context, cr, 0, height / 2, width, height / 2)
+
+        if not self.mini:
+            context.remove_class('zero')
+            for dB in [15, 10, 5, -5, -10, -15]:
+                Gtk.render_line(context, cr, 0, self._db_to_y(height, dB), width, self._db_to_y(height, dB))
+            for Hz in [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]:
+                x = self._f_to_x(width, Hz)
+                Gtk.render_line(context, cr, x, 0, x, height)
+
         context.restore()
         context.save()
         context.add_class('eq-window-curve')
+        if not self.enabled:
+            context.add_class('disabled')
+
+        step = 1 if self.mini else 3
 
         last = self._db_to_y(height, self.calculate_filter(19))
-        for i in range(0, width):
+        for i in range(0, width, step):
             f = self._x_to_f_aligned(width, i)
             gain = self.calculate_filter(f)
             y = self._db_to_y(height, gain)
-            Gtk.render_line(context, cr, i - 1, last, i, y)
+            Gtk.render_line(context, cr, i - step, last, i, y)
             last = y
+
+        if not self.mini:
+            context.restore()
+            context.save()
+            context.add_class('eq-window-handle')
+            if not self.enabled:
+                context.add_class('disabled')
+            for band_index in self.bands:
+                band = self.bands[band_index]
+                if band.band_enabled:
+                    context.add_class('active')
+                else:
+                    context.remove_class('active')
+                x = self._f_to_x(width, band.band_frequency)
+                y = self._db_to_y(height, band.band_gain / 100)
+                Gtk.render_background(context, cr, x - 8, y - 8, 16, 16)
+                Gtk.render_frame(context, cr, x - 8, y - 8, 16, 16)
+                cr.move_to(x - 3, y + 4)
+                color = context.get_color(Gtk.StateFlags.NORMAL)
+                cr.set_source_rgba(color.red, color.green, color.blue, color.alpha)
+                cr.show_text(f"{band_index + 1}")
+
         context.restore()
+
+    def on_mouse_up(self, widget, *args):
+        if self.mini:
+            pass

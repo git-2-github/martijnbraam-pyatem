@@ -48,6 +48,8 @@ switcher_sources = [
     'macroeditor.py',
     'stream_data.py',
     'template_i18n.py',
+    'eqcurve.py',
+    'eqwindow.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)

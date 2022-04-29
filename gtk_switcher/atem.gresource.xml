@@ -10,6 +10,7 @@
     <file>ui/downstream-keyer.glade</file>
     <file>ui/preferences.glade</file>
     <file>ui/macro-editor.glade</file>
+    <file>ui/eq.glade</file>
 
     <file>icons/wipe-h.svg</file>
     <file>icons/wipe-v.svg</file>
