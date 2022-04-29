@@ -1246,8 +1246,8 @@ class FairlightStripPropertiesCommand(Command):
 
     """
 
-    def __init__(self, source, channel, delay=None, gain=None, eq_gain=None, dynamics_gain=None, balance=None,
-                 volume=None, state=None):
+    def __init__(self, source, channel, delay=None, gain=None, eq_gain=None, eq_enable=None, dynamics_gain=None,
+                 balance=None, volume=None, state=None):
         """
         :param index: 0-indexed M/E number to control the preview bus of
         """
@@ -1256,6 +1256,7 @@ class FairlightStripPropertiesCommand(Command):
         self.delay = delay
         self.gain = gain
         self.eq_gain = eq_gain
+        self.eq_enable = eq_enable
         self.dynamics_gain = dynamics_gain
         self.balance = balance
         self.volume = volume
@@ -1267,6 +1268,8 @@ class FairlightStripPropertiesCommand(Command):
             mask |= 1 << 0
         if self.gain is not None:
             mask |= 1 << 1
+        if self.eq_enable is not None:
+            mask |= 1 << 3
         if self.eq_gain is not None:
             mask |= 1 << 4
         if self.dynamics_gain is not None:
@@ -1280,6 +1283,7 @@ class FairlightStripPropertiesCommand(Command):
 
         delay = 0 if self.delay is None else self.delay
         gain = 0 if self.gain is None else self.gain
+        eq_enable = False if self.eq_enable is None else self.eq_enable
         eq_gain = 0 if self.eq_gain is None else self.eq_gain
         dynamics_gain = 0 if self.dynamics_gain is None else self.dynamics_gain
         balance = 0 if self.balance is None else self.balance
@@ -1289,8 +1293,9 @@ class FairlightStripPropertiesCommand(Command):
         split = 0xff if self.channel > -1 else 0x01
         self.channel = 0x00 if self.channel == -1 else self.channel
         pad = b'\xff\xff\xff\xff\xff\xff\xff'
-        data = struct.pack('>H H4x6sBb B 3x i 6x h 2x Hh 2x iB 3x', mask, self.source, pad, split, self.channel, delay,
-                           gain, eq_gain,
+        data = struct.pack('>H H4x6sBb B 3x i ? 5x h 2x Hh 2x iB 3x', mask, self.source, pad, split, self.channel,
+                           delay,
+                           gain, eq_enable, eq_gain,
                            dynamics_gain, balance, volume, state)
         return self._make_command('CFSP', data)
 
