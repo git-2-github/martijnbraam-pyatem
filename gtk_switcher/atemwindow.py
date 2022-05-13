@@ -254,6 +254,12 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         print("Closing old connection...")
         self.connection.die()
         self.connection.join(timeout=1)
+        for tid in self.hardware_threads:
+            self.hardware_threads[tid].die()
+        for me in self.me:
+            self.me.remove(me)
+        for widget in self.main_blocks:
+            self.main_blocks.remove(widget)
         time.sleep(0.1)
         self.clear_audio_state()
         print("Starting new connection to {}".format(self.settings.get_string('switcher-ip')))
@@ -290,6 +296,10 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         settings = json.loads(settings)
         if self.connection.ip in settings:
             self.connection_settings = settings[self.connection.ip]
+        else:
+            self.connection_settings = {
+                "videohubs": []
+            }
 
         # Connect to stored videohubs
         if 'videohubs' in self.connection_settings:
