@@ -51,6 +51,8 @@ switcher_sources = [
     'eqcurve.py',
     'eqwindow.py',
     'videohub.py',
+    'videohubbus.py',
+    'videohubconnection.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)

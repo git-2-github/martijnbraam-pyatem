@@ -2,7 +2,7 @@
   "app-id": "nl.brixit.Switcher",
   "name": "Switcher control",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "3.38",
+  "runtime-version": "42",
   "sdk": "org.gnome.Sdk",
   "command": "switcher-control",
   "finish-args": [
@@ -36,26 +36,6 @@
         {
           "type": "dir",
           "path": "../"
-        }
-      ]
-    },
-    {
-      "name": "libhandy",
-      "buildsystem": "meson",
-      "config-opts": [
-        "-Dprofiling=false",
-        "-Dintrospection=enabled",
-        "-Dgtk_doc=false",
-        "-Dtests=false",
-        "-Dexamples=false",
-        "-Dvapi=false",
-        "-Dglade_catalog=disabled"
-      ],
-      "sources": [
-        {
-          "type": "git",
-          "url": "https://gitlab.gnome.org/GNOME/libhandy",
-          "tag": "1.5.0"
         }
       ]
     },
