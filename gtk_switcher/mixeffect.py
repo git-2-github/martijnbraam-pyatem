@@ -59,6 +59,8 @@ class MixEffectBlock(Gtk.Grid):
             'dve': '0:00'
         }
 
+        self.menu = None
+
     def set_mode(self, mode):
         self.mode = mode
 
@@ -142,6 +144,7 @@ class MixEffectBlock(Gtk.Grid):
                 btn.set_size_request(48, 48)
                 btn.get_style_context().add_class('bmdbtn')
                 btn.connect('clicked', self.do_program_input_change)
+                btn.connect('button-release-event', self.on_mouse_release)
                 self.program_bus.attach(btn, left, top, 1, 1)
 
                 plabel = Gtk.Label(label=button.short_name)
@@ -152,10 +155,34 @@ class MixEffectBlock(Gtk.Grid):
                 pbtn.set_size_request(48, 48)
                 pbtn.get_style_context().add_class('bmdbtn')
                 pbtn.connect('clicked', self.do_preview_input_change)
+                pbtn.connect('button-release-event', self.on_mouse_release)
                 self.preview_bus.attach(pbtn, left, top, 1, 1)
 
         self.program_bus.show_all()
         self.preview_bus.show_all()
+
+    def on_mouse_release(self, widget, event):
+        # Only respond on right click
+        if event.button != 3:
+            return
+
+        if not hasattr(widget, 'router_output') or widget.router_output is None:
+            return
+
+        self.menu = Gtk.Menu()
+        for index in widget.router.inputs:
+            source = widget.router.inputs[index]
+            item = Gtk.MenuItem(source['label'])
+            item.router = widget.router
+            item.router_output = widget.router_output
+            item.router_input = int(index)
+            item.connect('activate', self.on_route_change)
+            self.menu.append(item)
+        self.menu.show_all()
+        self.menu.popup(None, None, None, None, 0, Gtk.get_current_event_time())
+
+    def on_route_change(self, widget, *args):
+        widget.router.change_route(widget.router_output, widget.router_input)
 
     def program_input_change(self, data):
         for btn in self.program_bus:
@@ -644,7 +671,7 @@ class MixEffectBlock(Gtk.Grid):
         self.onair_key4.set_sensitive(data.keyers > 3)
 
     def add_router(self, hwthread, config):
-        for btn in self.program_bus:
+        for btn in list(self.program_bus) + list(self.preview_bus):
             link = None
             for output_idx in config['outputs']:
                 output = config['outputs'][output_idx]
