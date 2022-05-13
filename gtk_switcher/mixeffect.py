@@ -60,6 +60,10 @@ class MixEffectBlock(Gtk.Grid):
         }
 
         self.menu = None
+        self.routers = []
+        self.last_program = None
+        self.last_preview = None
+        self.last_preview_in_program = False
 
     def set_mode(self, mode):
         self.mode = mode
@@ -120,6 +124,8 @@ class MixEffectBlock(Gtk.Grid):
         for child in self.preview_bus:
             child.destroy()
 
+
+
         for top, row in enumerate(buttons):
             for left, button in enumerate(row):
                 if button is None:
@@ -136,6 +142,16 @@ class MixEffectBlock(Gtk.Grid):
                 active = button.short_name != ""
 
                 label = Gtk.Label(label=button.short_name)
+                link = None
+                hwthread = None
+                for hwthread, config in self.routers:
+                    link = None
+                    for output_idx in config['outputs']:
+                        output = config['outputs'][output_idx]
+                        if output['source'] == button.index:
+                            link = output_idx
+                    if link is not None:
+                        break
 
                 btn = Gtk.Button()
                 btn.add(label)
@@ -143,6 +159,12 @@ class MixEffectBlock(Gtk.Grid):
                 btn.set_sensitive(active)
                 btn.set_size_request(48, 48)
                 btn.get_style_context().add_class('bmdbtn')
+                btn.router_output = link
+                if link is not None:
+                    btn.router = hwthread
+                    btn.get_style_context().add_class('routable')
+                if button.index == self.last_program:
+                    btn.get_style_context().add_class('program')
                 btn.connect('clicked', self.do_program_input_change)
                 btn.connect('button-release-event', self.on_mouse_release)
                 self.program_bus.attach(btn, left, top, 1, 1)
@@ -154,6 +176,15 @@ class MixEffectBlock(Gtk.Grid):
                 pbtn.set_sensitive(active)
                 pbtn.set_size_request(48, 48)
                 pbtn.get_style_context().add_class('bmdbtn')
+                pbtn.router_output = link
+                if link is not None:
+                    pbtn.router = hwthread
+                    pbtn.get_style_context().add_class('routable')
+                if button.index == self.last_preview:
+                    if self.last_preview_in_program:
+                        pbtn.get_style_context().add_class('program')
+                    else:
+                        pbtn.get_style_context().add_class('preview')
                 pbtn.connect('clicked', self.do_preview_input_change)
                 pbtn.connect('button-release-event', self.on_mouse_release)
                 self.preview_bus.attach(pbtn, left, top, 1, 1)
@@ -185,6 +216,7 @@ class MixEffectBlock(Gtk.Grid):
         widget.router.change_route(widget.router_output, widget.router_input)
 
     def program_input_change(self, data):
+        self.last_program = data.source
         for btn in self.program_bus:
             if btn.source_index == data.source:
                 btn.get_style_context().add_class('program')
@@ -192,6 +224,8 @@ class MixEffectBlock(Gtk.Grid):
                 btn.get_style_context().remove_class('program')
 
     def preview_input_change(self, data):
+        self.last_preview = data.source
+        self.last_preview_in_program = data.in_program
         for btn in self.preview_bus:
             if btn.source_index == data.source:
                 if data.in_program:
@@ -671,6 +705,7 @@ class MixEffectBlock(Gtk.Grid):
         self.onair_key4.set_sensitive(data.keyers > 3)
 
     def add_router(self, hwthread, config):
+        self.routers.append((hwthread, config))
         for btn in list(self.program_bus) + list(self.preview_bus):
             link = None
             for output_idx in config['outputs']:

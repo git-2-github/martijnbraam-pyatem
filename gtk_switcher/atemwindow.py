@@ -18,7 +18,8 @@ from gtk_switcher.macroeditor import MacroEditorWindow
 from gtk_switcher.media import MediaPage
 from gtk_switcher.connectionwindow import ConnectionWindow
 from gtk_switcher.switcher import SwitcherPage
-from pyatem.command import ProgramInputCommand, PreviewInputCommand, AutoCommand, TransitionPositionCommand
+from pyatem.command import ProgramInputCommand, PreviewInputCommand, AutoCommand, TransitionPositionCommand, \
+    InputPropertiesCommand
 from pyatem.protocol import AtemProtocol
 
 gi.require_version('Gtk', '3.0')
@@ -339,6 +340,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             return
 
         if self.connection_settings['videohubs'][ip]['outputs'][str(index)]['rename']:
+            atem_input = self.connection_settings['videohubs'][ip]['outputs'][str(index)]['source']
             new_name = hub.inputs[source]['label']
             if ':' in new_name:
                 button, new_name = new_name.split(':', maxsplit=1)
@@ -346,7 +348,9 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                 button = button.strip()
             else:
                 button = None
-            print("RENAME")
+
+            cmd = InputPropertiesCommand(source_index=atem_input, label=new_name, short_label=button)
+            self.connection.mixer.send_commands([cmd])
 
     def on_bypass_firmware_clicked(self, widget, *args):
         self.connectionstack.set_visible_child_name("connected")
