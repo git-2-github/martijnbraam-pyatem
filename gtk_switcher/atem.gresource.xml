@@ -11,6 +11,8 @@
     <file>ui/preferences.glade</file>
     <file>ui/macro-editor.glade</file>
     <file>ui/eq.glade</file>
+    <file>ui/videohub.glade</file>
+    <file>ui/videohub-bus.glade</file>
 
     <file>icons/wipe-h.svg</file>
     <file>icons/wipe-v.svg</file>

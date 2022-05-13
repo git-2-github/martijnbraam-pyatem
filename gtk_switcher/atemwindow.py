@@ -1,4 +1,5 @@
 import ctypes
+import json
 import sys
 import threading
 import time
@@ -6,6 +7,8 @@ import traceback
 from datetime import datetime
 
 import gi
+
+from gtk_switcher.videohubconnection import VideoHubConnection
 from pyatem.hexdump import hexdump
 
 from gtk_switcher.audio import AudioPage
@@ -26,10 +29,11 @@ from gi.repository import Handy
 
 
 class AtemConnection(threading.Thread):
-    def __init__(self, callback, disconnected, transfer_progress, download_done):
+    def __init__(self, callback, disconnected, transfer_progress, download_done, connected):
         threading.Thread.__init__(self)
         self.callback = callback
         self.disconnected = disconnected
+        self._connected = connected
         self.transfer_progress = transfer_progress
         self.download_done = download_done
         self.atem = None
@@ -47,6 +51,7 @@ class AtemConnection(threading.Thread):
         else:
             self.mixer = AtemProtocol(self.ip)
         self.mixer.on('change', self.do_callback)
+        self.mixer.on('connected', self.do_connected)
         self.mixer.on('disconnected', self.do_disconnected)
         self.mixer.on('transfer-progress', self.do_transfer_progress)
         self.mixer.on('download-done', self.do_download_done)
@@ -69,6 +74,10 @@ class AtemConnection(threading.Thread):
     def do_disconnected(self):
         self.connected = False
         GLib.idle_add(self.disconnected)
+
+    def do_connected(self):
+        self.connected = True
+        GLib.idle_add(self._connected)
 
     def do_transfer_progress(self, store, slot, progress):
         GLib.idle_add(self.transfer_progress, store, slot, progress)
@@ -105,6 +114,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
 
         self.settings = Gio.Settings.new('nl.brixit.Switcher')
         self.settings.connect('changed::switcher-ip', self.on_switcher_ip_changed)
+        self.settings.connect('changed::connections', self.on_connection_settings_changed)
 
         builder = Gtk.Builder()
         builder.set_translation_domain("openswitcher")
@@ -143,6 +153,9 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
 
         self.aux_follow_audio = set()
 
+        self.hardware_threads = {}
+        self.connection_settings = {}
+
         self.apply_css(self.window, self.provider)
 
         self.window.show_all()
@@ -151,7 +164,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.mode = None
 
         self.connection = AtemConnection(self.on_change, self.on_disconnect, self.on_transfer_progress,
-                                         self.on_download_done)
+                                         self.on_download_done, self.on_connect)
 
         if args.ip:
             self.connection.ip = args.ip
@@ -244,10 +257,13 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.clear_audio_state()
         print("Starting new connection to {}".format(self.settings.get_string('switcher-ip')))
         self.connection = AtemConnection(self.on_change, self.on_disconnect, self.on_transfer_progress,
-                                         self.on_download_done)
+                                         self.on_download_done, self.on_connect)
         self.connection.daemon = True
         self.connection.ip = self.settings.get_string('switcher-ip')
         self.connection.start()
+
+    def on_connection_settings_changed(self, *args):
+        print("Connection stored config changed")
 
     def set_class(self, widget, classname, state):
         if state:
@@ -263,7 +279,53 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
 
     def on_disconnect(self):
         self.connectionstack.set_visible_child_name("disconnected")
+        for tid in self.hardware_threads:
+            self.hardware_threads[tid].die()
         print("Disconnected from mixer")
+
+    def on_connect(self):
+        # Load stored connection-specific settings if available
+        settings = self.settings.get_string('connections')
+        settings = json.loads(settings)
+        if self.connection.ip in settings:
+            self.connection_settings = settings[self.connection.ip]
+
+        # Connect to stored videohubs
+        if 'videohubs' in self.connection_settings:
+            hubs = self.connection_settings['videohubs']
+            for ip in hubs:
+                hub = hubs[ip]
+                thread = VideoHubConnection(ip, self.on_videohub_connect, self.on_videohub_disconnect,
+                                            self.on_videohub_input_change, self.on_videohub_output_change,
+                                            self.on_videohub_route_change)
+                thread.daemon = True
+                thread.id = f'hub-{ip}'
+                thread.start()
+                self.hardware_threads[thread.id] = thread
+
+    def on_videohub_connect(self, hub_id):
+        print(f"Connected to {hub_id}")
+        from gtk_switcher.videohubbus import VideoHubBus
+        for hubid in self.connection_settings['videohubs']:
+            for outputid in self.connection_settings['videohubs'][hubid]['outputs']:
+                ip = self.connection_settings['videohubs'][hubid]['ip']
+                output = self.connection_settings['videohubs'][hubid]['outputs'][outputid]
+                if output['bus']:
+                    bus = VideoHubBus(self.provider, self.hardware_threads[f'hub-{ip}'], outputid)
+                    self.main_blocks.add(bus)
+        self.main_blocks.show_all()
+
+    def on_videohub_disconnect(self, hub_id):
+        print(f"Disconnected from {hub_id}")
+
+    def on_videohub_input_change(self, hub_id, index, inputs):
+        pass
+
+    def on_videohub_output_change(self, hub_id, index, outputs):
+        pass
+
+    def on_videohub_route_change(self, hub_id, index, source):
+        pass
 
     def on_bypass_firmware_clicked(self, widget, *args):
         self.connectionstack.set_visible_child_name("connected")

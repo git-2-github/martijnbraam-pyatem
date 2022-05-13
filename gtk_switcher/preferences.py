@@ -1,3 +1,5 @@
+import json
+
 import gi
 
 from pyatem.command import MultiviewInputCommand, VideoModeCommand, AutoInputVideoModeCommand
@@ -16,6 +18,7 @@ class PreferencesWindow:
         self.connection = connection
         self.settings = Gio.Settings.new('nl.brixit.Switcher')
         self.model_changing = False
+        self.config = {}
 
         builder = Gtk.Builder()
         builder.set_translation_domain("openswitcher")
@@ -33,6 +36,7 @@ class PreferencesWindow:
 
         self.model_me1 = builder.get_object("model_me1")
         self.model_aux = builder.get_object("model_aux")
+        self.model_route_inputs = Gtk.ListStore(str, str)
 
         # Load requested view
         self.mainstack = builder.get_object("mainstack")
@@ -55,26 +59,69 @@ class PreferencesWindow:
         self.multiview_br = builder.get_object("multiview_br")
         self.multiview_swap = builder.get_object("multiview_swap")
         self.multiview_layout = builder.get_object("multiview_layout")
+
+        self.videohubs = builder.get_object("videohubs")
+
         self.apply_css(self.window, self.provider)
 
         self.window.set_transient_for(parent)
         self.window.set_modal(True)
         self.load_models()
         self.load_preferences()
+        self.load_config()
         self.connection.mixer.on('change:multiviewer-properties:*', self.make_multiviewer)
         self.connection.mixer.on('change:multiviewer-input:*', self.update_multiviewer_input)
         self.connection.mixer.on('change:video-mode', self.update_mode_models)
         self.window.show_all()
 
+    def load_config(self):
+        from gtk_switcher.videohub import VideoHub
+
+        connections = self.settings.get_string('connections')
+        connections = json.loads(connections)
+        if self.connection.ip in connections:
+            self.config = connections[self.connection.ip]
+        else:
+            self.config = {
+                'videohubs': {}
+            }
+
+        for ip in self.config['videohubs']:
+            config = self.config['videohubs'][ip]
+            hub = VideoHub()
+            hub.set_input_model(self.model_route_inputs)
+            hub.connect('config-changed', self.on_videohub_config_changed)
+            hub.load(config)
+            self.videohubs.add(hub)
+        self.videohubs.show_all()
+
+    def on_videohub_config_changed(self, widget, config):
+        config = json.loads(config)
+        self.config['videohubs'][config['ip']] = config
+        self.save_config()
+
+    def save_config(self):
+        connections = self.settings.get_string('connections')
+        connections = json.loads(connections)
+        connections[self.connection.ip] = self.config
+        connections = json.dumps(connections)
+        self.settings.set_string('connections', connections)
+
     def load_models(self):
         inputs = self.connection.mixer.mixerstate['input-properties']
         self.model_changing = True
+        self.model_route_inputs.clear()
+        self.model_route_inputs.append(["", ""])
         for i in inputs.values():
             if i.available_me1:
                 self.model_me1.append([str(i.index), i.name])
 
             if i.available_aux:
                 self.model_aux.append([str(i.index), i.name])
+
+            if i.port_type == InputPropertiesField.PORT_EXTERNAL:
+                self.model_route_inputs.append([str(i.index), f"{i.index}: {i.name}"])
+
         self.model_changing = False
 
         self.update_mode_models(None, update_active=True)
@@ -305,3 +352,12 @@ class PreferencesWindow:
 
         cmds.append(VideoModeCommand(int(self.video_mode.get_active_id())))
         self.connection.mixer.send_commands(cmds)
+
+    def on_add_videohub_clicked(self, widget, *args):
+        from gtk_switcher.videohub import VideoHub
+
+        hub = VideoHub()
+        hub.set_input_model(self.model_route_inputs)
+        hub.connect('config-changed', self.on_videohub_config_changed)
+        self.videohubs.add(hub)
+        self.videohubs.show_all()

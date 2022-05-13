@@ -50,6 +50,7 @@ switcher_sources = [
     'template_i18n.py',
     'eqcurve.py',
     'eqwindow.py',
+    'videohub.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)

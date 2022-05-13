@@ -9,7 +9,12 @@
         <key type="s" name="midi-map">
             <default>"[]"</default>
             <summary>Midi mapping</summary>
-            <description>Mapping between midi messages and gtk controls, as json</description>
+            <description>Mapping between midi messages and gtk controls, as json (deprecated)</description>
+        </key>
+        <key type="s" name="connections">
+            <default>"{}"</default>
+            <summary>Connection data</summary>
+            <description>Connection specific stored config</description>
         </key>
     </schema>
 </schemalist>

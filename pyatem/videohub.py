@@ -43,6 +43,7 @@ class VideoHub:
 
         self._handler = {
             'connect': set(),
+            'disconnect': set(),
             'route-change': set(),
             'input-label-change': set(),
             'output-label-change': set(),
@@ -51,6 +52,7 @@ class VideoHub:
 
     def connect(self):
         self.sock.connect((self.ip, self.port))
+        self.sock.settimeout(15)
         line = self._readline()
         if line != 'PROTOCOL PREAMBLE:':
             raise ValueError("Not a videohub")
@@ -111,15 +113,26 @@ class VideoHub:
         self._raise('output-label-change', index=index, label=value)
 
     def _parse_routing(self, line):
+        if line == 'ACK':
+            return
         key, value = line.split(' ', maxsplit=1)
         index = int(key)
         source = int(value)
         self.output_source[index] = source
         self._raise('route-change', index=index, source=source)
 
+    def _ping(self):
+        self.sock.send(b'PING:\n\n')
+
     def loop(self):
-        line = self._readline()
-        if line == '':
+        try:
+            line = self._readline()
+        except TimeoutError:
+            # No traffic for 15 seconds, try to send a ping
+            self._ping()
+            return
+
+        if line == '' or line == 'ACK':
             return
 
         if line in self._sections:
@@ -146,7 +159,6 @@ class VideoHub:
 
     def set_source(self, index, source):
         cmd = f'VIDEO OUTPUT ROUTING:\n{index} {source}\n\n'
-        print(cmd.encode())
         self.sock.send(cmd.encode())
 
 
