@@ -1,6 +1,13 @@
 Switcher hardware control
 =========================
 
+Labels
+------
+
+.. autoclass:: pyatem.command.InputPropertiesCommand
+   :members:
+   :special-members:
+
 Multiviewer routing
 -------------------
 

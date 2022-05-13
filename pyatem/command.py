@@ -2307,3 +2307,49 @@ class AutoInputVideoModeCommand(Command):
     def get_command(self):
         data = struct.pack('>?3x', self.enable)
         return self._make_command('AiVM', data)
+
+
+class InputPropertiesCommand(Command):
+    """
+    Implementation of the `CInL` command. This sets labels and routing for video inputs
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask
+    1      1    ?      unknown
+    2      2    u16    Source index
+    4      20   str[]  Label
+    24     4    str[]  Short label
+    28     2    u16    Port type
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, source_index, label=None, short_label=None, port_type=None):
+        """
+        :param source_index: Input index to change the properties for
+        :param label: Long display label for the input
+        :param short_label: Short display label for the button of the input, 4 letter code
+        :param port_type: Port type enum
+        """
+        self.source_index = source_index
+        self.label = label
+        self.short_label = short_label
+        self.port_type = port_type
+
+    def get_command(self):
+        mask = 0
+        if self.label is not None:
+            mask |= 1 << 0
+        if self.short_label is not None:
+            mask |= 1 << 1
+        if self.port_type is not None:
+            mask |= 1 << 2
+
+        label = self.label.encode() if self.label is not None else b''
+        short = self.short_label.encode() if self.short_label is not None else b''
+        port_type = self.port_type if self.port_type is not None else 0
+
+        data = struct.pack('>Bx H 20s 4s Hxx', mask, self.source_index, label, short, port_type)
+        return self._make_command('CInL', data)
