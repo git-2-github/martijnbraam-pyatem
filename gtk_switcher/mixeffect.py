@@ -642,3 +642,17 @@ class MixEffectBlock(Gtk.Grid):
         self.onair_key2.set_sensitive(data.keyers > 1)
         self.onair_key3.set_sensitive(data.keyers > 2)
         self.onair_key4.set_sensitive(data.keyers > 3)
+
+    def add_router(self, hwthread, config):
+        for btn in self.program_bus:
+            link = None
+            for output_idx in config['outputs']:
+                output = config['outputs'][output_idx]
+                if output['source'] == btn.source_index:
+                    link = output_idx
+            btn.router_output = link
+            if link is not None:
+                btn.router = hwthread
+                btn.get_style_context().add_class('routable')
+            else:
+                btn.get_style_context().remove_class('routable')

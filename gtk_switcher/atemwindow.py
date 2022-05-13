@@ -307,12 +307,17 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         print(f"Connected to {hub_id}")
         from gtk_switcher.videohubbus import VideoHubBus
         for hubid in self.connection_settings['videohubs']:
+            ip = self.connection_settings['videohubs'][hubid]['ip']
             for outputid in self.connection_settings['videohubs'][hubid]['outputs']:
-                ip = self.connection_settings['videohubs'][hubid]['ip']
                 output = self.connection_settings['videohubs'][hubid]['outputs'][outputid]
                 if output['bus']:
                     bus = VideoHubBus(self.provider, self.hardware_threads[f'hub-{ip}'], outputid)
                     self.main_blocks.add(bus)
+
+            for me in self.me:
+                if hasattr(me, 'add_router'):
+                    me.add_router(self.hardware_threads[f'hub-{ip}'], self.connection_settings['videohubs'][hubid])
+
         self.main_blocks.show_all()
 
     def on_videohub_disconnect(self, hub_id):
