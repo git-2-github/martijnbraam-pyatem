@@ -325,7 +325,23 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         pass
 
     def on_videohub_route_change(self, hub_id, index, source):
-        pass
+        hub = self.hardware_threads[hub_id]
+        ip = hub.ip
+        if 'videohubs' not in self.connection_settings:
+            return
+
+        if ip not in self.connection_settings['videohubs']:
+            return
+
+        if self.connection_settings['videohubs'][ip]['outputs'][str(index)]['rename']:
+            new_name = hub.inputs[source]['label']
+            if ':' in new_name:
+                button, new_name = new_name.split(':', maxsplit=1)
+                new_name = new_name.strip()
+                button = button.strip()
+            else:
+                button = None
+            print("RENAME")
 
     def on_bypass_firmware_clicked(self, widget, *args):
         self.connectionstack.set_visible_child_name("connected")

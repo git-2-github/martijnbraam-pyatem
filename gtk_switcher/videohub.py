@@ -26,6 +26,7 @@ class VideoHub(Gtk.Grid):
 
         self.probed = False
         self.input_model = None
+        self.old_ip = None
 
         self.config = {
             'ip': None,
@@ -47,19 +48,40 @@ class VideoHub(Gtk.Grid):
     def settings_changed(self, *args):
         pass
 
+    @GObject.Signal(name="ip-changed", flags=GObject.SignalFlags.RUN_LAST, return_type=bool,
+                    arg_types=(str, str),
+                    accumulator=GObject.signal_accumulator_true_handled)
+    def ip_changed(self, *args):
+        pass
+
+    @GObject.Signal(name="deleted", flags=GObject.SignalFlags.RUN_LAST, return_type=bool,
+                    arg_types=(str,),
+                    accumulator=GObject.signal_accumulator_true_handled)
+    def deleted(self, *args):
+        pass
+
     def load(self, config):
         self.config = config
         self.ip_entry.set_text(config['ip'])
+        self.old_ip = config['ip']
         self.on_connect_clicked(None, None)
 
     def save(self):
         self.emit('config-changed', json.dumps(self.config))
 
     @Gtk.Template.Callback()
+    def on_delete_clicked(self, widget, *args):
+        self.emit('deleted', self.old_ip)
+
+    @Gtk.Template.Callback()
     def on_connect_clicked(self, widget, *args):
         ip = self.ip_entry.get_text()
         if ip.strip() == "":
             return
+
+        if ip != self.old_ip:
+            self.emit('ip-changed', self.old_ip, ip)
+            self.old_ip = ip
 
         self.status.set_text("connecting...")
 
@@ -73,6 +95,9 @@ class VideoHub(Gtk.Grid):
 
         self.status.set_text(f"connected ({probe.model_display})")
         self.config['ip'] = ip
+        for output in self.outputs:
+            self.outputs.remove(output)
+
         for index in probe.output_label:
             output = probe.output_label[index]
             row = Gtk.Box(spacing=8)

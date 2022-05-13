@@ -91,6 +91,8 @@ class PreferencesWindow:
             hub = VideoHub()
             hub.set_input_model(self.model_route_inputs)
             hub.connect('config-changed', self.on_videohub_config_changed)
+            hub.connect('ip-changed', self.on_videohub_ip_changed)
+            hub.connect('deleted', self.on_videohub_deleted)
             hub.load(config)
             self.videohubs.add(hub)
         self.videohubs.show_all()
@@ -98,6 +100,20 @@ class PreferencesWindow:
     def on_videohub_config_changed(self, widget, config):
         config = json.loads(config)
         self.config['videohubs'][config['ip']] = config
+        self.save_config()
+
+    def on_videohub_ip_changed(self, widget, old_ip, new_ip):
+        if old_ip is None:
+            return
+        print(f"Rename hub {old_ip} -> {new_ip}")
+        hub_config = self.config['videohubs'][old_ip]
+        del self.config['videohubs'][old_ip]
+        self.config['videohubs'][new_ip] = hub_config
+        self.save_config()
+
+    def on_videohub_deleted(self, widget, ip):
+        del self.config['videohubs'][ip]
+        self.videohubs.remove(widget)
         self.save_config()
 
     def save_config(self):
@@ -359,5 +375,7 @@ class PreferencesWindow:
         hub = VideoHub()
         hub.set_input_model(self.model_route_inputs)
         hub.connect('config-changed', self.on_videohub_config_changed)
+        hub.connect('ip-changed', self.on_videohub_ip_changed)
+        hub.connect('deleted', self.on_videohub_deleted)
         self.videohubs.add(hub)
         self.videohubs.show_all()
