@@ -47,6 +47,9 @@ class VideoHubConnection(threading.Thread):
         except ConnectionError as e:
             sys.stderr.write(f"Could not connect to VideoHub at {self.ip}: {e}")
             return
+        except OSError as e:
+            sys.stderr.write(f"Could not connect to VideoHub at {self.ip}: {e}")
+            return
         while not self.stop:
             try:
                 self.hub.loop()
