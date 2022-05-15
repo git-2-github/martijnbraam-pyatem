@@ -88,8 +88,11 @@ class VideoHub(Gtk.Grid):
         self.probed = False
         probe = videohubprotocol.VideoHub(ip)
         probe.on('connect', self.on_connect)
-        probe.connect()
-
+        try:
+            probe.connect()
+        except OSError as e:
+            self.status.set_text(str(e))
+            return
         while not self.probed:
             probe.loop()
 

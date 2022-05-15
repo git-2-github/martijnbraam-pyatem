@@ -13,6 +13,7 @@
     <file>ui/eq.glade</file>
     <file>ui/videohub.glade</file>
     <file>ui/videohub-bus.glade</file>
+    <file>ui/debugger.glade</file>
 
     <file>icons/wipe-h.svg</file>
     <file>icons/wipe-v.svg</file>

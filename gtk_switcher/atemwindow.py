@@ -8,6 +8,7 @@ from datetime import datetime
 
 import gi
 
+from gtk_switcher.debugger import DebuggerWindow
 from gtk_switcher.videohubconnection import VideoHubConnection
 from pyatem.hexdump import hexdump
 
@@ -184,6 +185,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         accel.connect(Gdk.keyval_from_name('ISO_Enter'), 0, 0, self.on_auto_shortcut)
         accel.connect(Gdk.keyval_from_name('Return'), 0, 0, self.on_auto_shortcut)
         accel.connect(Gdk.keyval_from_name('KP_Enter'), 0, 0, self.on_auto_shortcut)
+        accel.connect(Gdk.keyval_from_name('F12'), 0, 0, self.on_debugger_shortcut)
+
 
         for i in range(0, 9):
             accel.connect(Gdk.keyval_from_name(str(i)), 0, 0, self.on_preview_keyboard_change)
@@ -313,6 +316,12 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                 thread.id = f'hub-{ip}'
                 thread.start()
                 self.hardware_threads[thread.id] = thread
+
+    def on_debugger_shortcut(self, *args):
+        if self.disable_shortcuts:
+            return
+
+        DebuggerWindow(self.window, self.connection, self.application)
 
     def on_videohub_connect(self, hub_id):
         print(f"Connected to {hub_id}")

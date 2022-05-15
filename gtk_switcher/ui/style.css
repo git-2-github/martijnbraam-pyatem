@@ -32,11 +32,10 @@ button.stylebtn.active {
 }
 
 button.bmdbtn.routable {
-    box-shadow:
-        0 -4px 0 0 @borders,
-        0 -3px 0 0 @theme_base_color,
-        0 -2px 0 0 @borders,
-        0 -1px 0 0 @theme_base_color;
+    box-shadow: 0 -4px 0 0 @borders,
+    0 -3px 0 0 @theme_base_color,
+    0 -2px 0 0 @borders,
+    0 -1px 0 0 @theme_base_color;
 }
 
 label.rate {
@@ -246,4 +245,30 @@ headerbar.streaming button.radio:checked {
 
 .eq-window:not(.mini) {
     background: @content_view_bg;
+}
+
+.hexdump {
+    font-family: monospace;
+}
+
+@keyframes pulsein {
+    from {
+        border-top-color: red;
+        border-bottom-color: red;
+        border-left-color: red;
+        border-right-color: red;
+    }
+    to {
+        border-top-color: transparent;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+        border-right-color: transparent;
+    }
+}
+
+.pulsein {
+    border: 1px solid transparent;
+    animation-name: pulsein;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
 }

@@ -97,7 +97,6 @@ class SwitcherPage:
         self.stream_live_active = False
         self.stream_live_start_time = None
 
-
         action_streampreset = Gio.SimpleAction.new("streampreset", GLib.VariantType.new("a{sv}"))
         action_streampreset.connect("activate", self.load_livestream_preset)
         self.application.add_action(action_streampreset)
