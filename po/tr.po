@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-24 00:27+0100\n"
+"POT-Creation-Date: 2022-05-17 22:34+0200\n"
 "PO-Revision-Date: 2022-03-25 23:50+0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,284 +18,284 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Window title
-#: gtk_switcher/ui/mixer.glade:168 gtk_switcher/ui/mixer.glade:179
-#: gtk_switcher/ui/mixer.glade:187
+#: gtk_switcher/ui/mixer.glade:168 gtk_switcher/ui/mixer.glade:181
+#: gtk_switcher/ui/mixer.glade:189
 msgid "Switcher control"
 msgstr "Anahtarlayıcı kontrolü"
 
-#: gtk_switcher/ui/mixer.glade:371
+#: gtk_switcher/ui/mixer.glade:387
 msgid "Color 1"
 msgstr "Renk 1"
 
-#: gtk_switcher/ui/mixer.glade:386
+#: gtk_switcher/ui/mixer.glade:402
 msgid "Color 2"
 msgstr "Renk 2"
 
-#: gtk_switcher/ui/mixer.glade:413
+#: gtk_switcher/ui/mixer.glade:429
 msgid "Color Generators"
 msgstr "Renk Üreteçleri"
 
-#: gtk_switcher/ui/mixer.glade:502 gtk_switcher/ui/mixer.glade:542
-#: gtk_switcher/ui/mixer.glade:618 gtk_switcher/ui/mixer.glade:1250
+#: gtk_switcher/ui/mixer.glade:518 gtk_switcher/ui/mixer.glade:558
+#: gtk_switcher/ui/mixer.glade:634 gtk_switcher/ui/mixer.glade:1266
 msgid "Rate"
 msgstr "Hız"
 
-#: gtk_switcher/ui/mixer.glade:527
+#: gtk_switcher/ui/mixer.glade:543
 msgid "Mix"
 msgstr "Miks"
 
-#: gtk_switcher/ui/mixer.glade:557
+#: gtk_switcher/ui/mixer.glade:573
 msgid "Dip source"
 msgstr "Dip Kaynağı"
 
-#: gtk_switcher/ui/mixer.glade:602
+#: gtk_switcher/ui/mixer.glade:618
 msgid "Dip"
 msgstr "Dip"
 
-#: gtk_switcher/ui/mixer.glade:929
+#: gtk_switcher/ui/mixer.glade:945
 msgctxt "wipe_transition"
 msgid "Symmetry"
 msgstr "Simetri"
 
-#: gtk_switcher/ui/mixer.glade:959
+#: gtk_switcher/ui/mixer.glade:975
 msgctxt "wipe_transition"
 msgid "X"
 msgstr "X"
 
-#: gtk_switcher/ui/mixer.glade:974
+#: gtk_switcher/ui/mixer.glade:990
 msgctxt "wipe_transition"
 msgid "Y"
 msgstr "Y"
 
-#: gtk_switcher/ui/mixer.glade:1030
+#: gtk_switcher/ui/mixer.glade:1046
 msgctxt "wipe_transition"
 msgid "Softness"
 msgstr "Yumuşaklık"
 
-#: gtk_switcher/ui/mixer.glade:1045
+#: gtk_switcher/ui/mixer.glade:1061
 msgid "Width"
 msgstr "Genişlik"
 
 #. Fill video source
-#: gtk_switcher/ui/mixer.glade:1090
+#: gtk_switcher/ui/mixer.glade:1106
 msgid "Fill"
 msgstr "Fill Kaynağı"
 
-#: gtk_switcher/ui/mixer.glade:1139
+#: gtk_switcher/ui/mixer.glade:1155
 msgid "Reverse"
 msgstr "Yön"
 
-#: gtk_switcher/ui/mixer.glade:1159
+#: gtk_switcher/ui/mixer.glade:1175
 msgid "Flip flop"
 msgstr "Ters Düz"
 
-#: gtk_switcher/ui/mixer.glade:1195
+#: gtk_switcher/ui/mixer.glade:1211
 msgid "Wipe"
 msgstr "Wipe"
 
-#: gtk_switcher/ui/mixer.glade:1234
+#: gtk_switcher/ui/mixer.glade:1250
 msgid "Sting"
 msgstr "Sting"
 
-#: gtk_switcher/ui/mixer.glade:1285 gtk_switcher/ui/mixeffect.glade:585
+#: gtk_switcher/ui/mixer.glade:1301 gtk_switcher/ui/mixeffect.glade:585
 #: gtk_switcher/ui/upstream-keyer.glade:1012
 msgid "DVE"
 msgstr "DVE"
 
-#: gtk_switcher/ui/mixer.glade:1313
+#: gtk_switcher/ui/mixer.glade:1329
 msgid "Transitions"
 msgstr "Geçişler"
 
-#: gtk_switcher/ui/mixer.glade:1376
+#: gtk_switcher/ui/mixer.glade:1392
 msgid "Audio follow video"
 msgstr "Ses Takipli Video"
 
-#: gtk_switcher/ui/mixer.glade:1388
+#: gtk_switcher/ui/mixer.glade:1404
 msgid "AFV"
 msgstr "AFV"
 
-#: gtk_switcher/ui/mixer.glade:1428
+#: gtk_switcher/ui/mixer.glade:1444
 msgid "Fade to black"
 msgstr "Karartma"
 
-#: gtk_switcher/ui/mixer.glade:1500
+#: gtk_switcher/ui/mixer.glade:1516
 msgid "Macros"
 msgstr "Makrolar"
 
-#: gtk_switcher/ui/mixer.glade:1523
+#: gtk_switcher/ui/mixer.glade:1539
 msgid "Palettes"
 msgstr "Paletler"
 
-#: gtk_switcher/ui/mixer.glade:1543
+#: gtk_switcher/ui/mixer.glade:1559
 msgid "Media Player"
 msgstr "Media Player"
 
 #. Hardware model
-#: gtk_switcher/ui/mixer.glade:1599
+#: gtk_switcher/ui/mixer.glade:1615
 msgid "Model"
 msgstr "Model"
 
-#: gtk_switcher/ui/mixer.glade:1614
+#: gtk_switcher/ui/mixer.glade:1630
 msgid "Video mode"
 msgstr "Video modu"
 
-#: gtk_switcher/ui/mixer.glade:1629 gtk_switcher/ui/mixer.glade:3005
+#: gtk_switcher/ui/mixer.glade:1645 gtk_switcher/ui/mixer.glade:3022
 msgid "Not connected"
 msgstr "Bağlı değil"
 
-#: gtk_switcher/ui/mixer.glade:1664
+#: gtk_switcher/ui/mixer.glade:1680
 msgid "Hardware status"
 msgstr "Donanım Durumu"
 
-#: gtk_switcher/ui/mixer.glade:1738
+#: gtk_switcher/ui/mixer.glade:1754
 msgid "AUX Outputs"
 msgstr "AUX Çıkışları"
 
-#: gtk_switcher/ui/mixer.glade:1786
+#: gtk_switcher/ui/mixer.glade:1803
 msgid "Preset"
 msgstr "Ön ayar"
 
-#: gtk_switcher/ui/mixer.glade:1801
+#: gtk_switcher/ui/mixer.glade:1818
 msgid "Audio bitrate"
 msgstr "Ses bit hızı"
 
-#: gtk_switcher/ui/mixer.glade:1848
+#: gtk_switcher/ui/mixer.glade:1865
 msgid "Video bitrate"
 msgstr "Video bit hızı"
 
-#: gtk_switcher/ui/mixer.glade:1913
+#: gtk_switcher/ui/mixer.glade:1930
 msgid "Encoder output"
 msgstr "Enkoder çıkışı"
 
 #. Stream recorder filename
-#: gtk_switcher/ui/mixer.glade:1962
+#: gtk_switcher/ui/mixer.glade:1979
 msgctxt "streamrecorder"
 msgid "Filename"
 msgstr "Dosya adı"
 
-#: gtk_switcher/ui/mixer.glade:2012
+#: gtk_switcher/ui/mixer.glade:2029
 msgid "STOP"
 msgstr "DUR"
 
-#: gtk_switcher/ui/mixer.glade:2060
+#: gtk_switcher/ui/mixer.glade:2077
 msgctxt "streamrecorder"
 msgid "Disk 1"
 msgstr "Disk 1"
 
-#: gtk_switcher/ui/mixer.glade:2075
+#: gtk_switcher/ui/mixer.glade:2092
 msgctxt "streamrecorder"
 msgid "Disk 2"
 msgstr "Disk 2"
 
-#: gtk_switcher/ui/mixer.glade:2087
+#: gtk_switcher/ui/mixer.glade:2104
 msgid "Record in all cameras"
 msgstr "Tüm kameralarda kaydet"
 
 #. Switch disk button
-#: gtk_switcher/ui/mixer.glade:2117
+#: gtk_switcher/ui/mixer.glade:2134
 msgctxt "streamrecorder"
 msgid "Switch"
 msgstr "DEĞİŞTİR"
 
 #. button
-#: gtk_switcher/ui/mixer.glade:2131
+#: gtk_switcher/ui/mixer.glade:2148
 msgctxt "streamrecorder"
 msgid "Stop"
 msgstr "DURDUR"
 
 #. Button
-#: gtk_switcher/ui/mixer.glade:2146
+#: gtk_switcher/ui/mixer.glade:2163
 msgctxt "streamrecorder"
 msgid "Record"
 msgstr "KAYDET"
 
-#: gtk_switcher/ui/mixer.glade:2243
+#: gtk_switcher/ui/mixer.glade:2260
 msgid "Stream recorder"
 msgstr "Stream recorder"
 
-#: gtk_switcher/ui/mixer.glade:2329
+#: gtk_switcher/ui/mixer.glade:2346
 msgid "OFF"
 msgstr "KAPAT"
 
 #. Stop livestream button
-#: gtk_switcher/ui/mixer.glade:2380
+#: gtk_switcher/ui/mixer.glade:2397
 msgctxt "livestream"
 msgid "Off"
 msgstr "KAPAT"
 
 #. Start livestream button
-#: gtk_switcher/ui/mixer.glade:2395
+#: gtk_switcher/ui/mixer.glade:2412
 msgctxt "livestream"
 msgid "On air"
 msgstr "ON AIR"
 
-#: gtk_switcher/ui/mixer.glade:2419
+#: gtk_switcher/ui/mixer.glade:2436
 msgid "Platform"
 msgstr "Yayıncı"
 
-#: gtk_switcher/ui/mixer.glade:2434
+#: gtk_switcher/ui/mixer.glade:2451
 msgid "Server"
 msgstr "Sunucu"
 
-#: gtk_switcher/ui/mixer.glade:2449 gtk_switcher/ui/downstream-keyer.glade:116
+#: gtk_switcher/ui/mixer.glade:2466 gtk_switcher/ui/downstream-keyer.glade:116
 #: gtk_switcher/ui/upstream-keyer.glade:232
 msgid "Key"
 msgstr "Key"
 
-#: gtk_switcher/ui/mixer.glade:2606
+#: gtk_switcher/ui/mixer.glade:2623
 msgid "Live stream"
 msgstr "Canlı Yayın"
 
-#: gtk_switcher/ui/mixer.glade:2632
+#: gtk_switcher/ui/mixer.glade:2649
 msgid "Output"
 msgstr "Çıkış"
 
-#: gtk_switcher/ui/mixer.glade:2664 gtk_switcher/ui/preferences.glade:788
+#: gtk_switcher/ui/mixer.glade:2681 gtk_switcher/ui/preferences.glade:984
 msgid "Switcher"
 msgstr "Switcher"
 
-#: gtk_switcher/ui/mixer.glade:2757
+#: gtk_switcher/ui/mixer.glade:2774
 msgid "Media"
 msgstr "Medya"
 
-#: gtk_switcher/ui/mixer.glade:2792
+#: gtk_switcher/ui/mixer.glade:2809
 msgctxt "audio_mixer"
 msgid "Input"
 msgstr "Giriş"
 
-#: gtk_switcher/ui/mixer.glade:2808
+#: gtk_switcher/ui/mixer.glade:2825
 msgctxt "audio_mixer"
 msgid "Equalizer"
 msgstr "Ekolayzer"
 
-#: gtk_switcher/ui/mixer.glade:2824
+#: gtk_switcher/ui/mixer.glade:2841
 msgctxt "audio_mixer"
 msgid "Dynamics"
 msgstr "Dinamik Efektler"
 
-#: gtk_switcher/ui/mixer.glade:2840
+#: gtk_switcher/ui/mixer.glade:2857
 msgctxt "audio_mixer"
 msgid "dB"
 msgstr "dB"
 
-#: gtk_switcher/ui/mixer.glade:2856
+#: gtk_switcher/ui/mixer.glade:2873
 msgctxt "audio_mixer"
 msgid "Pan"
 msgstr "Pan"
 
-#: gtk_switcher/ui/mixer.glade:2952 gtk_switcher/ui/preferences.glade:401
+#: gtk_switcher/ui/mixer.glade:2969 gtk_switcher/ui/preferences.glade:525
 msgid "Audio"
 msgstr "Ses"
 
-#: gtk_switcher/ui/mixer.glade:2990
+#: gtk_switcher/ui/mixer.glade:3007
 msgid "Camera"
 msgstr "Kamera"
 
-#: gtk_switcher/ui/mixer.glade:2997
+#: gtk_switcher/ui/mixer.glade:3014
 msgid "page0"
 msgstr "sayfa0"
 
-#: gtk_switcher/ui/mixer.glade:3006
+#: gtk_switcher/ui/mixer.glade:3023
 msgid ""
 "There is no connection to the hardware. The connection might be interrupted "
 "or a new connection needs to be made in the Preferences window"
@@ -303,19 +303,19 @@ msgstr ""
 "Donanım bağlantısı yok. Tercihler penceresinde bağlantı kesilebilir veya "
 "yeni bir bağlantı yapılması gerekebilir."
 
-#: gtk_switcher/ui/mixer.glade:3009
+#: gtk_switcher/ui/mixer.glade:3026
 msgid "Open preferences"
 msgstr "Ayarlar"
 
-#: gtk_switcher/ui/mixer.glade:3023
+#: gtk_switcher/ui/mixer.glade:3040
 msgid "Disconnected"
 msgstr "Bağlantı kesildi"
 
-#: gtk_switcher/ui/mixer.glade:3032
+#: gtk_switcher/ui/mixer.glade:3049
 msgid "Firmware outdated"
 msgstr "Firmware güncel değil"
 
-#: gtk_switcher/ui/mixer.glade:3033
+#: gtk_switcher/ui/mixer.glade:3050
 msgid ""
 "The firmware on the connected device is not new enough for this "
 "application.\n"
@@ -326,11 +326,11 @@ msgstr ""
 "OpenSwitcher, çoğu donanımla doğru şekilde çalışması için en az 8.0+ donanım "
 "yazılımı gerektirir."
 
-#: gtk_switcher/ui/mixer.glade:3037
+#: gtk_switcher/ui/mixer.glade:3054
 msgid "Continue anyway"
 msgstr "Yoksay devam et"
 
-#: gtk_switcher/ui/mixer.glade:3048
+#: gtk_switcher/ui/mixer.glade:3065
 msgid "firmware"
 msgstr "firmware"
 
@@ -368,7 +368,7 @@ msgstr "KEY 4"
 
 #: gtk_switcher/ui/mixeffect.glade:359 gtk_switcher/ui/mixeffect.glade:379
 #: gtk_switcher/ui/mixeffect.glade:399 gtk_switcher/ui/mixeffect.glade:419
-#: gtk_switcher/mixeffect.py:529
+#: gtk_switcher/mixeffect.py:591
 msgid ""
 "ON\n"
 "AIR"
@@ -404,12 +404,12 @@ msgstr ""
 msgid "CUT"
 msgstr "CUT"
 
-#: gtk_switcher/ui/mixeffect.glade:643 gtk_switcher/mixeffect.py:538
+#: gtk_switcher/ui/mixeffect.glade:643 gtk_switcher/mixeffect.py:600
 msgid "AUTO"
 msgstr "AUTO"
 
 #: gtk_switcher/ui/mixeffect.glade:669 gtk_switcher/ui/mixeffect.glade:985
-#: gtk_switcher/mixeffect.py:510
+#: gtk_switcher/mixeffect.py:572
 msgid "rate"
 msgstr "Hız"
 
@@ -437,7 +437,7 @@ msgstr "Bağlantı Ayarları"
 msgid "Switcher connection"
 msgstr "ATEM Bağlantısı"
 
-#: gtk_switcher/ui/connection.glade:91
+#: gtk_switcher/ui/connection.glade:91 gtk_switcher/ui/videohub.glade:22
 msgid "IP Address"
 msgstr "IP Adresi"
 
@@ -473,7 +473,7 @@ msgstr "Cihaz"
 msgid "No atem hardware detected"
 msgstr "Hiçbir Atem Donanımı Algılanmadı !"
 
-#: gtk_switcher/ui/connection.glade:323
+#: gtk_switcher/ui/connection.glade:323 gtk_switcher/ui/videohub.glade:105
 msgid "Connect"
 msgstr "Bağlan"
 
@@ -647,127 +647,154 @@ msgstr "A'ya Git"
 msgid "Run B"
 msgstr "B'ye Git"
 
-#: gtk_switcher/ui/mixeffect-aux.glade:28
+#: gtk_switcher/ui/mixeffect-aux.glade:28 gtk_switcher/ui/videohub-bus.glade:28
 msgid "AUX"
 msgstr "AUX"
 
-#: gtk_switcher/ui/preferences.glade:25 gtk_switcher/ui/preferences.glade:36
+#: gtk_switcher/ui/preferences.glade:48 gtk_switcher/ui/preferences.glade:59
 msgid "Preferences"
 msgstr "Tercihler"
 
-#: gtk_switcher/ui/preferences.glade:108
+#: gtk_switcher/ui/preferences.glade:131
 msgid "Video"
 msgstr "Video"
 
-#: gtk_switcher/ui/preferences.glade:142
+#: gtk_switcher/ui/preferences.glade:165
 msgid "Video standard"
 msgstr "Video standardı ayarı"
 
-#: gtk_switcher/ui/preferences.glade:157
+#: gtk_switcher/ui/preferences.glade:180
 msgid "Multiview video standard"
 msgstr "Çoklu görüntü standardı ayarı"
 
-#: gtk_switcher/ui/preferences.glade:172
+#: gtk_switcher/ui/preferences.glade:195
 msgid "Down convert as"
 msgstr "Aşağı dönüşüm formatı"
 
-#: gtk_switcher/ui/preferences.glade:187
+#: gtk_switcher/ui/preferences.glade:210
 msgid "SDI output standard"
 msgstr "SDI çıkış ayarı"
 
-#: gtk_switcher/ui/preferences.glade:230
+#: gtk_switcher/ui/preferences.glade:280
+#, fuzzy
+msgid "Set modes"
+msgstr "Video modu"
+
+#: gtk_switcher/ui/preferences.glade:354
 msgid "Media pool"
 msgstr "Medya Havuzu"
 
-#: gtk_switcher/ui/preferences.glade:264
+#: gtk_switcher/ui/preferences.glade:388
 msgid "Clip 1 length"
 msgstr "Klip 1 uzunluğu"
 
-#: gtk_switcher/ui/preferences.glade:279
+#: gtk_switcher/ui/preferences.glade:403
 msgid "Clip 2 length"
 msgstr "Klip 2 uzunluğu"
 
-#: gtk_switcher/ui/preferences.glade:316
+#: gtk_switcher/ui/preferences.glade:440
 msgid "Camera Control"
 msgstr "Kamera Kontrolü"
 
-#: gtk_switcher/ui/preferences.glade:350
+#: gtk_switcher/ui/preferences.glade:474
 msgid "Camera control monitoring output"
 msgstr "Kamera kontrol izleme çıkışı"
 
-#: gtk_switcher/ui/preferences.glade:381
+#: gtk_switcher/ui/preferences.glade:505
 msgid "General"
 msgstr "Genel"
 
-#: gtk_switcher/ui/preferences.glade:423
+#: gtk_switcher/ui/preferences.glade:547
 msgid "Multiview layout"
 msgstr "Çoklu görüntü düzeni"
 
-#: gtk_switcher/ui/preferences.glade:439
+#: gtk_switcher/ui/preferences.glade:563
 msgid "Audio meters"
 msgstr "Ses Göstergeleri"
 
-#: gtk_switcher/ui/preferences.glade:628
+#: gtk_switcher/ui/preferences.glade:752
 msgid "Multiview"
 msgstr "Çoklu Görüntü"
 
-#: gtk_switcher/ui/preferences.glade:649
+#: gtk_switcher/ui/preferences.glade:773
 msgid "Labels"
 msgstr "Etiketler"
 
-#: gtk_switcher/ui/preferences.glade:670
+#: gtk_switcher/ui/preferences.glade:794
 msgid "HyperDeck"
 msgstr "HyperDeck"
 
-#: gtk_switcher/ui/preferences.glade:685 gtk_switcher/ui/preferences.glade:768
+#: gtk_switcher/ui/preferences.glade:811
+msgid "Add videohub"
+msgstr ""
+
+#: gtk_switcher/ui/preferences.glade:866
+#, fuzzy
+msgid "Routing"
+msgstr "Sting"
+
+#: gtk_switcher/ui/preferences.glade:881 gtk_switcher/ui/preferences.glade:964
 msgid "Remote"
 msgstr "Uzaktan Kontrol"
 
-#: gtk_switcher/ui/preferences.glade:719
+#: gtk_switcher/ui/preferences.glade:915
 msgid "Use RS-422 port for"
 msgstr "RS-422 kontrol portu seçenekleri"
 
-#: gtk_switcher/ui/preferences.glade:808
+#: gtk_switcher/ui/preferences.glade:1004
 msgid "Control app"
 msgstr "Kontrol uygulaması"
 
-#: gtk_switcher/mixeffect.py:501
+#: gtk_switcher/ui/videohub.glade:48
+msgid "Status"
+msgstr ""
+
+#: gtk_switcher/ui/videohub.glade:63
+#, fuzzy
+msgid "disconnected"
+msgstr "Bağlantı kesildi"
+
+#: gtk_switcher/ui/videohub.glade:119
+msgid "Delete"
+msgstr ""
+
+#: gtk_switcher/mixeffect.py:563
 msgid "TIE"
 msgstr "BAĞLA"
 
-#: gtk_switcher/switcher.py:176
+#: gtk_switcher/switcher.py:175
 msgid "Layout editor M/E {}"
 msgstr "Düzen düzenleyici M/E {}"
 
-#: gtk_switcher/switcher.py:468 gtk_switcher/switcher.py:478
-#: gtk_switcher/switcher.py:496 gtk_switcher/layout.py:292
+#: gtk_switcher/switcher.py:467 gtk_switcher/switcher.py:477
+#: gtk_switcher/switcher.py:495 gtk_switcher/layout.py:292
 #: gtk_switcher/layout.py:293
 msgid "Downstream keyer {}"
 msgstr "Downstream Key {}"
 
-#: gtk_switcher/switcher.py:547
+#: gtk_switcher/switcher.py:546
 msgid "Upstream keyer {}"
 msgstr "Upstream Key {}"
 
-#: gtk_switcher/switcher.py:587 gtk_switcher/switcher.py:630
-#: gtk_switcher/switcher.py:633 gtk_switcher/layout.py:258
+#: gtk_switcher/switcher.py:586 gtk_switcher/switcher.py:629
+#: gtk_switcher/switcher.py:632 gtk_switcher/layout.py:258
 #: gtk_switcher/layout.py:259 gtk_switcher/layout.py:287
 #: gtk_switcher/layout.py:288
 msgid "Upstream key {}"
 msgstr "Upstream Key {}"
 
-#: gtk_switcher/switcher.py:833
+#: gtk_switcher/switcher.py:832
 msgid "Show as bus"
 msgstr "Veriyolu olarak göster"
 
-#: gtk_switcher/switcher.py:837
+#: gtk_switcher/switcher.py:836
 msgid "Follow audio monitor bus"
 msgstr "Ses monitör veriyolunu takip edin"
 
-#: gtk_switcher/switcher.py:979
+#: gtk_switcher/switcher.py:978
 msgid "Run macro"
 msgstr "Makroyu çalıştır"
 
-#: gtk_switcher/switcher.py:981
+#: gtk_switcher/switcher.py:980
 msgid "Edit macro"
 msgstr "Makroyu düzenle"
