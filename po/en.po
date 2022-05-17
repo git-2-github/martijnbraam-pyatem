@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-17 22:34+0200\n"
+"POT-Creation-Date: 2022-05-17 22:45+0200\n"
 "PO-Revision-Date: 2022-03-23 19:44+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -307,7 +307,7 @@ msgstr ""
 msgid "Open preferences"
 msgstr "Open preferences"
 
-#: gtk_switcher/ui/mixer.glade:3040
+#: gtk_switcher/ui/mixer.glade:3040 gtk_switcher/ui/videohub.glade:63
 msgid "Disconnected"
 msgstr "Disconnected"
 
@@ -752,10 +752,6 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: gtk_switcher/ui/videohub.glade:63
-msgid "disconnected"
-msgstr ""
-
 #: gtk_switcher/ui/videohub.glade:119
 msgid "Delete"
 msgstr ""
@@ -785,7 +781,8 @@ msgstr ""
 msgid "Upstream key {}"
 msgstr "Upstream key {}"
 
-#: gtk_switcher/switcher.py:832
+#. Show the videohub output as bus, checkbox
+#: gtk_switcher/switcher.py:832 gtk_switcher/videohub.py:115
 msgid "Show as bus"
 msgstr ""
 
@@ -799,4 +796,17 @@ msgstr ""
 
 #: gtk_switcher/switcher.py:980
 msgid "Edit macro"
+msgstr ""
+
+#: gtk_switcher/videohub.py:87
+msgid "Connecting..."
+msgstr ""
+
+#: gtk_switcher/videohub.py:100
+msgid "Connected"
+msgstr ""
+
+#. Source label checkbox
+#: gtk_switcher/videohub.py:124
+msgid "Rename on change"
 msgstr ""

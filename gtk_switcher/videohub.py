@@ -3,10 +3,6 @@ import json
 from gi.repository import Gtk, GObject, Gdk
 
 from gtk_switcher.template_i18n import TemplateLocale
-from pyatem.command import KeyFillCommand, KeyPropertiesDveCommand, KeyTypeCommand, KeyCutCommand, \
-    KeyPropertiesLumaCommand, KeyerKeyframeSetCommand, KeyerKeyframeRunCommand, DkeySetFillCommand, DkeySetKeyCommand, \
-    DkeyGainCommand
-from pyatem.field import TransitionSettingsField, KeyPropertiesDveField, KeyPropertiesLumaField, DkeyPropertiesField
 
 import pyatem.videohub as videohubprotocol
 
@@ -83,7 +79,7 @@ class VideoHub(Gtk.Grid):
             self.emit('ip-changed', self.old_ip, ip)
             self.old_ip = ip
 
-        self.status.set_text("connecting...")
+        self.status.set_text(_("Connecting..."))
 
         self.probed = False
         probe = videohubprotocol.VideoHub(ip)
@@ -96,7 +92,7 @@ class VideoHub(Gtk.Grid):
         while not self.probed:
             probe.loop()
 
-        self.status.set_text(f"connected ({probe.model_display})")
+        self.status.set_text(_("Connected") + f" ({probe.model_display})")
         self.config['ip'] = ip
         for output in self.outputs:
             self.outputs.remove(output)
@@ -111,7 +107,7 @@ class VideoHub(Gtk.Grid):
             row.add(label)
 
             # Show the videohub output as bus, checkbox
-            checkbox = Gtk.CheckButton("Show as bus")
+            checkbox = Gtk.CheckButton(_("Show as bus"))
             if str(index) in self.config['outputs']:
                 checkbox.set_active(self.config['outputs'][str(index)]['bus'])
             checkbox.output = index
@@ -120,7 +116,7 @@ class VideoHub(Gtk.Grid):
             row.pack_end(checkbox, False, False, 0)
 
             # Source label checkbox
-            checkbox = Gtk.CheckButton("Rename on change")
+            checkbox = Gtk.CheckButton(_("Rename on change"))
             if str(index) in self.config['outputs']:
                 checkbox.set_active(self.config['outputs'][str(index)]['rename'])
             checkbox.output = index

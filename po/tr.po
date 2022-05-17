@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-17 22:34+0200\n"
+"POT-Creation-Date: 2022-05-17 22:45+0200\n"
 "PO-Revision-Date: 2022-03-25 23:50+0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -307,7 +307,7 @@ msgstr ""
 msgid "Open preferences"
 msgstr "Ayarlar"
 
-#: gtk_switcher/ui/mixer.glade:3040
+#: gtk_switcher/ui/mixer.glade:3040 gtk_switcher/ui/videohub.glade:63
 msgid "Disconnected"
 msgstr "Bağlantı kesildi"
 
@@ -749,11 +749,6 @@ msgstr "Kontrol uygulaması"
 msgid "Status"
 msgstr ""
 
-#: gtk_switcher/ui/videohub.glade:63
-#, fuzzy
-msgid "disconnected"
-msgstr "Bağlantı kesildi"
-
 #: gtk_switcher/ui/videohub.glade:119
 msgid "Delete"
 msgstr ""
@@ -783,7 +778,8 @@ msgstr "Upstream Key {}"
 msgid "Upstream key {}"
 msgstr "Upstream Key {}"
 
-#: gtk_switcher/switcher.py:832
+#. Show the videohub output as bus, checkbox
+#: gtk_switcher/switcher.py:832 gtk_switcher/videohub.py:115
 msgid "Show as bus"
 msgstr "Veriyolu olarak göster"
 
@@ -798,3 +794,18 @@ msgstr "Makroyu çalıştır"
 #: gtk_switcher/switcher.py:980
 msgid "Edit macro"
 msgstr "Makroyu düzenle"
+
+#: gtk_switcher/videohub.py:87
+#, fuzzy
+msgid "Connecting..."
+msgstr "Bağlan"
+
+#: gtk_switcher/videohub.py:100
+#, fuzzy
+msgid "Connected"
+msgstr "Bağlan"
+
+#. Source label checkbox
+#: gtk_switcher/videohub.py:124
+msgid "Rename on change"
+msgstr ""

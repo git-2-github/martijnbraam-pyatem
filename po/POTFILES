@@ -11,3 +11,4 @@ gtk_switcher/mixeffect.py
 gtk_switcher/switcher.py
 gtk_switcher/layout.py
 gtk_switcher/audio.py
+gtk_switcher/videohub.py
