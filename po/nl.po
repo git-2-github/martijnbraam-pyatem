@@ -728,7 +728,6 @@ msgid "Add videohub"
 msgstr "Videohub toevoegen"
 
 #: gtk_switcher/ui/preferences.glade:866
-#, fuzzy
 msgid "Routing"
 msgstr "Routing"
 
@@ -795,12 +794,10 @@ msgid "Edit macro"
 msgstr "Macro bewerken"
 
 #: gtk_switcher/videohub.py:87
-#, fuzzy
 msgid "Connecting..."
 msgstr "Verbinden..."
 
 #: gtk_switcher/videohub.py:100
-#, fuzzy
 msgid "Connected"
 msgstr "Verbonden"
 
