@@ -32,6 +32,17 @@
   <content_rating type="oars-1.1"/>
   <releases>
 
+    <release version="0.6.1" date="2022-05-19">
+      <description>
+        <ul>
+          <li>Fix crash when an videohub is disconnected</li>
+          <li>Add protocol debugger window when pressing F12</li>
+          <li>Updated translations for the new features</li>
+        </ul>
+      </description>
+    </release>
+
+
     <release version="0.6.0" date="2022-05-13">
       <description>
         <ul>
