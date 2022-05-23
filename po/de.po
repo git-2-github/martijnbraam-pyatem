@@ -8,31 +8,34 @@ msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-23 15:00+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-05-23 14:24+0000\n"
+"Last-Translator: TheJes <mail@jesko-stolp.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/openswitcher/"
+"openswitcher/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #. Window title
 #: gtk_switcher/ui/mixer.glade:168 gtk_switcher/ui/mixer.glade:181
 #: gtk_switcher/ui/mixer.glade:189
 msgid "Switcher control"
-msgstr ""
+msgstr "Mischer Steuerung"
 
 #: gtk_switcher/ui/mixer.glade:387
 msgid "Color 1"
-msgstr ""
+msgstr "Farbe 1"
 
 #: gtk_switcher/ui/mixer.glade:402
 msgid "Color 2"
-msgstr ""
+msgstr "Farbe 2"
 
 #: gtk_switcher/ui/mixer.glade:429
 msgid "Color Generators"
-msgstr ""
+msgstr "Farb Generator"
 
 #: gtk_switcher/ui/mixer.glade:518 gtk_switcher/ui/mixer.glade:558
 #: gtk_switcher/ui/mixer.glade:634 gtk_switcher/ui/mixer.glade:1266
