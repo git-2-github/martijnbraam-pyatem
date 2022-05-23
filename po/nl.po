@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-17 22:45+0200\n"
-"PO-Revision-Date: 2022-03-23 19:44+0100\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-05-23 12:53+0000\n"
+"Last-Translator: Martijn Braam <martijn@brixit.nl>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/openswitcher/"
+"openswitcher/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #. Window title
 #: gtk_switcher/ui/mixer.glade:168 gtk_switcher/ui/mixer.glade:181
@@ -175,7 +177,7 @@ msgstr "Bestandsnaam"
 
 #: gtk_switcher/ui/mixer.glade:2029
 msgid "STOP"
-msgstr ""
+msgstr "STOP"
 
 #: gtk_switcher/ui/mixer.glade:2077
 msgctxt "streamrecorder"
@@ -211,7 +213,7 @@ msgstr "Opnemen"
 
 #: gtk_switcher/ui/mixer.glade:2260
 msgid "Stream recorder"
-msgstr "Stream recorder"
+msgstr "Stream opnemen"
 
 #: gtk_switcher/ui/mixer.glade:2346
 msgid "OFF"
@@ -348,23 +350,23 @@ msgstr "Volgende overgang"
 
 #: gtk_switcher/ui/mixeffect.glade:264
 msgid "BKGD"
-msgstr ""
+msgstr "BKGD"
 
 #: gtk_switcher/ui/mixeffect.glade:283
 msgid "KEY 1"
-msgstr ""
+msgstr "KEY 1"
 
 #: gtk_switcher/ui/mixeffect.glade:302
 msgid "KEY 2"
-msgstr ""
+msgstr "KEY 2"
 
 #: gtk_switcher/ui/mixeffect.glade:321
 msgid "KEY 3"
-msgstr ""
+msgstr "KEY 3"
 
 #: gtk_switcher/ui/mixeffect.glade:340
 msgid "KEY 4"
-msgstr ""
+msgstr "KEY 4"
 
 #: gtk_switcher/ui/mixeffect.glade:359 gtk_switcher/ui/mixeffect.glade:379
 #: gtk_switcher/ui/mixeffect.glade:399 gtk_switcher/ui/mixeffect.glade:419
@@ -373,6 +375,8 @@ msgid ""
 "ON\n"
 "AIR"
 msgstr ""
+"ON\n"
+"AIR"
 
 #: gtk_switcher/ui/mixeffect.glade:474
 msgid "Transition style"
@@ -380,33 +384,35 @@ msgstr "Overgang stijl"
 
 #: gtk_switcher/ui/mixeffect.glade:508
 msgid "MIX"
-msgstr ""
+msgstr "MIX"
 
 #: gtk_switcher/ui/mixeffect.glade:528
 msgid "DIP"
-msgstr ""
+msgstr "DIP"
 
 #: gtk_switcher/ui/mixeffect.glade:547
 msgid "WIPE"
-msgstr ""
+msgstr "WIPE"
 
 #: gtk_switcher/ui/mixeffect.glade:566
 msgid "STING"
-msgstr ""
+msgstr "STING"
 
 #: gtk_switcher/ui/mixeffect.glade:604
 msgid ""
 "PREV\n"
 "TRANS"
 msgstr ""
+"PREV\n"
+"TRANS"
 
 #: gtk_switcher/ui/mixeffect.glade:624
 msgid "CUT"
-msgstr ""
+msgstr "CUT"
 
 #: gtk_switcher/ui/mixeffect.glade:643 gtk_switcher/mixeffect.py:600
 msgid "AUTO"
-msgstr ""
+msgstr "AUTO"
 
 #: gtk_switcher/ui/mixeffect.glade:669 gtk_switcher/ui/mixeffect.glade:985
 #: gtk_switcher/mixeffect.py:572
@@ -419,7 +425,7 @@ msgstr "Overgang"
 
 #: gtk_switcher/ui/mixeffect.glade:846
 msgid "Downstream key"
-msgstr ""
+msgstr "Downstream key"
 
 #: gtk_switcher/ui/mixeffect.glade:925
 msgid "Fade to Black"
@@ -427,7 +433,7 @@ msgstr "Vervagen"
 
 #: gtk_switcher/ui/mixeffect.glade:959
 msgid "FTB"
-msgstr ""
+msgstr "FTB"
 
 #: gtk_switcher/ui/connection.glade:21
 msgid "Connection settings"
@@ -753,7 +759,7 @@ msgstr "Verwijderen"
 
 #: gtk_switcher/mixeffect.py:563
 msgid "TIE"
-msgstr ""
+msgstr "TIE"
 
 #: gtk_switcher/switcher.py:175
 msgid "Layout editor M/E {}"
@@ -763,11 +769,11 @@ msgstr "Layout bewerken M/E {}"
 #: gtk_switcher/switcher.py:495 gtk_switcher/layout.py:292
 #: gtk_switcher/layout.py:293
 msgid "Downstream keyer {}"
-msgstr ""
+msgstr "Downstream keyer {}"
 
 #: gtk_switcher/switcher.py:546
 msgid "Upstream keyer {}"
-msgstr ""
+msgstr "Upstream keyer {}"
 
 #: gtk_switcher/switcher.py:586 gtk_switcher/switcher.py:629
 #: gtk_switcher/switcher.py:632 gtk_switcher/layout.py:258
