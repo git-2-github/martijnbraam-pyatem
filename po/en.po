@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-17 22:45+0200\n"
+"POT-Creation-Date: 2022-05-23 15:00+0200\n"
 "PO-Revision-Date: 2022-03-23 19:44+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -290,10 +290,6 @@ msgstr "Audio"
 #: gtk_switcher/ui/mixer.glade:3007
 msgid "Camera"
 msgstr "Camera"
-
-#: gtk_switcher/ui/mixer.glade:3014
-msgid "page0"
-msgstr "page0"
 
 #: gtk_switcher/ui/mixer.glade:3023
 msgid ""
@@ -782,7 +778,7 @@ msgid "Upstream key {}"
 msgstr "Upstream key {}"
 
 #. Show the videohub output as bus, checkbox
-#: gtk_switcher/switcher.py:832 gtk_switcher/videohub.py:115
+#: gtk_switcher/switcher.py:832 gtk_switcher/videohub.py:110
 msgid "Show as bus"
 msgstr ""
 
@@ -798,15 +794,18 @@ msgstr ""
 msgid "Edit macro"
 msgstr ""
 
-#: gtk_switcher/videohub.py:87
+#: gtk_switcher/videohub.py:82
 msgid "Connecting..."
 msgstr ""
 
-#: gtk_switcher/videohub.py:100
+#: gtk_switcher/videohub.py:95
 msgid "Connected"
 msgstr ""
 
 #. Source label checkbox
-#: gtk_switcher/videohub.py:124
+#: gtk_switcher/videohub.py:119
 msgid "Rename on change"
 msgstr ""
+
+#~ msgid "page0"
+#~ msgstr "page0"
