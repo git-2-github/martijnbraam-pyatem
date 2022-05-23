@@ -93,3 +93,10 @@ of the enabled frontends.
 
 The http-api frontend provides a HTTP server that can return any of the supported fields as json and
 trigger commands by sending a HTTP POST request with formfields or json
+
+
+Translations
+------------
+
+The main language for the software is english, the translation for the project happens on
+https://hosted.weblate.org/projects/openswitcher
