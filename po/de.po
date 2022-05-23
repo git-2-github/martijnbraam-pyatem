@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-23 15:00+0200\n"
-"PO-Revision-Date: 2022-05-23 14:34+0000\n"
+"PO-Revision-Date: 2022-05-24 20:18+0000\n"
 "Last-Translator: TheJes <mail@jesko-stolp.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openswitcher/"
 "openswitcher/de/>\n"
@@ -217,99 +217,101 @@ msgstr "Stream Aufnahme"
 
 #: gtk_switcher/ui/mixer.glade:2346
 msgid "OFF"
-msgstr ""
+msgstr "AUS"
 
 #. Stop livestream button
 #: gtk_switcher/ui/mixer.glade:2397
 msgctxt "livestream"
 msgid "Off"
-msgstr ""
+msgstr "Aus"
 
 #. Start livestream button
 #: gtk_switcher/ui/mixer.glade:2412
 msgctxt "livestream"
 msgid "On air"
-msgstr ""
+msgstr "Live"
 
 #: gtk_switcher/ui/mixer.glade:2436
 msgid "Platform"
-msgstr ""
+msgstr "Plattform"
 
 #: gtk_switcher/ui/mixer.glade:2451
 msgid "Server"
-msgstr ""
+msgstr "Server"
 
 #: gtk_switcher/ui/mixer.glade:2466 gtk_switcher/ui/downstream-keyer.glade:116
 #: gtk_switcher/ui/upstream-keyer.glade:232
 msgid "Key"
-msgstr ""
+msgstr "Key"
 
 #: gtk_switcher/ui/mixer.glade:2623
 msgid "Live stream"
-msgstr ""
+msgstr "Livestream"
 
 #: gtk_switcher/ui/mixer.glade:2649
 msgid "Output"
-msgstr ""
+msgstr "Ausgabe"
 
 #: gtk_switcher/ui/mixer.glade:2681 gtk_switcher/ui/preferences.glade:984
 msgid "Switcher"
-msgstr ""
+msgstr "Mischer"
 
 #: gtk_switcher/ui/mixer.glade:2774
 msgid "Media"
-msgstr ""
+msgstr "Medien"
 
 #: gtk_switcher/ui/mixer.glade:2809
 msgctxt "audio_mixer"
 msgid "Input"
-msgstr ""
+msgstr "Eingang"
 
 #: gtk_switcher/ui/mixer.glade:2825
 msgctxt "audio_mixer"
 msgid "Equalizer"
-msgstr ""
+msgstr "Equalizer"
 
 #: gtk_switcher/ui/mixer.glade:2841
 msgctxt "audio_mixer"
 msgid "Dynamics"
-msgstr ""
+msgstr "Dynamik"
 
 #: gtk_switcher/ui/mixer.glade:2857
 msgctxt "audio_mixer"
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: gtk_switcher/ui/mixer.glade:2873
 msgctxt "audio_mixer"
 msgid "Pan"
-msgstr ""
+msgstr "Pan"
 
 #: gtk_switcher/ui/mixer.glade:2969 gtk_switcher/ui/preferences.glade:525
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: gtk_switcher/ui/mixer.glade:3007
 msgid "Camera"
-msgstr ""
+msgstr "Kamera"
 
 #: gtk_switcher/ui/mixer.glade:3023
 msgid ""
 "There is no connection to the hardware. The connection might be interrupted "
 "or a new connection needs to be made in the Preferences window"
 msgstr ""
+"Keine Verbindung zum Gerät. Die Verbindung wurde eventuell unterbrochen, "
+"eine neue Verbindung muss in den Einstellung erstellt werden"
 
 #: gtk_switcher/ui/mixer.glade:3026
 msgid "Open preferences"
-msgstr ""
+msgstr "Einstellungen Öffnen"
 
 #: gtk_switcher/ui/mixer.glade:3040 gtk_switcher/ui/videohub.glade:63
 msgid "Disconnected"
-msgstr ""
+msgstr "Verbindung getrennt"
 
 #: gtk_switcher/ui/mixer.glade:3049
 msgid "Firmware outdated"
-msgstr ""
+msgstr "Firmware veraltet"
 
 #: gtk_switcher/ui/mixer.glade:3050
 msgid ""
@@ -318,26 +320,29 @@ msgid ""
 "OpenSwitcher requires at least firmware 8.0+ to correctly function with most "
 "hardware."
 msgstr ""
+"Die auf dem gerät verwendete firmware ist zu alt für diese software.\n"
+"OpenSwitcher braucht mindestens firmwar version 8.0 oder höher um mit den "
+"meisten geräten zu funktionieren."
 
 #: gtk_switcher/ui/mixer.glade:3054
 msgid "Continue anyway"
-msgstr ""
+msgstr "Trotzdem Fortsetzen"
 
 #: gtk_switcher/ui/mixer.glade:3065
 msgid "firmware"
-msgstr ""
+msgstr "firmware"
 
 #: gtk_switcher/ui/mixeffect.glade:34
 msgid "Program"
-msgstr ""
+msgstr "Programm"
 
 #: gtk_switcher/ui/mixeffect.glade:132
 msgid "Preview"
-msgstr ""
+msgstr "Vorschau"
 
 #: gtk_switcher/ui/mixeffect.glade:230
 msgid "Next transition"
-msgstr ""
+msgstr "Nächster Übergang"
 
 #: gtk_switcher/ui/mixeffect.glade:264
 msgid "BKGD"
@@ -345,19 +350,19 @@ msgstr ""
 
 #: gtk_switcher/ui/mixeffect.glade:283
 msgid "KEY 1"
-msgstr ""
+msgstr "KEY 1"
 
 #: gtk_switcher/ui/mixeffect.glade:302
 msgid "KEY 2"
-msgstr ""
+msgstr "KEY 2"
 
 #: gtk_switcher/ui/mixeffect.glade:321
 msgid "KEY 3"
-msgstr ""
+msgstr "KEY 3"
 
 #: gtk_switcher/ui/mixeffect.glade:340
 msgid "KEY 4"
-msgstr ""
+msgstr "KEY 4"
 
 #: gtk_switcher/ui/mixeffect.glade:359 gtk_switcher/ui/mixeffect.glade:379
 #: gtk_switcher/ui/mixeffect.glade:399 gtk_switcher/ui/mixeffect.glade:419
@@ -365,7 +370,7 @@ msgstr ""
 msgid ""
 "ON\n"
 "AIR"
-msgstr ""
+msgstr "Live"
 
 #: gtk_switcher/ui/mixeffect.glade:474
 msgid "Transition style"
