@@ -53,8 +53,6 @@ method_atem_to_rgb(PyObject *self, PyObject *args)
     int pixel_size = 8;
     buffer = input_buffer.buf;
     for (int i = 0; i < data_length; i += pixel_size) {
-        buffer += pixel_size;
-
         // Convert 10-bit BT.709 Y'CbCrA 4:2:2 to RGB
         // Unpack bytes to 2xY 2xA and a B and R pair
         unsigned short a1 = (buffer[0] << 4) + ((buffer[1] & 0xf0) >> 4);
@@ -85,6 +83,7 @@ method_atem_to_rgb(PyObject *self, PyObject *args)
         outbuffer[6] = (unsigned char) b2f;
         outbuffer[7] = (unsigned char) (((double) (a2 - 16)) / 3.6);
         outbuffer += pixel_size;
+        buffer += pixel_size;
     }
 
     res = Py_BuildValue("y#", resbuffer, data_length);
@@ -106,7 +105,7 @@ method_rgb_to_atem(PyObject *self, PyObject *args)
     }
 
     data_length = input_buffer.len;
-    char *buffer;
+    unsigned char *buffer;
     buffer = input_buffer.buf;
 
     char *outbuffer = (char *) malloc(data_length);
@@ -118,19 +117,24 @@ method_rgb_to_atem(PyObject *self, PyObject *args)
 
     int pixel_size = 8;
     for (int i = 0; i < data_length; i += pixel_size) {
-        buffer += pixel_size;
         // Convert RGBA 8888 to 10-bit BT.709 Y'CbCrA
         float y16a = y_offset + bt709_coeff_r * buffer[0] + bt709_coeff_g * buffer[1] + bt709_coeff_b * buffer[2];
         float y16b = y_offset + bt709_coeff_r * buffer[4] + bt709_coeff_g * buffer[5] + bt709_coeff_b * buffer[6];
         float cr16 = 0;
         float cb16 = 0;
 
-        unsigned short y10a = ((int) y16a) >> 6;
-        unsigned short y10b = ((int) y16b) >> 6;
-        unsigned short cr10 = ((int) cr16) >> 6;
-        unsigned short cb10 = ((int) cb16) >> 6;
-        unsigned short a10a = ((buffer[3] << 2) * 219 / 255) + (16 << 2);
-        unsigned short a10b = ((buffer[7] << 2) * 219 / 255) + (16 << 2);
+        unsigned short y10a = ((unsigned int) (y_offset +
+                              ((buffer[0] * bt709_coeff_r * y_range) +
+                               (buffer[1] * bt709_coeff_g * y_range) +
+                               (buffer[2] * bt709_coeff_b * y_range)))) >> 6;
+        unsigned short y10b = ((unsigned int) (y_offset +
+                              ((buffer[4] * bt709_coeff_r * y_range) +
+                               (buffer[5] * bt709_coeff_g * y_range) +
+                               (buffer[6] * bt709_coeff_b * y_range)))) >> 6;
+        unsigned short cr10 = (((112 * buffer[4] - 94 * buffer[5] -  18 * buffer[6] + 128) >> 8) + 128) * 4 - 1;
+        unsigned short cb10 = (((-38 * buffer[0] - 74 * buffer[1] + 112 * buffer[2] + 128) >> 8) + 128) * 4 - 1;
+        unsigned short a10a = ((buffer[3] << 2) * 219 / 255) + (15 << 2) + 1;
+        unsigned short a10b = ((buffer[7] << 2) * 219 / 255) + (15 << 2) + 1;
 
         writepointer[0] = (unsigned char) (a10a >> 4);
         writepointer[1] = (unsigned char) (((a10a & 0x0f) << 4) | (cb10 >> 6));
@@ -141,6 +145,7 @@ method_rgb_to_atem(PyObject *self, PyObject *args)
         writepointer[6] = (unsigned char) (((cr10 & 0x3f) << 2) | (y10b >> 8));
         writepointer[7] = (unsigned char) (y10b & 0xff);
         writepointer += pixel_size;
+        buffer += pixel_size;
     }
 
     res = Py_BuildValue("y#", outbuffer, data_length);
@@ -179,15 +184,18 @@ method_rle_encode(PyObject *self, PyObject *args)
             for (Py_ssize_t j = 0; j < c; ++j) {
                 buf[w++] = data[i - 1];
             }
-        } else {
-            buf[w++] = data[i];
         }
+        buf[w++] = data[i];
         c = 0;
     }
-    if (c > 0 && input_buffer.len > 1) {
+    if (c > 2 && input_buffer.len > 1) {
         buf[w++] = RLE_HEADER;
         beputu64(&buf[w++], c);
         buf[w++] = data[i - 1];
+    } else if (c > 0 && input_buffer.len > 1) {
+        for (Py_ssize_t j = 0; j < c; ++j) {
+            buf[w++] = data[i - 1];
+        }
     } else if (input_buffer.len == 1) {
         buf[0] = data[0];
     }

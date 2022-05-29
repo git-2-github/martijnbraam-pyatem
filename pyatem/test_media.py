@@ -10,10 +10,16 @@ class Test(TestCase):
     FRAME_1080_RED_PIXEL = b':\x96d\xfa:\x9e\xfc\xfa'
     RED_PIXEL_8888 = b'\xff\0\0\xff'
 
+    def test_rle_decode(self):
+        decompressed = rle_decode(self.FRAME_1080_RED)
+        for index in range(0, len(decompressed), 8):
+            pixel = decompressed[index:index + 8]
+            self.assertEqual(self.FRAME_1080_RED_PIXEL, pixel, msg='index {}'.format(index))
+
     def test_atem_to_image(self):
         decompressed = rle_decode(self.FRAME_1080_RED)
         result = atem_to_rgb(decompressed, 1920, 1080)
-        for index in range(0, len(result) - 8, 4):
+        for index in range(0, len(result), 4):
             pixel = result[index:index + 4]
             self.assertEqual(self.RED_PIXEL_8888, pixel, msg='index {}'.format(index))
 
