@@ -16,6 +16,9 @@ class TransferTask:
         self.data_length = None
         self.hash = None
 
+        self.send_length = None
+        self.send_done = 0
+
         self.name = None
         self.description = None
 
@@ -27,6 +30,11 @@ class TransferTask:
     def compress(self):
         compressed = rle_encode(self.data)
         self.data = compressed
+        self.send_length = len(self.data)
+
+    def __repr__(self):
+        direction = 'upload' if self.upload else 'download'
+        return f'<TransferTask {direction} store={self.store} slot={self.slot}>'
 
 
 class TransferQueueFlushed:

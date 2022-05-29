@@ -2446,7 +2446,8 @@ class LockStateField(FieldBase):
         self.store, self.state, self.u1 = struct.unpack('>H?B', raw)
 
     def __repr__(self):
-        return '<lock-state store={} state={}>'.format(self.store, self.state)
+        state = 'locked' if self.state else 'unlocked'
+        return '<lock-state store={} state={}>'.format(self.store, state)
 
 
 class FileTransferDataField(FieldBase):

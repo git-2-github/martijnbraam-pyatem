@@ -2065,9 +2065,8 @@ class LockCommand(Command):
 
     def __init__(self, store, state):
         """
-        :param index: 0-indexed DSK number to trigger
-        :param keyer: 0-indexed keyer number
-        :param source: Source index for the keyer fill
+        :param store: Store number to get the lock for
+        :param state: True to request the lock, False to release it
         """
         self.store = store
         self.state = state
@@ -2075,6 +2074,33 @@ class LockCommand(Command):
     def get_command(self):
         data = struct.pack('>H?x', self.store, self.state)
         return self._make_command('LOCK', data)
+
+
+class PartialLockCommand(Command):
+    """
+    Implementation of the `PLCK` command. This requests a new lock, used for data transfers.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u16    Store index
+    2      2    u16    Slot
+    4      4    ?      unknown
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, store, slot):
+        """
+        :param store: Store number to request a lock for
+        :param slot: Slot number inside the store to get the partial lock for
+        """
+        self.store = store
+        self.slot = slot
+
+    def get_command(self):
+        data = struct.pack('>HH BBxx', self.store, self.slot, 0xff, 0x01)
+        return self._make_command('PLCK', data)
 
 
 class TransferDownloadRequestCommand(Command):
@@ -2136,6 +2162,7 @@ class TransferUploadRequestCommand(Command):
     === ==========
     0   Unknown
     1   Write RLE
+    2   Clear
     256 Write uncompressed
     512 Pre-erase
     === ==========
@@ -2475,3 +2502,13 @@ class InputPropertiesCommand(Command):
 
         data = struct.pack('>Bx H 20s 4s Hxx', mask, self.source_index, label, short, port_type)
         return self._make_command('CInL', data)
+
+
+class TimeRequestCommand(Command):
+    """
+    Request the system time of the hardware, this is also used as a NOP command
+    This command has no arguments
+    """
+
+    def get_command(self):
+        return self._make_command('TiRq', b'')

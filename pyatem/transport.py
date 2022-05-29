@@ -1,3 +1,4 @@
+import select
 import socket
 import struct
 import logging
@@ -5,11 +6,18 @@ import time
 from queue import Queue, Empty
 import collections
 from urllib.parse import urlparse
+import threading
 
 import usb.core
 import usb.util
 
+from pyatem.socketqueue import SocketQueue
 from pyatem.transfer import TransferQueueFlushed
+
+
+class ConnectionReady:
+    def __init__(self):
+        pass
 
 
 class Packet:
@@ -43,7 +51,6 @@ class Packet:
         res.acknowledgement_number = fields[2]
         res.remote_sequence_number = fields[3]
         res.sequence_number = fields[4]
-
         res.data = packet[12:]
         return res
 
@@ -92,8 +99,52 @@ class Packet:
             label = ' ' + self.label
         return '<Packet flags={} data={} sequence={}{}{}>'.format(flags, data_len, self.sequence_number, extra, label)
 
+    def get_flags(self):
+        flags = [hex(self.flags), len(self.data)]
+        if self.flags & 0x01:
+            flags.append('AckRequest')
+        if self.flags & 0x02:
+            flags.append('Hello')
+        if self.flags & 0x04:
+            flags.append('Resend')
+        if self.flags & 0x08:
+            flags.append('Undefined')
+        if self.flags & 0x10:
+            flags.append('Ack')
+        return flags
 
-class UdpProtocol:
+
+class BaseProtocol:
+    def __init__(self):
+        self.send_queue = collections.deque(maxlen=1024)
+        self.queue_enabled = False
+        self.queue_callback = None
+        self.mark_next_connected = False
+        self.batch_size = 1
+        self.batch_delay = 0
+
+    def _send_packet(self, packet):
+        raise NotImplementedError()
+
+    def queue_packet(self, packet):
+        self.send_queue.append(packet)
+
+    def queue_trigger(self):
+        if len(self.send_queue) > 0:
+            self.queue_enabled = True
+            for i in range(0, min(len(self.send_queue), self.batch_size)):
+                p = self.send_queue.popleft()
+                self._send_packet(p)
+                if self.queue_callback is not None:
+                    self.queue_callback(len(self.send_queue), len(p.data) - 4)
+            time.sleep(self.batch_delay)
+        elif self.queue_enabled:
+            self.queue_enabled = False
+            return True
+        return False
+
+
+class UdpProtocol(BaseProtocol):
     STATE_CLOSED = 0
     STATE_SYN_SENT = 1
     STATE_SYN_RECEIVED = 2
@@ -106,12 +157,15 @@ class UdpProtocol:
     FLAG_ACK = 16
 
     def __init__(self, ip, port=9910):
+        super().__init__()
         self.ip = ip
         self.port = port
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.settimeout(5)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024 * 1024 * 16)
+
+        self.thread = threading.Thread(None, self._udp_thread, "atem-udp", daemon=True)
 
         self.local_sequence_number = 0
         self.local_ack_number = 0
@@ -124,13 +178,36 @@ class UdpProtocol:
         self.enable_ack = False
         self.had_traffic = False
 
-        self.received_packets = collections.deque(maxlen=128)
-        self.queue = collections.deque(maxlen=1024)
-        self.queue_enabled = False
+        self.received_packets = collections.deque(maxlen=1024)
+        self.retransmission_buffer = {}
+
+        self.thread_queue = SocketQueue()
+        self.thread_recv_queue = Queue()
+
+        self.batch_size = 5
+        self.batch_delay = 0.003
+
+    def _udp_thread(self):
+        while True:
+            readable, _, _ = select.select([self.sock, self.thread_queue], [], [])
+            for queue in readable:
+                if queue is self.sock:
+                    packet = self._receive_packet_low()
+                    if packet is not None:
+                        self.thread_recv_queue.put(packet)
+                elif queue is self.thread_queue:
+                    self._send_packet_low(queue.get())
+                else:
+                    RuntimeError("Unexpected result from select()")
 
     def _send_packet(self, packet):
+        self.thread_queue.put(packet)
+
+    def _send_packet_low(self, packet):
         packet.session = self.session_id
         if not packet.flags & UdpProtocol.FLAG_ACK:
+            if self.local_sequence_number == -1:
+                self.local_sequence_number = 0
             packet.sequence_number = (self.local_sequence_number + 1) % 2 ** 16
         raw = packet.to_bytes()
         self.sock.sendto(raw, (self.ip, self.port))
@@ -140,8 +217,16 @@ class UdpProtocol:
             pass
         if packet.flags & (UdpProtocol.FLAG_SYN | UdpProtocol.FLAG_ACK) == 0:
             self.local_sequence_number = (self.local_sequence_number + 1) % 2 ** 16
+        self.retransmission_buffer[self.local_sequence_number] = packet
+
+        if packet.label == "_handshake":
+            # Clear temporary session id, use the session id received in the first packet from the remote
+            self.session_id = None
 
     def _receive_packet(self):
+        return self.thread_recv_queue.get()
+
+    def _receive_packet_low(self):
         try:
             data, address = self.sock.recvfrom(2048)
         except socket.timeout:
@@ -150,15 +235,15 @@ class UdpProtocol:
             self.connect()
             return
         packet = Packet.from_bytes(data)
-        logging.debug('< {}'.format(packet))
+
+        if packet.flags & UdpProtocol.FLAG_RETRANSMISSION:
+            logging.error("retransmission detected")
 
         if packet.flags & UdpProtocol.FLAG_REQUEST_RETRANSMISSION:
-            pass
+            logging.error("retransmission requested")
             # hexdump(data)
 
         new_sequence_number = packet.sequence_number
-        if new_sequence_number > self.remote_sequence_number + 1:
-            pass
         self.remote_sequence_number = new_sequence_number
 
         if self.session_id is None:
@@ -171,8 +256,10 @@ class UdpProtocol:
 
         self.received_packets.append(self.remote_sequence_number)
 
-        if packet.flags & UdpProtocol.FLAG_RELIABLE and self.enable_ack:
-            # This packet needs an ACK
+        if (packet.flags & UdpProtocol.FLAG_RELIABLE and self.enable_ack) or \
+                (not self.enable_ack and UdpProtocol.FLAG_ACK and len(packet.data) == 0):
+            self.enable_ack = True
+            # ACK this
             ack = Packet()
             ack.flags = UdpProtocol.FLAG_ACK
             ack.acknowledgement_number = self.remote_sequence_number
@@ -198,17 +285,18 @@ class UdpProtocol:
         # Got a valid 2nd handshake packet, send back the third one
         response = Packet()
         response.flags = UdpProtocol.FLAG_ACK
+        response.label = "_handshake"
         self._send_packet(response)
-
-        # Clear temporary session id, use the session id received in the first packet from the remote
-        self.session_id = None
 
     def connect(self):
         if self.state != UdpProtocol.STATE_CLOSED:
             raise RuntimeError("Trying to open an connection that's already open")
 
+        if not self.thread.is_alive():
+            self.thread.start()
+
         # Reset internal state
-        self.local_sequence_number = 0
+        self.local_sequence_number = -1
         self.local_ack_number = 0
         self.remote_sequence_number = 0
         self.remote_ack_numbe = 0
@@ -230,6 +318,7 @@ class UdpProtocol:
     def receive_packet(self):
         while True:
             packet = self._receive_packet()
+
             if packet is True:
                 continue
             if packet is None and not self.had_traffic:
@@ -243,6 +332,13 @@ class UdpProtocol:
             if packet is None:
                 continue
 
+            if self.mark_next_connected:
+                self.mark_next_connected = False
+                return ConnectionReady()
+
+            if self.enable_ack and self.queue_trigger():
+                return TransferQueueFlushed()
+
             if self.state == UdpProtocol.STATE_SYN_SENT:
                 # Got response for the first handshake packet
                 self.had_traffic = True
@@ -253,13 +349,13 @@ class UdpProtocol:
                     if not self.enable_ack:
                         # This is the first ACK from the mixer, after this we should send ACKs bac
                         self.enable_ack = True
+                        # self.local_sequence_number = 0
                         ack = Packet()
                         ack.flags = UdpProtocol.FLAG_ACK
                         ack.acknowledgement_number = self.remote_sequence_number
                         ack.remote_sequence_number = 0x61
                         ack.label = 'initial ack after connection'
                         self._send_packet(ack)
-
                     # TODO: Implement other control packets, like request for retransmission
 
                     # Send queued up bulk traffic after the ack
@@ -272,21 +368,8 @@ class UdpProtocol:
     def send_packet(self, packet):
         self._send_packet(packet)
 
-    def queue_packet(self, packet):
-        self.queue.append(packet)
 
-    def queue_trigger(self):
-        if len(self.queue) > 0:
-            self.queue_enabled = True
-            p = self.queue.popleft()
-            self._send_packet(p)
-        elif self.queue_enabled:
-            self.queue_enabled = False
-            return True
-        return False
-
-
-class UsbProtocol:
+class UsbProtocol(BaseProtocol):
     STATE_INIT = 0
 
     PRODUCTS = {
@@ -295,6 +378,7 @@ class UsbProtocol:
     }
 
     def __init__(self, port=None):
+        super().__init__()
         port = port or "auto"
         self.port = port
         self.queue = Queue()
@@ -331,12 +415,20 @@ class UsbProtocol:
 
     def _receive_packet(self):
         try:
-            data = self.handle.read(0x82, 8192 * 4, timeout=1100)
+            # Lower the timeout when doing an bulk upload to not wait a second between packets
+            t = 1 if self.queue_enabled else 1100
+            data = self.handle.read(0x82, 8192 * 4, timeout=t)
         except:
+            if self.queue_trigger():
+                return TransferQueueFlushed()
             return None
 
         raw = bytes(data)
         if len(raw) == 0:
+            # Send queued up bulk traffic after the ack
+            if self.queue_trigger():
+                return TransferQueueFlushed()
+
             return None
 
         chunks = []
@@ -364,6 +456,10 @@ class UsbProtocol:
                 self.handle.write(0x02, b'')
                 time.sleep(0.020)
 
+            if self.mark_next_connected:
+                self.mark_next_connected = False
+                return ConnectionReady()
+
             packet = self._receive_packet()
             if packet is not None:
                 return packet
@@ -372,12 +468,13 @@ class UsbProtocol:
         self._send_packet(packet)
 
 
-class TcpProtocol:
+class TcpProtocol(BaseProtocol):
     STATE_INIT = 0
     STATE_AUTH = 1
     STATE_CONNECTED = 2
 
     def __init__(self, url=None, host=None, port=None, username=None, password=None, device=None):
+        super().__init__()
         if url is not None:
             part = urlparse(url)
             host = part.hostname
