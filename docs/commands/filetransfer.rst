@@ -10,6 +10,10 @@ Locking
    :members:
    :special-members:
 
+.. autoclass:: pyatem.command.PartialLockCommand
+   :members:
+   :special-members:
+
 
 Transfer
 --------

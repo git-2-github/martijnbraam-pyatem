@@ -11,6 +11,7 @@ a few parts since the skaarhoj documentation has been last updated.
 
    udptransport
    usbtransport
+   media
    fields
    commands
    python
