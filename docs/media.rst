@@ -14,6 +14,7 @@ If you look at the bits of 2 consecutive pixels, which is 8 bytes:
 
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 | byte 1        |  byte 2       | byte 3        | byte 4        |
 +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 | A1  (12 bits)         | Cb  (10 bits)     | Y 1  (10 bits)    |
@@ -65,7 +66,7 @@ To upload or download frames from the memory in the ATEM the control software fi
 specific storage. The options for the storage for the lock is ``0`` for the media frame storage and ``255`` for
 the macro storage.
 
-The process for getting a lock is::
+The process for getting a lock is:
 
 #. Check the LKST field first to see if the storage is locked. If another application has a lock the only thing
    you can do is wait for the LKST to update when the other application releases the lock.
