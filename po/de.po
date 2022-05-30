@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-23 15:00+0200\n"
-"PO-Revision-Date: 2022-05-24 20:18+0000\n"
+"PO-Revision-Date: 2022-05-31 09:15+0000\n"
 "Last-Translator: TheJes <mail@jesko-stolp.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openswitcher/"
 "openswitcher/de/>\n"
@@ -157,7 +157,6 @@ msgid "Preset"
 msgstr "Voreinstellung"
 
 #: gtk_switcher/ui/mixer.glade:1818
-#, fuzzy
 msgid "Audio bitrate"
 msgstr "Audio bitrate"
 
@@ -197,7 +196,7 @@ msgstr "In allen Kameras aufzeichnen"
 #: gtk_switcher/ui/mixer.glade:2134
 msgctxt "streamrecorder"
 msgid "Switch"
-msgstr ""
+msgstr "Umschalten"
 
 #. button
 #: gtk_switcher/ui/mixer.glade:2148
