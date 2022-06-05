@@ -5,6 +5,10 @@ import logging
 import socketserver
 from functools import partial
 
+from pyatem.command import TransferCompleteCommand
+from pyatem.field import InitCompleteField
+from pyatem.transfer import TransferTask
+
 
 class TCPHandler(socketserver.BaseRequestHandler):
     def __init__(self, config, threadpool, *args, **kwargs):
@@ -12,6 +16,8 @@ class TCPHandler(socketserver.BaseRequestHandler):
         self.threadpool = threadpool
         self.device = None
         self.callback_id = None
+        self.callback_uploaded = None
+        self.transfer_buffer = {}
         super().__init__(*args, **kwargs)
 
     def setup(self):
@@ -82,6 +88,9 @@ class TCPHandler(socketserver.BaseRequestHandler):
             size += fsize
         self.send_fields(buffer)
 
+        buffer = [InitCompleteField(b'\0\0\0\0')]
+        self.send_fields(buffer)
+
     def receive(self):
         try:
             header = self.request.recv(2)
@@ -90,7 +99,17 @@ class TCPHandler(socketserver.BaseRequestHandler):
         if len(header) == 0:
             raise ValueError("Client disconnected")
         datalength, = struct.unpack('!H', header)
-        return self.request.recv(datalength)
+        data_left = datalength
+        data = b''
+        while data_left > 0:
+            block = self.request.recv(data_left)
+            if len(block) == 0:
+                logging.warning("Connection closed")
+                return
+            data_left -= len(block)
+            data += block
+
+        return data
 
     def handle(self):
         # Rename thread
@@ -147,20 +166,49 @@ class TCPHandler(socketserver.BaseRequestHandler):
 
             # Register events
             self.callback_id = self.threadpool['hardware'][self.device].switcher.on('change', self.proxy_change)
+            self.callback_upload = self.threadpool['hardware'][self.device].switcher.on('upload-done',
+                                                                                        self.proxy_uploaded)
 
             # Proxying
             while True:
                 packet = self.receive()
-                self.threadpool['hardware'][self.device].switcher.send_raw(packet)
+                pid = packet[4:8]
+                if pid.startswith(b'*'):
+                    cmd = pid[1:4].decode()
+                    handler_name = f'handle_{cmd.lower()}'
+                    if hasattr(self, handler_name):
+                        handler = getattr(self, handler_name)
+                        handler(packet)
+                    else:
+                        logging.error(f"Unknown command: {cmd}")
+                else:
+                    self.threadpool['hardware'][self.device].switcher.send_raw(packet)
 
 
         except ValueError as e:
             logging.error("Protocol error: " + str(e))
             return
 
+    def handle_xfr(self, packet):
+        task = TransferTask.from_tcp(packet)
+        id = (task.store, task.slot, task.upload)
+        if id not in self.transfer_buffer:
+            self.transfer_buffer[id] = task
+        else:
+            self.transfer_buffer[id].data += task.data
+
+        received = len(self.transfer_buffer[id].data)
+        if received == task.send_length:
+            logging.info(f'Uploading to store {task.store} slot {task.slot}')
+            hw = self.threadpool['hardware'][self.device].switcher
+            if task.upload:
+                hw.upload(task.store, task.slot, b'', task=self.transfer_buffer[id])
+
     def finish(self):
         if self.callback_id is not None:
             self.threadpool['hardware'][self.device].switcher.off('change', self.callback_id)
+        if self.callback_upload is not None:
+            self.threadpool['hardware'][self.device].switcher.off('upload-done', self.callback_upload)
         self.server.numclients -= 1
 
     def proxy_change(self, key, val):
@@ -170,6 +218,10 @@ class TCPHandler(socketserver.BaseRequestHandler):
             # self.send_raw(val)
         else:
             self.send_raw(val.make_packet())
+
+    def proxy_uploaded(self, store, slot):
+        del self.transfer_buffer[(store, slot, True)]
+        self.send_raw(TransferCompleteCommand(store, slot, True).get_command())
 
 
 class TcpFrontendThread(threading.Thread):

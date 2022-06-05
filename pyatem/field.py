@@ -3179,3 +3179,55 @@ class AutoInputVideoModeField(FieldBase):
 
     def __repr__(self):
         return '<auto-input-video-mode: enabled={} detected={}>'.format(self.enabled, self.detected)
+
+
+class InitCompleteField(FieldBase):
+    """
+    Data from the `InCm`. This notifies the app that all the initial state has been sent
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      4    ?      unknown
+    ====== ==== ====== ===========
+    """
+
+    CODE = "InCm"
+
+    def __init__(self, raw):
+        self.raw = raw
+
+    def __repr__(self):
+        return '<init-complete>'
+
+
+class TransferCompleteField(FieldBase):
+    """
+    Data from the `*XFC`. This is an command that's part of OpenSwitcher for the TCP protocol and not part
+    of the actual ATEM protocol. This command is send over the TCP connection when the upstream atem has completed
+    a file transfer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Store
+    2      2    u16    Slot
+    4      1    bool   Is upload
+    5      3    x      padding
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar store: Transfer store index
+    :ivar slot: Transfer slot index
+    :ivar upload: True if the transfer was an upload, False if the transfer was a download
+    """
+
+    CODE = "*XFC"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.store, self.slot, self.upload = struct.unpack('>HH ?xxx', raw)
+
+    def __repr__(self):
+        return '<*transfer-complete: store={} slot={} upload={}>'.format(self.store, self.slot, self.upload)

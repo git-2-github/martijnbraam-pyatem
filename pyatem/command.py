@@ -2512,3 +2512,34 @@ class TimeRequestCommand(Command):
 
     def get_command(self):
         return self._make_command('TiRq', b'')
+
+
+class TransferCompleteCommand(Command):
+    """
+    Implementation of the `*XFC` command. This is an command that's part of OpenSwitcher for the TCP protocol and not part
+    of the actual ATEM protocol.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Store
+    2      2    u16    Slot
+    4      1    bool   Is upload
+    5      3    x      padding
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, store, slot, upload):
+        """
+        :param store: Transfer store index
+        :param slot: Transfer slot index
+        :param upload: True if an upload was completed, False if a download was completed
+        """
+        self.store = store
+        self.slot = slot
+        self.upload = upload
+
+    def get_command(self):
+        data = struct.pack('>HH ?xxx', self.store, self.slot, self.upload)
+        return self._make_command('*XFC', data)

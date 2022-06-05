@@ -192,6 +192,7 @@ class AtemProtocol:
             'FMLv': 'fairlight-meter-levels',
             'FDLv': 'fairlight-master-levels',
             'CCdP': 'camera-control-data-packet',
+            '*XFC': 'transfer-complete',
         }
 
         fieldname_to_unique = {
@@ -313,6 +314,21 @@ class AtemProtocol:
             # Start next transfer in the queue
             self._transfer_trigger(self.transfer.store)
             return
+        elif key == 'transfer-complete':
+            logging.debug('Proxy transfer complete')
+
+            # Remove current item from the transfer queue
+            queue = self.transfer_queue[contents.store]
+            self.transfer_queue[contents.store] = queue[1:]
+
+            if contents.upload:
+                self._raise('upload-done', contents.store, contents.slot)
+            else:
+                # TODO: Implement proxy download
+                pass
+            # Start next transfer in the queue
+            self._transfer_trigger(self.transfer.store)
+            return
 
         if key in fieldname_to_unique:
             idxes = struct.unpack_from(fieldname_to_unique[key], raw, 0)
@@ -337,6 +353,8 @@ class AtemProtocol:
 
         if key == 'InCm':
             self.transport.mark_next_connected = True
+            if isinstance(self.transport, TcpProtocol):
+                self._raise('connected')
         self._raise('change', key, contents)
 
     def make_unique_dict(self, content, path):
@@ -388,31 +406,37 @@ class AtemProtocol:
         self.transfer_queue[store].append(TransferTask(store, index))
         self._transfer_trigger(store)
 
-    def upload(self, store, index, data, compress=True, compressed=False, name=None, description=None, size=None):
+    def upload(self, store, index, data, compress=True, compressed=False, name=None, description=None, size=None,
+               task=None):
         logging.info("Queue upload of {}:{}".format(store, index))
         if store not in self.transfer_queue:
             self.transfer_queue[store] = []
-        task = TransferTask(store, index, upload=True)
-        task.data = data
-        task.send_length = len(data)
-        task.name = name
-        task.description = description
-        if compressed:
-            uncompressed = rle_decode(data)
-            task.data = uncompressed
-            task.calculate_hash()
+
+        if task is None:
+            task = TransferTask(store, index, upload=True)
             task.data = data
-        else:
-            task.calculate_hash()
-        if compress:
-            task.compress()
-        elif compressed:
-            task.data_length = len(rle_decode(data))
+            task.send_length = len(data)
+            task.name = name
+            task.description = description
+            if compressed:
+                uncompressed = rle_decode(data)
+                task.data = uncompressed
+                task.calculate_hash()
+                task.data = data
+            else:
+                task.calculate_hash()
+            if compress:
+                task.compress()
+            elif compressed:
+                task.data_length = len(rle_decode(data))
 
         logging.info(f'New upload task is {len(task.data)} bytes, {task.data_length} uncompressed')
 
-        self.transfer_queue[store].append(task)
-        self._transfer_trigger(store)
+        if isinstance(self.transport, TcpProtocol):
+            self.transport.upload(task)
+        else:
+            self.transfer_queue[store].append(task)
+            self._transfer_trigger(store)
 
     def _queue_chunks(self):
         # Can't transfer without a chunk size

@@ -12,7 +12,7 @@ import usb.core
 import usb.util
 
 from pyatem.socketqueue import SocketQueue
-from pyatem.transfer import TransferQueueFlushed
+from pyatem.transfer import TransferQueueFlushed, TransferTask
 
 
 class ConnectionReady:
@@ -571,3 +571,12 @@ class TcpProtocol(BaseProtocol):
 
     def send_packet(self, packet):
         self._send_packet(packet.data)
+
+    def upload(self, task):
+        if not isinstance(task, TransferTask):
+            raise ValueError()
+        for packet in task.to_tcp():
+            self._send_packet(self.list_to_packets([packet]))
+
+    def download(self, task):
+        pass
