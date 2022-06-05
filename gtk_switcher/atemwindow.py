@@ -31,13 +31,16 @@ from gi.repository import Handy
 
 
 class AtemConnection(threading.Thread):
-    def __init__(self, callback, disconnected, transfer_progress, download_done, connected):
+    def __init__(self, callback, disconnected, transfer_progress, download_done, connected, upload_done,
+                 upload_progress):
         threading.Thread.__init__(self)
         self.callback = callback
         self.disconnected = disconnected
         self._connected = connected
         self.transfer_progress = transfer_progress
         self.download_done = download_done
+        self.upload_done = upload_done
+        self.upload_progress = upload_progress
         self.atem = None
         self.ip = None
         self.stop = False
@@ -57,6 +60,8 @@ class AtemConnection(threading.Thread):
         self.mixer.on('disconnected', self.do_disconnected)
         self.mixer.on('transfer-progress', self.do_transfer_progress)
         self.mixer.on('download-done', self.do_download_done)
+        self.mixer.on('upload-done', self.do_upload_done)
+        self.mixer.on('upload-progress', self.do_upload_progress)
         try:
             self.mixer.connect()
         except ConnectionError as e:
@@ -86,6 +91,12 @@ class AtemConnection(threading.Thread):
 
     def do_download_done(self, store, slot, data):
         GLib.idle_add(self.download_done, store, slot, data)
+
+    def do_upload_progress(self, store, slot, percent, done, size):
+        GLib.idle_add(self.upload_progress, store, slot, percent, done, size)
+
+    def do_upload_done(self, store, slot):
+        GLib.idle_add(self.upload_done, store, slot)
 
     def get_id(self):
 
@@ -166,7 +177,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.mode = None
 
         self.connection = AtemConnection(self.on_change, self.on_disconnect, self.on_transfer_progress,
-                                         self.on_download_done, self.on_connect)
+                                         self.on_download_done, self.on_connect, self.on_upload_done,
+                                         self.on_upload_progress)
 
         if args.ip:
             self.connection.ip = args.ip
@@ -186,7 +198,6 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         accel.connect(Gdk.keyval_from_name('Return'), 0, 0, self.on_auto_shortcut)
         accel.connect(Gdk.keyval_from_name('KP_Enter'), 0, 0, self.on_auto_shortcut)
         accel.connect(Gdk.keyval_from_name('F12'), 0, 0, self.on_debugger_shortcut)
-
 
         for i in range(0, 9):
             accel.connect(Gdk.keyval_from_name(str(i)), 0, 0, self.on_preview_keyboard_change)
@@ -267,7 +278,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.clear_audio_state()
         print("Starting new connection to {}".format(self.settings.get_string('switcher-ip')))
         self.connection = AtemConnection(self.on_change, self.on_disconnect, self.on_transfer_progress,
-                                         self.on_download_done, self.on_connect)
+                                         self.on_download_done, self.on_connect, self.on_upload_done,
+                                         self.on_upload_progress)
         self.connection.daemon = True
         self.connection.ip = self.settings.get_string('switcher-ip')
         self.connection.start()
@@ -554,6 +566,14 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                 self.macro_edit = False
 
                 MacroEditorWindow(self.window, self.application, self.connection, slot, data)
+
+    def on_upload_done(self, store, slot):
+        if store == 0:
+            self.on_media_upload_done(store, slot)
+
+    def on_upload_progress(self, store, slot, percent, done, size):
+        if store == 0:
+            self.on_media_upload_progress(store, slot, percent, done, size)
 
     def on_page_changed(self, widget, *args):
         page = widget.get_visible_child_name()

@@ -64,6 +64,7 @@ class MediaPage:
             grid.attach(slot_img, 0, 1, 2, 1)
 
             progress = Gtk.ProgressBar()
+            progress.set_no_show_all(True)
             grid.attach(progress, 0, 2, 2, 1)
 
             self.media_slot[i] = slot
@@ -167,6 +168,7 @@ class MediaPage:
 
     def on_page_media_open(self):
         for index in self.media_queue:
+            self.media_slot_progress[index].show()
             self.connection.mixer.download(0, index)
         self.media_queue = []
 
@@ -197,6 +199,12 @@ class MediaPage:
                     continue
                 self.media_slot_upload_file(index, path)
                 index += 1
+
+    def on_media_upload_done(self, store, slot):
+        self.media_slot_progress[slot].hide()
+
+    def on_media_upload_progress(self, store, slot, percent, done, size):
+        self.media_slot_progress[slot].set_fraction(percent/100)
 
     def media_slot_upload_file(self, index, path):
         mode = self.connection.mixer.mixerstate['video-mode']
@@ -234,4 +242,6 @@ class MediaPage:
 
         pixels = dest.get_pixels()
         frame = pyatem.media.rgb_to_atem(pixels, width, height)
+        self.media_slot_progress[index].show()
+        self.media_slot[index].get_style_context().add_class('uploading')
         self.connection.mixer.upload(0, index, frame, name=name)

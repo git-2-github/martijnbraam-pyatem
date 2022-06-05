@@ -397,7 +397,7 @@ class AtemProtocol:
 
         self.transfer.send_done += size
         fraction = self.transfer.send_done / self.transfer.send_length
-        self._raise('upload-progress', fraction * 100, self.transfer.send_done, self.transfer.send_length)
+        self._raise('upload-progress', self.transfer.store, self.transfer.slot, fraction * 100, self.transfer.send_done, self.transfer.send_length)
 
     def download(self, store, index):
         logging.info("Queue download of {}:{}".format(store, index))

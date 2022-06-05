@@ -98,7 +98,7 @@ def progress(store, slot, factor):
     print(factor * 100)
 
 
-def upload_progress(percent, done, size):
+def upload_progress(store, slot, percent, done, size):
     global pbar
     if pbar is None:
         pbar = tqdm.tqdm(total=size, unit='B', unit_scale=True)
