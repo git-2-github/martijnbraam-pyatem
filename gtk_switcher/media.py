@@ -1,4 +1,9 @@
+import os
+import urllib.request
+from pathlib import Path
+
 import gi
+import pyatem
 
 from gtk_switcher.colorwheel import ColorWheelWidget
 from pyatem.field import InputPropertiesField
@@ -28,6 +33,11 @@ class MediaPage:
 
         for i in range(0, data.stills):
             slot = Gtk.Frame()
+            slot.index = i
+            slot.drag_dest_set(Gtk.DestDefaults.MOTION |
+                               Gtk.DestDefaults.HIGHLIGHT | Gtk.DestDefaults.DROP,
+                               [Gtk.TargetEntry.new("text/uri-list", 0, 80)], Gdk.DragAction.COPY)
+            slot.connect('drag_data_received', self.on_media_file_dropped)
             slot.get_style_context().add_class('view')
             grid = Gtk.Grid()
             grid.set_column_spacing(8)
@@ -159,3 +169,69 @@ class MediaPage:
         for index in self.media_queue:
             self.connection.mixer.download(0, index)
         self.media_queue = []
+
+    def dnd_uri_to_path(self, uri):
+        # Strip the various schemes from dropped uris
+        path = ""
+        if uri.startswith('file:\\\\\\'):
+            path = uri[8:]
+        elif uri.startswith('file://'):
+            path = uri[7:]
+        elif uri.startswith('file:'):
+            path = uri[5:]
+
+        path = urllib.request.url2pathname(path)
+        path = path.strip('\r\n\x00')
+        return path
+
+    def on_media_file_dropped(self, widget, context, x, y, selection, target_type, timestamp):
+        index = widget.index
+
+        # URI List
+        if target_type == 80:
+            data = selection.get_data().decode().strip('\r\n\0')
+            for uri in data.split('\r\n'):
+                path = self.dnd_uri_to_path(uri)
+                if not os.path.isfile(path):
+                    print(f"File does not exist: {path}")
+                    continue
+                self.media_slot_upload_file(index, path)
+                index += 1
+
+    def media_slot_upload_file(self, index, path):
+        mode = self.connection.mixer.mixerstate['video-mode']
+        width, height = mode.get_resolution()
+
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, width, height, preserve_aspect_ratio=True)
+
+        name = Path(path).stem
+
+        self.media_slot_upload_pixbuf(index, pixbuf, name=name)
+
+    def media_slot_upload_pixbuf(self, index, pixbuf, name=None):
+        print(f"Uploading pixbuf to media slot {index}")
+        mode = self.connection.mixer.mixerstate['video-mode']
+        width, height = mode.get_resolution()
+        aspect = width / height
+        swidth = pixbuf.get_width()
+        sheight = pixbuf.get_height()
+        saspect = swidth / sheight
+
+        if saspect < aspect:
+            scale = sheight / height
+            dest_y = 0
+            dest_x = (width - (swidth * scale)) / 2
+        else:
+            scale = swidth / width
+            dest_x = 0
+            dest_y = (height - (sheight * scale)) / 2
+
+        dest_w = swidth * scale
+        dest_h = sheight * scale
+
+        dest = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
+        pixbuf.scale(dest, dest_x, dest_y, dest_w, dest_h, dest_x, dest_y, scale, scale, GdkPixbuf.InterpType.BILINEAR)
+
+        pixels = dest.get_pixels()
+        frame = pyatem.media.rgb_to_atem(pixels, width, height)
+        self.connection.mixer.upload(0, index, frame, name=name)

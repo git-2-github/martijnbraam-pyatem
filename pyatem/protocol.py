@@ -276,7 +276,7 @@ class AtemProtocol:
                 logging.error('Got file transfer data for wrong transfer id')
             return
         elif key == 'file-transfer-error':
-            logging.error("file-transfer-error", contents)
+            logging.error(f"file-transfer-error: {str(contents)}")
             self.transfer_requested = False
             if contents.status == 1:
                 # Status is try-again
