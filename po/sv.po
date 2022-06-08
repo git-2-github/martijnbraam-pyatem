@@ -2,36 +2,40 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the openswitcher package.
 # Martijn Braam <martijn@brixit.nl>, 2022.
+# Filip Bengtsson <me@autom.zone>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-23 15:00+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-06-09 17:36+0000\n"
+"Last-Translator: Filip Bengtsson <me@autom.zone>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/openswitcher/"
+"openswitcher/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #. Window title
 #: gtk_switcher/ui/mixer.glade:168 gtk_switcher/ui/mixer.glade:181
 #: gtk_switcher/ui/mixer.glade:189
 msgid "Switcher control"
-msgstr ""
+msgstr "Mixerstyrning"
 
 #: gtk_switcher/ui/mixer.glade:387
 msgid "Color 1"
-msgstr ""
+msgstr "Färg 1"
 
 #: gtk_switcher/ui/mixer.glade:402
 msgid "Color 2"
-msgstr ""
+msgstr "Färg 2"
 
 #: gtk_switcher/ui/mixer.glade:429
 msgid "Color Generators"
-msgstr ""
+msgstr "Färgkällor"
 
 #: gtk_switcher/ui/mixer.glade:518 gtk_switcher/ui/mixer.glade:558
 #: gtk_switcher/ui/mixer.glade:634 gtk_switcher/ui/mixer.glade:1266
@@ -53,31 +57,31 @@ msgstr ""
 #: gtk_switcher/ui/mixer.glade:945
 msgctxt "wipe_transition"
 msgid "Symmetry"
-msgstr ""
+msgstr "Symmetri"
 
 #: gtk_switcher/ui/mixer.glade:975
 msgctxt "wipe_transition"
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: gtk_switcher/ui/mixer.glade:990
 msgctxt "wipe_transition"
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: gtk_switcher/ui/mixer.glade:1046
 msgctxt "wipe_transition"
 msgid "Softness"
-msgstr ""
+msgstr "Mjukhet"
 
 #: gtk_switcher/ui/mixer.glade:1061
 msgid "Width"
-msgstr ""
+msgstr "Bredd"
 
 #. Fill video source
 #: gtk_switcher/ui/mixer.glade:1106
 msgid "Fill"
-msgstr ""
+msgstr "Fyllning"
 
 #: gtk_switcher/ui/mixer.glade:1155
 msgid "Reverse"
@@ -89,7 +93,7 @@ msgstr ""
 
 #: gtk_switcher/ui/mixer.glade:1211
 msgid "Wipe"
-msgstr ""
+msgstr "Svepning"
 
 #: gtk_switcher/ui/mixer.glade:1250
 msgid "Sting"
@@ -102,36 +106,36 @@ msgstr ""
 
 #: gtk_switcher/ui/mixer.glade:1329
 msgid "Transitions"
-msgstr ""
+msgstr "Övergångar"
 
 #: gtk_switcher/ui/mixer.glade:1392
 msgid "Audio follow video"
-msgstr ""
+msgstr "Ljud följer bild"
 
 #: gtk_switcher/ui/mixer.glade:1404
 msgid "AFV"
-msgstr ""
+msgstr "LFB"
 
 #: gtk_switcher/ui/mixer.glade:1444
 msgid "Fade to black"
-msgstr ""
+msgstr "Tona till svart"
 
 #: gtk_switcher/ui/mixer.glade:1516
 msgid "Macros"
-msgstr ""
+msgstr "Makron"
 
 #: gtk_switcher/ui/mixer.glade:1539
 msgid "Palettes"
-msgstr ""
+msgstr "Paletter"
 
 #: gtk_switcher/ui/mixer.glade:1559
 msgid "Media Player"
-msgstr ""
+msgstr "Mediaspelare"
 
 #. Hardware model
 #: gtk_switcher/ui/mixer.glade:1615
 msgid "Model"
-msgstr ""
+msgstr "Modell"
 
 #: gtk_switcher/ui/mixer.glade:1630
 msgid "Video mode"
@@ -139,27 +143,27 @@ msgstr ""
 
 #: gtk_switcher/ui/mixer.glade:1645 gtk_switcher/ui/mixer.glade:3022
 msgid "Not connected"
-msgstr ""
+msgstr "Ej ansluten"
 
 #: gtk_switcher/ui/mixer.glade:1680
 msgid "Hardware status"
-msgstr ""
+msgstr "Hårdvarustatus"
 
 #: gtk_switcher/ui/mixer.glade:1754
 msgid "AUX Outputs"
-msgstr ""
+msgstr "AUX-utgångar"
 
 #: gtk_switcher/ui/mixer.glade:1803
 msgid "Preset"
-msgstr ""
+msgstr "Förinställning"
 
 #: gtk_switcher/ui/mixer.glade:1818
 msgid "Audio bitrate"
-msgstr ""
+msgstr "Bithastighet för ljud"
 
 #: gtk_switcher/ui/mixer.glade:1865
 msgid "Video bitrate"
-msgstr ""
+msgstr "Bithastighet för bild"
 
 #: gtk_switcher/ui/mixer.glade:1930
 msgid "Encoder output"
@@ -169,43 +173,43 @@ msgstr ""
 #: gtk_switcher/ui/mixer.glade:1979
 msgctxt "streamrecorder"
 msgid "Filename"
-msgstr ""
+msgstr "Filnamn"
 
 #: gtk_switcher/ui/mixer.glade:2029
 msgid "STOP"
-msgstr ""
+msgstr "STOPP"
 
 #: gtk_switcher/ui/mixer.glade:2077
 msgctxt "streamrecorder"
 msgid "Disk 1"
-msgstr ""
+msgstr "Disk 1"
 
 #: gtk_switcher/ui/mixer.glade:2092
 msgctxt "streamrecorder"
 msgid "Disk 2"
-msgstr ""
+msgstr "Disk 2"
 
 #: gtk_switcher/ui/mixer.glade:2104
 msgid "Record in all cameras"
-msgstr ""
+msgstr "Spela in alla kameror"
 
 #. Switch disk button
 #: gtk_switcher/ui/mixer.glade:2134
 msgctxt "streamrecorder"
 msgid "Switch"
-msgstr ""
+msgstr "Växla"
 
 #. button
 #: gtk_switcher/ui/mixer.glade:2148
 msgctxt "streamrecorder"
 msgid "Stop"
-msgstr ""
+msgstr "Stopp"
 
 #. Button
 #: gtk_switcher/ui/mixer.glade:2163
 msgctxt "streamrecorder"
 msgid "Record"
-msgstr ""
+msgstr "Spela in"
 
 #: gtk_switcher/ui/mixer.glade:2260
 msgid "Stream recorder"
@@ -213,81 +217,81 @@ msgstr ""
 
 #: gtk_switcher/ui/mixer.glade:2346
 msgid "OFF"
-msgstr ""
+msgstr "AV"
 
 #. Stop livestream button
 #: gtk_switcher/ui/mixer.glade:2397
 msgctxt "livestream"
 msgid "Off"
-msgstr ""
+msgstr "Av"
 
 #. Start livestream button
 #: gtk_switcher/ui/mixer.glade:2412
 msgctxt "livestream"
 msgid "On air"
-msgstr ""
+msgstr "Direkt"
 
 #: gtk_switcher/ui/mixer.glade:2436
 msgid "Platform"
-msgstr ""
+msgstr "Plattform"
 
 #: gtk_switcher/ui/mixer.glade:2451
 msgid "Server"
-msgstr ""
+msgstr "Server"
 
 #: gtk_switcher/ui/mixer.glade:2466 gtk_switcher/ui/downstream-keyer.glade:116
 #: gtk_switcher/ui/upstream-keyer.glade:232
 msgid "Key"
-msgstr ""
+msgstr "Nyckel"
 
 #: gtk_switcher/ui/mixer.glade:2623
 msgid "Live stream"
-msgstr ""
+msgstr "Direktströmning"
 
 #: gtk_switcher/ui/mixer.glade:2649
 msgid "Output"
-msgstr ""
+msgstr "Utgång"
 
 #: gtk_switcher/ui/mixer.glade:2681 gtk_switcher/ui/preferences.glade:984
 msgid "Switcher"
-msgstr ""
+msgstr "Mixer"
 
 #: gtk_switcher/ui/mixer.glade:2774
 msgid "Media"
-msgstr ""
+msgstr "Media"
 
 #: gtk_switcher/ui/mixer.glade:2809
 msgctxt "audio_mixer"
 msgid "Input"
-msgstr ""
+msgstr "Ingång"
 
 #: gtk_switcher/ui/mixer.glade:2825
 msgctxt "audio_mixer"
 msgid "Equalizer"
-msgstr ""
+msgstr "Tonkontroll"
 
 #: gtk_switcher/ui/mixer.glade:2841
 msgctxt "audio_mixer"
 msgid "Dynamics"
-msgstr ""
+msgstr "Dynamik"
 
 #: gtk_switcher/ui/mixer.glade:2857
 msgctxt "audio_mixer"
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: gtk_switcher/ui/mixer.glade:2873
 msgctxt "audio_mixer"
 msgid "Pan"
-msgstr ""
+msgstr "Pan."
 
 #: gtk_switcher/ui/mixer.glade:2969 gtk_switcher/ui/preferences.glade:525
 msgid "Audio"
-msgstr ""
+msgstr "Ljud"
 
 #: gtk_switcher/ui/mixer.glade:3007
 msgid "Camera"
-msgstr ""
+msgstr "Kamera"
 
 #: gtk_switcher/ui/mixer.glade:3023
 msgid ""
@@ -301,11 +305,11 @@ msgstr ""
 
 #: gtk_switcher/ui/mixer.glade:3040 gtk_switcher/ui/videohub.glade:63
 msgid "Disconnected"
-msgstr ""
+msgstr "Ej ansluten"
 
 #: gtk_switcher/ui/mixer.glade:3049
 msgid "Firmware outdated"
-msgstr ""
+msgstr "Föråldrad firmware"
 
 #: gtk_switcher/ui/mixer.glade:3050
 msgid ""
@@ -321,39 +325,39 @@ msgstr ""
 
 #: gtk_switcher/ui/mixer.glade:3065
 msgid "firmware"
-msgstr ""
+msgstr "firmware"
 
 #: gtk_switcher/ui/mixeffect.glade:34
 msgid "Program"
-msgstr ""
+msgstr "Program"
 
 #: gtk_switcher/ui/mixeffect.glade:132
 msgid "Preview"
-msgstr ""
+msgstr "Förhandsvisning"
 
 #: gtk_switcher/ui/mixeffect.glade:230
 msgid "Next transition"
-msgstr ""
+msgstr "Nästa övergång"
 
 #: gtk_switcher/ui/mixeffect.glade:264
 msgid "BKGD"
-msgstr ""
+msgstr "BKGD"
 
 #: gtk_switcher/ui/mixeffect.glade:283
 msgid "KEY 1"
-msgstr ""
+msgstr "KEY 1"
 
 #: gtk_switcher/ui/mixeffect.glade:302
 msgid "KEY 2"
-msgstr ""
+msgstr "KEY 2"
 
 #: gtk_switcher/ui/mixeffect.glade:321
 msgid "KEY 3"
-msgstr ""
+msgstr "KEY 3"
 
 #: gtk_switcher/ui/mixeffect.glade:340
 msgid "KEY 4"
-msgstr ""
+msgstr "KEY 4"
 
 #: gtk_switcher/ui/mixeffect.glade:359 gtk_switcher/ui/mixeffect.glade:379
 #: gtk_switcher/ui/mixeffect.glade:399 gtk_switcher/ui/mixeffect.glade:419
@@ -361,125 +365,125 @@ msgstr ""
 msgid ""
 "ON\n"
 "AIR"
-msgstr ""
+msgstr "DIREKT"
 
 #: gtk_switcher/ui/mixeffect.glade:474
 msgid "Transition style"
-msgstr ""
+msgstr "Övergångsstil"
 
 #: gtk_switcher/ui/mixeffect.glade:508
 msgid "MIX"
-msgstr ""
+msgstr "MIX"
 
 #: gtk_switcher/ui/mixeffect.glade:528
 msgid "DIP"
-msgstr ""
+msgstr "DIPP"
 
 #: gtk_switcher/ui/mixeffect.glade:547
 msgid "WIPE"
-msgstr ""
+msgstr "SVEP"
 
 #: gtk_switcher/ui/mixeffect.glade:566
 msgid "STING"
-msgstr ""
+msgstr "STING"
 
 #: gtk_switcher/ui/mixeffect.glade:604
 msgid ""
 "PREV\n"
 "TRANS"
-msgstr ""
+msgstr "FÖREG."
 
 #: gtk_switcher/ui/mixeffect.glade:624
 msgid "CUT"
-msgstr ""
+msgstr "TAG"
 
 #: gtk_switcher/ui/mixeffect.glade:643 gtk_switcher/mixeffect.py:600
 msgid "AUTO"
-msgstr ""
+msgstr "AUTO"
 
 #: gtk_switcher/ui/mixeffect.glade:669 gtk_switcher/ui/mixeffect.glade:985
 #: gtk_switcher/mixeffect.py:572
 msgid "rate"
-msgstr ""
+msgstr "hast."
 
 #: gtk_switcher/ui/mixeffect.glade:746
 msgid "Transition"
-msgstr ""
+msgstr "Övergång"
 
 #: gtk_switcher/ui/mixeffect.glade:846
 msgid "Downstream key"
-msgstr ""
+msgstr "Nerströms key"
 
 #: gtk_switcher/ui/mixeffect.glade:925
 msgid "Fade to Black"
-msgstr ""
+msgstr "Tona till svart"
 
 #: gtk_switcher/ui/mixeffect.glade:959
 msgid "FTB"
-msgstr ""
+msgstr "SVART"
 
 #: gtk_switcher/ui/connection.glade:21
 msgid "Connection settings"
-msgstr ""
+msgstr "Inställningar för anslutning"
 
 #: gtk_switcher/ui/connection.glade:58
 msgid "Switcher connection"
-msgstr ""
+msgstr "Mixeranslutning"
 
 #: gtk_switcher/ui/connection.glade:91 gtk_switcher/ui/videohub.glade:22
 msgid "IP Address"
-msgstr ""
+msgstr "IP-adress"
 
 #: gtk_switcher/ui/connection.glade:116
 msgid "Connection type"
-msgstr ""
+msgstr "Anslutningstyp"
 
 #: gtk_switcher/ui/connection.glade:133
 msgid "ATEM network connection"
-msgstr ""
+msgstr "ATEM nätverksanslutning"
 
 #: gtk_switcher/ui/connection.glade:149
 msgid "ATEM usb connection"
-msgstr ""
+msgstr "ATEM USB-anslutning"
 
 #: gtk_switcher/ui/connection.glade:166
 msgid "OpenSwitcher proxy"
-msgstr ""
+msgstr "OpenSwitcher proxy"
 
 #: gtk_switcher/ui/connection.glade:192
 msgid "Username"
-msgstr ""
+msgstr "Användarnamn"
 
 #: gtk_switcher/ui/connection.glade:207
 msgid "Password"
-msgstr ""
+msgstr "Lösenord"
 
 #: gtk_switcher/ui/connection.glade:244
 msgid "Device"
-msgstr ""
+msgstr "Enhet"
 
 #: gtk_switcher/ui/connection.glade:295
 msgid "No atem hardware detected"
-msgstr ""
+msgstr "Ingen ATEM-hårdvara hittades"
 
 #: gtk_switcher/ui/connection.glade:323 gtk_switcher/ui/videohub.glade:105
 msgid "Connect"
-msgstr ""
+msgstr "Anslut"
 
 #: gtk_switcher/ui/connection.glade:342
 msgid "Hardware settings"
-msgstr ""
+msgstr "Hårdvaruinställningar"
 
 #: gtk_switcher/ui/downstream-keyer.glade:37
 #: gtk_switcher/ui/upstream-keyer.glade:153
 #: gtk_switcher/ui/upstream-keyer.glade:446
 msgid "Fill source"
-msgstr ""
+msgstr "Fyllningskälla"
 
 #: gtk_switcher/ui/downstream-keyer.glade:71
 #: gtk_switcher/ui/upstream-keyer.glade:187
 msgid "Key source"
-msgstr ""
+msgstr "Key-källa"
 
 #: gtk_switcher/ui/downstream-keyer.glade:128
 #: gtk_switcher/ui/upstream-keyer.glade:244
@@ -511,31 +515,31 @@ msgstr ""
 #: gtk_switcher/ui/downstream-keyer.glade:280
 #: gtk_switcher/ui/upstream-keyer.glade:1058
 msgid "Mask"
-msgstr ""
+msgstr "Mask"
 
 #: gtk_switcher/ui/downstream-keyer.glade:300
 #: gtk_switcher/ui/upstream-keyer.glade:1078
 msgid "Top"
-msgstr ""
+msgstr "Upp"
 
 #: gtk_switcher/ui/downstream-keyer.glade:315
 #: gtk_switcher/ui/upstream-keyer.glade:1093
 msgid "Bottom"
-msgstr ""
+msgstr "Ner"
 
 #: gtk_switcher/ui/downstream-keyer.glade:330
 #: gtk_switcher/ui/upstream-keyer.glade:1108
 msgid "Left"
-msgstr ""
+msgstr "Vänster"
 
 #: gtk_switcher/ui/downstream-keyer.glade:345
 #: gtk_switcher/ui/upstream-keyer.glade:1123
 msgid "Right"
-msgstr ""
+msgstr "Höger"
 
 #: gtk_switcher/ui/upstream-keyer.glade:354
 msgid "Luma"
-msgstr ""
+msgstr "Luminans"
 
 #: gtk_switcher/ui/upstream-keyer.glade:369
 #: gtk_switcher/ui/upstream-keyer.glade:407
@@ -544,7 +548,7 @@ msgstr ""
 
 #: gtk_switcher/ui/upstream-keyer.glade:391
 msgid "Chroma"
-msgstr ""
+msgstr "Krominans"
 
 #: gtk_switcher/ui/upstream-keyer.glade:429
 msgid "Pattern"
@@ -565,7 +569,7 @@ msgstr ""
 
 #: gtk_switcher/ui/upstream-keyer.glade:636
 msgid "Angle"
-msgstr ""
+msgstr "Vinkel"
 
 #: gtk_switcher/ui/upstream-keyer.glade:651
 msgid "Altitude"
@@ -574,15 +578,15 @@ msgstr ""
 #: gtk_switcher/ui/upstream-keyer.glade:706
 #: gtk_switcher/ui/upstream-keyer.glade:718
 msgid "Border"
-msgstr ""
+msgstr "Inramning"
 
 #: gtk_switcher/ui/upstream-keyer.glade:739
 msgid "Color"
-msgstr ""
+msgstr "Färg"
 
 #: gtk_switcher/ui/upstream-keyer.glade:758
 msgid "Pick a border color"
-msgstr ""
+msgstr "Välj en kantfärg"
 
 #: gtk_switcher/ui/upstream-keyer.glade:799
 msgid "Bevel soften"
@@ -646,11 +650,11 @@ msgstr ""
 
 #: gtk_switcher/ui/preferences.glade:131
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: gtk_switcher/ui/preferences.glade:165
 msgid "Video standard"
-msgstr ""
+msgstr "Videostandard"
 
 #: gtk_switcher/ui/preferences.glade:180
 msgid "Multiview video standard"
@@ -784,13 +788,13 @@ msgstr ""
 
 #: gtk_switcher/videohub.py:82
 msgid "Connecting..."
-msgstr ""
+msgstr "Ansluter …"
 
 #: gtk_switcher/videohub.py:95
 msgid "Connected"
-msgstr ""
+msgstr "Ansluten"
 
 #. Source label checkbox
 #: gtk_switcher/videohub.py:119
 msgid "Rename on change"
-msgstr ""
+msgstr "Byt namn vid byte"
