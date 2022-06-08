@@ -138,7 +138,7 @@ method_rgb_to_atem(PyObject *self, PyObject *args)
 
         writepointer[0] = (unsigned char) (a10a >> 4);
         writepointer[1] = (unsigned char) (((a10a & 0x0f) << 4) | (cb10 >> 6));
-        writepointer[2] = (unsigned char) (((cb10 & 0x3f) << 2) | (y10b >> 8));
+        writepointer[2] = (unsigned char) (((cb10 & 0x3f) << 2) | (y10a >> 8));
         writepointer[3] = (unsigned char) (y10a & 0xff);
         writepointer[4] = (unsigned char) (a10b >> 4);
         writepointer[5] = (unsigned char) (((a10b & 0x0f) << 4) | (cr10 >> 6));
