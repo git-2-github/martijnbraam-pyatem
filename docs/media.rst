@@ -9,6 +9,7 @@ Frame format
 The frames are stored as 10-bit YCbCr data 4:2:2 with an alpha channel. This seems to also be a custom packing method
 from Blackmagic Design. It packs 2 luma channels, 2 alpha channels and the Cb and Cr channel in 64 bits.
 
+For the color conversion BT.709 coefficients are used.
 
 If you look at the bits of 2 consecutive pixels, which is 8 bytes:
 
