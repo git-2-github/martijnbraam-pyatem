@@ -27,6 +27,13 @@ beputu64(uint64_t *dest, uint64_t v)
     for (int i = 0; i < 8; i++) buf[i] = (v >> ((7 - i) * 8)) & 0xff;
 }
 
+unsigned short
+clamp(unsigned short v, unsigned short min, unsigned short max)
+{
+    const short t = v < min ? min : v;
+    return t > max ? max : t;
+}
+
 static PyObject *
 method_atem_to_rgb(PyObject *self, PyObject *args)
 {
@@ -118,23 +125,24 @@ method_rgb_to_atem(PyObject *self, PyObject *args)
     int pixel_size = 8;
     for (int i = 0; i < data_length; i += pixel_size) {
         // Convert RGBA 8888 to 10-bit BT.709 Y'CbCrA
-        float y16a = y_offset + bt709_coeff_r * buffer[0] + bt709_coeff_g * buffer[1] + bt709_coeff_b * buffer[2];
-        float y16b = y_offset + bt709_coeff_r * buffer[4] + bt709_coeff_g * buffer[5] + bt709_coeff_b * buffer[6];
-        float cr16 = 0;
-        float cb16 = 0;
+        float r1 = (float)buffer[0] / 255;
+        float g1 = (float)buffer[1] / 255;
+        float b1 = (float)buffer[2] / 255;
+        float r2 = (float)buffer[4] / 255;
+        float g2 = (float)buffer[5] / 255;
+        float b2 = (float)buffer[6] / 255;
 
-        unsigned short y10a = ((unsigned int) (y_offset +
-                              ((buffer[0] * bt709_coeff_r * y_range) +
-                               (buffer[1] * bt709_coeff_g * y_range) +
-                               (buffer[2] * bt709_coeff_b * y_range)))) >> 6;
-        unsigned short y10b = ((unsigned int) (y_offset +
-                              ((buffer[4] * bt709_coeff_r * y_range) +
-                               (buffer[5] * bt709_coeff_g * y_range) +
-                               (buffer[6] * bt709_coeff_b * y_range)))) >> 6;
-        unsigned short cr10 = (((112 * buffer[4] - 94 * buffer[5] -  18 * buffer[6] + 128) >> 8) + 128) * 4 - 1;
-        unsigned short cb10 = (((-38 * buffer[0] - 74 * buffer[1] + 112 * buffer[2] + 128) >> 8) + 128) * 4 - 1;
+        float y1 = (0.2126 * r1) + (0.7152 * g1) + (0.0722 * b1);
+        float y2 = (0.2126 * r2) + (0.7152 * g2) + (0.0722 * b2);
+        float cb = (b2 - y2) / 1.8556;
+        float cr = (r2 - y2) /  1.5748;
+
         unsigned short a10a = ((buffer[3] << 2) * 219 / 255) + (15 << 2) + 1;
         unsigned short a10b = ((buffer[7] << 2) * 219 / 255) + (15 << 2) + 1;
+        unsigned short y10a = clamp((unsigned short)(y1 * 876) + 64, 64, 940);
+        unsigned short y10b = clamp((unsigned short)(y2 * 876) + 64, 64, 940);
+        unsigned short cb10 = clamp((unsigned short)(cb * 896) + 512, 44, 960);
+        unsigned short cr10 = clamp((unsigned short)(cr * 896) + 512, 44, 960);
 
         writepointer[0] = (unsigned char) (a10a >> 4);
         writepointer[1] = (unsigned char) (((a10a & 0x0f) << 4) | (cb10 >> 6));
