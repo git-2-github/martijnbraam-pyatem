@@ -88,6 +88,12 @@ the keyer is in.
 .. autoclass:: pyatem.field.KeyPropertiesDveField
    :members:
 
+Mediaplayer
+-----------
+
+.. autoclass:: pyatem.field.MediaplayerSelectedField
+   :members:
+
 
 Video Tally
 -----------

@@ -156,6 +156,13 @@ Upstream keyers
    :members:
    :special-members:
 
+Mediaplayer
+-----------
+
+.. autoclass:: pyatem.command.MediaplayerSelectCommand
+   :members:
+   :special-members:
+
 
 Fade to black
 -------------
