@@ -420,7 +420,7 @@ msgstr "AUTO"
 #: gtk_switcher/ui/mixeffect.glade:669 gtk_switcher/ui/mixeffect.glade:985
 #: gtk_switcher/mixeffect.py:572
 msgid "rate"
-msgstr ""
+msgstr "rate"
 
 #: gtk_switcher/ui/mixeffect.glade:746
 msgid "Transition"
