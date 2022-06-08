@@ -87,6 +87,8 @@ class MediaPage:
             else:
                 self.media_queue.append(data.index)
         else:
+            if data.index in self.media_queue:
+                self.media_queue.remove(data.index)
             self.media_slot_name[data.index].set_label("")
             for child in self.media_slot_box[data.index]:
                 self.media_slot_box[data.index].remove(child)
