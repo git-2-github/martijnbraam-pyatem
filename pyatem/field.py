@@ -189,6 +189,37 @@ class MediaplayerSlotsField(FieldBase):
         return '<mediaplayer-slots: stills={} clips={}>'.format(self.stills, self.clips)
 
 
+class MediaplayerSelectedField(FieldBase):
+    """
+    Data from the `MPCE` field. This defines what media from the media pool is loaded in a specific media player.
+    There is one MPCE field per mediaplayer in the hardware.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mediaplayer index, 0-indexed
+    1      1    u8     Source type, 1=still, 2=clip
+    2      1    u8     Source index, 0-indexed
+    3      1    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: Mediaplayer index
+    :ivar source_type: 1 for still, 2 for clip
+    :ivar slot: Source index
+    """
+
+    CODE = "MPCE"
+
+    def __init__(self, raw):
+        self.raw = raw
+        self.index, self.source_type, self.slot = struct.unpack('>BBBx', raw)
+
+    def __repr__(self):
+        return '<mediaplayer-selected: index={} type={} slot={}>'.format(self.index, self.source_type, self.slot)
+
+
 class VideoModeField(FieldBase):
     """
     Data from the `VidM` field. This sets the video standard the mixer operates on internally.

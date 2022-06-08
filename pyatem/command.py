@@ -376,6 +376,55 @@ class CaptureStillCommand(Command):
         return self._make_command('Capt', b'')
 
 
+class MediaplayerSelectCommand(Command):
+    """
+    Implementation of the `MPSS` command. This sets the still or clip from the media pool to load into a mediaplayer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask
+    1      1    u8     Mediaplayer index
+    2      1    u8     Source type, 1=still, 2=clip
+    3      1    u8     Still index
+    4      1    u8     Clip index
+    5      3    ?      padding
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, still=None, clip=None):
+        """
+        :param index: Mediaplayer index
+        :param still: Still index to load
+        :param clip: Clip index to load
+        """
+        self.index = index
+        self.still = still
+        self.clip = clip
+        if still is not None and clip is not None:
+            raise ValueError("Can only set still= or clip=, not both")
+        if still is None and clip is None:
+            raise ValueError("Either still or clip is required")
+        if clip is None:
+            self.source_type = 1
+        else:
+            self.source_type = 2
+
+    def get_command(self):
+        mask = 1
+        if self.still is not None:
+            mask |= 1 << 1
+        if self.clip is not None:
+            mask |= 1 << 2
+
+        still = self.still if self.still is not None else 0
+        clip = self.clip if self.clip is not None else 0
+
+        data = struct.pack('>BBBBBxxx', mask, self.index, self.source_type, still, clip)
+        return self._make_command('MPSS', data)
+
+
 class DkeyOnairCommand(Command):
     """
     Implementation of the `CDsL` command. This setting the "on-air" state of the downstream keyer on or off
