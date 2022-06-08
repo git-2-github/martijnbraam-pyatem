@@ -8,8 +8,8 @@ from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, Transiti
     DkeyAutoCommand, DkeyTieCommand, \
     DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand, \
     FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand, StreamingServiceSetCommand, \
-    RecordingSettingsSetCommand, StreamingStatusSetCommand
-from pyatem.field import TransitionSettingsField, InputPropertiesField
+    RecordingSettingsSetCommand, StreamingStatusSetCommand, MediaplayerSelectCommand
+from pyatem.field import TransitionSettingsField, InputPropertiesField, TopologyField
 import gtk_switcher.stream_data
 
 import gi
@@ -96,6 +96,9 @@ class SwitcherPage:
         self.live_stats = builder.get_object('live_stats')
         self.stream_live_active = False
         self.stream_live_start_time = None
+
+        self.switcher_mediaplayers = builder.get_object('switcher_mediaplayers')
+        self.mediaplayer_dropdowns = {}
 
         action_streampreset = Gio.SimpleAction.new("streampreset", GLib.VariantType.new("a{sv}"))
         action_streampreset.connect("activate", self.load_livestream_preset)
@@ -477,11 +480,12 @@ class SwitcherPage:
         label = _("Downstream keyer {}").format(data.index + 1)
         self.layout[0].region_onair(label, data.on_air)
 
-    def on_topology_change(self, data):
+    def on_topology_change(self, data: TopologyField):
+        # Create the M/E units
         for i in range(0, data.me_units - len(self.me)):
             self.add_mixeffect()
 
-        # Topology is only used for downstream keyer count, only available on M/E 1
+        # Downstream keyer count, only available on M/E 1
         self.me[0].set_topology(data)
         self.apply_css(self.me[0], self.provider)
 
@@ -510,6 +514,73 @@ class SwitcherPage:
             self.layout[0].update_region(label, 0, 0, 16, 9)
             self.layout[0].update_mask(label, 0, 0, 0, 0)
         self.downstream_keyers.show_all()
+
+        # Media players
+        for i in range(0, data.mediaplayers):
+            label = Gtk.Label(_("Media Player {}").format(i + 1), xalign=0.0)
+            label.get_style_context().add_class('heading')
+            expander = Gtk.Expander()
+            expander.set_label_widget(label)
+            expander.set_expanded(True)
+            frame = Gtk.Frame()
+            frame.set_margin_top(6)
+            frame.get_style_context().add_class('view')
+            expander.add(frame)
+
+            grid = Gtk.Grid()
+            grid.set_column_spacing(12)
+            grid.set_row_spacing(12)
+            grid.set_margin_top(12)
+            grid.set_margin_bottom(12)
+            grid.set_margin_start(12)
+            grid.set_margin_end(12)
+            frame.add(grid)
+
+            label = Gtk.Label("Media", xalign=1.0)
+            label.get_style_context().add_class('dim-label')
+            grid.attach(label, 0, 0, 1, 1)
+
+            dropdown = Gtk.ComboBox.new_with_model(self.model_media)
+            grid.attach(dropdown, 1, 0, 1, 1)
+            dropdown.set_entry_text_column(1)
+            dropdown.set_id_column(0)
+            self.mediaplayer_dropdowns[i] = dropdown
+
+            if 'mediaplayer-selected' in self.connection.mixer.mixerstate:
+                if i in self.connection.mixer.mixerstate['mediaplayer-selected']:
+                    field = self.connection.mixer.mixerstate['mediaplayer-selected'][i]
+                    if field.source_type == 1:
+                        # Stills source
+                        dropdown.set_active_id(str(field.slot))
+
+            dropdown.mediaplayer = i
+            dropdown.connect('changed', self.on_mediaplayer_change)
+            renderer = Gtk.CellRendererText()
+            dropdown.pack_start(renderer, True)
+            dropdown.add_attribute(renderer, "text", 1)
+
+            self.switcher_mediaplayers.add(expander)
+        self.switcher_mediaplayers.show_all()
+
+    def on_mediaplayer_switcher_source_change(self, data):
+        if data.index not in self.mediaplayer_dropdowns:
+            return
+        self.model_changing = True
+        if data.source_type == 1:
+            self.mediaplayer_dropdowns[data.index].set_active_id(str(data.slot))
+        self.model_changing = False
+
+    def on_mediaplayer_change(self, widget, *args):
+        if self.model_changing:
+            return
+
+        index = widget.get_active_id()
+        if index == "":
+            return
+
+        index = int(index)
+        cmd = MediaplayerSelectCommand(widget.mediaplayer, still=index)
+        self.connection.mixer.send_commands([cmd])
 
     def on_dsk_tie_clicked(self, widget, index, dsk, enabled):
         cmd = DkeyTieCommand(index=dsk, tie=enabled)

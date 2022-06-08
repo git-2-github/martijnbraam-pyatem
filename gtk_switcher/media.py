@@ -19,6 +19,7 @@ from gi.repository import Handy
 class MediaPage:
     def __init__(self, builder):
         self.media_flow = builder.get_object('media_flow')
+        self.model_media = builder.get_object('model_media')
         self.media_slot = {}
         self.media_slot_name = {}
         self.media_slot_box = {}
@@ -32,8 +33,12 @@ class MediaPage:
     def on_mediaplayer_slots_change(self, data):
         for child in self.media_flow:
             child.destroy()
+        self.model_changing = True
+        self.model_media.clear()
 
         for i in range(0, data.stills):
+            self.model_media.append([f"{i}", f"{i + 1}: "])
+
             slot = Gtk.Frame()
             slot.index = i
             slot.drag_dest_set(Gtk.DestDefaults.MOTION |
@@ -75,6 +80,7 @@ class MediaPage:
             self.media_slot_progress[i] = progress
 
             self.media_flow.add(slot)
+        self.model_changing = False
         self.media_flow.show_all()
 
     def on_mediaplayer_file_info_change(self, data):
@@ -82,6 +88,11 @@ class MediaPage:
             return
         self.set_class(self.media_slot[data.index], 'used', data.is_used)
         self.set_class(self.media_slot[data.index], 'empty', data.is_used)
+
+        self.model_changing = True
+        self.model_media[data.index][1] = f'{data.index + 1}: {data.name.decode()}'
+        self.model_changing = False
+
         if self.media_last_upload is not None and data.index == self.media_last_upload:
             # Don't download the frame that was just uploaded
             self.media_last_upload = None
