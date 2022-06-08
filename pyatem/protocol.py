@@ -252,6 +252,12 @@ class AtemProtocol:
             self._transfer_trigger(contents.store)
             return
         elif key == 'lock-state':
+            if contents.state:
+                # Ignore lock aquired messages from other clients
+                return
+            if contents.store in self.locks and self.locks[contents.store]:
+                # Remove the lock if we held it
+                del self.locks[contents.store]
             logging.debug(contents)
             return
         elif key == 'file-transfer-continue-data':
@@ -299,6 +305,7 @@ class AtemProtocol:
 
             if self.transfer.upload:
                 self._raise('upload-done', self.transfer.store, self.transfer.slot)
+                self.transfer_requested = False
             else:
                 # Assemble the buffer
                 data = self.transfer_buffer

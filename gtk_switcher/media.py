@@ -23,7 +23,9 @@ class MediaPage:
         self.media_slot_name = {}
         self.media_slot_box = {}
         self.media_slot_progress = {}
+        self.media_pixbuf = {}
         self.media_queue = []
+        self.media_last_upload = None
 
         self.media_context = None
 
@@ -80,6 +82,10 @@ class MediaPage:
             return
         self.set_class(self.media_slot[data.index], 'used', data.is_used)
         self.set_class(self.media_slot[data.index], 'empty', data.is_used)
+        if self.media_last_upload is not None and data.index == self.media_last_upload:
+            # Don't download the frame that was just uploaded
+            self.media_last_upload = None
+            return
         if data.is_used:
             self.media_slot_name[data.index].set_label(data.name.decode())
             if self.mainstack.get_visible_child_name() == 'media':
@@ -205,8 +211,21 @@ class MediaPage:
     def on_media_upload_done(self, store, slot):
         self.media_slot_progress[slot].hide()
 
+        width, height = self.connection.mixer.mixerstate['video-mode'].get_resolution()
+        pixbuf = self.media_pixbuf[slot]
+        aw = 184
+        thumb = pixbuf.scale_simple(aw, int(aw * height / width), GdkPixbuf.InterpType.BILINEAR)
+        thumb_img = Gtk.Image.new_from_pixbuf(thumb)
+        eventbox = Gtk.EventBox()
+        eventbox.add(thumb_img)
+        eventbox.frame = pixbuf
+        eventbox.connect('button-press-event', self.on_media_context_menu)
+
+        self.media_slot_box[slot].add(eventbox)
+        self.media_slot_box[slot].show_all()
+
     def on_media_upload_progress(self, store, slot, percent, done, size):
-        self.media_slot_progress[slot].set_fraction(percent/100)
+        self.media_slot_progress[slot].set_fraction(percent / 100)
 
     def media_slot_upload_file(self, index, path):
         mode = self.connection.mixer.mixerstate['video-mode']
@@ -242,8 +261,11 @@ class MediaPage:
         dest = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
         pixbuf.scale(dest, dest_x, dest_y, dest_w, dest_h, dest_x, dest_y, scale, scale, GdkPixbuf.InterpType.BILINEAR)
 
+        self.media_pixbuf[index] = pixbuf
+
         pixels = dest.get_pixels()
         frame = pyatem.media.rgb_to_atem(pixels, width, height)
         self.media_slot_progress[index].show()
         self.media_slot[index].get_style_context().add_class('uploading')
         self.connection.mixer.upload(0, index, frame, name=name)
+        self.media_last_upload = index
