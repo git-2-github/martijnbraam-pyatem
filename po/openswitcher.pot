@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-08 17:53+0200\n"
+"POT-Creation-Date: 2022-06-09 19:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -742,6 +742,38 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+#: gtk_switcher/ui/shortcuts.ui:7
+msgid "Switcher shortcuts"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:12
+msgid "M/E Control"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:18
+msgid "Auto transition"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:25
+msgid "Cut transition"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:33
+msgid "Source selection"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:39
+msgid "Preview input 1"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:46
+msgid "Cut input 1 to program"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:53
+msgid "Auto transition input 1 to program"
+msgstr ""
+
 #: gtk_switcher/mixeffect.py:563
 msgid "TIE"
 msgstr ""
@@ -760,31 +792,31 @@ msgstr ""
 msgid "Media Player {}"
 msgstr ""
 
-#: gtk_switcher/switcher.py:617
+#: gtk_switcher/switcher.py:618
 msgid "Upstream keyer {}"
 msgstr ""
 
-#: gtk_switcher/switcher.py:657 gtk_switcher/switcher.py:700
-#: gtk_switcher/switcher.py:703 gtk_switcher/layout.py:258
+#: gtk_switcher/switcher.py:658 gtk_switcher/switcher.py:701
+#: gtk_switcher/switcher.py:704 gtk_switcher/layout.py:258
 #: gtk_switcher/layout.py:259 gtk_switcher/layout.py:287
 #: gtk_switcher/layout.py:288
 msgid "Upstream key {}"
 msgstr ""
 
 #. Show the videohub output as bus, checkbox
-#: gtk_switcher/switcher.py:903 gtk_switcher/videohub.py:110
+#: gtk_switcher/switcher.py:904 gtk_switcher/videohub.py:110
 msgid "Show as bus"
 msgstr ""
 
-#: gtk_switcher/switcher.py:907
+#: gtk_switcher/switcher.py:908
 msgid "Follow audio monitor bus"
 msgstr ""
 
-#: gtk_switcher/switcher.py:1049
+#: gtk_switcher/switcher.py:1050
 msgid "Run macro"
 msgstr ""
 
-#: gtk_switcher/switcher.py:1051
+#: gtk_switcher/switcher.py:1052
 msgid "Edit macro"
 msgstr ""
 

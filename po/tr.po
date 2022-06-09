@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-08 17:53+0200\n"
+"POT-Creation-Date: 2022-06-09 19:12+0200\n"
 "PO-Revision-Date: 2022-03-25 23:50+0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -748,6 +748,43 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+#: gtk_switcher/ui/shortcuts.ui:7
+#, fuzzy
+msgid "Switcher shortcuts"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:12
+#, fuzzy
+msgid "M/E Control"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:18
+#, fuzzy
+msgid "Auto transition"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:25
+#, fuzzy
+msgid "Cut transition"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:33
+msgid "Source selection"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:39
+#, fuzzy
+msgid "Preview input 1"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:46
+msgid "Cut input 1 to program"
+msgstr ""
+
+#: gtk_switcher/ui/shortcuts.ui:53
+msgid "Auto transition input 1 to program"
+msgstr ""
+
 #: gtk_switcher/mixeffect.py:563
 msgid "TIE"
 msgstr "BAĞLA"
@@ -767,31 +804,31 @@ msgstr "Downstream Key {}"
 msgid "Media Player {}"
 msgstr "Media Player {}"
 
-#: gtk_switcher/switcher.py:617
+#: gtk_switcher/switcher.py:618
 msgid "Upstream keyer {}"
 msgstr "Upstream Key {}"
 
-#: gtk_switcher/switcher.py:657 gtk_switcher/switcher.py:700
-#: gtk_switcher/switcher.py:703 gtk_switcher/layout.py:258
+#: gtk_switcher/switcher.py:658 gtk_switcher/switcher.py:701
+#: gtk_switcher/switcher.py:704 gtk_switcher/layout.py:258
 #: gtk_switcher/layout.py:259 gtk_switcher/layout.py:287
 #: gtk_switcher/layout.py:288
 msgid "Upstream key {}"
 msgstr "Upstream Key {}"
 
 #. Show the videohub output as bus, checkbox
-#: gtk_switcher/switcher.py:903 gtk_switcher/videohub.py:110
+#: gtk_switcher/switcher.py:904 gtk_switcher/videohub.py:110
 msgid "Show as bus"
 msgstr "Veriyolu olarak göster"
 
-#: gtk_switcher/switcher.py:907
+#: gtk_switcher/switcher.py:908
 msgid "Follow audio monitor bus"
 msgstr "Ses monitör veriyolunu takip edin"
 
-#: gtk_switcher/switcher.py:1049
+#: gtk_switcher/switcher.py:1050
 msgid "Run macro"
 msgstr "Makroyu çalıştır"
 
-#: gtk_switcher/switcher.py:1051
+#: gtk_switcher/switcher.py:1052
 msgid "Edit macro"
 msgstr "Makroyu düzenle"
 

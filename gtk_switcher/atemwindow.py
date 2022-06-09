@@ -198,6 +198,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         accel.connect(Gdk.keyval_from_name('Return'), 0, 0, self.on_auto_shortcut)
         accel.connect(Gdk.keyval_from_name('KP_Enter'), 0, 0, self.on_auto_shortcut)
         accel.connect(Gdk.keyval_from_name('F12'), 0, 0, self.on_debugger_shortcut)
+        ctrl = Gdk.ModifierType.CONTROL_MASK
+        accel.connect(Gdk.keyval_from_name('question'), ctrl, 0, self.on_help_shortcut)
 
         for i in range(0, 9):
             accel.connect(Gdk.keyval_from_name(str(i)), 0, 0, self.on_preview_keyboard_change)
@@ -334,6 +336,18 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             return
 
         DebuggerWindow(self.window, self.connection, self.application)
+
+    def on_help_shortcut(self, *args):
+        print("SHORTCUTS")
+        if self.disable_shortcuts:
+            return
+
+        builder = Gtk.Builder()
+        builder.set_translation_domain("openswitcher")
+        builder.add_from_resource('/nl/brixit/switcher/ui/shortcuts.ui')
+        window = builder.get_object('shortcuts')
+        window.set_transient_for(self.window)
+        window.present()
 
     def on_videohub_connect(self, hub_id):
         print(f"Connected to {hub_id}")

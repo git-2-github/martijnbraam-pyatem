@@ -7,6 +7,7 @@ gtk_switcher/ui/mixeffect-aux.glade
 gtk_switcher/ui/preferences.glade
 gtk_switcher/ui/videohub.glade
 gtk_switcher/ui/videohub-bus.glade
+gtk_switcher/ui/shortcuts.ui
 gtk_switcher/mixeffect.py
 gtk_switcher/switcher.py
 gtk_switcher/layout.py
