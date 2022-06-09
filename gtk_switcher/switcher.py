@@ -560,6 +560,7 @@ class SwitcherPage:
             dropdown.add_attribute(renderer, "text", 1)
 
             self.switcher_mediaplayers.add(expander)
+        self.media_create_mediaplayers(data.mediaplayers)
         self.switcher_mediaplayers.show_all()
 
     def on_mediaplayer_switcher_source_change(self, data):

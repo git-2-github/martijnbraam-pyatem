@@ -457,6 +457,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                 self.on_mediaplayer_file_info_change(data)
             elif field == 'mediaplayer-selected':
                 self.on_mediaplayer_switcher_source_change(data)
+                self.on_mediaplayer_media_source_change(data)
             elif field == 'transition-mix':
                 self.on_transition_mix_change(data)
             elif field == 'transition-dip':
