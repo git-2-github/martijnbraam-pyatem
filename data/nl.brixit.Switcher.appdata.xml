@@ -32,6 +32,18 @@
   <content_rating type="oars-1.1"/>
   <releases>
 
+    <release version="0.7.0" date="2022-06-12">
+      <description>
+        <ul>
+          <li>Implement stills upload and download</li>
+          <li>Add support for changing the still in mediaplayers</li>
+          <li>Make UDP backend threaded for ack reliability</li>
+          <li>New translations for Danish, German, Norwegian Bokmål, and Swedish</li>
+        </ul>
+      </description>
+    </release>
+
+
     <release version="0.6.1" date="2022-05-19">
       <description>
         <ul>
