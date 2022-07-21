@@ -13,6 +13,11 @@ if get_option('with_gtk_app')
     subdir('po')
 endif
 
+if get_option('with_setup_app')
+    subdir('bmd_setup')
+endif
+
+
 if get_option('with_proxy')
     subdir('openswitcher_proxy')
 endif

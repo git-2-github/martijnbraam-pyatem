@@ -4,15 +4,17 @@ import struct
 
 
 class Field:
-    def __init__(self, name, dtype, section, label, mapping=None, sys=False):
+    def __init__(self, name, dtype, section, label, mapping=None, sys=False, ro=False):
         self.name = name
         self.section = section
         self.dtype = dtype
         self.label = label
         self.sys = sys
         self.mapping = mapping
+        self.ro = ro
 
         self.value = None
+        self.widget = None
 
     def __repr__(self):
         return f'<Field {self.name} ({self.label})>'
@@ -23,6 +25,7 @@ class Converter:
     PRODUCT = 0
     NAME = "Unknown"
     FIELDS = []
+    NAME_FIELD = "DeviceName"
 
     def __init__(self):
         self.handle = None
@@ -35,6 +38,14 @@ class Converter:
     def connect(self):
         self.handle = usb.core.find(idVendor=self.VENDOR, idProduct=self.PRODUCT)
         self.handle.set_configuration(1)
+
+    def get_name(self):
+        # Fallback for devices that might not support renaming
+        if self.NAME_FIELD is None:
+            return self.NAME
+
+        # Get the name field
+        return self.get_field(self.NAME_FIELD, sys=True).decode()
 
     def get_field(self, name, sys=False, write=None):
         ep_read = 0xa1 if sys else 0xc0
@@ -89,8 +100,8 @@ class MicroConverterBiDirectional12G(Converter):
 
     FIELDS = [
         Field('DeviceName', str, 'Device', 'Name', sys=True),
-        Field('BuildId', str, 'Device', 'Build ID', sys=True),
-        Field('ReleaseVersion', str, 'Device', 'Software', sys=True),
+        Field('BuildId', str, 'Device', 'Build ID', sys=True, ro=True),
+        Field('ReleaseVersion', str, 'Device', 'Software', sys=True, ro=True),
         Field('AtemId', int, 'SDI Camera Control', 'ATEM Camera ID'),
         Field('SdiLevelAEnable', int, 'SDI Output', '3G SDI Output', mapping={
             0xff: 'Level A',
@@ -116,5 +127,5 @@ class MicroConverterBiDirectional12G(Converter):
             0x00: 'False',
             0xff: 'True',
         }),
-        Field('LutName', str, 'LUTs', 'LUT name'),
+        Field('LutName', str, 'LUTs', 'LUT name', ro=True),
     ]

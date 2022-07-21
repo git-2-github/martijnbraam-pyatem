@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2021 Martijn Braam -->
+<component type="desktop-application">
+  <id>nl.brixit.Setup</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <name>Converter Setup</name>
+  <summary>Setup application for the Blackmagic design Mini and Micro converters</summary>
+  <description>
+    <p>
+      Implementation of the USB setup system for Blackmagic Design Mini and Microconverters
+    </p>
+  </description>
+  <launchable type="desktop-id">nl.brixit.Setup.desktop</launchable>
+  <provides>
+    <binary>bmd-setup</binary>
+  </provides>
+  <screenshots>
+    <screenshot type="default">
+      <caption>OpenSwitcher connected to the Atem Mini Pro</caption>
+      <image>https://brixitcdn.net/metainfo/openswitcher.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>OpenSwitcher audio page on a fairlight mixer</caption>
+      <image>https://brixitcdn.net/metainfo/openswitcher-audio.png</image>
+    </screenshot>
+  </screenshots>
+  <url type="homepage">https://sr.ht/~martijnbraam/pyatem</url>
+  <url type="bugtracker">https://todo.sr.ht/~martijnbraam/OpenAtem</url>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.0" date="2022-07-21">
+      <description>
+        <p>
+          First release
+        </p>
+        <ul>
+          <li>Support for the BiDirectional 12G converter</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+</component>
