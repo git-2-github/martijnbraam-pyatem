@@ -17,6 +17,7 @@ a few parts since the skaarhoj documentation has been last updated.
    python
    proxy
    tcptransport
+   converters
 
 Indices and tables
 ==================
