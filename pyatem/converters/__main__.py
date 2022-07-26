@@ -12,6 +12,7 @@ def enumerate_hardware():
 
 def main():
     parser = argparse.ArgumentParser(description="Blackmagic Design Converter Setup")
+    parser.add_argument('--factory-reset', action='store_true', help='Run the factory reset operation', dest='reset')
     args = parser.parse_args()
 
     existing = []
@@ -51,6 +52,13 @@ def main():
             for key, display in field.mapping.items():
                 x = 'x' if key == value else ' '
                 print(f'    [{x}] {display}')
+
+    if args.reset:
+        print()
+        print("Factory reset requested, press enter to reset all settings for this device or press ctrl+c to cancel")
+        input()
+        print("Executing factory reset")
+        device.factory_reset()
 
 
 if __name__ == '__main__':

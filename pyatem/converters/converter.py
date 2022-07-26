@@ -93,6 +93,13 @@ class Converter:
             result[field.name] = field
         return result
 
+    def factory_reset(self):
+        self.handle.ctrl_transfer(bmRequestType=0x40,
+                                  bRequest=20,
+                                  wValue=0,
+                                  wIndex=0,
+                                  data_or_wLength=0)
+
 
 class MicroConverterBiDirectional12G(Converter):
     PRODUCT = 0xbe89
