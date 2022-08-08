@@ -3,8 +3,135 @@ from gi.repository import Gtk, GObject, Gdk
 from pyatem.command import KeyPropertiesDveCommand, DkeyMaskCommand
 
 
+class Region:
+    def __init__(self, rid, layout):
+        self.rid = rid
+        self.layout = layout
+
+        self.x = 0
+        self.y = 0
+        self.w = 0
+        self.h = 0
+
+        self.has_mask = False
+        self.mask_top = 0
+        self.mask_bottom = 0
+        self.mask_left = 0
+        self.mask_right = 0
+
+        self.tally = False
+        self.visible = True
+
+    def _queue_draw(self):
+        self.layout.da.queue_draw()
+
+    def set_tally(self, onair):
+        self.tally = onair
+        self._queue_draw()
+
+    def set_region(self, x, y, w, h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self._queue_draw()
+
+    def set_mask(self, top, bottom, left, right):
+        self.has_mask = True
+        self.mask_top = top / 18000
+        self.mask_bottom = bottom / 18000
+        self.mask_left = left / 32000
+        self.mask_right = right / 32000
+        self._queue_draw()
+
+    def get_label(self):
+        return "Error"
+
+    def __repr__(self):
+        return '<Region {} {},{} {}x{}>'.format(self.get_label(), self.x, self.y, self.w, self.h)
+
+    def get_region_cairo(self, width, height):
+        w = self.w / 16
+        h = self.h / 9
+        x = ((self.x + 16) / 32.0) - (w / 2)
+        y = ((self.y + 9) / 18.0) - (h / 2)
+
+        return x * width, y * height, w * width, h * height
+
+    def get_mask_cairo(self, width, height):
+        return self.mask_top, self.mask_bottom, self.mask_left, self.mask_right
+
+    def _update_region(self, index, pos_x=None, pos_y=None, size_x=None, size_y=None):
+        return []
+
+    def _update_mask(self, index, left=None, right=None, top=None, bottom=None):
+        return []
+
+
+class UpstreamKeyRegion(Region):
+    def get_label(self):
+        return _("Upstream key {}").format(self.rid[1] + 1)
+
+    def _update_region(self, index, pos_x=None, pos_y=None, size_x=None, size_y=None):
+        if pos_x is not None:
+            x = int((pos_x * 32 - 16) * 1000)
+        if pos_y is not None:
+            y = int((pos_y * 18 - 9) * 1000)
+
+        w = None
+        h = None
+        if size_x is not None and size_y is not None:
+            w = int(size_x * 1000)
+            h = int(size_y * 1000)
+        cmd = KeyPropertiesDveCommand(index=index, keyer=self.rid[1], pos_x=x, pos_y=y,
+                                      size_x=w, size_y=h)
+        return [cmd]
+
+    def _update_mask(self, index, left=None, right=None, top=None, bottom=None):
+        ml, mr, mt, mb = None, None, None, None
+        if left is not None:
+            ml = int(left * 32000)
+        if right is not None:
+            mr = int(right * 32000)
+        if top is not None:
+            mt = int(top * 18000)
+        if bottom is not None:
+            mb = int(bottom * 18000)
+
+        cmd = KeyPropertiesDveCommand(index=index, keyer=self.rid[1], mask_top=mt, mask_bottom=mb, mask_left=ml,
+                                      mask_right=mr)
+        return [cmd]
+
+
+class DownstreamKeyRegion(Region):
+    def get_label(self):
+        return _("Downstream keyer {}").format(self.rid[1] + 1)
+
+    def _update_mask(self, index, left=None, right=None, top=None, bottom=None):
+        ml, mr, mt, mb = None, None, None, None
+        if left is not None:
+            ml = int(left * 32000) - 16000
+        if right is not None:
+            mr = 16000 - int(right * 32000)
+        if top is not None:
+            mt = 9000 - int(top * 18000)
+        if bottom is not None:
+            mb = int(bottom * 18000) - 9000
+
+        cmd = DkeyMaskCommand(index=self.rid[1], top=mt, bottom=mb, left=ml, right=mr)
+        return [cmd]
+
+
+class ColorPickerRegion(Region):
+    def get_label(self):
+        return _("Chroma picker {}").format(self.rid[1] + 1)
+
+
 class LayoutView(Gtk.Frame):
     __gtype_name__ = 'LayoutView'
+    LAYER_USK = 1
+    LAYER_DSK = 2
+    LAYER_ACK = 3
 
     def __init__(self, index, connection):
         super(Gtk.Frame, self).__init__()
@@ -35,7 +162,6 @@ class LayoutView(Gtk.Frame):
         self.area_left = 0
 
         self.da.connect("draw", self.on_draw)
-        self.da.connect("configure-event", self.on_configure)
         self.da.connect("button-press-event", self.on_mouse_down)
         self.da.connect("button-release-event", self.on_mouse_up)
         self.da.connect("motion-notify-event", self.on_mouse_move)
@@ -58,27 +184,24 @@ class LayoutView(Gtk.Frame):
         self.mask_right = 0
 
         self.regions = {}
-        self.masks = {}
-        self.tally = {}
 
-    def update_region(self, label, x, y, w, h):
-        self.regions[label] = [x, y, w, h]
-        self.da.queue_draw()
+    def get(self, type, index):
+        """
+        Get a region by type and index, type is one of the LayoutView.LAYER_ constants.
+        The region will be created internally if it did not exist yet.
 
-    def update_mask(self, label, top, bottom, left, right):
-        top = (top) / 18000
-        bottom = (bottom) / 18000
-        left = (left) / 32000
-        right = (right) / 32000
-        self.masks[label] = [top, bottom, left, right]
-        self.da.queue_draw()
-
-    def region_onair(self, label, onair):
-        self.tally[label] = onair
-        self.da.queue_draw()
-
-    def on_configure(self, widget, event, data=None):
-        width, height = widget.get_allocated_width(), widget.get_allocated_height()
+        :rtype: Region
+        """
+        rid = (type, index)
+        if rid not in self.regions:
+            if type == LayoutView.LAYER_USK:
+                region = UpstreamKeyRegion(rid, self)
+            elif type == LayoutView.LAYER_DSK:
+                region = DownstreamKeyRegion(rid, self)
+            elif type == LayoutView.LAYER_ACK:
+                region = ColorPickerRegion(rid, self)
+            self.regions[rid] = region
+        return self.regions[rid]
 
     def on_mouse_down(self, widget, event):
         # grr cairo coordinates
@@ -88,43 +211,27 @@ class LayoutView(Gtk.Frame):
 
         if self.selected is None:
             hits = []
-            for label in self.regions:
-                region = self.regions[label]
-                w = self._coord_w(region[2])
-                h = self._coord_h(region[3])
+            for rid in self.regions:
+                region = self.regions[rid]
+                x, y, w, h = region.get_region_cairo(self.area_width, self.area_height)
 
-                x = self._coord_x(region[0]) - (w / 2)
-                y = self._coord_y(region[1]) - (h / 2)
                 if x < event.x < (x + w):
                     if y < event.y < (y + h):
-                        hits.append((label, w * h))
+                        hits.append((rid, w * h))
+
             if len(hits) == 0:
                 return
+
+            # Sort all hits on area of the region, always pick the smallest one so it's possible to select overlapping
+            # regions naturally
             sorted_hits = list(sorted(hits, key=lambda k: k[1]))
             self.selected = sorted_hits[0][0]
             self.da.queue_draw()
             return
 
         region = self.regions[self.selected]
-        w = self._coord_w(region[2])
-        h = self._coord_h(region[3])
-        x = self._coord_x(region[0]) - (w / 2)
-        y = self._coord_y(region[1]) - (h / 2)
-
-        mtop = 0
-        mbottom = 0
-        mleft = 0
-        mright = 0
-        if self.selected in self.masks:
-            mask = self.masks[self.selected]
-            mtop = mask[0]
-            mbottom = mask[1]
-            mleft = mask[2]
-            mright = mask[3]
-            self.mask_top = mtop
-            self.mask_bottom = mbottom
-            self.mask_left = mleft
-            self.mask_right = mright
+        x, y, w, h = region.get_region_cairo(self.area_width, self.area_height)
+        mtop, mbottom, mleft, mright = region.get_mask_cairo(self.area_width, self.area_height)
 
         if (x - 5) < event.x < (x + 5):
             if (y - 5) < event.y < (y + 5):
@@ -198,7 +305,6 @@ class LayoutView(Gtk.Frame):
         self.da.queue_draw()
 
     def on_mouse_move(self, widget, event):
-
         if self.handle is None or self.selected is None:
             return
 
@@ -207,8 +313,7 @@ class LayoutView(Gtk.Frame):
         event.x = event.x - self.area_left
 
         region = self.regions[self.selected]
-        w = self._coord_w(region[2])
-        h = self._coord_h(region[3])
+        x, y, w, h = region.get_region_cairo(self.area_width, self.area_height)
 
         if self.handle == 'pos':
             if self.move_alt:
@@ -254,88 +359,30 @@ class LayoutView(Gtk.Frame):
             new_h = max(self.offset_y, event.y) - min(self.offset_y, event.y)
             self.on_region_update(self.selected, pos_x=new_x, pos_y=new_y, size_x=new_w, size_y=new_h)
 
-    def on_region_update(self, label, pos_x=None, pos_y=None, size_x=None, size_y=None, exec=True):
-        if label.startswith(_("Upstream key {}").format("")):
-            keyer = int(label.replace(_("Upstream key {}").format(""), "")) - 1
-            x, y = self._pos_to_atem(pos_x, pos_y)
-            w = None
-            h = None
-            if size_x is not None and size_y is not None:
-                w, h = self._size_to_atem(size_x, size_y)
-                w = int(w * 100)
-                h = int(h * 100)
-            cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, pos_x=int(x * 1000), pos_y=int(y * 1000),
-                                          size_x=w, size_y=h)
-            if exec:
-                self.connection.mixer.send_commands([cmd])
-            return cmd
+    def on_region_update(self, rid, pos_x=None, pos_y=None, size_x=None, size_y=None, exec=True):
+        # Normalize the cairo coordinates again
+        if pos_x is not None:
+            pos_x = pos_x / self.area_width
+        if pos_y is not None:
+            pos_y = pos_y / self.area_height
+        if size_x is not None:
+            size_x = size_x / self.area_width
+        if size_y is not None:
+            size_y = size_y / self.area_height
 
-    def on_mask_update(self, label, left=None, right=None, top=None, bottom=None, exec=True):
-        ml = None
-        mr = None
-        mt = None
-        mb = None
-        if left is not None:
-            ml = int(left * 32000)
-        if right is not None:
-            mr = int(right * 32000)
-        if top is not None:
-            mt = int(top * 18000)
-        if bottom is not None:
-            mb = int(bottom * 18000)
+        region = self.regions[rid]
+        cmds = region._update_region(index=self.index, pos_x=pos_x, pos_y=pos_y, size_x=size_x, size_y=size_y)
 
-        if label.startswith(_("Upstream key {}").format("")):
-            keyer = int(label.replace(_("Upstream key {}").format(""), "")) - 1
-
-            cmd = KeyPropertiesDveCommand(index=self.index, keyer=keyer, mask_top=mt, mask_bottom=mb, mask_left=ml,
-                                          mask_right=mr)
-        elif label.startswith(_("Downstream keyer {}").format("")):
-            keyer = int(label.replace(_("Downstream keyer {}").format(""), "")) - 1
-            if ml is not None:
-                ml = ml - 16000
-            if mr is not None:
-                mr = 16000 - mr
-            if mt is not None:
-                mt = 9000 - mt
-            if mb is not None:
-                mb = mb - 9000
-            cmd = DkeyMaskCommand(index=keyer, top=mt, bottom=mb, left=ml, right=mr)
-
-        if not cmd:
-            return None
         if exec:
-            self.connection.mixer.send_commands([cmd])
-        return cmd
+            self.connection.mixer.send_commands(cmds)
+        return cmds
 
-    def _coord_x(self, input_coord):
-        input_coord = (input_coord + 16) / 32.0
-        return (self.area_width * input_coord)
-
-    def _coord_y(self, input_coord):
-        input_coord = (input_coord + 9) / 18.0
-        return (self.area_height * input_coord)
-
-    def _coord_w(self, input_coord):
-        input_coord = input_coord / 16.0
-        return (self.area_width * input_coord)
-
-    def _coord_h(self, input_coord):
-        input_coord = input_coord / 9
-        return (self.area_height * input_coord)
-
-    def _pos_to_atem(self, x, y):
-        nx = x / self.area_width
-        ny = y / self.area_height
-        x = nx * 32 - 16
-        y = ny * 18 - 9
-        return x, y
-
-    def _size_to_atem(self, x, y):
-        nx = x / self.area_width
-        ny = y / self.area_height
-        x = nx * 10
-        y = ny * 10
-        return x, y
+    def on_mask_update(self, rid, left=None, right=None, top=None, bottom=None, exec=True):
+        region = self.regions[rid]
+        cmds = region._update_mask(index=self.index, left=left, right=right, top=top, bottom=bottom)
+        if exec:
+            self.connection.mixer.send_commands(cmds)
+        return cmds
 
     def on_draw(self, widget, cr):
 
@@ -357,6 +404,7 @@ class LayoutView(Gtk.Frame):
         self.area_top = top
         self.area_left = left
 
+        # Clear
         cr.set_source_rgba(0.0, 0.0, 0.0, 0.0)
         cr.paint()
 
@@ -365,29 +413,19 @@ class LayoutView(Gtk.Frame):
         cr.rectangle(left, top, width, height)
         cr.fill()
 
-        for label in self.regions:
-            region = self.regions[label]
-            w = self._coord_w(region[2])
-            h = self._coord_h(region[3])
+        for rid in self.regions:
+            region = self.regions[rid]
+            x, y, w, h = region.get_region_cairo(self.area_width, self.area_height)
 
-            x = self._coord_x(region[0]) - (w / 2)
-            y = self._coord_y(region[1]) - (h / 2)
+            mtop, mbottom, mleft, mright = 0, 0, 0, 0
+            if region.has_mask:
+                mtop, mbottom, mleft, mright = region.get_mask_cairo(self.area_width, self.area_height)
 
-            mtop = 0
-            mbottom = 0
-            mleft = 0
-            mright = 0
-            if label in self.masks:
-                mask = self.masks[label]
-                mtop = mask[0]
-                mbottom = mask[1]
-                mleft = mask[2]
-                mright = mask[3]
-
-            if label in self.tally and self.tally[label]:
+            if region.tally:
                 cr.set_source_rgb(1.0, 0, 0)
             else:
                 cr.set_source_rgb(1.0, 1.0, 1.0)
+
             if mleft != 0:
                 cr.move_to(x + left + (w * mleft), height - (y + top + h))
                 cr.line_to(x + left + (w * mleft), height - (y + top))
@@ -401,11 +439,13 @@ class LayoutView(Gtk.Frame):
                 cr.move_to(x + left + w - (w * mright), height - (y + top + h))
                 cr.line_to(x + left + w - (w * mright), height - (y + top))
 
-            if self.selected == label:
+            if self.selected == rid:
                 cr.set_dash([2.0, 1.0])
+
             cr.rectangle(x + left, height - (y + top + h), w, h)
             cr.stroke()
-            if self.selected == label:
+
+            if self.selected == rid:
                 # Position/Size handles on the corners
                 cr.rectangle(x + left - 5, height - (y + top + h) - 5, 10, 10)
                 cr.fill()
@@ -429,4 +469,4 @@ class LayoutView(Gtk.Frame):
                 cr.fill()
 
             cr.move_to(x + left + 10, height - (y + top + h) + 20)
-            cr.show_text(label)
+            cr.show_text(region.get_label())

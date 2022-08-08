@@ -467,18 +467,19 @@ class SwitcherPage:
         self.me[0].set_dsk(data)
         if data.index in self.dsks:
             self.dsks[data.index].on_key_properties_change(data)
-            label = _("Downstream keyer {}").format(data.index + 1)
 
             top = 9000 - data.top
             bottom = data.bottom + 9000
             left = data.left + 16000
             right = 16000 - data.right
-            self.layout[0].update_mask(label, top, bottom, left, right)
+
+            region = self.layout[0].get(LayoutView.LAYER_DSK, data.index)
+            region.set_mask(top, bottom, left, right)
 
     def on_dsk_state_change(self, data):
         self.me[0].set_dsk_state(data)
-        label = _("Downstream keyer {}").format(data.index + 1)
-        self.layout[0].region_onair(label, data.on_air)
+        region = self.layout[0].get(LayoutView.LAYER_DSK, data.index)
+        region.set_tally(data.on_air)
 
     def on_topology_change(self, data: TopologyField):
         # Create the M/E units
@@ -511,8 +512,9 @@ class SwitcherPage:
             self.downstream_keyers.pack_start(exp, False, True, 0)
 
             # Add the DSK to the layout editor of M/E 1
-            self.layout[0].update_region(label, 0, 0, 16, 9)
-            self.layout[0].update_mask(label, 0, 0, 0, 0)
+            region = self.layout[0].get(LayoutView.LAYER_DSK, i)
+            region.set_region(0, 0, 16, 9)
+            region.set_mask(0, 0, 0, 0)
         self.downstream_keyers.show_all()
 
         # Media players
@@ -655,7 +657,7 @@ class SwitcherPage:
             print("Got key-on-air for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
             return
         self.me[data.index].set_key_on_air(data)
-        self.layout[data.index].region_onair(_('Upstream key {}').format(data.keyer + 1), data.enabled)
+        self.layout[data.index].get(LayoutView.LAYER_USK, data.keyer).set_tally(data.enabled)
 
     def on_transition_preview_change(self, data):
         if data.index > len(self.me) - 1:
@@ -698,11 +700,10 @@ class SwitcherPage:
         self.usks[data.keyer].on_key_properties_dve_change(data)
         width = 16.0 * data.size_x / 1000
         height = 9.0 * data.size_y / 1000
-        self.layout[data.index].update_region(_('Upstream key {}').format(data.keyer + 1),
-                                              data.pos_x / 1000, data.pos_y / 1000, width, height)
 
-        self.layout[data.index].update_mask(_('Upstream key {}').format(data.keyer + 1),
-                                            data.mask_top, data.mask_bottom, data.mask_left, data.mask_right)
+        region = self.layout[data.index].get(LayoutView.LAYER_USK, data.keyer)
+        region.set_region(data.pos_x / 1000, data.pos_y / 1000, width, height)
+        region.set_mask(data.mask_top, data.mask_bottom, data.mask_left, data.mask_right)
 
     def on_program_input_change(self, data):
         if data.index > len(self.me) - 1:
