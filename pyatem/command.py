@@ -1730,6 +1730,198 @@ class KeyPropertiesDveCommand(Command):
         return self._make_command('CKDV', data)
 
 
+class KeyPropertiesAdvancedChromaColorpickerCommand(Command):
+    """
+    Implementation of the `CACC` command. This sets the state of the colorpicker for the advanced chroma keyer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask
+    1      1    u8     M/E index, 0-indexed
+    2      1    u8     Keyer index
+    3      1    bool   Enable cursor
+    4      1    bool   Enable preview
+    5      1    ?      padding
+    6      2    i16    Cursor X [-16000 - 16000]
+    8      2    i16    Cursor Y [-9000 - 9000]
+    10     2    u16    Cursor size [620 - 9925]
+    12     2    u16    Color Y
+    14     2    i16    Color Cb
+    16     2    i16    Color Cr
+    18     2    ?      padding
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Enable cursor
+    1   Enable preview
+    2   Cursor X
+    3   Cursor Y
+    4   Cursor size
+    5   Color Y
+    6   Color Cb
+    7   color Cr
+    === ==========
+
+    """
+
+    def __init__(self, index, keyer, cursor=None, preview=None, x=None, y=None, size=None, Y=None, Cb=None, Cr=None):
+        """
+        :param index: 0-indexed M/E number to control the preview bus of
+        """
+        self.index = index
+        self.keyer = keyer
+        self.cursor = cursor
+        self.preview = preview
+        self.x = x
+        self.y = y
+        self.size = size
+        self.Y = Y
+        self.Cb = Cb
+        self.Cr = Cr
+
+    def get_command(self):
+        mask = 0
+        if self.cursor is not None:
+            mask |= 1 << 0
+        if self.preview is not None:
+            mask |= 1 << 1
+        if self.x is not None:
+            mask |= 1 << 2
+        if self.y is not None:
+            mask |= 1 << 3
+        if self.size is not None:
+            mask |= 1 << 4
+        if self.Y is not None:
+            mask |= 1 << 5
+        if self.Cb is not None:
+            mask |= 1 << 6
+        if self.Cr is not None:
+            mask |= 1 << 7
+
+        index = 0 if self.index is None else self.index
+        keyer = 0 if self.keyer is None else self.keyer
+        cursor = False if self.cursor is None else self.cursor
+        preview = False if self.preview is None else self.preview
+        x = 0 if self.x is None else self.x
+        y = 0 if self.y is None else self.y
+        size = 0 if self.size is None else self.size
+        Y = 0 if self.Y is None else self.Y
+        Cb = 0 if self.Cb is None else self.Cb
+        Cr = 0 if self.Cr is None else self.Cr
+
+        data = struct.pack('>BBB? ?x hhH Hhh xx', mask, index, keyer,
+                           cursor, preview, x, y, size, Y, Cb, Cr)
+
+        return self._make_command('CACC', data)
+
+
+class KeyPropertiesAdvancedChromaCommand(Command):
+    """
+    Implementation of the `CACK` command. This sets the state for the advanced chroma keyer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Mask
+    2      1    u8     M/E index, 0-indexed
+    3      1    u8     Keyer index
+    4      2    u16    Foreground [0 - 1000]
+    6      2    u16    Background [0 - 1000]
+    8      2    u16    Key edge [0 - 1000]
+    10     2    u16    Spill suppress [0 - 1000]
+    12     2    u16    Flare suppress [0 - 1000]
+    14     2    i16    Brightness [-1000 - 1000]
+    16     2    i16    Contrast [-1000 - 1000]
+    18     2    u16    Saturation [0 - 2000]
+    20     2    i16    Red [-1000 - 1000]
+    22     2    i16    Green [-1000 - 1000]
+    24     2    i16    Blue [-1000 - 1000]
+    26     2    ?      padding
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Foreground
+    1   Background
+    2   Key edge
+    3   Spill suppress
+    4   Flare suppress
+    5   Brightness
+    6   Contrast
+    7   Saturation
+    8   Red
+    9   Green
+    10  Blue
+    === ==========
+
+    """
+
+    def __init__(self, index, keyer, foreground=None, background=None, key_edge=None, spill=None, flare=None,
+                 brightness=None, contrast=None, saturation=None, red=None, green=None, blue=None):
+        """
+        :param index: 0-indexed M/E number to control the preview bus of
+        """
+        self.index = index
+        self.keyer = keyer
+        self.foreground = foreground
+        self.background = background
+        self.key_edge = key_edge
+        self.spill = spill
+        self.flare = flare
+        self.brightness = brightness
+        self.contrast = contrast
+        self.saturation = saturation
+        self.red = red
+        self.green = green
+        self.blue = blue
+
+    def get_command(self):
+        mask = 0
+        if self.foreground is not None:
+            mask |= 1 << 0
+        if self.background is not None:
+            mask |= 1 << 1
+        if self.key_edge is not None:
+            mask |= 1 << 2
+        if self.spill is not None:
+            mask |= 1 << 3
+        if self.flare is not None:
+            mask |= 1 << 4
+        if self.brightness is not None:
+            mask |= 1 << 5
+        if self.contrast is not None:
+            mask |= 1 << 6
+        if self.saturation is not None:
+            mask |= 1 << 7
+        if self.red is not None:
+            mask |= 1 << 8
+        if self.green is not None:
+            mask |= 1 << 9
+        if self.blue is not None:
+            mask |= 1 << 10
+
+        foreground = 0 if self.foreground is None else self.foreground
+        background = 0 if self.background is None else self.background
+        key_edge = 0 if self.key_edge is None else self.key_edge
+        spill = 0 if self.spill is None else self.spill
+        flare = 0 if self.flare is None else self.flare
+        brightness = 0 if self.brightness is None else self.brightness
+        contrast = 0 if self.contrast is None else self.contrast
+        saturation = 0 if self.saturation is None else self.saturation
+        red = 0 if self.red is None else self.red
+        green = 0 if self.green is None else self.green
+        blue = 0 if self.blue is None else self.blue
+
+        data = struct.pack('>HBB HHH HH hhHhhh xx', mask, self.index, self.keyer, foreground, background, key_edge, spill,
+                           flare, brightness, contrast, saturation, red, green, blue)
+
+        return self._make_command('CACK', data)
+
+
 class KeyPropertiesLumaCommand(Command):
     """
     Implementation of the `CKLm` command. This sets the key source for an upstream keyer.

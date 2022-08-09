@@ -2,8 +2,10 @@ from gi.repository import Gtk, GObject, Gdk
 
 from gtk_switcher.template_i18n import TemplateLocale
 from pyatem.command import KeyFillCommand, KeyPropertiesDveCommand, KeyTypeCommand, KeyCutCommand, \
-    KeyPropertiesLumaCommand, KeyerKeyframeSetCommand, KeyerKeyframeRunCommand
-from pyatem.field import TransitionSettingsField, KeyPropertiesDveField, KeyPropertiesLumaField
+    KeyPropertiesLumaCommand, KeyerKeyframeSetCommand, KeyerKeyframeRunCommand, KeyPropertiesAdvancedChromaCommand, \
+    KeyPropertiesAdvancedChromaColorpickerCommand
+from pyatem.field import TransitionSettingsField, KeyPropertiesDveField, KeyPropertiesLumaField, \
+    KeyPropertiesAdvancedChromaField
 
 
 @TemplateLocale(resource_path='/nl/brixit/switcher/ui/upstream-keyer.glade')
@@ -25,6 +27,23 @@ class UpstreamKeyer(Gtk.Frame):
     luma_gain = Gtk.Template.Child()
     luma_gain_adj = Gtk.Template.Child()
     luma_invert = Gtk.Template.Child()
+
+    chroma_sample = Gtk.Template.Child()
+    chroma_sample_pick = Gtk.Template.Child()
+    chroma_sample_preview = Gtk.Template.Child()
+
+    chroma_fill = Gtk.Template.Child()
+    chroma_foreground_adj = Gtk.Template.Child()
+    chroma_background_adj = Gtk.Template.Child()
+    chroma_edge_adj = Gtk.Template.Child()
+    chroma_spill_adj = Gtk.Template.Child()
+    chroma_flare_adj = Gtk.Template.Child()
+    chroma_brightness_adj = Gtk.Template.Child()
+    chroma_contrast_adj = Gtk.Template.Child()
+    chroma_saturation_adj = Gtk.Template.Child()
+    chroma_red_adj = Gtk.Template.Child()
+    chroma_green_adj = Gtk.Template.Child()
+    chroma_blue_adj = Gtk.Template.Child()
 
     dve_fill = Gtk.Template.Child()
     dve_shadow_en = Gtk.Template.Child()
@@ -70,6 +89,7 @@ class UpstreamKeyer(Gtk.Frame):
         self.model_changing = True
         self.dve_fill.set_model(model)
         self.luma_fill.set_model(model)
+        self.chroma_fill.set_model(model)
         self.model_changing = False
 
     def set_key_model(self, model):
@@ -81,6 +101,7 @@ class UpstreamKeyer(Gtk.Frame):
         self.model_changing = True
         self.dve_fill.set_active_id(str(data.fill_source))
         self.luma_fill.set_active_id(str(data.fill_source))
+        self.chroma_fill.set_active_id(str(data.fill_source))
         self.luma_key.set_active_id(str(data.key_source))
 
         if data.type == 0:
@@ -151,6 +172,37 @@ class UpstreamKeyer(Gtk.Frame):
         self.mask_bottom.set_text(str(data.mask_bottom / 1000))
         self.mask_left.set_text(str(data.mask_left / 1000))
         self.mask_right.set_text(str(data.mask_right / 1000))
+
+    def on_advanced_chroma_change(self, data):
+        if not isinstance(data, KeyPropertiesAdvancedChromaField):
+            return
+
+        self.model_changing = True
+        self.chroma_foreground_adj.set_value(data.foreground)
+        self.chroma_background_adj.set_value(data.background)
+        self.chroma_edge_adj.set_value(data.key_edge)
+        self.chroma_spill_adj.set_value(data.spill_suppress)
+        self.chroma_flare_adj.set_value(data.flare_suppress)
+        self.chroma_brightness_adj.set_value(data.brightness)
+        self.chroma_contrast_adj.set_value(data.contrast)
+        self.chroma_saturation_adj.set_value(data.saturation)
+        self.chroma_red_adj.set_value(data.red)
+        self.chroma_green_adj.set_value(data.green)
+        self.chroma_blue_adj.set_value(data.blue)
+        self.model_changing = False
+
+    def on_chroma_picker_change(self, data):
+        self.set_class(self.chroma_sample_pick, 'active', data.cursor)
+        self.set_class(self.chroma_sample_preview, 'active', data.preview)
+
+        r, g, b = data.get_rgb()
+        color = Gdk.RGBA()
+        color.red = r
+        color.green = g
+        color.blue = b
+        color.alpha = 1.0
+
+        self.chroma_sample.set_rgba(color)
 
     @Gtk.Template.Callback()
     def on_fill_changed(self, widget, *args):
@@ -372,4 +424,94 @@ class UpstreamKeyer(Gtk.Frame):
     @Gtk.Template.Callback()
     def on_dve_run_b_clicked(self, widget):
         cmd = KeyerKeyframeRunCommand(index=self.index, keyer=self.keyer, run_to='B')
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_pick_clicked(self, widget):
+        state = widget.get_style_context().has_class('active')
+        cmd = KeyPropertiesAdvancedChromaColorpickerCommand(index=self.index, keyer=self.keyer, cursor=not state)
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_preview_clicked(self, widget):
+        state = widget.get_style_context().has_class('active')
+        cmd = KeyPropertiesAdvancedChromaColorpickerCommand(index=self.index, keyer=self.keyer, preview=not state)
+        self.connection.mixer.send_commands([cmd])
+
+
+    @Gtk.Template.Callback()
+    def on_chroma_foreground_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+        cmd = KeyPropertiesAdvancedChromaCommand(index=self.index, keyer=self.keyer, foreground=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_background_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+        cmd = KeyPropertiesAdvancedChromaCommand(index=self.index, keyer=self.keyer, background=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_edge_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+        cmd = KeyPropertiesAdvancedChromaCommand(index=self.index, keyer=self.keyer, key_edge=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_spill_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+        cmd = KeyPropertiesAdvancedChromaCommand(index=self.index, keyer=self.keyer, spill=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_flare_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+        cmd = KeyPropertiesAdvancedChromaCommand(index=self.index, keyer=self.keyer, flare=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_brightness_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+        cmd = KeyPropertiesAdvancedChromaCommand(index=self.index, keyer=self.keyer, brightness=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_contrast_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+        cmd = KeyPropertiesAdvancedChromaCommand(index=self.index, keyer=self.keyer, contrast=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_saturation_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+        cmd = KeyPropertiesAdvancedChromaCommand(index=self.index, keyer=self.keyer, saturation=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_red_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+        cmd = KeyPropertiesAdvancedChromaCommand(index=self.index, keyer=self.keyer, red=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_green_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+        cmd = KeyPropertiesAdvancedChromaCommand(index=self.index, keyer=self.keyer, green=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    @Gtk.Template.Callback()
+    def on_chroma_blue_adj_value_changed(self, widget):
+        if not self.slider_held:
+            return
+        cmd = KeyPropertiesAdvancedChromaCommand(index=self.index, keyer=self.keyer, blue=int(widget.get_value()))
         self.connection.mixer.send_commands([cmd])

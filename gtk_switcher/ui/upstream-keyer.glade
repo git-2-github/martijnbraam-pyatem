@@ -2,6 +2,77 @@
 <!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
+  <object class="GtkAdjustment" id="chroma_background_adj">
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_chroma_background_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="chroma_blue_adj">
+    <property name="lower">-1000</property>
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_chroma_blue_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="chroma_brightness_adj">
+    <property name="lower">-1000</property>
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_chroma_brightness_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="chroma_contrast_adj">
+    <property name="lower">-1000</property>
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_chroma_contrast_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="chroma_edge_adj">
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_chroma_edge_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="chroma_flare_adj">
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_chroma_flare_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="chroma_foreground_adj">
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_chroma_foreground_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="chroma_green_adj">
+    <property name="lower">-1000</property>
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_chroma_green_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="chroma_red_adj">
+    <property name="lower">-1000</property>
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_chroma_red_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="chroma_saturation_adj">
+    <property name="upper">2000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_chroma_saturation_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="chroma_spill_adj">
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+    <signal name="value-changed" handler="on_chroma_spill_adj_value_changed" swapped="no"/>
+  </object>
   <object class="GtkAdjustment" id="dve_border_bevel_position_adj">
     <property name="upper">100</property>
     <property name="step-increment">1</property>
@@ -82,6 +153,14 @@
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
     <signal name="value-changed" handler="on_dve_size_y_adj_value_changed" swapped="no"/>
+  </object>
+  <object class="GtkListStore" id="liststore1">
+    <columns>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name label -->
+      <column type="gchararray"/>
+    </columns>
   </object>
   <object class="GtkAdjustment" id="luma_clip_adj">
     <property name="upper">1000</property>
@@ -198,6 +277,7 @@
                       <object class="GtkComboBox" id="luma_key">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
+                        <property name="model">liststore1</property>
                         <property name="entry-text-column">1</property>
                         <property name="id-column">0</property>
                         <signal name="changed" handler="on_key_changed" swapped="no"/>
@@ -355,7 +435,7 @@
                   </packing>
                 </child>
                 <child>
-                  <!-- n-columns=2 n-rows=2 -->
+                  <!-- n-columns=2 n-rows=16 -->
                   <object class="GtkGrid">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
@@ -366,7 +446,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">end</property>
-                        <property name="label" translatable="yes">Keyer mode</property>
+                        <property name="label" translatable="yes">Fill source</property>
                         <style>
                           <class name="dim-label"/>
                         </style>
@@ -377,13 +457,452 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkComboBox" id="chroma_fill">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="entry-text-column">1</property>
+                        <property name="id-column">0</property>
+                        <signal name="changed" handler="on_fill_changed" swapped="no"/>
+                        <child>
+                          <object class="GtkCellRendererText"/>
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">0</property>
+                      </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkSeparator">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">2</property>
+                        <property name="width">2</property>
+                      </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Foreground</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Background</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes" comments="Chroma keyer">Key edge</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSeparator">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">6</property>
+                        <property name="width">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes" comments="Chroma key">Spill</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">7</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes" comments="Chromakey">Flare supression</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">8</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSeparator">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">9</property>
+                        <property name="width">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes" context="colorcorrector">Brightness</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">10</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes" context="colorcorrector">Contrast</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">11</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes" context="colorcorrector">Saturation</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">12</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes" context="colorcorrector">Red</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">13</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes" context="colorcorrector">Green</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">14</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes" context="colorcorrector">Blue</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">15</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Chroma sample</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="chroma_foreground">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">chroma_foreground_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="chroma_background">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">chroma_background_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="chroma_edge">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">chroma_edge_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="chroma_spill">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">chroma_spill_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">7</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="chroma_supression">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">chroma_flare_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">8</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="chroma_brightness">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">chroma_brightness_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">10</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="chroma_contrast">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">chroma_contrast_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">11</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="chroma_saturation">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">chroma_saturation_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">12</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="chroma_red">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">chroma_red_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">13</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="chroma_green">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">chroma_green_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">14</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="chroma_blue">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">chroma_blue_adj</property>
+                        <property name="draw-value">False</property>
+                        <signal name="button-press-event" handler="on_slider_press" swapped="no"/>
+                        <signal name="button-release-event" handler="on_slider_release" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">15</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="hexpand">True</property>
+                        <property name="spacing">8</property>
+                        <property name="homogeneous">True</property>
+                        <child>
+                          <object class="GtkColorButton" id="chroma_sample">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <style>
+                              <class name="flat"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="chroma_sample_pick">
+                            <property name="label" translatable="yes">Pick</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <signal name="clicked" handler="on_chroma_pick_clicked" swapped="no"/>
+                            <style>
+                              <class name="bmdbtn"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="chroma_sample_preview">
+                            <property name="label" translatable="yes">Preview</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <signal name="clicked" handler="on_chroma_preview_clicked" swapped="no"/>
+                            <style>
+                              <class name="bmdbtn"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">1</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>

@@ -43,6 +43,8 @@ class AtemProtocol:
         'KeOn': 'key-on-air',
         'KeBP': 'key-properties-base',
         'KeLm': 'key-properties-luma',
+        'KACk': 'key-properties-advanced-chroma',
+        'KACC': 'key-properties-advanced-chroma-colorpicker',
         'KePt': 'key-properties-pattern',
         'KeDV': 'key-properties-dve',
         'KeFS': 'key-properties-fly',

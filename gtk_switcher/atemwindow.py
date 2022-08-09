@@ -509,6 +509,10 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                 self.on_key_properties_luma_change(data)
             elif field == 'key-properties-dve':
                 self.on_key_properties_dve_change(data)
+            elif field == 'key-properties-advanced-chroma':
+                self.on_key_properties_advanced_chroma_change(data)
+            elif field == 'key-properties-advanced-chroma-colorpicker':
+                self.on_key_properties_advanced_chroma_colorpicker_change(data)
             elif field == 'recording-settings':
                 self.on_stream_recording_setting_change(data)
             elif field == 'recording-disk':

@@ -700,7 +700,8 @@ class SwitcherPage:
 
     def on_key_properties_dve_change(self, data):
         if data.keyer not in self.usks:
-            self.log_sw.warning("Got key-properties-dve for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            self.log_sw.warning(
+                "Got key-properties-dve for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
             return
         self.usks[data.keyer].on_key_properties_dve_change(data)
         width = 16.0 * data.size_x / 1000
@@ -709,6 +710,25 @@ class SwitcherPage:
         region = self.layout[data.index].get(LayoutView.LAYER_USK, data.keyer)
         region.set_region(data.pos_x / 1000, data.pos_y / 1000, width, height)
         region.set_mask(data.mask_top, data.mask_bottom, data.mask_left, data.mask_right)
+
+    def on_key_properties_advanced_chroma_change(self, data):
+        if data.keyer not in self.usks:
+            self.log_sw.warning("Got KACk for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            return
+        self.usks[data.keyer].on_advanced_chroma_change(data)
+
+    def on_key_properties_advanced_chroma_colorpicker_change(self, data):
+        if data.keyer not in self.usks:
+            self.log_sw.warning("Got KACC for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            return
+        self.usks[data.keyer].on_chroma_picker_change(data)
+
+        size = data.size / 1000
+
+        region = self.layout[data.index].get(LayoutView.LAYER_ACK, data.keyer)
+        region.set_region(data.x / 1000, data.y / 1000, size, size)
+        region.set_tally(data.preview)
+        region.set_visible(data.cursor)
 
     def on_program_input_change(self, data):
         if data.index > len(self.me) - 1:

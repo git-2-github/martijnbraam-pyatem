@@ -2087,6 +2087,73 @@ class KeyPropertiesLumaField(FieldBase):
         return '<key-properties-luma me={}, key={}>'.format(self.index, self.keyer)
 
 
+class KeyPropertiesAdvancedChromaField(FieldBase):
+    """
+    Data from the `KACk` field. This contains the data about the settings in the upstream advanced chroma keyer.
+    """
+
+    CODE = "KACk"
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>BBH HH HH hhHhhh', raw)
+        self.index = field[0]
+        self.keyer = field[1]
+
+        self.foreground = field[2]
+        self.background = field[3]
+        self.key_edge = field[4]
+
+        self.spill_suppress = field[5]
+        self.flare_suppress = field[6]
+
+        self.brightness = field[7]
+        self.contrast = field[8]
+        self.saturation = field[9]
+        self.red = field[10]
+        self.green = field[11]
+        self.blue = field[12]
+
+    def __repr__(self):
+        return '<key-properties-advanced-chroma me={}, key={}>'.format(self.index, self.keyer)
+
+
+class KeyPropertiesAdvancedChromaColorpickerField(FieldBase):
+    """
+    Data from the `KACC` field. This contains the data about the color picker in the upstream advanced chroma keyer.
+    """
+
+    CODE = "KACC"
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>BB?? hhH HHH', raw)
+        self.index = field[0]
+        self.keyer = field[1]
+        self.cursor = field[2]
+        self.preview = field[3]
+
+        self.x = field[4]
+        self.y = field[5]
+        self.size = field[6]
+
+        self.Y = (field[7] - 625) / 8544
+        self.Cb = (field[8] - 5000) / 5000
+        self.Cr = (field[9] - 5000) / 5000
+
+    def get_rgb(self):
+        r = self.Y + (self.Cr * 1.5748)
+        g = self.Y + (self.Cb * -0.1873) + (self.Cr * -0.4681)
+        b = self.Y + (self.Cb * 1.8556)
+        r = max(0, min(1, r))
+        g = max(0, min(1, g))
+        b = max(0, min(1, b))
+        return r, g, b
+
+    def __repr__(self):
+        return '<key-properties-advanced-chroma-colorpicker me={}, key={}>'.format(self.index, self.keyer)
+
+
 class RecordingDiskField(FieldBase):
     """
     Data from the `RTMD`. Info about an attached recording disk.

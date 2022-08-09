@@ -1,6 +1,6 @@
 from gi.repository import Gtk, GObject, Gdk
 
-from pyatem.command import KeyPropertiesDveCommand, DkeyMaskCommand
+from pyatem.command import KeyPropertiesDveCommand, DkeyMaskCommand, KeyPropertiesAdvancedChromaColorpickerCommand
 
 
 class Region:
@@ -26,7 +26,15 @@ class Region:
         self.layout.da.queue_draw()
 
     def set_tally(self, onair):
+        if onair == self.tally:
+            return
         self.tally = onair
+        self._queue_draw()
+
+    def set_visible(self, visible):
+        if visible == self.visible:
+            return
+        self.visible = visible
         self._queue_draw()
 
     def set_region(self, x, y, w, h):
@@ -125,6 +133,21 @@ class DownstreamKeyRegion(Region):
 class ColorPickerRegion(Region):
     def get_label(self):
         return _("Chroma picker {}").format(self.rid[1] + 1)
+
+    def _update_region(self, index, pos_x=None, pos_y=None, size_x=None, size_y=None):
+        x = None
+        y = None
+        if pos_x is not None:
+            x = int((pos_x * 32 - 16) * 1000)
+        if pos_y is not None:
+            y = int((pos_y * 18 - 9) * 1000)
+
+        size = None
+        if size_x is not None:
+            size = int(size_x * 16000)
+
+        cmd = KeyPropertiesAdvancedChromaColorpickerCommand(index=index, keyer=self.rid[1], x=x, y=y, size=size)
+        return [cmd]
 
 
 class LayoutView(Gtk.Frame):
@@ -415,6 +438,8 @@ class LayoutView(Gtk.Frame):
 
         for rid in self.regions:
             region = self.regions[rid]
+            if not region.visible:
+                continue
             x, y, w, h = region.get_region_cairo(self.area_width, self.area_height)
 
             mtop, mbottom, mleft, mright = 0, 0, 0, 0
@@ -459,14 +484,15 @@ class LayoutView(Gtk.Frame):
                 cr.fill()
 
                 # Mask handles on the sides
-                cr.rectangle(x + left - 4 + (w * mleft), height - (y + top + (h / 2)) - 15, 5, 30)
-                cr.fill()
-                cr.rectangle(x + left + w - (w * mright), height - (y + top + (h / 2)) - 15, 5, 30)
-                cr.fill()
-                cr.rectangle(x + left + (w / 2) - 15, height - (y + top + h - (mtop * h) + 4), 30, 5)
-                cr.fill()
-                cr.rectangle(x + left + (w / 2) - 15, height - (y + top + (mbottom * h)), 30, 5)
-                cr.fill()
+                if region.has_mask:
+                    cr.rectangle(x + left - 4 + (w * mleft), height - (y + top + (h / 2)) - 15, 5, 30)
+                    cr.fill()
+                    cr.rectangle(x + left + w - (w * mright), height - (y + top + (h / 2)) - 15, 5, 30)
+                    cr.fill()
+                    cr.rectangle(x + left + (w / 2) - 15, height - (y + top + h - (mtop * h) + 4), 30, 5)
+                    cr.fill()
+                    cr.rectangle(x + left + (w / 2) - 15, height - (y + top + (mbottom * h)), 30, 5)
+                    cr.fill()
 
             cr.move_to(x + left + 10, height - (y + top + h) + 20)
             cr.show_text(region.get_label())
