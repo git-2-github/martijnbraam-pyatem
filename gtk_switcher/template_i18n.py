@@ -1,3 +1,4 @@
+import logging
 import platform
 from gi.repository import Gtk, GObject, Gio, GLib
 import xml.etree.ElementTree as ET
@@ -9,7 +10,8 @@ class TemplateLocale(Gtk.Template):
 
     def __call__(self, cls):
         if not _PERFORM_MANUAL_TRANSLATION:
-            print("Localize is not needed")
+            logging.getLogger('TemplateLocale').debug("Localize is not needed")
+
             return super(TemplateLocale, self).__call__(cls)
 
         element = Gio.resources_lookup_data(self.resource_path, Gio.ResourceLookupFlags.NONE).get_data().decode('utf-8')

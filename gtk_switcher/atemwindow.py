@@ -1,6 +1,6 @@
 import ctypes
 import json
-import sys
+import logging
 import threading
 import time
 import traceback
@@ -34,6 +34,7 @@ class AtemConnection(threading.Thread):
     def __init__(self, callback, disconnected, transfer_progress, download_done, connected, upload_done,
                  upload_progress):
         threading.Thread.__init__(self)
+        self.name = 'Connection'
         self.callback = callback
         self.disconnected = disconnected
         self._connected = connected
@@ -45,15 +46,19 @@ class AtemConnection(threading.Thread):
         self.ip = None
         self.stop = False
         self.connected = False
+        self.log = logging.getLogger('AtemConnection')
 
     def run(self):
         # Don't run if the ip isn't set yet
         if self.ip is None or self.ip == '0.0.0.0':
             if AtemProtocol.usb_exists():
+                self.log.info(f'Connect to USB device')
                 self.mixer = AtemProtocol(usb="auto")
             else:
+                self.log.error(f'Invalid connection parameter')
                 return
         else:
+            self.log.info(f'Connect to {self.ip}')
             self.mixer = AtemProtocol(self.ip)
         self.mixer.on('change', self.do_callback)
         self.mixer.on('connected', self.do_connected)
@@ -65,7 +70,7 @@ class AtemConnection(threading.Thread):
         try:
             self.mixer.connect()
         except ConnectionError as e:
-            sys.stderr.write(f"Could not connect to {self.ip}: {e}")
+            self.log.error(f"Could not connect to {self.ip}: {e}")
             return
         self.connected = True
         while not self.stop:
@@ -73,7 +78,7 @@ class AtemConnection(threading.Thread):
                 self.mixer.loop()
             except Exception as e:
                 traceback.print_exc()
-                print("EXCEPTION", repr(e))
+                self.log.error(repr(e))
 
     def do_callback(self, *args, **kwargs):
         GLib.idle_add(self.callback, *args, **kwargs)
@@ -113,7 +118,7 @@ class AtemConnection(threading.Thread):
                                                          ctypes.py_object(SystemExit))
         if res > 1:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
-            print('Exception raise failure')
+            self.log.error('Exception raise failure')
 
 
 class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
@@ -122,6 +127,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.args = args
 
         self.debug = args.debug
+        self.log_aw = logging.getLogger('AtemWindow')
 
         Handy.init()
 
@@ -266,8 +272,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             widget.forall(self.apply_css, provider)
 
     def on_switcher_ip_changed(self, *args):
-        print("Connection settings changed")
-        print("Closing old connection...")
+        self.log_aw.info("Connection settings changed")
+        self.log_aw.info("Closing old connection...")
         self.connection.die()
         self.connection.join(timeout=1)
         for tid in self.hardware_threads:
@@ -278,7 +284,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             self.main_blocks.remove(widget)
         time.sleep(0.1)
         self.clear_audio_state()
-        print("Starting new connection to {}".format(self.settings.get_string('switcher-ip')))
+        self.log_aw.info("Starting new connection to {}".format(self.settings.get_string('switcher-ip')))
         self.connection = AtemConnection(self.on_change, self.on_disconnect, self.on_transfer_progress,
                                          self.on_download_done, self.on_connect, self.on_upload_done,
                                          self.on_upload_progress)
@@ -287,7 +293,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.connection.start()
 
     def on_connection_settings_changed(self, *args):
-        print("Connection stored config changed")
+        self.log_aw.info("Connection stored config changed")
 
     def set_class(self, widget, classname, state):
         if state:
@@ -305,7 +311,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.connectionstack.set_visible_child_name("disconnected")
         for tid in self.hardware_threads:
             self.hardware_threads[tid].die()
-        print("Disconnected from mixer")
+        self.log_aw.warning("Disconnected from mixer")
 
     def on_connect(self):
         # Load stored connection-specific settings if available
@@ -338,7 +344,6 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         DebuggerWindow(self.window, self.connection, self.application)
 
     def on_help_shortcut(self, *args):
-        print("SHORTCUTS")
         if self.disable_shortcuts:
             return
 
@@ -350,7 +355,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         window.present()
 
     def on_videohub_connect(self, hub_id):
-        print(f"Connected to {hub_id}")
+        self.log_aw.info(f"Connected to {hub_id}")
         from gtk_switcher.videohubbus import VideoHubBus
         for hubid in self.connection_settings['videohubs']:
             ip = self.connection_settings['videohubs'][hubid]['ip']
@@ -367,7 +372,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.main_blocks.show_all()
 
     def on_videohub_disconnect(self, hub_id):
-        print(f"Disconnected from {hub_id}")
+        self.log_aw.warning(f"Disconnected from {hub_id}")
 
     def on_videohub_input_change(self, hub_id, index, inputs):
         pass
@@ -423,7 +428,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                     self.connectionstack.set_visible_child_name("firmware")
                 else:
                     self.connectionstack.set_visible_child_name("connected")
-                print("Firmware: {}".format(data.version))
+                self.log_aw.info("Firmware: {}".format(data.version))
             elif field == 'time':
                 self.on_time_sync(data)
             elif field == 'time-config':
@@ -455,7 +460,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                 self.on_topology_change(data)
             elif field == 'product-name':
                 self.status_model.set_text(data.name)
-                print("Mixer model: {}".format(data.name))
+                self.log_aw.info("Mixer model: {}".format(data.name))
             elif field == 'video-mode':
                 self.mode = data
                 for me in self.me:
@@ -541,15 +546,15 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                 if not self.debug and self.args.dump is not None and len(self.args.dump) > 0:
                     return
                 if isinstance(data, bytes):
-                    print(field)
+                    self.log_aw.debug(field)
                 else:
-                    print(data)
+                    self.log_aw.debug(data)
         except Exception as e:
             # When the connection breaks on initial sync the UI events are queued but no mixer state is present
             # catch the exceptions and bring the software into the disconnected state cleanly
             if self.connection.connected:
                 raise
-            print(f"Exception while disconnected: {e}")
+            self.log_aw.error(f"Exception while disconnected: {e}")
 
     def on_time_sync(self, data):
         seconds = data.total_seconds()

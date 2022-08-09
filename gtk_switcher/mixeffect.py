@@ -1,3 +1,5 @@
+import logging
+
 from gi.repository import Gtk, GObject
 
 from gtk_switcher.template_i18n import TemplateLocale
@@ -47,6 +49,8 @@ class MixEffectBlock(Gtk.Grid):
         self.init_template()
         self.index = index
         self.mode = None
+
+        self.log = logging.getLogger('MixEffectBlock')
 
         self.tbar_held = False
         self.last_transition_state = False
@@ -275,7 +279,7 @@ class MixEffectBlock(Gtk.Grid):
 
     @Gtk.Template.Callback()
     def on_context_menu(self, *args):
-        print("CONTEXT!")
+        self.log.debug("CONTEXT!")
 
     @Gtk.Template.Callback()
     def on_ftb_clicked(self, *args):
@@ -368,7 +372,7 @@ class MixEffectBlock(Gtk.Grid):
         except Exception as e:
             if style is not None:
                 self.auto_rate.set_text(self.rate[style])
-            print(e)
+            self.log.error(e)
             return
 
         # Send new rate
@@ -667,7 +671,7 @@ class MixEffectBlock(Gtk.Grid):
         try:
             frames = self.time_to_frames(widget.get_text())
         except Exception as e:
-            print(e)
+            self.log.error(e)
             return
         self.emit('dsk-rate', self.index, widget.dsk_rate, frames)
         self.focus_dummy.grab_focus()
@@ -684,7 +688,7 @@ class MixEffectBlock(Gtk.Grid):
         try:
             frames = self.time_to_frames(widget.get_text())
         except Exception as e:
-            print(e)
+            self.log.error(e)
             return
         self.emit('ftb-rate', self.index, frames)
         self.focus_dummy.grab_focus()

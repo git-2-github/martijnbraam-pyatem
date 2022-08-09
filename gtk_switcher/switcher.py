@@ -1,4 +1,5 @@
 import gettext
+import logging
 from datetime import datetime, timedelta
 
 from gtk_switcher.layout import LayoutView
@@ -26,6 +27,8 @@ class SwitcherPage:
         self.main_blocks = builder.get_object('main_blocks')
         self.me = []
         self.layout = {}
+
+        self.log_sw = logging.getLogger('SwitcherPage')
 
         self.mix_rate = builder.get_object('mix_rate')
         self.dip_rate = builder.get_object('dip_rate')
@@ -241,7 +244,7 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_next_clicked(self, widget, index, current):
-        print('next', index, current)
+        self.log_sw.debug('next', index, current)
         cmd = TransitionSettingsCommand(index=index, next_transition=current)
         self.connection.mixer.send_commands([cmd])
 
@@ -396,13 +399,13 @@ class SwitcherPage:
 
     def on_ftb_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got FTB change for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got FTB change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].set_ftb_rate(data.rate)
 
     def on_transition_mix_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got transition mix change for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got transition mix change for non-existing M/E {}".format(data.index + 1))
             return
 
         label = self.frames_to_time(data.rate)
@@ -411,7 +414,7 @@ class SwitcherPage:
 
     def on_transition_dip_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got transition dip change for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got transition dip change for non-existing M/E {}".format(data.index + 1))
             return
 
         label = self.frames_to_time(data.rate)
@@ -423,7 +426,7 @@ class SwitcherPage:
 
     def on_transition_wipe_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got transition wipe change for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got transition wipe change for non-existing M/E {}".format(data.index + 1))
             return
 
         label = self.frames_to_time(data.rate)
@@ -453,7 +456,7 @@ class SwitcherPage:
 
     def on_transition_dve_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got transition dve change for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got transition dve change for non-existing M/E {}".format(data.index + 1))
             return
 
         label = self.frames_to_time(data.rate)
@@ -603,7 +606,7 @@ class SwitcherPage:
 
     def on_mixer_effect_config_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got _MeC for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got _MeC for non-existing M/E {}".format(data.index + 1))
             return
 
         self.me[data.index].set_config(data)
@@ -634,7 +637,7 @@ class SwitcherPage:
 
     def on_ftb_state_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got FTB state change for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got FTB state change for non-existing M/E {}".format(data.index + 1))
             return
 
         self.me[data.index].set_ftb_state(data.done, data.transitioning)
@@ -654,26 +657,26 @@ class SwitcherPage:
 
     def on_key_on_air_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got key-on-air for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            self.log_sw.warning("Got key-on-air for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
             return
         self.me[data.index].set_key_on_air(data)
         self.layout[data.index].get(LayoutView.LAYER_USK, data.keyer).set_tally(data.enabled)
 
     def on_transition_preview_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got transition preview change for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got transition preview change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].set_preview_transition(data.enabled)
 
     def on_transition_settings_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got transition settings change for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got transition settings change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].set_transition_settings(data)
 
     def on_transition_position_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got transition position change for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got transition position change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].set_transition_progress(data)
 
@@ -683,19 +686,21 @@ class SwitcherPage:
 
     def on_key_properties_base_change(self, data):
         if data.keyer not in self.usks:
-            print("Got key-properties-base for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            self.log_sw.warning(
+                "Got key-properties-base for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
             return
         self.usks[data.index].on_key_properties_base_change(data)
 
     def on_key_properties_luma_change(self, data):
         if data.keyer not in self.usks:
-            print("Got key-properties-luma for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            self.log_sw.warning(
+                "Got key-properties-luma for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
             return
         self.usks[data.index].on_key_properties_luma_change(data)
 
     def on_key_properties_dve_change(self, data):
         if data.keyer not in self.usks:
-            print("Got key-properties-dve for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            self.log_sw.warning("Got key-properties-dve for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
             return
         self.usks[data.keyer].on_key_properties_dve_change(data)
         width = 16.0 * data.size_x / 1000
@@ -707,19 +712,19 @@ class SwitcherPage:
 
     def on_program_input_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got program input change for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got program input change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].program_input_change(data)
 
     def on_preview_input_change(self, data):
         if data.index > len(self.me) - 1:
-            print("Got preview input change for non-existing M/E {}".format(data.index + 1))
+            self.log_sw.warning("Got preview input change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].preview_input_change(data)
 
     def on_dkey_properties_base_change(self, data):
         if data.index not in self.dsks:
-            print("Got dkey-properties-base for non-existant keyer {}".format(data.index))
+            self.log_sw.warning("Got dkey-properties-base for non-existant keyer {}".format(data.index))
             return
         self.dsks[data.index].on_key_properties_base_change(data)
 
@@ -736,7 +741,7 @@ class SwitcherPage:
         self.model_changing = True
         self.stream_recorder_filename.set_text(data.filename)
         self.stream_recorder_disk = [data.disk1, data.disk2]
-        print('disks', self.stream_recorder_disk)
+
         self.stream_recorder_disk1.set_active_id(str(data.disk1))
         self.stream_recorder_disk2.set_active_id(str(data.disk2))
         self.on_update_recording_buttons()

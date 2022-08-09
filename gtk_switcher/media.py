@@ -1,3 +1,4 @@
+import logging
 import os
 import struct
 import urllib.request
@@ -34,6 +35,8 @@ class MediaPage:
         self.media_last_upload = None
 
         self.media_context = None
+
+        self.log_mp = logging.getLogger('MediaPage')
 
     def on_mediaplayer_slots_change(self, data):
         for child in self.media_flow:
@@ -204,7 +207,7 @@ class MediaPage:
         dialog.destroy()
 
     def on_media_context_menu(self, widget, event):
-        print("Button", event.button)
+        self.log_mp.debug("Button", event.button)
         if event.button != 3:
             return
         self.media_context = Gtk.Menu.new()
@@ -302,7 +305,7 @@ class MediaPage:
             for uri in data.split('\r\n'):
                 path = self.dnd_uri_to_path(uri)
                 if not os.path.isfile(path):
-                    print(f"File does not exist: {path}")
+                    self.log_mp.error(f"File does not exist: {path}")
                     continue
                 self.media_slot_upload_file(index, path)
                 index += 1
@@ -337,7 +340,7 @@ class MediaPage:
         self.media_slot_upload_pixbuf(index, pixbuf, name=name)
 
     def media_slot_upload_pixbuf(self, index, pixbuf, name=None):
-        print(f"Uploading pixbuf to media slot {index}")
+        self.log_mp.info(f"Uploading pixbuf to media slot {index}")
         mode = self.connection.mixer.mixerstate['video-mode']
         width, height = mode.get_resolution()
         aspect = width / height

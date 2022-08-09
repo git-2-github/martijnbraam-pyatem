@@ -1,4 +1,5 @@
 import colorsys
+import logging
 
 import cairo
 import io
@@ -22,7 +23,7 @@ class ColorWheelWidget(Gtk.DrawingArea):
 
     def get_coordinates(self):
         yiq = colorsys.rgb_to_yiq(self.red, self.green, self.blue)
-        print(yiq)
+        logging.debug(yiq)
         return yiq
 
     def set_coordinates(self, gain, x, y):

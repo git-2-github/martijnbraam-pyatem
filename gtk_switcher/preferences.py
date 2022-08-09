@@ -105,7 +105,7 @@ class PreferencesWindow:
     def on_videohub_ip_changed(self, widget, old_ip, new_ip):
         if old_ip is None:
             return
-        print(f"Rename hub {old_ip} -> {new_ip}")
+
         hub_config = self.config['videohubs'][old_ip]
         del self.config['videohubs'][old_ip]
         self.config['videohubs'][new_ip] = hub_config

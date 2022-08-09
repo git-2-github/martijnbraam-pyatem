@@ -190,6 +190,8 @@ class UdpProtocol(BaseProtocol):
         self.batch_size = 5
         self.batch_delay = 0.003
 
+        self.log = logging.getLogger('UdpTransport')
+
     def _udp_thread(self):
         while True:
             readable, _, _ = select.select([self.sock, self.thread_queue], [], [])
@@ -214,7 +216,7 @@ class UdpProtocol(BaseProtocol):
             packet.sequence_number = (self.local_sequence_number + 1) % 2 ** 16
         raw = packet.to_bytes()
         self.sock.sendto(raw, (self.ip, self.port))
-        logging.debug('> {}'.format(packet))
+        self.log.debug('> {}'.format(packet))
         if packet.debug:
             # hexdump(raw)
             pass
@@ -240,10 +242,10 @@ class UdpProtocol(BaseProtocol):
         packet = Packet.from_bytes(data)
 
         if packet.flags & UdpProtocol.FLAG_RETRANSMISSION:
-            logging.error("retransmission detected")
+            self.log.error("retransmission detected")
 
         if packet.flags & UdpProtocol.FLAG_REQUEST_RETRANSMISSION:
-            logging.error("retransmission requested")
+            self.log.error("retransmission requested")
             # hexdump(data)
 
         new_sequence_number = packet.sequence_number
@@ -280,7 +282,7 @@ class UdpProtocol(BaseProtocol):
 
         response_code = packet.data[0]
 
-        logging.debug('Got response 0x{:02X} to handshake'.format(response_code))
+        self.log.debug('Got response 0x{:02X} to handshake'.format(response_code))
 
         if response_code == 0x02:
             self.state = UdpProtocol.STATE_ESTABLISHED
@@ -386,6 +388,8 @@ class UsbProtocol(BaseProtocol):
         self.port = port
         self.queue = Queue()
 
+        self.log = logging.getLogger('USBTransport')
+
         self.handle = UsbProtocol.find_device()
         self._detach_kernel()
         self.handle.set_configuration()
@@ -408,9 +412,9 @@ class UsbProtocol(BaseProtocol):
                 if self.handle.is_kernel_driver_active(i):
                     try:
                         self.handle.detach_kernel_driver(i)
-                        logging.debug('kernel driver detached')
+                        self.log.debug('kernel driver detached')
                     except usb.core.USBError as e:
-                        logging.error('Could not detach kernel driver: ' + str(e))
+                        self.log.error('Could not detach kernel driver: ' + str(e))
 
     def _send_packet(self, packet):
         raw = packet.to_usb()
@@ -497,6 +501,8 @@ class TcpProtocol(BaseProtocol):
         self.sock = None
         self.state = TcpProtocol.STATE_INIT
 
+        self.log = logging.getLogger('TcpTransport')
+
     def _send_packet(self, data):
         header = self.STRUCT_HEADER.pack(len(data))
         self.sock.sendall(header + data)
@@ -510,7 +516,7 @@ class TcpProtocol(BaseProtocol):
             while data_left > 0:
                 block = self.sock.recv(data_left)
                 if len(block) == 0:
-                    logging.error("Connection closed")
+                    self.log.error("Connection closed")
                     return
                 data_left -= len(block)
                 data += block

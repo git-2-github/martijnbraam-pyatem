@@ -151,6 +151,8 @@ class AtemProtocol:
                 self.transport = UdpProtocol(ip, port)
         else:
             self.transport = UsbProtocol(usb)
+
+        self.log = logging.getLogger('AtemProtocol')
         self.transport.queue_callback = self.queue_callback
         self.mixerstate = {}
         self.callbacks = {}
@@ -174,11 +176,11 @@ class AtemProtocol:
         return UsbProtocol.device_exists()
 
     def connect(self):
-        logging.debug('Starting connection')
+        self.log.debug('Starting connection')
         self.transport.connect()
 
     def loop(self):
-        logging.debug('Waiting for data packet...')
+        self.log.debug('Waiting for data packet...')
         packet = self.transport.receive_packet()
         if packet is None:
             # Disconnected from hardware
@@ -249,7 +251,7 @@ class AtemProtocol:
             return
 
         if key == 'lock-obtained':
-            logging.info('Got lock for {}'.format(contents.store))
+            self.log.info('Got lock for {}'.format(contents.store))
             self.locks[contents.store] = True
             self._transfer_trigger(contents.store)
             return
@@ -260,14 +262,14 @@ class AtemProtocol:
             if contents.store in self.locks and self.locks[contents.store]:
                 # Remove the lock if we held it
                 del self.locks[contents.store]
-            logging.debug(contents)
+            self.log.debug(contents)
             return
         elif key == 'file-transfer-continue-data':
             self.transfer_budget = contents
             old = self.transfer_budget.size
             self.transfer_budget.size = self.transfer_budget.size // 8 * 8
             if old != self.transfer_budget.size:
-                logging.debug(f"Adjusted transfer chunk size from {old} to {self.transfer_budget.size}")
+                self.log.debug(f"Adjusted transfer chunk size from {old} to {self.transfer_budget.size}")
             self._queue_chunks()
             return
         elif key == 'file-transfer-data':
@@ -281,23 +283,23 @@ class AtemProtocol:
                 # The 0 should be the transfer slot, but it seems it's always 0 in practice
                 self.send_commands([TransferAckCommand(self.transfer.tid, 0)])
             else:
-                logging.error('Got file transfer data for wrong transfer id')
+                self.log.error('Got file transfer data for wrong transfer id')
             return
         elif key == 'file-transfer-error':
-            logging.error(f"file-transfer-error: {str(contents)}")
+            self.log.error(f"file-transfer-error: {str(contents)}")
             self.transfer_requested = False
             if contents.status == 1:
                 # Status is try-again
-                logging.debug('Retrying transfer')
+                self.log.debug('Retrying transfer')
                 self._transfer_trigger(self.transfer.store, retry=True)
             elif contents.status == 5:
                 self.locks[self.transfer.store] = False
                 self._transfer_trigger(self.transfer.store, retry=True)
             return
         elif key == 'file-transfer-data-complete':
-            logging.debug('Transfer complete')
+            self.log.debug('Transfer complete')
             if self.transfer is None:
-                logging.warning("Got FTDC without transfer active")
+                self.log.warning("Got FTDC without transfer active")
                 return
             if contents.transfer != self.transfer.tid:
                 return
@@ -324,7 +326,7 @@ class AtemProtocol:
             self._transfer_trigger(self.transfer.store)
             return
         elif key == 'transfer-complete':
-            logging.debug('Proxy transfer complete')
+            self.log.debug('Proxy transfer complete')
 
             # Remove current item from the transfer queue
             queue = self.transfer_queue[contents.store]
@@ -410,7 +412,7 @@ class AtemProtocol:
                     self.transfer.send_length)
 
     def download(self, store, index):
-        logging.info("Queue download of {}:{}".format(store, index))
+        self.log.info("Queue download of {}:{}".format(store, index))
         if store not in self.transfer_queue:
             self.transfer_queue[store] = []
         self.transfer_queue[store].append(TransferTask(store, index))
@@ -418,7 +420,7 @@ class AtemProtocol:
 
     def upload(self, store, index, data, compress=True, compressed=False, name=None, description=None, size=None,
                task=None):
-        logging.info("Queue upload of {}:{}".format(store, index))
+        self.log.info("Queue upload of {}:{}".format(store, index))
         if store not in self.transfer_queue:
             self.transfer_queue[store] = []
 
@@ -440,7 +442,7 @@ class AtemProtocol:
             elif compressed:
                 task.data_length = len(rle_decode(data))
 
-        logging.info(f'New upload task is {len(task.data)} bytes, {task.data_length} uncompressed')
+        self.log.info(f'New upload task is {len(task.data)} bytes, {task.data_length} uncompressed')
 
         if isinstance(self.transport, TcpProtocol):
             self.transport.upload(task)
@@ -451,20 +453,20 @@ class AtemProtocol:
     def _queue_chunks(self):
         # Can't transfer without a chunk size
         if self.transfer_budget is None:
-            logging.error('Cannot transfer without chunk size')
+            self.log.error('Cannot transfer without chunk size')
             return
 
         # Only queue chunks if an upload is planned
         if self.transfer is None:
-            logging.error('No transfer scheduled')
+            self.log.error('No transfer scheduled')
             return
 
         if not self.transfer.upload:
-            logging.error('Current transfer is a download')
+            self.log.error('Current transfer is a download')
             return
 
         chunk_size = self.transfer_budget.size
-        logging.debug(f'Queue {self.transfer_budget.count} chunks of {chunk_size}')
+        self.log.debug(f'Queue {self.transfer_budget.count} chunks of {chunk_size}')
         for i in range(0, self.transfer_budget.count):
             if len(self.transfer.data) == 0:
                 break
@@ -481,7 +483,7 @@ class AtemProtocol:
 
             self.transfer_budget.count -= 1
             if self.transfer_budget.count == 0:
-                logging.debug('Transfer budget ran out')
+                self.log.debug('Transfer budget ran out')
                 self.transfer_budget = None
 
             cmd = TransferDataCommand(self.transfer.tid, chunk)
@@ -492,11 +494,11 @@ class AtemProtocol:
         self.transport.queue_trigger()
 
     def _queue_flushed(self):
-        logging.info('Queue flushed')
+        self.log.info('Queue flushed')
         if len(self.transfer.data):
             self._queue_chunks()
             return
-        logging.info('Sending file metadata')
+        self.log.info('Sending file metadata')
         cmd = TransferFileDataCommand(self.transfer.tid, self.transfer.hash,
                                       name=self.transfer.name, description=self.transfer.description)
         self.send_commands([cmd])
@@ -504,7 +506,7 @@ class AtemProtocol:
     def _transfer_trigger(self, store, retry=False):
         next = None
 
-        logging.info(f'transfer trigger for store {store} (retry={retry})')
+        self.log.info(f'transfer trigger for store {store} (retry={retry})')
 
         # Try the preferred queue
         if store in self.transfer_queue:
@@ -518,27 +520,27 @@ class AtemProtocol:
                     next = self.transfer_queue[store][0]
                     break
 
-        logging.info(f'next transfer: {next}')
+        self.log.info(f'next transfer: {next}')
 
         # All transfers done, clean locks
         if next is None:
             for lock in self.locks:
                 if self.locks[lock]:
-                    logging.info('Releasing lock {}'.format(lock))
+                    self.log.info('Releasing lock {}'.format(lock))
                     cmd = LockCommand(lock, False)
                     self.send_commands([cmd])
             return
 
         # Request a lock if needed
         if next.store != 0xffff and (next.store not in self.locks or not self.locks[next.store]):
-            logging.info('Requesting lock for {}'.format(next.store))
+            self.log.info('Requesting lock for {}'.format(next.store))
             cmd = PartialLockCommand(next.store, next.slot)
             self.send_commands([cmd])
             return
 
         # A transfer request is already running, don't start a new one
         if self.transfer_requested:
-            logging.info('Request already submitted, do nothing')
+            self.log.info('Request already submitted, do nothing')
             return
 
         # Assign a transfer id and start the transfer
@@ -550,9 +552,9 @@ class AtemProtocol:
         if self.transfer.upload:
             cmd = TransferUploadRequestCommand(self.transfer.tid, self.transfer.store, self.transfer.slot,
                                                self.transfer.data_length, 1)
-            logging.info('Requesting upload to {}:{}'.format(next.store, next.slot))
+            self.log.info('Requesting upload to {}:{}'.format(next.store, next.slot))
         else:
             cmd = TransferDownloadRequestCommand(self.transfer.tid, self.transfer.store, self.transfer.slot)
-            logging.info('Requesting download of {}:{}'.format(next.store, next.slot))
+            self.log.info('Requesting download of {}:{}'.format(next.store, next.slot))
         self.transfer_requested = True
         self.send_commands([cmd])

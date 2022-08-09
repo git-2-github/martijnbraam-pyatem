@@ -1,3 +1,4 @@
+import logging
 import time
 from urllib.parse import urlparse, quote
 
@@ -44,6 +45,8 @@ class Handler:
         self.connection = connection
         self.window = builder.get_object('preferences_window')
 
+        self.log = logging.getLogger('ConnectionWindow')
+
         self.ipaddress = builder.get_object('ipaddress')
         self.username = builder.get_object('username')
         self.password = builder.get_object('password')
@@ -77,7 +80,7 @@ class Handler:
         self.avahi_list.show_all()
 
     def on_lost(self, address):
-        print('lost', address)
+        self.log.info('lost', address)
 
     def on_avahi_activate(self, widget, row):
         label = list(row)[0]
@@ -107,7 +110,7 @@ class Handler:
                 url += f"{quote(username)}:{quote(password)}@"
             url += self.ipaddress.get_text()
             url += '/' + self.device.get_text()
-            print("New connection url: " + str(url))
+            self.log.info("New connection url: " + str(url))
             self.settings.set_string('switcher-ip', url)
         self.window.close()
 

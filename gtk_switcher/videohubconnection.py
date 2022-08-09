@@ -1,4 +1,5 @@
 import ctypes
+import logging
 import sys
 import threading
 import traceback
@@ -14,6 +15,8 @@ from pyatem.videohub import VideoHub
 class VideoHubConnection(threading.Thread):
     def __init__(self, ip, connected, disconnected, input_change, output_change, route_change):
         threading.Thread.__init__(self)
+
+        self.log = logging.getLogger('VideoHubConnection')
 
         self.id = None
 
@@ -55,7 +58,7 @@ class VideoHubConnection(threading.Thread):
                 self.hub.loop()
             except Exception as e:
                 traceback.print_exc()
-                print("EXCEPTION", repr(e))
+                self.log.error(repr(e))
 
     def do_disconnected(self, hub):
         self.connected = False
@@ -124,4 +127,4 @@ class VideoHubConnection(threading.Thread):
                                                          ctypes.py_object(SystemExit))
         if res > 1:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
-            print('Exception raise failure')
+            self.log.error('Exception raise failure')
