@@ -21,6 +21,9 @@ class ConnectionReady:
 
 
 class Packet:
+    STRUCT_HEADER = struct.Struct('>HHH 2x HH')
+    STRUCT_USB = struct.Struct('<I')
+
     def __init__(self):
         self.flags = 0
         self.length = 0
@@ -38,7 +41,7 @@ class Packet:
     def from_bytes(cls, packet):
         res = cls()
         res.original = packet
-        fields = struct.unpack('>HHH 2x HH', packet[0:12])
+        fields = cls.STRUCT_HEADER.unpack_from(packet)
         res.length = fields[0] & ~(0x1f << 11)
         res.flags = (fields[0] & (0x1f << 11)) >> 11
 
@@ -58,7 +61,7 @@ class Packet:
         header_len = 12
         data_len = len(self.data) if self.data is not None else 0
         packet_len = header_len + data_len
-        result = struct.pack('!HHH 2x HH',
+        result = self.STRUCT_HEADER.pack(
                              packet_len + (self.flags << 11),
                              self.session,
                              self.acknowledgement_number,
@@ -72,7 +75,7 @@ class Packet:
 
     def to_usb(self):
         data_len = len(self.data) if self.data is not None else 0
-        result = struct.pack('<I', data_len)
+        result = self.STRUCT_USB.pack(data_len)
         if self.data:
             result += bytes(self.data)
         return result
@@ -433,7 +436,7 @@ class UsbProtocol(BaseProtocol):
 
         chunks = []
         while True:
-            length, = struct.unpack('<I', raw[0:4])
+            length, = Packet.STRUCT_USB.unpack_from(raw)
             chunks.append(raw[4:length + 4])
             raw = raw[length + 4:]
             if len(raw) == 0:
@@ -473,6 +476,9 @@ class TcpProtocol(BaseProtocol):
     STATE_AUTH = 1
     STATE_CONNECTED = 2
 
+    STRUCT_HEADER = struct.Struct('!H')
+    STRUCT_FIELD = struct.Struct('!H2x 4s')
+
     def __init__(self, url=None, host=None, port=None, username=None, password=None, device=None):
         super().__init__()
         if url is not None:
@@ -492,19 +498,19 @@ class TcpProtocol(BaseProtocol):
         self.state = TcpProtocol.STATE_INIT
 
     def _send_packet(self, data):
-        header = struct.pack('!H', len(data))
+        header = self.STRUCT_HEADER.pack(len(data))
         self.sock.sendall(header + data)
 
     def _receive_packet(self):
         try:
             header = self.sock.recv(2)
-            datalength, = struct.unpack('!H', header)
+            datalength, = self.STRUCT_HEADER.unpack(header)
             data_left = datalength
             data = b''
             while data_left > 0:
                 block = self.sock.recv(data_left)
                 if len(block) == 0:
-                    print("Connection closed")
+                    logging.error("Connection closed")
                     return
                 data_left -= len(block)
                 data += block
@@ -520,7 +526,7 @@ class TcpProtocol(BaseProtocol):
         if len(data) < 8:
             raise ValueError("Packet too short")
         while offset < len(data):
-            datalen, cmd = struct.unpack_from('!H2x 4s', data, offset)
+            datalen, cmd = self.STRUCT_FIELD.unpack_from(data, offset)
             raw = data[offset + 8:offset + datalen]
             yield (cmd, raw)
             offset += datalen
@@ -528,7 +534,7 @@ class TcpProtocol(BaseProtocol):
     def list_to_packets(self, data):
         result = b''
         for key, value in data:
-            result += struct.pack('!H2x 4s', len(value) + 8, key)
+            result += self.STRUCT_FIELD.pack(len(value) + 8, key)
             result += value
         return result
 

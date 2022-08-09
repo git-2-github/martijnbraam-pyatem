@@ -10,6 +10,137 @@ import pyatem.field as fieldmodule
 
 
 class AtemProtocol:
+    STRUCT_FIELD = struct.Struct('!H2x 4s')
+
+    FIELDNAME_PRETTY = {
+        '_ver': 'firmware-version',
+        '_pin': 'product-name',
+        '_top': 'topology',
+        'Time': 'time',
+        'TCCc': 'time-config',
+        'TcLk': 'timecode-lock',
+        '_MeC': 'mixer-effect-config',
+        '_MvC': 'multiviewer-config',
+        '_FAC': 'fairlight-audio-config',
+        '_VMC': 'video-mode-capability',
+        'MvVM': 'multiview-video-mode-capability',
+        '_MAC': 'macro-config',
+        '_DVE': 'dve-capabilities',
+        'Powr': 'power-status',
+        '_mpl': 'mediaplayer-slots',
+        'VidM': 'video-mode',
+        'InPr': 'input-properties',
+        'PrgI': 'program-bus-input',
+        'PrvI': 'preview-bus-input',
+        'TrSS': 'transition-settings',
+        'TrPr': 'transition-preview',
+        'TrPs': 'transition-position',
+        'TMxP': 'transition-mix',
+        'TDpP': 'transition-dip',
+        'TWpP': 'transition-wipe',
+        'TDvP': 'transition-dve',
+        'TStP': 'transition-stinger',
+        'KeOn': 'key-on-air',
+        'KeBP': 'key-properties-base',
+        'KeLm': 'key-properties-luma',
+        'KePt': 'key-properties-pattern',
+        'KeDV': 'key-properties-dve',
+        'KeFS': 'key-properties-fly',
+        'KKFP': 'key-properties-fly-keyframe',
+        'DskB': 'dkey-properties-base',
+        'DskP': 'dkey-properties',
+        'DskS': 'dkey-state',
+        'FtbP': 'fade-to-black',
+        'FtbS': 'fade-to-black-state',
+        'ColV': 'color-generator',
+        'AuxS': 'aux-output-source',
+        'MPfe': 'mediaplayer-file-info',
+        'MPCE': 'mediaplayer-selected',
+        'AMMO': 'audio-mixer-master-properties',
+        'AMmO': 'audio-mixer-monitor-properties',
+        'AMTl': 'audio-mixer-tally',
+        'FASP': 'fairlight-strip-properties',
+        'FAMP': 'fairlight-master-properties',
+        'FMHP': 'fairlight-headphones',
+        'FAMS': 'fairlight-solo',
+        '_TlC': 'tally-config',
+        'TlIn': 'tally-index',
+        'TlSr': 'tally-source',
+        'FMTl': 'fairlight-tally',
+        'MPrp': 'macro-properties',
+        'AiVM': 'auto-input-video-mode',
+        'FASD': 'fairlight-strip-delete',
+        'FAIP': 'fairlight-audio-input',
+        'AMIP': 'audio-input',
+        'RTMR': 'recording-duration',
+        'RTMD': 'recording-disk',
+        'RTMS': 'recording-status',
+        'RMSu': 'recording-settings',
+        'SRSU': 'streaming-service',
+        'STAB': 'streaming-audio-bitrate',
+        'StRS': 'streaming-status',
+        'SRST': 'streaming-time',
+        'SRSS': 'streaming-stats',
+        'SAth': 'streaming-authentication',
+        'AEBP': 'atem-eq-band-properties',
+        'MvPr': 'multiviewer-properties',
+        'MvIn': 'multiviewer-input',
+        'VuMC': 'multiviewer-vu',
+        'VuMo': 'multiviewer-vu-opacity',
+        'SaMw': 'multiviewer-safe-area',
+        'LKOB': 'lock-obtained',
+        'FTDa': 'file-transfer-data',
+        'LKST': 'lock-state',
+        'FTDE': 'file-transfer-error',
+        'FTDC': 'file-transfer-data-complete',
+        'FTCD': 'file-transfer-continue-data',
+        'AMLv': 'audio-meter-levels',
+        'FMLv': 'fairlight-meter-levels',
+        'FDLv': 'fairlight-master-levels',
+        'CCdP': 'camera-control-data-packet',
+        '*XFC': 'transfer-complete',
+    }
+
+    FIELDNAME_UNIQUE = {
+        'mixer-effect-config': struct.Struct('>B'),
+        'input-properties': struct.Struct('>H'),
+        'program-bus-input': struct.Struct('>B'),
+        'preview-bus-input': struct.Struct('>B'),
+        'transition-preview': struct.Struct('>B'),
+        'transition-position': struct.Struct('>B'),
+        'transition-mix': struct.Struct('>B'),
+        'transition-dip': struct.Struct('>B'),
+        'transition-wipe': struct.Struct('>B'),
+        'transition-dve': struct.Struct('>B'),
+        'transition-stinger': struct.Struct('>B'),
+        'fairlight-strip-properties': struct.Struct('>H'),
+        'macro-properties': struct.Struct('>H'),
+        'fairlight-audio-input': struct.Struct('>H'),
+        'audio-input': struct.Struct('>H'),
+        'key-on-air': struct.Struct('>BB'),
+        'key-properties-base': struct.Struct('>BB'),
+        'key-properties-luma': struct.Struct('>BB'),
+        'key-properties-pattern': struct.Struct('>BB'),
+        'key-properties-dve': struct.Struct('>BB'),
+        'key-properties-fly': struct.Struct('>BB'),
+        'key-properties-fly-keyframe': struct.Struct('>BBB'),
+        'dkey-properties-base': struct.Struct('>B'),
+        'dkey-properties': struct.Struct('>B'),
+        'dkey-state': struct.Struct('>B'),
+        'fade-to-black': struct.Struct('>B'),
+        'fade-to-black-state': struct.Struct('>B'),
+        'color-generator': struct.Struct('>B'),
+        'aux-output-source': struct.Struct('>B'),
+        'mediaplayer-file-info': struct.Struct('>xxH'),
+        'mediaplayer-selected': struct.Struct('>B'),
+        'atem-eq-band-properties': struct.Struct('>H14xB'),
+        'multiviewer-properties': struct.Struct('>B'),
+        'multiviewer-input': struct.Struct('>BB'),
+        'multiviewer-vu': struct.Struct('>BB'),
+        'multiviewer-safe-area': struct.Struct('>BB'),
+        'camera-control-data-packet': struct.Struct('>BBB'),
+    }
+
     def __init__(self, ip=None, port=9910, usb=None):
         if ip is None and usb is None:
             raise ValueError("Need either an ip or usb port")
@@ -94,7 +225,7 @@ class AtemProtocol:
     def decode_packet(self, data):
         offset = 0
         while offset < len(data):
-            datalen, cmd = struct.unpack_from('!H2x 4s', data, offset)
+            datalen, cmd = self.STRUCT_FIELD.unpack_from(data, offset)
 
             # A zero length header is not possible, this occurs when the transport layer has corruption, mark the
             # connection closed to restart and recover state
@@ -106,139 +237,10 @@ class AtemProtocol:
             offset += datalen
 
     def save_field_data(self, fieldname, contents):
-        fieldname_to_pretty = {
-            '_ver': 'firmware-version',
-            '_pin': 'product-name',
-            '_top': 'topology',
-            'Time': 'time',
-            'TCCc': 'time-config',
-            'TcLk': 'timecode-lock',
-            '_MeC': 'mixer-effect-config',
-            '_MvC': 'multiviewer-config',
-            '_FAC': 'fairlight-audio-config',
-            '_VMC': 'video-mode-capability',
-            'MvVM': 'multiview-video-mode-capability',
-            '_MAC': 'macro-config',
-            '_DVE': 'dve-capabilities',
-            'Powr': 'power-status',
-            '_mpl': 'mediaplayer-slots',
-            'VidM': 'video-mode',
-            'InPr': 'input-properties',
-            'PrgI': 'program-bus-input',
-            'PrvI': 'preview-bus-input',
-            'TrSS': 'transition-settings',
-            'TrPr': 'transition-preview',
-            'TrPs': 'transition-position',
-            'TMxP': 'transition-mix',
-            'TDpP': 'transition-dip',
-            'TWpP': 'transition-wipe',
-            'TDvP': 'transition-dve',
-            'TStP': 'transition-stinger',
-            'KeOn': 'key-on-air',
-            'KeBP': 'key-properties-base',
-            'KeLm': 'key-properties-luma',
-            'KePt': 'key-properties-pattern',
-            'KeDV': 'key-properties-dve',
-            'KeFS': 'key-properties-fly',
-            'KKFP': 'key-properties-fly-keyframe',
-            'DskB': 'dkey-properties-base',
-            'DskP': 'dkey-properties',
-            'DskS': 'dkey-state',
-            'FtbP': 'fade-to-black',
-            'FtbS': 'fade-to-black-state',
-            'ColV': 'color-generator',
-            'AuxS': 'aux-output-source',
-            'MPfe': 'mediaplayer-file-info',
-            'MPCE': 'mediaplayer-selected',
-            'AMMO': 'audio-mixer-master-properties',
-            'AMmO': 'audio-mixer-monitor-properties',
-            'AMTl': 'audio-mixer-tally',
-            'FASP': 'fairlight-strip-properties',
-            'FAMP': 'fairlight-master-properties',
-            'FMHP': 'fairlight-headphones',
-            'FAMS': 'fairlight-solo',
-            '_TlC': 'tally-config',
-            'TlIn': 'tally-index',
-            'TlSr': 'tally-source',
-            'FMTl': 'fairlight-tally',
-            'MPrp': 'macro-properties',
-            'AiVM': 'auto-input-video-mode',
-            'FASD': 'fairlight-strip-delete',
-            'FAIP': 'fairlight-audio-input',
-            'AMIP': 'audio-input',
-            'RTMR': 'recording-duration',
-            'RTMD': 'recording-disk',
-            'RTMS': 'recording-status',
-            'RMSu': 'recording-settings',
-            'SRSU': 'streaming-service',
-            'STAB': 'streaming-audio-bitrate',
-            'StRS': 'streaming-status',
-            'SRST': 'streaming-time',
-            'SRSS': 'streaming-stats',
-            'SAth': 'streaming-authentication',
-            'AEBP': 'atem-eq-band-properties',
-            'MvPr': 'multiviewer-properties',
-            'MvIn': 'multiviewer-input',
-            'VuMC': 'multiviewer-vu',
-            'VuMo': 'multiviewer-vu-opacity',
-            'SaMw': 'multiviewer-safe-area',
-            'LKOB': 'lock-obtained',
-            'FTDa': 'file-transfer-data',
-            'LKST': 'lock-state',
-            'FTDE': 'file-transfer-error',
-            'FTDC': 'file-transfer-data-complete',
-            'FTCD': 'file-transfer-continue-data',
-            'AMLv': 'audio-meter-levels',
-            'FMLv': 'fairlight-meter-levels',
-            'FDLv': 'fairlight-master-levels',
-            'CCdP': 'camera-control-data-packet',
-            '*XFC': 'transfer-complete',
-        }
-
-        fieldname_to_unique = {
-            'mixer-effect-config': '>B',
-            'input-properties': '>H',
-            'program-bus-input': '>B',
-            'preview-bus-input': '>B',
-            'transition-preview': '>B',
-            'transition-position': '>B',
-            'transition-mix': '>B',
-            'transition-dip': '>B',
-            'transition-wipe': '>B',
-            'transition-dve': '>B',
-            'transition-stinger': '>B',
-            'fairlight-strip-properties': '>H',
-            'macro-properties': '>H',
-            'fairlight-audio-input': '>H',
-            'audio-input': '>H',
-            'key-on-air': '>BB',
-            'key-properties-base': '>BB',
-            'key-properties-luma': '>BB',
-            'key-properties-pattern': '>BB',
-            'key-properties-dve': '>BB',
-            'key-properties-fly': '>BB',
-            'key-properties-fly-keyframe': '>BBB',
-            'dkey-properties-base': '>B',
-            'dkey-properties': '>B',
-            'dkey-state': '>B',
-            'fade-to-black': '>B',
-            'fade-to-black-state': '>B',
-            'color-generator': '>B',
-            'aux-output-source': '>B',
-            'mediaplayer-file-info': '>xxH',
-            'mediaplayer-selected': '>B',
-            'atem-eq-band-properties': '>H14xB',
-            'multiviewer-properties': '>B',
-            'multiviewer-input': '>BB',
-            'multiviewer-vu': '>BB',
-            'multiviewer-safe-area': '>BB',
-            'camera-control-data-packet': '>BBB',
-        }
-
         raw = contents
         key = fieldname.decode()
-        if key in fieldname_to_pretty:
-            key = fieldname_to_pretty[key]
+        if key in self.FIELDNAME_PRETTY:
+            key = self.FIELDNAME_PRETTY[key]
             classname = key.title().replace('-', '') + "Field"
             if hasattr(fieldmodule, classname):
                 contents = getattr(fieldmodule, classname)(contents)
@@ -337,8 +339,8 @@ class AtemProtocol:
             self._transfer_trigger(self.transfer.store)
             return
 
-        if key in fieldname_to_unique:
-            idxes = struct.unpack_from(fieldname_to_unique[key], raw, 0)
+        if key in self.FIELDNAME_UNIQUE:
+            idxes = self.FIELDNAME_UNIQUE[key].unpack_from(raw, 0)
             if key not in self.mixerstate:
                 self.mixerstate[key] = {}
 
@@ -404,7 +406,8 @@ class AtemProtocol:
 
         self.transfer.send_done += size
         fraction = self.transfer.send_done / self.transfer.send_length
-        self._raise('upload-progress', self.transfer.store, self.transfer.slot, fraction * 100, self.transfer.send_done, self.transfer.send_length)
+        self._raise('upload-progress', self.transfer.store, self.transfer.slot, fraction * 100, self.transfer.send_done,
+                    self.transfer.send_length)
 
     def download(self, store, index):
         logging.info("Queue download of {}:{}".format(store, index))
@@ -553,67 +556,3 @@ class AtemProtocol:
             logging.info('Requesting download of {}:{}'.format(next.store, next.slot))
         self.transfer_requested = True
         self.send_commands([cmd])
-
-
-if __name__ == '__main__':
-    from pyatem.command import CutCommand
-    import pyatem.mediaconvert
-    from pyatem.cameracontrol import CameraControlData
-
-    logging.basicConfig(level=logging.INFO)
-
-    testmixer = AtemProtocol('192.168.2.84')
-
-
-    # testmixer = AtemProtocol(usb='auto')
-
-    def changed(key, contents):
-        if key == 'time':
-            return
-        if isinstance(contents, fieldmodule.CameraControlDataPacketField):
-            parsed = CameraControlData.from_data(contents)
-            if parsed:
-                print(parsed)
-                return
-        if isinstance(contents, fieldmodule.FieldBase):
-            print(contents)
-        else:
-            print(key)
-
-
-    def connected():
-        for mid in testmixer.mixerstate['macro-properties']:
-            macro = testmixer.mixerstate['macro-properties'][mid]
-            if macro.is_used:
-                # testmixer.download(0xffff, macro.index)
-                pass
-        return
-        for sid in testmixer.mixerstate['mediaplayer-file-info']:
-            still = testmixer.mixerstate['mediaplayer-file-info'][sid]
-            if not still.is_used:
-                continue
-            # print("Fetching {}".format(still.name))
-            # testmixer.download(0, still.index)
-
-
-    def downloaded(store, slot, data):
-        logging.info('Downloaded {}:{}'.format(store, slot))
-        with open(f'/workspace/usb-{store}-{slot}.bin', 'wb') as handle:
-            handle.write(data)
-        data = pyatem.mediaconvert.atem_to_rgb(data, 1920, 1080)
-        with open(f'/workspace/usb-{store}-{slot}.data', 'wb') as handle:
-            handle.write(data)
-
-
-    def progress(store, slot, factor):
-        print(factor * 100)
-
-
-    testmixer.on('connected', connected)
-    testmixer.on('download-done', downloaded)
-    testmixer.on('transfer-progress', progress)
-    testmixer.on('change', changed)
-
-    testmixer.connect()
-    while True:
-        testmixer.loop()
