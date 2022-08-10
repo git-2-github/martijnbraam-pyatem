@@ -317,7 +317,7 @@ class SetupWindow:
 
         self.make_page(row.device)
 
-        self.headerbar.set_subtitle(row.device.NAME)
+        self.headerbar.set_subtitle(row.device.NAME.replace('Blackmagic design ', ''))
         self.leaflet.set_visible_child_name('content')
 
         # In folded view unselect the row in the listbox

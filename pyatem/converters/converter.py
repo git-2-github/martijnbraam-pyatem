@@ -119,8 +119,8 @@ class MicroConverterBiDirectional12G(Converter):
             0xff: 'Illegal levels (0 - 255)',
         }),
         Field('HdmiTxCh34Swap', int, 'HDMI Audio', 'For 5.1 surround use', mapping={
-            0x00: 'SMPTE standard (L, R, C, LFE, Ls, Rs)',
-            0xff: 'Consumer standard (L, R, LFE, C, Ls, Rs)',
+            0x00: 'SMPTE standard',
+            0xff: 'Consumer standard',
         }),
         Field('LutSelection', int, 'LUTs', 'Lut Selection', mapping={
             0x00: 'False',
