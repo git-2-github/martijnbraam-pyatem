@@ -5,7 +5,7 @@ import pyatem.converters.converter as conv
 def enumerate_hardware():
     classes = []
     for name, cls in conv.__dict__.items():
-        if isinstance(cls, type) and name not in ['Field', 'Converter']:
+        if isinstance(cls, type) and name not in ['Field', 'ValueField', 'Converter']:
             classes.append(cls)
     return classes
 
@@ -41,9 +41,13 @@ def main():
             print(f"\n===[ {field.section} ]===")
             last_section = field.section
         if field.dtype == str:
-            value = field.value.decode()
-        if field.dtype == int:
+            value = field.value.split(b'\0')[0].decode()
+        elif field.dtype == int:
             value = int.from_bytes(field.value, byteorder='little')
+        elif field.dtype == bool:
+            value = int.from_bytes(field.value, byteorder='little') > 0
+        else:
+            raise ValueError("Unknown type")
 
         if field.mapping is None:
             print(f'{field.label}:  {value}')

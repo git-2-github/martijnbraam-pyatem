@@ -1,109 +1,10 @@
-import usb.core
-import usb.util
-import struct
+from pyatem.converters.protocol import LabelProtoConverter, Field, ValueField, WValueProtoConverter
 
 
-class Field:
-    def __init__(self, name, dtype, section, label, mapping=None, sys=False, ro=False):
-        self.name = name
-        self.section = section
-        self.dtype = dtype
-        self.label = label
-        self.sys = sys
-        self.mapping = mapping
-        self.ro = ro
-
-        self.value = None
-        self.widget = None
-
-    def __repr__(self):
-        return f'<Field {self.name} ({self.label})>'
-
-
-class Converter:
-    VENDOR = 0x1edb
-    PRODUCT = 0
-    NAME = "Unknown"
-    FIELDS = []
-    NAME_FIELD = "DeviceName"
-
-    def __init__(self):
-        self.handle = None
-
-    @classmethod
-    def is_plugged_in(cls):
-        result = usb.core.find(idVendor=cls.VENDOR, idProduct=cls.PRODUCT)
-        return result is not None
-
-    def connect(self):
-        self.handle = usb.core.find(idVendor=self.VENDOR, idProduct=self.PRODUCT)
-        self.handle.set_configuration(1)
-
-    def get_name(self):
-        # Fallback for devices that might not support renaming
-        if self.NAME_FIELD is None:
-            return self.NAME
-
-        # Get the name field
-        return self.get_field(self.NAME_FIELD, sys=True).decode()
-
-    def get_field(self, name, sys=False, write=None):
-        ep_read = 0xa1 if sys else 0xc0
-        ep_write = 0x21 if sys else 0x40
-        req_ticket = 1 if sys else 10
-        req_name = 2 if sys else 11
-        req_read = 3 if sys else 12
-        req_write = 4 if sys else 13
-
-        ticket = self.handle.ctrl_transfer(bmRequestType=ep_read,
-                                           bRequest=req_ticket,
-                                           wValue=0,
-                                           wIndex=0,
-                                           data_or_wLength=2)
-
-        ticket, = struct.unpack('<H', bytes(ticket))
-
-        self.handle.ctrl_transfer(bmRequestType=ep_write,
-                                  bRequest=req_name,
-                                  wValue=ticket,
-                                  wIndex=0,
-                                  data_or_wLength=name.encode())
-
-        if write is not None:
-            self.handle.ctrl_transfer(bmRequestType=ep_write,
-                                      bRequest=req_write,
-                                      wValue=ticket,
-                                      wIndex=0,
-                                      data_or_wLength=write)
-        else:
-            return bytes(self.handle.ctrl_transfer(bmRequestType=ep_read,
-                                                   bRequest=req_read,
-                                                   wValue=ticket,
-                                                   wIndex=0,
-                                                   data_or_wLength=255))
-
-    def set_field(self, name, value, sys=False):
-        return self.get_field(name, sys=sys, write=value)
-
-    def get_state(self):
-        result = {}
-        for field in self.FIELDS:
-            ret = self.get_field(field.name, sys=field.sys)
-            field.value = ret
-            result[field.name] = field
-        return result
-
-    def factory_reset(self):
-        self.handle.ctrl_transfer(bmRequestType=0x40,
-                                  bRequest=20,
-                                  wValue=0,
-                                  wIndex=0,
-                                  data_or_wLength=0)
-
-
-class MicroConverterBiDirectional12G(Converter):
+class MicroConverterBiDirectional12G(LabelProtoConverter):
     PRODUCT = 0xbe89
     NAME = "Blackmagic design Micro Converter BiDirectional SDI/HDMI 12G"
+    PROTOCOL = "label"
 
     FIELDS = [
         Field('DeviceName', str, 'Device', 'Name', sys=True),
@@ -135,4 +36,52 @@ class MicroConverterBiDirectional12G(Converter):
             0xff: 'True',
         }),
         Field('LutName', str, 'LUTs', 'LUT name', ro=True),
+    ]
+
+
+class MicroConverterSdiHdmi3G(WValueProtoConverter):
+    PRODUCT = 0xBE90
+    NAME = "Blackmagic design Micro Converter SDI to HDMI 3G"
+    PROTOCOL = "wValue"
+    NAME_FIELD = 0x00C0
+
+    FIELDS = [
+        ValueField("DeviceName", 0x00c0, 64, str, "Device", "Name"),
+        ValueField("HdmiClampEnable", 0x0100, 1, int, "HDMI Output", "Clip signal to", mapping={
+            0x01: 'Normal levels (16 - 235)',
+            0x00: 'Illegal levels (0 - 255)',
+        }),
+        ValueField('HdmiTxCh34Swap', 0x0102, 1, int, 'HDMI Audio', 'For 5.1 surround use', mapping={
+            0x00: 'SMPTE standard',
+            0x01: 'Consumer standard',
+        }),
+        ValueField('LutName', 0x0310, 64, str, 'LUTs', 'LUT name', ro=True),
+        ValueField('LutEnable', 0x0300, 1, int, 'LUTs', 'Enable 3D LUT', mapping={
+            0x00: 'Enable',
+            0xff: 'Disable',
+        }),
+        ValueField('LutLoop', 0x0301, 1, int, 'LUTs', 'LUT on loop output', mapping={
+            0x01: 'Enable',
+            0x00: 'Disable',
+        }),
+    ]
+
+
+class MicroConverterHdmiSdi3G(WValueProtoConverter):
+    PRODUCT = 0xBE90
+    NAME = "Blackmagic design Micro Converter HDMI to SDI 3G"
+    PROTOCOL = "wValue"
+    NAME_FIELD = 0x00C0
+
+    FIELDS = [
+        ValueField("DeviceName", 0x00c0, 64, str, "Device", "Name"),
+        ValueField("SdiLevelAEnable", 0x0200, 1, int, "SDI Output", "3G SDI Output", mapping={
+            0x01: 'Level A',
+            0x00: 'Level B',
+        }),
+        ValueField('LutName', 0x0310, 64, str, 'LUTs', 'LUT name', ro=True),
+        ValueField('LutEnable', 0x0300, 1, int, 'LUTs', 'Enable 3D LUT', mapping={
+            0x00: 'Enable',
+            0xff: 'Disable',
+        }),
     ]

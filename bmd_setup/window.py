@@ -136,7 +136,7 @@ class SetupWindow:
     def enumerate_hardware(self):
         classes = []
         for name, cls in conv.__dict__.items():
-            if isinstance(cls, type) and name not in ['Field', 'Converter']:
+            if isinstance(cls, type) and name not in ['Field', 'ValueField', 'Converter']:
                 classes.append(cls)
         return classes
 
