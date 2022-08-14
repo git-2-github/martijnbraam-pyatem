@@ -221,6 +221,9 @@ class AtemProtocol:
             return
         del self.callbacks[event][callback_id]
 
+    def get_link_quality(self):
+        return self.transport.get_link_quality()
+
     def _raise(self, event, *args, **kwargs):
         if event in self.callbacks:
             for cbidx in self.callbacks[event]:

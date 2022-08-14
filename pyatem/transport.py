@@ -62,11 +62,11 @@ class Packet:
         data_len = len(self.data) if self.data is not None else 0
         packet_len = header_len + data_len
         result = self.STRUCT_HEADER.pack(
-                             packet_len + (self.flags << 11),
-                             self.session,
-                             self.acknowledgement_number,
-                             self.remote_sequence_number,
-                             self.sequence_number)
+            packet_len + (self.flags << 11),
+            self.session,
+            self.acknowledgement_number,
+            self.remote_sequence_number,
+            self.sequence_number)
 
         if self.data:
             result += bytes(self.data)
@@ -146,6 +146,9 @@ class BaseProtocol:
             return True
         return False
 
+    def get_link_quality(self):
+        return 100
+
 
 class UdpProtocol(BaseProtocol):
     STATE_CLOSED = 0
@@ -191,6 +194,8 @@ class UdpProtocol(BaseProtocol):
         self.batch_delay = 0.003
 
         self.log = logging.getLogger('UdpTransport')
+        self.packet_sucess = 0
+        self.packet_errors = 0
 
     def _udp_thread(self):
         while True:
@@ -205,8 +210,12 @@ class UdpProtocol(BaseProtocol):
                 else:
                     RuntimeError("Unexpected result from select()")
 
+    def get_link_quality(self):
+        return 100 - (self.packet_errors / self.packet_sucess * 100)
+
     def _send_packet(self, packet):
         self.thread_queue.put(packet)
+        self.packet_sucess += 1
 
     def _send_packet_low(self, packet):
         packet.session = self.session_id
@@ -242,10 +251,19 @@ class UdpProtocol(BaseProtocol):
         packet = Packet.from_bytes(data)
 
         if packet.flags & UdpProtocol.FLAG_RETRANSMISSION:
-            self.log.error("retransmission detected")
+            if len(data) > 12:
+                self.log.error("retransmission detected")
+                self.packet_errors += 1
+                if self.get_link_quality() < 80:
+                    self.log.error(f"Connection quality bad ({self.get_link_quality():.1f}%)")
+            else:
+                self.log.warning("retransmission of PING detected, non-fatal")
+        else:
+            self.packet_sucess += 1
 
         if packet.flags & UdpProtocol.FLAG_REQUEST_RETRANSMISSION:
             self.log.error("retransmission requested")
+            self.packet_errors += 1
             # hexdump(data)
 
         new_sequence_number = packet.sequence_number
