@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-14 19:53+0200\n"
+"POT-Creation-Date: 2022-08-14 21:06+0200\n"
 "PO-Revision-Date: 2022-05-23 12:53+0000\n"
 "Last-Translator: Martijn Braam <martijn@brixit.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/openswitcher/"
@@ -301,19 +301,20 @@ msgstr ""
 "Er is geen verbinding met de hardware. De verbinding can verbroken zijn of "
 "een nieuwe verbinding moet gemaakt worden in het Instellingen scherm"
 
-#: gtk_switcher/ui/mixer.glade:3033
+#: gtk_switcher/ui/mixer.glade:3039 gtk_switcher/ui/mixer.glade:3115
 msgid "Open preferences"
 msgstr "Open instellingen"
 
-#: gtk_switcher/ui/mixer.glade:3047 gtk_switcher/ui/videohub.glade:63
-msgid "Disconnected"
-msgstr "Verbroken"
+#: gtk_switcher/ui/mixer.glade:3057
+#, fuzzy
+msgid "Reconnect"
+msgstr "Verbinden"
 
-#: gtk_switcher/ui/mixer.glade:3056
+#: gtk_switcher/ui/mixer.glade:3084
 msgid "Firmware outdated"
 msgstr "Firmware is oud"
 
-#: gtk_switcher/ui/mixer.glade:3057
+#: gtk_switcher/ui/mixer.glade:3085
 msgid ""
 "The firmware on the connected device is not new enough for this "
 "application.\n"
@@ -324,13 +325,21 @@ msgstr ""
 "programma.\n"
 "OpenSwitcher heeft minimaal firmware 8.0+ nodig om correct te functioneren."
 
-#: gtk_switcher/ui/mixer.glade:3061
+#: gtk_switcher/ui/mixer.glade:3089
 msgid "Continue anyway"
 msgstr "Toch verbinden"
 
-#: gtk_switcher/ui/mixer.glade:3072
-msgid "firmware"
-msgstr "firmware"
+#: gtk_switcher/ui/mixer.glade:3109
+msgid "Permission denied"
+msgstr ""
+
+#: gtk_switcher/ui/mixer.glade:3110
+msgid ""
+"Could not connect to the selected USB device. The udev rules might be "
+"missing on your installation or the current device is not supported yet.\n"
+"\n"
+"A different connection can be made in the preferences window"
+msgstr ""
 
 #: gtk_switcher/ui/mixeffect.glade:34
 msgid "Program"
@@ -814,6 +823,10 @@ msgstr "Bedieningssoftware"
 msgid "Status"
 msgstr "Status"
 
+#: gtk_switcher/ui/videohub.glade:63
+msgid "Disconnected"
+msgstr "Verbroken"
+
 #: gtk_switcher/ui/videohub.glade:119
 msgid "Delete"
 msgstr "Verwijderen"
@@ -907,3 +920,6 @@ msgstr "Verbonden"
 #: gtk_switcher/videohub.py:119
 msgid "Rename on change"
 msgstr "Hernoem op verandering"
+
+#~ msgid "firmware"
+#~ msgstr "firmware"

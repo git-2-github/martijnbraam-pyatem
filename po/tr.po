@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-14 19:53+0200\n"
+"POT-Creation-Date: 2022-08-14 21:06+0200\n"
 "PO-Revision-Date: 2022-03-25 23:50+0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -299,19 +299,20 @@ msgstr ""
 "Donanım bağlantısı yok. Tercihler penceresinde bağlantı kesilebilir veya "
 "yeni bir bağlantı yapılması gerekebilir."
 
-#: gtk_switcher/ui/mixer.glade:3033
+#: gtk_switcher/ui/mixer.glade:3039 gtk_switcher/ui/mixer.glade:3115
 msgid "Open preferences"
 msgstr "Ayarlar"
 
-#: gtk_switcher/ui/mixer.glade:3047 gtk_switcher/ui/videohub.glade:63
-msgid "Disconnected"
-msgstr "Bağlantı kesildi"
+#: gtk_switcher/ui/mixer.glade:3057
+#, fuzzy
+msgid "Reconnect"
+msgstr "Bağlan"
 
-#: gtk_switcher/ui/mixer.glade:3056
+#: gtk_switcher/ui/mixer.glade:3084
 msgid "Firmware outdated"
 msgstr "Firmware güncel değil"
 
-#: gtk_switcher/ui/mixer.glade:3057
+#: gtk_switcher/ui/mixer.glade:3085
 msgid ""
 "The firmware on the connected device is not new enough for this "
 "application.\n"
@@ -322,13 +323,21 @@ msgstr ""
 "OpenSwitcher, çoğu donanımla doğru şekilde çalışması için en az 8.0+ donanım "
 "yazılımı gerektirir."
 
-#: gtk_switcher/ui/mixer.glade:3061
+#: gtk_switcher/ui/mixer.glade:3089
 msgid "Continue anyway"
 msgstr "Yoksay devam et"
 
-#: gtk_switcher/ui/mixer.glade:3072
-msgid "firmware"
-msgstr "firmware"
+#: gtk_switcher/ui/mixer.glade:3109
+msgid "Permission denied"
+msgstr ""
+
+#: gtk_switcher/ui/mixer.glade:3110
+msgid ""
+"Could not connect to the selected USB device. The udev rules might be "
+"missing on your installation or the current device is not supported yet.\n"
+"\n"
+"A different connection can be made in the preferences window"
+msgstr ""
 
 #: gtk_switcher/ui/mixeffect.glade:34
 msgid "Program"
@@ -809,6 +818,10 @@ msgstr "Kontrol uygulaması"
 msgid "Status"
 msgstr ""
 
+#: gtk_switcher/ui/videohub.glade:63
+msgid "Disconnected"
+msgstr "Bağlantı kesildi"
+
 #: gtk_switcher/ui/videohub.glade:119
 msgid "Delete"
 msgstr ""
@@ -903,6 +916,9 @@ msgstr "Bağlı"
 #: gtk_switcher/videohub.py:119
 msgid "Rename on change"
 msgstr "Değişiklikte yeniden adlandır"
+
+#~ msgid "firmware"
+#~ msgstr "firmware"
 
 #~ msgid "page0"
 #~ msgstr "sayfa0"

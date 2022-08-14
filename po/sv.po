@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-14 19:53+0200\n"
+"POT-Creation-Date: 2022-08-14 21:06+0200\n"
 "PO-Revision-Date: 2022-06-09 17:36+0000\n"
 "Last-Translator: Filip Bengtsson <me@autom.zone>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/openswitcher/"
@@ -299,19 +299,20 @@ msgid ""
 "or a new connection needs to be made in the Preferences window"
 msgstr ""
 
-#: gtk_switcher/ui/mixer.glade:3033
+#: gtk_switcher/ui/mixer.glade:3039 gtk_switcher/ui/mixer.glade:3115
 msgid "Open preferences"
 msgstr ""
 
-#: gtk_switcher/ui/mixer.glade:3047 gtk_switcher/ui/videohub.glade:63
-msgid "Disconnected"
-msgstr "Ej ansluten"
+#: gtk_switcher/ui/mixer.glade:3057
+#, fuzzy
+msgid "Reconnect"
+msgstr "Anslut"
 
-#: gtk_switcher/ui/mixer.glade:3056
+#: gtk_switcher/ui/mixer.glade:3084
 msgid "Firmware outdated"
 msgstr "Föråldrad firmware"
 
-#: gtk_switcher/ui/mixer.glade:3057
+#: gtk_switcher/ui/mixer.glade:3085
 msgid ""
 "The firmware on the connected device is not new enough for this "
 "application.\n"
@@ -319,13 +320,21 @@ msgid ""
 "hardware."
 msgstr ""
 
-#: gtk_switcher/ui/mixer.glade:3061
+#: gtk_switcher/ui/mixer.glade:3089
 msgid "Continue anyway"
 msgstr ""
 
-#: gtk_switcher/ui/mixer.glade:3072
-msgid "firmware"
-msgstr "firmware"
+#: gtk_switcher/ui/mixer.glade:3109
+msgid "Permission denied"
+msgstr ""
+
+#: gtk_switcher/ui/mixer.glade:3110
+msgid ""
+"Could not connect to the selected USB device. The udev rules might be "
+"missing on your installation or the current device is not supported yet.\n"
+"\n"
+"A different connection can be made in the preferences window"
+msgstr ""
 
 #: gtk_switcher/ui/mixeffect.glade:34
 msgid "Program"
@@ -804,6 +813,10 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
+#: gtk_switcher/ui/videohub.glade:63
+msgid "Disconnected"
+msgstr "Ej ansluten"
+
 #: gtk_switcher/ui/videohub.glade:119
 msgid "Delete"
 msgstr ""
@@ -902,3 +915,6 @@ msgstr "Ansluten"
 #: gtk_switcher/videohub.py:119
 msgid "Rename on change"
 msgstr "Byt namn vid byte"
+
+#~ msgid "firmware"
+#~ msgstr "firmware"

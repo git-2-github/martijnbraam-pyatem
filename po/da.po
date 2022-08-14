@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-14 19:53+0200\n"
+"POT-Creation-Date: 2022-08-14 21:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -296,19 +296,19 @@ msgid ""
 "or a new connection needs to be made in the Preferences window"
 msgstr ""
 
-#: gtk_switcher/ui/mixer.glade:3033
+#: gtk_switcher/ui/mixer.glade:3039 gtk_switcher/ui/mixer.glade:3115
 msgid "Open preferences"
 msgstr ""
 
-#: gtk_switcher/ui/mixer.glade:3047 gtk_switcher/ui/videohub.glade:63
-msgid "Disconnected"
+#: gtk_switcher/ui/mixer.glade:3057
+msgid "Reconnect"
 msgstr ""
 
-#: gtk_switcher/ui/mixer.glade:3056
+#: gtk_switcher/ui/mixer.glade:3084
 msgid "Firmware outdated"
 msgstr ""
 
-#: gtk_switcher/ui/mixer.glade:3057
+#: gtk_switcher/ui/mixer.glade:3085
 msgid ""
 "The firmware on the connected device is not new enough for this "
 "application.\n"
@@ -316,12 +316,20 @@ msgid ""
 "hardware."
 msgstr ""
 
-#: gtk_switcher/ui/mixer.glade:3061
+#: gtk_switcher/ui/mixer.glade:3089
 msgid "Continue anyway"
 msgstr ""
 
-#: gtk_switcher/ui/mixer.glade:3072
-msgid "firmware"
+#: gtk_switcher/ui/mixer.glade:3109
+msgid "Permission denied"
+msgstr ""
+
+#: gtk_switcher/ui/mixer.glade:3110
+msgid ""
+"Could not connect to the selected USB device. The udev rules might be "
+"missing on your installation or the current device is not supported yet.\n"
+"\n"
+"A different connection can be made in the preferences window"
 msgstr ""
 
 #: gtk_switcher/ui/mixeffect.glade:34
@@ -796,6 +804,10 @@ msgstr ""
 
 #: gtk_switcher/ui/videohub.glade:48
 msgid "Status"
+msgstr ""
+
+#: gtk_switcher/ui/videohub.glade:63
+msgid "Disconnected"
 msgstr ""
 
 #: gtk_switcher/ui/videohub.glade:119
