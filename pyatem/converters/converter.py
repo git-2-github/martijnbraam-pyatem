@@ -4,7 +4,6 @@ from pyatem.converters.protocol import LabelProtoConverter, Field, WValueProtoCo
 class MicroConverterBiDirectional12G(LabelProtoConverter):
     PRODUCT = 0xbe89
     NAME = "Blackmagic design Micro Converter BiDirectional SDI/HDMI 12G"
-    PROTOCOL = "label"
 
     FIELDS = [
         Field('DeviceName', str, 'Device', 'Name', sys=True),
@@ -42,8 +41,6 @@ class MicroConverterBiDirectional12G(LabelProtoConverter):
 class MicroConverterSdiHdmi3G(WValueProtoConverter):
     PRODUCT = 0xBE90
     NAME = "Blackmagic design Micro Converter SDI to HDMI 3G"
-    PROTOCOL = "wValue"
-    NAME_FIELD = 0x00C0
 
     FIELDS = [
         Field((0x00c0, 64), str, "Device", "Name"),
@@ -70,8 +67,6 @@ class MicroConverterSdiHdmi3G(WValueProtoConverter):
 class MicroConverterHdmiSdi3G(WValueProtoConverter):
     PRODUCT = 0xBE91
     NAME = "Blackmagic design Micro Converter HDMI to SDI 3G"
-    PROTOCOL = "wValue"
-    NAME_FIELD = 0x00C0
 
     FIELDS = [
         Field((0x00c0, 64), str, "Device", "Name"),
