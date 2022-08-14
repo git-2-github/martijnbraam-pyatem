@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-09 19:12+0200\n"
+"POT-Creation-Date: 2022-08-14 19:53+0200\n"
 "PO-Revision-Date: 2022-05-23 12:53+0000\n"
 "Last-Translator: Martijn Braam <martijn@brixit.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/openswitcher/"
@@ -21,285 +21,279 @@ msgstr ""
 
 #. Window title
 #: gtk_switcher/ui/mixer.glade:176 gtk_switcher/ui/mixer.glade:189
-#: gtk_switcher/ui/mixer.glade:197 gtk_switcher/ui/mixer.glade:168
-#: gtk_switcher/ui/mixer.glade:181
+#: gtk_switcher/ui/mixer.glade:197
 msgid "Switcher control"
 msgstr "Switcher control"
 
-#: gtk_switcher/ui/mixer.glade:395 gtk_switcher/ui/mixer.glade:387
+#: gtk_switcher/ui/mixer.glade:395
 msgid "Color 1"
 msgstr "Kleur 1"
 
-#: gtk_switcher/ui/mixer.glade:410 gtk_switcher/ui/mixer.glade:402
+#: gtk_switcher/ui/mixer.glade:410
 msgid "Color 2"
 msgstr "Kleur 2"
 
-#: gtk_switcher/ui/mixer.glade:437 gtk_switcher/ui/mixer.glade:429
+#: gtk_switcher/ui/mixer.glade:437
 msgid "Color Generators"
 msgstr "Kleur generators"
 
 #: gtk_switcher/ui/mixer.glade:526 gtk_switcher/ui/mixer.glade:566
 #: gtk_switcher/ui/mixer.glade:642 gtk_switcher/ui/mixer.glade:1274
-#: gtk_switcher/ui/mixer.glade:518 gtk_switcher/ui/mixer.glade:558
-#: gtk_switcher/ui/mixer.glade:634 gtk_switcher/ui/mixer.glade:1266
 msgid "Rate"
 msgstr "Snelheid"
 
-#: gtk_switcher/ui/mixer.glade:551 gtk_switcher/ui/mixer.glade:543
+#: gtk_switcher/ui/mixer.glade:551
 msgid "Mix"
 msgstr "Mix"
 
-#: gtk_switcher/ui/mixer.glade:581 gtk_switcher/ui/mixer.glade:573
+#: gtk_switcher/ui/mixer.glade:581
 msgid "Dip source"
 msgstr "Dip bron"
 
-#: gtk_switcher/ui/mixer.glade:626 gtk_switcher/ui/mixer.glade:618
+#: gtk_switcher/ui/mixer.glade:626
 msgid "Dip"
 msgstr "Dip"
 
-#: gtk_switcher/ui/mixer.glade:953 gtk_switcher/ui/mixer.glade:945
+#: gtk_switcher/ui/mixer.glade:953
 msgctxt "wipe_transition"
 msgid "Symmetry"
 msgstr "Symmetrie"
 
-#: gtk_switcher/ui/mixer.glade:983 gtk_switcher/ui/mixer.glade:975
+#: gtk_switcher/ui/mixer.glade:983
 msgctxt "wipe_transition"
 msgid "X"
 msgstr "X"
 
-#: gtk_switcher/ui/mixer.glade:998 gtk_switcher/ui/mixer.glade:990
+#: gtk_switcher/ui/mixer.glade:998
 msgctxt "wipe_transition"
 msgid "Y"
 msgstr "Y"
 
-#: gtk_switcher/ui/mixer.glade:1054 gtk_switcher/ui/mixer.glade:1046
+#: gtk_switcher/ui/mixer.glade:1054
 msgctxt "wipe_transition"
 msgid "Softness"
 msgstr "Zachtheid"
 
-#: gtk_switcher/ui/mixer.glade:1069 gtk_switcher/ui/mixer.glade:1061
+#: gtk_switcher/ui/mixer.glade:1069
 msgid "Width"
 msgstr "Breedte"
 
 #. Fill video source
-#: gtk_switcher/ui/mixer.glade:1114 gtk_switcher/ui/mixer.glade:1106
+#: gtk_switcher/ui/mixer.glade:1114
 msgid "Fill"
 msgstr "Fill"
 
-#: gtk_switcher/ui/mixer.glade:1163 gtk_switcher/ui/mixer.glade:1155
+#: gtk_switcher/ui/mixer.glade:1163
 msgid "Reverse"
 msgstr "Omdraaien"
 
-#: gtk_switcher/ui/mixer.glade:1183 gtk_switcher/ui/mixer.glade:1175
+#: gtk_switcher/ui/mixer.glade:1183
 msgid "Flip flop"
 msgstr "Wisselen"
 
-#: gtk_switcher/ui/mixer.glade:1219 gtk_switcher/ui/mixer.glade:1211
+#: gtk_switcher/ui/mixer.glade:1219
 msgid "Wipe"
 msgstr "Wipe"
 
-#: gtk_switcher/ui/mixer.glade:1258 gtk_switcher/ui/mixer.glade:1250
+#: gtk_switcher/ui/mixer.glade:1258
 msgid "Sting"
 msgstr "Sting"
 
 #: gtk_switcher/ui/mixer.glade:1309 gtk_switcher/ui/mixeffect.glade:585
-#: gtk_switcher/ui/upstream-keyer.glade:1012 gtk_switcher/ui/mixer.glade:1301
+#: gtk_switcher/ui/upstream-keyer.glade:1531
 msgid "DVE"
 msgstr "DVE"
 
-#: gtk_switcher/ui/mixer.glade:1337 gtk_switcher/ui/mixer.glade:1329
+#: gtk_switcher/ui/mixer.glade:1337
 msgid "Transitions"
 msgstr "Overgangen"
 
-#: gtk_switcher/ui/mixer.glade:1400 gtk_switcher/ui/mixer.glade:1392
+#: gtk_switcher/ui/mixer.glade:1400
 msgid "Audio follow video"
 msgstr "Audio volgt video"
 
-#: gtk_switcher/ui/mixer.glade:1412 gtk_switcher/ui/mixer.glade:1404
+#: gtk_switcher/ui/mixer.glade:1412
 msgid "AFV"
 msgstr "AFV"
 
-#: gtk_switcher/ui/mixer.glade:1452 gtk_switcher/ui/mixer.glade:1444
+#: gtk_switcher/ui/mixer.glade:1452
 msgid "Fade to black"
 msgstr "Naar zwart vervagen"
 
-#: gtk_switcher/ui/mixer.glade:1524 gtk_switcher/ui/mixer.glade:1516
+#: gtk_switcher/ui/mixer.glade:1524
 msgid "Macros"
 msgstr "Macros"
 
-#: gtk_switcher/ui/mixer.glade:1547 gtk_switcher/ui/mixer.glade:1539
+#: gtk_switcher/ui/mixer.glade:1547
 msgid "Palettes"
 msgstr "Paletten"
 
-#: gtk_switcher/ui/mixer.glade:1579 gtk_switcher/ui/mixer.glade:1559
+#: gtk_switcher/ui/mixer.glade:1579
 msgid "Media Player"
 msgstr "Mediaspeler"
 
 #. Hardware model
-#: gtk_switcher/ui/mixer.glade:1635 gtk_switcher/ui/mixer.glade:1615
+#: gtk_switcher/ui/mixer.glade:1635
 msgid "Model"
 msgstr "Model"
 
-#: gtk_switcher/ui/mixer.glade:1650 gtk_switcher/ui/mixer.glade:1630
+#: gtk_switcher/ui/mixer.glade:1650
 msgid "Video mode"
 msgstr "Video mode"
 
 #: gtk_switcher/ui/mixer.glade:1665 gtk_switcher/ui/mixer.glade:3029
-#: gtk_switcher/ui/mixer.glade:1645 gtk_switcher/ui/mixer.glade:3022
 msgid "Not connected"
 msgstr "Niet verbonden"
 
-#: gtk_switcher/ui/mixer.glade:1700 gtk_switcher/ui/mixer.glade:1680
+#: gtk_switcher/ui/mixer.glade:1700
 msgid "Hardware status"
 msgstr "Hardware status"
 
-#: gtk_switcher/ui/mixer.glade:1774 gtk_switcher/ui/mixer.glade:1754
+#: gtk_switcher/ui/mixer.glade:1774
 msgid "AUX Outputs"
 msgstr "AUX Uitgangen"
 
-#: gtk_switcher/ui/mixer.glade:1823 gtk_switcher/ui/mixer.glade:1803
+#: gtk_switcher/ui/mixer.glade:1823
 msgid "Preset"
 msgstr "Preset"
 
-#: gtk_switcher/ui/mixer.glade:1838 gtk_switcher/ui/mixer.glade:1818
+#: gtk_switcher/ui/mixer.glade:1838
 msgid "Audio bitrate"
 msgstr "Audio bitrate"
 
-#: gtk_switcher/ui/mixer.glade:1885 gtk_switcher/ui/mixer.glade:1865
+#: gtk_switcher/ui/mixer.glade:1885
 msgid "Video bitrate"
 msgstr "Video bitrate"
 
-#: gtk_switcher/ui/mixer.glade:1950 gtk_switcher/ui/mixer.glade:1930
+#: gtk_switcher/ui/mixer.glade:1950
 msgid "Encoder output"
 msgstr "Encoder uitgang"
 
 #. Stream recorder filename
-#: gtk_switcher/ui/mixer.glade:1999 gtk_switcher/ui/mixer.glade:1979
+#: gtk_switcher/ui/mixer.glade:1999
 msgctxt "streamrecorder"
 msgid "Filename"
 msgstr "Bestandsnaam"
 
-#: gtk_switcher/ui/mixer.glade:2049 gtk_switcher/ui/mixer.glade:2029
+#: gtk_switcher/ui/mixer.glade:2049
 msgid "STOP"
 msgstr "STOP"
 
-#: gtk_switcher/ui/mixer.glade:2097 gtk_switcher/ui/mixer.glade:2077
+#: gtk_switcher/ui/mixer.glade:2097
 msgctxt "streamrecorder"
 msgid "Disk 1"
 msgstr "Schijf 1"
 
-#: gtk_switcher/ui/mixer.glade:2112 gtk_switcher/ui/mixer.glade:2092
+#: gtk_switcher/ui/mixer.glade:2112
 msgctxt "streamrecorder"
 msgid "Disk 2"
 msgstr "Schijf 2"
 
-#: gtk_switcher/ui/mixer.glade:2124 gtk_switcher/ui/mixer.glade:2104
+#: gtk_switcher/ui/mixer.glade:2124
 msgid "Record in all cameras"
 msgstr "In alle cameras opnemen"
 
 #. Switch disk button
-#: gtk_switcher/ui/mixer.glade:2154 gtk_switcher/ui/mixer.glade:2134
+#: gtk_switcher/ui/mixer.glade:2154
 msgctxt "streamrecorder"
 msgid "Switch"
 msgstr "Wissel"
 
 #. button
-#: gtk_switcher/ui/mixer.glade:2168 gtk_switcher/ui/mixer.glade:2148
+#: gtk_switcher/ui/mixer.glade:2168
 msgctxt "streamrecorder"
 msgid "Stop"
 msgstr "Stoppen"
 
 #. Button
-#: gtk_switcher/ui/mixer.glade:2183 gtk_switcher/ui/mixer.glade:2163
+#: gtk_switcher/ui/mixer.glade:2183
 msgctxt "streamrecorder"
 msgid "Record"
 msgstr "Opnemen"
 
-#: gtk_switcher/ui/mixer.glade:2280 gtk_switcher/ui/mixer.glade:2260
+#: gtk_switcher/ui/mixer.glade:2280
 msgid "Stream recorder"
 msgstr "Stream opnemen"
 
-#: gtk_switcher/ui/mixer.glade:2366 gtk_switcher/ui/mixer.glade:2346
+#: gtk_switcher/ui/mixer.glade:2366
 msgid "OFF"
 msgstr "UIT"
 
 #. Stop livestream button
-#: gtk_switcher/ui/mixer.glade:2417 gtk_switcher/ui/mixer.glade:2397
+#: gtk_switcher/ui/mixer.glade:2417
 msgctxt "livestream"
 msgid "Off"
 msgstr "Uit"
 
 #. Start livestream button
-#: gtk_switcher/ui/mixer.glade:2432 gtk_switcher/ui/mixer.glade:2412
+#: gtk_switcher/ui/mixer.glade:2432
 msgctxt "livestream"
 msgid "On air"
 msgstr "On air"
 
-#: gtk_switcher/ui/mixer.glade:2456 gtk_switcher/ui/mixer.glade:2436
+#: gtk_switcher/ui/mixer.glade:2456
 msgid "Platform"
 msgstr "Platform"
 
-#: gtk_switcher/ui/mixer.glade:2471 gtk_switcher/ui/mixer.glade:2451
+#: gtk_switcher/ui/mixer.glade:2471
 msgid "Server"
 msgstr "Server"
 
 #: gtk_switcher/ui/mixer.glade:2486 gtk_switcher/ui/downstream-keyer.glade:116
-#: gtk_switcher/ui/upstream-keyer.glade:232 gtk_switcher/ui/mixer.glade:2466
+#: gtk_switcher/ui/upstream-keyer.glade:312
 msgid "Key"
 msgstr "Sleutel"
 
-#: gtk_switcher/ui/mixer.glade:2643 gtk_switcher/ui/mixer.glade:2623
+#: gtk_switcher/ui/mixer.glade:2643
 msgid "Live stream"
 msgstr "Live stream"
 
-#: gtk_switcher/ui/mixer.glade:2669 gtk_switcher/ui/mixer.glade:2649
+#: gtk_switcher/ui/mixer.glade:2669
 msgid "Output"
 msgstr "Uitgang"
 
 #: gtk_switcher/ui/mixer.glade:2701 gtk_switcher/ui/preferences.glade:984
-#: gtk_switcher/ui/mixer.glade:2681
 msgid "Switcher"
 msgstr "Switcher"
 
-#: gtk_switcher/ui/mixer.glade:2781 gtk_switcher/ui/mixer.glade:2774
+#: gtk_switcher/ui/mixer.glade:2781
 msgid "Media"
 msgstr "Media"
 
-#: gtk_switcher/ui/mixer.glade:2816 gtk_switcher/ui/mixer.glade:2809
+#: gtk_switcher/ui/mixer.glade:2816
 msgctxt "audio_mixer"
 msgid "Input"
 msgstr "Ingang"
 
-#: gtk_switcher/ui/mixer.glade:2832 gtk_switcher/ui/mixer.glade:2825
+#: gtk_switcher/ui/mixer.glade:2832
 msgctxt "audio_mixer"
 msgid "Equalizer"
 msgstr "Equalizer"
 
-#: gtk_switcher/ui/mixer.glade:2848 gtk_switcher/ui/mixer.glade:2841
+#: gtk_switcher/ui/mixer.glade:2848
 msgctxt "audio_mixer"
 msgid "Dynamics"
 msgstr "Dynamics"
 
-#: gtk_switcher/ui/mixer.glade:2864 gtk_switcher/ui/mixer.glade:2857
+#: gtk_switcher/ui/mixer.glade:2864
 msgctxt "audio_mixer"
 msgid "dB"
 msgstr "dB"
 
-#: gtk_switcher/ui/mixer.glade:2880 gtk_switcher/ui/mixer.glade:2873
+#: gtk_switcher/ui/mixer.glade:2880
 msgctxt "audio_mixer"
 msgid "Pan"
 msgstr "Pan"
 
 #: gtk_switcher/ui/mixer.glade:2976 gtk_switcher/ui/preferences.glade:525
-#: gtk_switcher/ui/mixer.glade:2969
 msgid "Audio"
 msgstr "Audio"
 
-#: gtk_switcher/ui/mixer.glade:3014 gtk_switcher/ui/mixer.glade:3007
+#: gtk_switcher/ui/mixer.glade:3014
 msgid "Camera"
 msgstr "Camera"
 
-#: gtk_switcher/ui/mixer.glade:3030 gtk_switcher/ui/mixer.glade:3023
+#: gtk_switcher/ui/mixer.glade:3030
 msgid ""
 "There is no connection to the hardware. The connection might be interrupted "
 "or a new connection needs to be made in the Preferences window"
@@ -307,20 +301,19 @@ msgstr ""
 "Er is geen verbinding met de hardware. De verbinding can verbroken zijn of "
 "een nieuwe verbinding moet gemaakt worden in het Instellingen scherm"
 
-#: gtk_switcher/ui/mixer.glade:3033 gtk_switcher/ui/mixer.glade:3026
+#: gtk_switcher/ui/mixer.glade:3033
 msgid "Open preferences"
 msgstr "Open instellingen"
 
 #: gtk_switcher/ui/mixer.glade:3047 gtk_switcher/ui/videohub.glade:63
-#: gtk_switcher/ui/mixer.glade:3040
 msgid "Disconnected"
 msgstr "Verbroken"
 
-#: gtk_switcher/ui/mixer.glade:3056 gtk_switcher/ui/mixer.glade:3049
+#: gtk_switcher/ui/mixer.glade:3056
 msgid "Firmware outdated"
 msgstr "Firmware is oud"
 
-#: gtk_switcher/ui/mixer.glade:3057 gtk_switcher/ui/mixer.glade:3050
+#: gtk_switcher/ui/mixer.glade:3057
 msgid ""
 "The firmware on the connected device is not new enough for this "
 "application.\n"
@@ -331,11 +324,11 @@ msgstr ""
 "programma.\n"
 "OpenSwitcher heeft minimaal firmware 8.0+ nodig om correct te functioneren."
 
-#: gtk_switcher/ui/mixer.glade:3061 gtk_switcher/ui/mixer.glade:3054
+#: gtk_switcher/ui/mixer.glade:3061
 msgid "Continue anyway"
 msgstr "Toch verbinden"
 
-#: gtk_switcher/ui/mixer.glade:3072 gtk_switcher/ui/mixer.glade:3065
+#: gtk_switcher/ui/mixer.glade:3072
 msgid "firmware"
 msgstr "firmware"
 
@@ -343,7 +336,7 @@ msgstr "firmware"
 msgid "Program"
 msgstr "Program"
 
-#: gtk_switcher/ui/mixeffect.glade:132
+#: gtk_switcher/ui/mixeffect.glade:132 gtk_switcher/ui/upstream-keyer.glade:886
 msgid "Preview"
 msgstr "Voorbeeld"
 
@@ -373,7 +366,7 @@ msgstr "KEY 4"
 
 #: gtk_switcher/ui/mixeffect.glade:359 gtk_switcher/ui/mixeffect.glade:379
 #: gtk_switcher/ui/mixeffect.glade:399 gtk_switcher/ui/mixeffect.glade:419
-#: gtk_switcher/mixeffect.py:591
+#: gtk_switcher/mixeffect.py:595
 msgid ""
 "ON\n"
 "AIR"
@@ -413,12 +406,12 @@ msgstr ""
 msgid "CUT"
 msgstr "CUT"
 
-#: gtk_switcher/ui/mixeffect.glade:643 gtk_switcher/mixeffect.py:600
+#: gtk_switcher/ui/mixeffect.glade:643 gtk_switcher/mixeffect.py:604
 msgid "AUTO"
 msgstr "AUTO"
 
 #: gtk_switcher/ui/mixeffect.glade:669 gtk_switcher/ui/mixeffect.glade:985
-#: gtk_switcher/mixeffect.py:572
+#: gtk_switcher/mixeffect.py:576
 msgid "rate"
 msgstr "rate"
 
@@ -491,168 +484,233 @@ msgid "Hardware settings"
 msgstr "Hardware instellingen"
 
 #: gtk_switcher/ui/downstream-keyer.glade:37
-#: gtk_switcher/ui/upstream-keyer.glade:153
-#: gtk_switcher/ui/upstream-keyer.glade:446
+#: gtk_switcher/ui/upstream-keyer.glade:232
+#: gtk_switcher/ui/upstream-keyer.glade:449
+#: gtk_switcher/ui/upstream-keyer.glade:965
 msgid "Fill source"
 msgstr "Fill bron"
 
 #: gtk_switcher/ui/downstream-keyer.glade:71
-#: gtk_switcher/ui/upstream-keyer.glade:187
+#: gtk_switcher/ui/upstream-keyer.glade:266
 msgid "Key source"
 msgstr "Key bron"
 
 #: gtk_switcher/ui/downstream-keyer.glade:128
-#: gtk_switcher/ui/upstream-keyer.glade:244
+#: gtk_switcher/ui/upstream-keyer.glade:324
 msgid "Pre multiplied"
 msgstr "Voorvermenigvuldigd"
 
 #: gtk_switcher/ui/downstream-keyer.glade:149
-#: gtk_switcher/ui/upstream-keyer.glade:265
+#: gtk_switcher/ui/upstream-keyer.glade:345
 msgid "Clip"
 msgstr "Clip"
 
 #: gtk_switcher/ui/downstream-keyer.glade:164
-#: gtk_switcher/ui/upstream-keyer.glade:280
+#: gtk_switcher/ui/upstream-keyer.glade:360
 msgid "Gain"
 msgstr "Gain"
 
 #: gtk_switcher/ui/downstream-keyer.glade:207
 #: gtk_switcher/ui/downstream-keyer.glade:219
-#: gtk_switcher/ui/upstream-keyer.glade:323
-#: gtk_switcher/ui/upstream-keyer.glade:335
+#: gtk_switcher/ui/upstream-keyer.glade:403
+#: gtk_switcher/ui/upstream-keyer.glade:415
 msgid "Invert"
 msgstr "Omkeren"
 
 #: gtk_switcher/ui/downstream-keyer.glade:268
-#: gtk_switcher/ui/upstream-keyer.glade:1046
+#: gtk_switcher/ui/upstream-keyer.glade:1565
 msgid "Use mask"
 msgstr "Gebruik masker"
 
 #: gtk_switcher/ui/downstream-keyer.glade:280
-#: gtk_switcher/ui/upstream-keyer.glade:1058
+#: gtk_switcher/ui/upstream-keyer.glade:1577
 msgid "Mask"
 msgstr "Masker"
 
 #: gtk_switcher/ui/downstream-keyer.glade:300
-#: gtk_switcher/ui/upstream-keyer.glade:1078
+#: gtk_switcher/ui/upstream-keyer.glade:1597
 msgid "Top"
 msgstr "Bovenkant"
 
 #: gtk_switcher/ui/downstream-keyer.glade:315
-#: gtk_switcher/ui/upstream-keyer.glade:1093
+#: gtk_switcher/ui/upstream-keyer.glade:1612
 msgid "Bottom"
 msgstr "Onderkant"
 
 #: gtk_switcher/ui/downstream-keyer.glade:330
-#: gtk_switcher/ui/upstream-keyer.glade:1108
+#: gtk_switcher/ui/upstream-keyer.glade:1627
 msgid "Left"
 msgstr "Links"
 
 #: gtk_switcher/ui/downstream-keyer.glade:345
-#: gtk_switcher/ui/upstream-keyer.glade:1123
+#: gtk_switcher/ui/upstream-keyer.glade:1642
 msgid "Right"
 msgstr "Rechts"
 
-#: gtk_switcher/ui/upstream-keyer.glade:354
+#: gtk_switcher/ui/upstream-keyer.glade:434
 msgid "Luma"
 msgstr "Luma"
 
-#: gtk_switcher/ui/upstream-keyer.glade:369
-#: gtk_switcher/ui/upstream-keyer.glade:407
-msgid "Keyer mode"
-msgstr "Keyer modus"
+#: gtk_switcher/ui/upstream-keyer.glade:494
+msgid "Foreground"
+msgstr ""
 
-#: gtk_switcher/ui/upstream-keyer.glade:391
+#: gtk_switcher/ui/upstream-keyer.glade:509
+msgid "Background"
+msgstr ""
+
+#. Chroma keyer
+#: gtk_switcher/ui/upstream-keyer.glade:524
+msgid "Key edge"
+msgstr ""
+
+#. Chroma key
+#: gtk_switcher/ui/upstream-keyer.glade:550
+msgid "Spill"
+msgstr ""
+
+#. Chromakey
+#: gtk_switcher/ui/upstream-keyer.glade:565
+msgid "Flare supression"
+msgstr ""
+
+#: gtk_switcher/ui/upstream-keyer.glade:591
+msgctxt "colorcorrector"
+msgid "Brightness"
+msgstr ""
+
+#: gtk_switcher/ui/upstream-keyer.glade:606
+#, fuzzy
+msgctxt "colorcorrector"
+msgid "Contrast"
+msgstr "Bedieningssoftware"
+
+#: gtk_switcher/ui/upstream-keyer.glade:621
+#, fuzzy
+msgctxt "colorcorrector"
+msgid "Saturation"
+msgstr "Overgang"
+
+#: gtk_switcher/ui/upstream-keyer.glade:636
+#, fuzzy
+msgctxt "colorcorrector"
+msgid "Red"
+msgstr "Opnemen"
+
+#: gtk_switcher/ui/upstream-keyer.glade:651
+msgctxt "colorcorrector"
+msgid "Green"
+msgstr ""
+
+#: gtk_switcher/ui/upstream-keyer.glade:666
+msgctxt "colorcorrector"
+msgid "Blue"
+msgstr ""
+
+#: gtk_switcher/ui/upstream-keyer.glade:681
+#, fuzzy
+msgid "Chroma sample"
+msgstr "Chroma"
+
+#: gtk_switcher/ui/upstream-keyer.glade:869
+msgid "Pick"
+msgstr ""
+
+#: gtk_switcher/ui/upstream-keyer.glade:910
 msgid "Chroma"
 msgstr "Chroma"
 
-#: gtk_switcher/ui/upstream-keyer.glade:429
+#: gtk_switcher/ui/upstream-keyer.glade:926
+msgid "Keyer mode"
+msgstr "Keyer modus"
+
+#: gtk_switcher/ui/upstream-keyer.glade:948
 msgid "Pattern"
 msgstr "Patroon"
 
-#: gtk_switcher/ui/upstream-keyer.glade:480
+#: gtk_switcher/ui/upstream-keyer.glade:999
 msgid "Position"
 msgstr "Positie"
 
-#: gtk_switcher/ui/upstream-keyer.glade:495
+#: gtk_switcher/ui/upstream-keyer.glade:1014
 msgid "Size"
 msgstr "Grootte"
 
-#: gtk_switcher/ui/upstream-keyer.glade:603
-#: gtk_switcher/ui/upstream-keyer.glade:615
+#: gtk_switcher/ui/upstream-keyer.glade:1122
+#: gtk_switcher/ui/upstream-keyer.glade:1134
 msgid "Shadow"
 msgstr "Schaduw"
 
-#: gtk_switcher/ui/upstream-keyer.glade:636
+#: gtk_switcher/ui/upstream-keyer.glade:1155
 msgid "Angle"
 msgstr "Hoek"
 
-#: gtk_switcher/ui/upstream-keyer.glade:651
+#: gtk_switcher/ui/upstream-keyer.glade:1170
 msgid "Altitude"
 msgstr "Hoogte"
 
-#: gtk_switcher/ui/upstream-keyer.glade:706
-#: gtk_switcher/ui/upstream-keyer.glade:718
+#: gtk_switcher/ui/upstream-keyer.glade:1225
+#: gtk_switcher/ui/upstream-keyer.glade:1237
 msgid "Border"
 msgstr "Rand"
 
-#: gtk_switcher/ui/upstream-keyer.glade:739
+#: gtk_switcher/ui/upstream-keyer.glade:1258
 msgid "Color"
 msgstr "Kleur"
 
-#: gtk_switcher/ui/upstream-keyer.glade:758
+#: gtk_switcher/ui/upstream-keyer.glade:1277
 msgid "Pick a border color"
 msgstr "Kies een rand kleur"
 
-#: gtk_switcher/ui/upstream-keyer.glade:799
+#: gtk_switcher/ui/upstream-keyer.glade:1318
 msgid "Bevel soften"
 msgstr "Rand vervagen"
 
-#: gtk_switcher/ui/upstream-keyer.glade:814
+#: gtk_switcher/ui/upstream-keyer.glade:1333
 msgid "Bevel position"
 msgstr "Rand positie"
 
-#: gtk_switcher/ui/upstream-keyer.glade:829
+#: gtk_switcher/ui/upstream-keyer.glade:1348
 msgid "Inner soften"
 msgstr "Binnenkant vervagen"
 
-#: gtk_switcher/ui/upstream-keyer.glade:844
+#: gtk_switcher/ui/upstream-keyer.glade:1363
 msgid "Outer soften"
 msgstr "Buitenkant vervagen"
 
-#: gtk_switcher/ui/upstream-keyer.glade:859
+#: gtk_switcher/ui/upstream-keyer.glade:1378
 msgid "Inner width"
 msgstr "Binnendikte"
 
-#: gtk_switcher/ui/upstream-keyer.glade:874
+#: gtk_switcher/ui/upstream-keyer.glade:1393
 msgid "Outer width"
 msgstr "Buitendikte"
 
-#: gtk_switcher/ui/upstream-keyer.glade:973
+#: gtk_switcher/ui/upstream-keyer.glade:1492
 msgid "Border opacity"
 msgstr "Rand doorzichtigheid"
 
-#: gtk_switcher/ui/upstream-keyer.glade:1202
+#: gtk_switcher/ui/upstream-keyer.glade:1721
 msgid "Lock keyframes"
 msgstr "Slot"
 
-#: gtk_switcher/ui/upstream-keyer.glade:1219
+#: gtk_switcher/ui/upstream-keyer.glade:1738
 msgid "Set A"
 msgstr "Kies A"
 
-#: gtk_switcher/ui/upstream-keyer.glade:1238
+#: gtk_switcher/ui/upstream-keyer.glade:1757
 msgid "Set B"
 msgstr "Kies B"
 
-#: gtk_switcher/ui/upstream-keyer.glade:1257
+#: gtk_switcher/ui/upstream-keyer.glade:1776
 msgid "Run full"
 msgstr "Naar volledig"
 
-#: gtk_switcher/ui/upstream-keyer.glade:1275
+#: gtk_switcher/ui/upstream-keyer.glade:1794
 msgid "Run A"
 msgstr "Naar A"
 
-#: gtk_switcher/ui/upstream-keyer.glade:1293
+#: gtk_switcher/ui/upstream-keyer.glade:1812
 msgid "Run B"
 msgstr "Naar B"
 
@@ -792,60 +850,50 @@ msgstr "Cut ingang 1 naar program"
 msgid "Auto transition input 1 to program"
 msgstr "Auto overgang input 1 naar program"
 
-#: gtk_switcher/mixeffect.py:563
+#: gtk_switcher/mixeffect.py:567
 msgid "TIE"
 msgstr "TIE"
 
-#: gtk_switcher/switcher.py:178 gtk_switcher/switcher.py:175
+#: gtk_switcher/switcher.py:181
 msgid "Layout editor M/E {}"
 msgstr "Layout bewerken M/E {}"
 
-#: gtk_switcher/switcher.py:470 gtk_switcher/switcher.py:480
-#: gtk_switcher/switcher.py:499 gtk_switcher/layout.py:292
-#: gtk_switcher/layout.py:293 gtk_switcher/switcher.py:467
-#: gtk_switcher/switcher.py:477 gtk_switcher/switcher.py:495
+#: gtk_switcher/switcher.py:503 gtk_switcher/layout.py:116
 msgid "Downstream keyer {}"
 msgstr "Downstream keyer {}"
 
-#: gtk_switcher/switcher.py:520
+#: gtk_switcher/switcher.py:525
 msgid "Media Player {}"
 msgstr "Mediaspeler {}"
 
-#: gtk_switcher/switcher.py:618 gtk_switcher/switcher.py:617
-#: gtk_switcher/switcher.py:546
+#: gtk_switcher/switcher.py:623
 msgid "Upstream keyer {}"
 msgstr "Upstream keyer {}"
 
-#: gtk_switcher/switcher.py:658 gtk_switcher/switcher.py:701
-#: gtk_switcher/switcher.py:704 gtk_switcher/layout.py:258
-#: gtk_switcher/layout.py:259 gtk_switcher/layout.py:287
-#: gtk_switcher/layout.py:288 gtk_switcher/switcher.py:657
-#: gtk_switcher/switcher.py:700 gtk_switcher/switcher.py:703
-#: gtk_switcher/switcher.py:586 gtk_switcher/switcher.py:629
-#: gtk_switcher/switcher.py:632
-msgid "Upstream key {}"
-msgstr "Upstream key {}"
-
 #. Show the videohub output as bus, checkbox
-#: gtk_switcher/switcher.py:904 gtk_switcher/videohub.py:110
-#: gtk_switcher/switcher.py:903 gtk_switcher/switcher.py:832
+#: gtk_switcher/switcher.py:930 gtk_switcher/videohub.py:110
 msgid "Show as bus"
 msgstr "Als bus weergeven"
 
-#: gtk_switcher/switcher.py:908 gtk_switcher/switcher.py:907
-#: gtk_switcher/switcher.py:836
+#: gtk_switcher/switcher.py:934
 msgid "Follow audio monitor bus"
 msgstr "Volg audio monitor bus"
 
-#: gtk_switcher/switcher.py:1050 gtk_switcher/switcher.py:1049
-#: gtk_switcher/switcher.py:978
+#: gtk_switcher/switcher.py:1076
 msgid "Run macro"
 msgstr "Macro uitvoeren"
 
-#: gtk_switcher/switcher.py:1052 gtk_switcher/switcher.py:1051
-#: gtk_switcher/switcher.py:980
+#: gtk_switcher/switcher.py:1078
 msgid "Edit macro"
 msgstr "Macro bewerken"
+
+#: gtk_switcher/layout.py:81
+msgid "Upstream key {}"
+msgstr "Upstream key {}"
+
+#: gtk_switcher/layout.py:135
+msgid "Chroma picker {}"
+msgstr ""
 
 #: gtk_switcher/videohub.py:82
 msgid "Connecting..."
