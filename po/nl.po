@@ -302,6 +302,7 @@ msgstr ""
 "een nieuwe verbinding moet gemaakt worden in het Instellingen scherm"
 
 #: gtk_switcher/ui/mixer.glade:3039 gtk_switcher/ui/mixer.glade:3115
+#: gtk_switcher/ui/mixer.glade:3033
 msgid "Open preferences"
 msgstr "Open instellingen"
 
@@ -310,11 +311,11 @@ msgstr "Open instellingen"
 msgid "Reconnect"
 msgstr "Verbinden"
 
-#: gtk_switcher/ui/mixer.glade:3084
+#: gtk_switcher/ui/mixer.glade:3084 gtk_switcher/ui/mixer.glade:3056
 msgid "Firmware outdated"
 msgstr "Firmware is oud"
 
-#: gtk_switcher/ui/mixer.glade:3085
+#: gtk_switcher/ui/mixer.glade:3085 gtk_switcher/ui/mixer.glade:3057
 msgid ""
 "The firmware on the connected device is not new enough for this "
 "application.\n"
@@ -325,7 +326,7 @@ msgstr ""
 "programma.\n"
 "OpenSwitcher heeft minimaal firmware 8.0+ nodig om correct te functioneren."
 
-#: gtk_switcher/ui/mixer.glade:3089
+#: gtk_switcher/ui/mixer.glade:3089 gtk_switcher/ui/mixer.glade:3061
 msgid "Continue anyway"
 msgstr "Toch verbinden"
 
@@ -562,68 +563,64 @@ msgstr "Luma"
 
 #: gtk_switcher/ui/upstream-keyer.glade:494
 msgid "Foreground"
-msgstr ""
+msgstr "Voorgrond"
 
 #: gtk_switcher/ui/upstream-keyer.glade:509
 msgid "Background"
-msgstr ""
+msgstr "Achtergrond"
 
 #. Chroma keyer
 #: gtk_switcher/ui/upstream-keyer.glade:524
 msgid "Key edge"
-msgstr ""
+msgstr "Key rand"
 
 #. Chroma key
 #: gtk_switcher/ui/upstream-keyer.glade:550
 msgid "Spill"
-msgstr ""
+msgstr "Overspilling"
 
 #. Chromakey
 #: gtk_switcher/ui/upstream-keyer.glade:565
 msgid "Flare supression"
-msgstr ""
+msgstr "Kleur onderdrukking"
 
 #: gtk_switcher/ui/upstream-keyer.glade:591
 msgctxt "colorcorrector"
 msgid "Brightness"
-msgstr ""
+msgstr "Helderheid"
 
 #: gtk_switcher/ui/upstream-keyer.glade:606
-#, fuzzy
 msgctxt "colorcorrector"
 msgid "Contrast"
-msgstr "Bedieningssoftware"
+msgstr "Contrast"
 
 #: gtk_switcher/ui/upstream-keyer.glade:621
-#, fuzzy
 msgctxt "colorcorrector"
 msgid "Saturation"
-msgstr "Overgang"
+msgstr "Verzadiging"
 
 #: gtk_switcher/ui/upstream-keyer.glade:636
-#, fuzzy
 msgctxt "colorcorrector"
 msgid "Red"
-msgstr "Opnemen"
+msgstr "Rood"
 
 #: gtk_switcher/ui/upstream-keyer.glade:651
 msgctxt "colorcorrector"
 msgid "Green"
-msgstr ""
+msgstr "Groen"
 
 #: gtk_switcher/ui/upstream-keyer.glade:666
 msgctxt "colorcorrector"
 msgid "Blue"
-msgstr ""
+msgstr "Blauw"
 
 #: gtk_switcher/ui/upstream-keyer.glade:681
-#, fuzzy
 msgid "Chroma sample"
-msgstr "Chroma"
+msgstr "Kleurkiezer"
 
 #: gtk_switcher/ui/upstream-keyer.glade:869
 msgid "Pick"
-msgstr ""
+msgstr "Kies"
 
 #: gtk_switcher/ui/upstream-keyer.glade:910
 msgid "Chroma"
@@ -823,7 +820,7 @@ msgstr "Bedieningssoftware"
 msgid "Status"
 msgstr "Status"
 
-#: gtk_switcher/ui/videohub.glade:63
+#: gtk_switcher/ui/videohub.glade:63 gtk_switcher/ui/mixer.glade:3047
 msgid "Disconnected"
 msgstr "Verbroken"
 
@@ -906,7 +903,7 @@ msgstr "Upstream key {}"
 
 #: gtk_switcher/layout.py:135
 msgid "Chroma picker {}"
-msgstr ""
+msgstr "Kleurkiezer {}"
 
 #: gtk_switcher/videohub.py:82
 msgid "Connecting..."
@@ -921,5 +918,6 @@ msgstr "Verbonden"
 msgid "Rename on change"
 msgstr "Hernoem op verandering"
 
-#~ msgid "firmware"
-#~ msgstr "firmware"
+#: gtk_switcher/ui/mixer.glade:3072
+msgid "firmware"
+msgstr "firmware"
