@@ -4,8 +4,8 @@ import struct
 
 
 class Field:
-    def __init__(self, name, dtype, section, label, mapping=None, sys=False, ro=False):
-        self.name = name
+    def __init__(self, key, dtype, section, label, mapping=None, sys=False, ro=False):
+        self.key = key
         self.section = section
         self.dtype = dtype
         self.label = label
@@ -17,25 +17,7 @@ class Field:
         self.widget = None
 
     def __repr__(self):
-        return f'<Field {self.name} ({self.label})>'
-
-
-class ValueField:
-    def __init__(self, name, wvalue, length, dtype, section, label, mapping=None, ro=False):
-        self.name = name
-        self.wvalue = wvalue
-        self.length = length
-        self.section = section
-        self.dtype = dtype
-        self.label = label
-        self.mapping = mapping
-        self.ro = ro
-        self.value = None
-
-        self.widget = None
-
-    def __repr__(self):
-        return f'<Field {self.wvalue} ({self.label})>'
+        return f'<Field {self.key} ({self.label})>'
 
 
 class Converter:
@@ -64,14 +46,49 @@ class Converter:
     def get_version(self):
         return None
 
-    def get_wvalue_field(self, wvalue, length):
-        return bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
-                                               bRequest=83,
-                                               wValue=wvalue,
-                                               wIndex=0,
-                                               data_or_wLength=length))
+    def get_value(self, field):
+        raise NotImplementedError()
 
-    def get_field(self, name, sys=False, write=None):
+    def set_value(self, field, value):
+        raise NotImplementedError()
+
+    def get_state(self):
+        result = {}
+        for field in self.FIELDS:
+            ret = self.get_value(field)
+            field.value = ret
+            result[field.key] = field
+        return result
+
+    def factory_reset(self):
+        raise NotImplementedError()
+
+
+class LabelProtoConverter(Converter):
+    PROTOCOL = 'label'
+    NAME_FIELD = "DeviceName"
+    VERSION_FIELD = "ReleaseVersion"
+
+    def get_name(self):
+        return self._communicate(self.NAME_FIELD, sys=True).decode()
+
+    def get_version(self):
+        return self._communicate(self.VERSION_FIELD, sys=True).decode()
+
+    def factory_reset(self):
+        self.handle.ctrl_transfer(bmRequestType=0x40,
+                                  bRequest=20,
+                                  wValue=0,
+                                  wIndex=0,
+                                  data_or_wLength=0)
+
+    def get_value(self, field):
+        return self._communicate(field.key, field.sys)
+
+    def set_value(self, field, value):
+        self._communicate(field.key, field.sys, write=value)
+
+    def _communicate(self, name, sys=False, write=None):
         ep_read = 0xa1 if sys else 0xc0
         ep_write = 0x21 if sys else 0x40
         req_ticket = 1 if sys else 10
@@ -106,42 +123,6 @@ class Converter:
                                                    wIndex=0,
                                                    data_or_wLength=255))
 
-    def set_field(self, name, value, sys=False):
-        return self.get_field(name, sys=sys, write=value)
-
-    def get_state(self):
-        result = {}
-        for field in self.FIELDS:
-            if isinstance(field, Field):
-                ret = self.get_field(field.name, sys=field.sys)
-            elif isinstance(field, ValueField):
-                ret = self.get_wvalue_field(field.wvalue, field.length)
-            field.value = ret
-            result[field.name] = field
-        return result
-
-    def factory_reset(self):
-        raise NotImplementedError()
-
-
-class LabelProtoConverter(Converter):
-    PROTOCOL = 'label'
-    NAME_FIELD = "DeviceName"
-    VERSION_FIELD = "ReleaseVersion"
-
-    def get_name(self):
-        return self.get_field(self.NAME_FIELD, sys=True).decode()
-
-    def get_version(self):
-        return self.get_field(self.VERSION_FIELD, sys=True).decode()
-
-    def factory_reset(self):
-        self.handle.ctrl_transfer(bmRequestType=0x40,
-                                  bRequest=20,
-                                  wValue=0,
-                                  wIndex=0,
-                                  data_or_wLength=0)
-
 
 class WValueProtoConverter(Converter):
     PROTOCOL = 'wValue'
@@ -149,7 +130,32 @@ class WValueProtoConverter(Converter):
     VERSION_FIELD = 0x00B0
 
     def get_name(self):
-        return self.get_wvalue_field(self.NAME_FIELD, 64).split(b'\0')[0].decode()
+        raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
+                                              bRequest=83,
+                                              wValue=self.NAME_FIELD,
+                                              wIndex=0,
+                                              data_or_wLength=64))
+
+        return raw.split(b'\0')[0].decode()
 
     def get_version(self):
-        return self.get_wvalue_field(self.VERSION_FIELD, 7).split(b'\0')[0].decode()
+        raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
+                                              bRequest=83,
+                                              wValue=self.VERSION_FIELD,
+                                              wIndex=0,
+                                              data_or_wLength=7))
+
+        return raw.split(b'\0')[0].decode()
+
+    def get_value(self, field):
+        return bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
+                                               bRequest=83,
+                                               wValue=field.key[0],
+                                               wIndex=0,
+                                               data_or_wLength=field.key[1]))
+
+    def set_value(self, field, value):
+        self.handle.ctrl_transfer(bmRequestType=0x41,
+                                  bRequest=82,
+                                  wValue=field.key[0],
+                                  data_or_wLength=value)

@@ -1,4 +1,4 @@
-from pyatem.converters.protocol import LabelProtoConverter, Field, ValueField, WValueProtoConverter
+from pyatem.converters.protocol import LabelProtoConverter, Field, WValueProtoConverter
 
 
 class MicroConverterBiDirectional12G(LabelProtoConverter):
@@ -46,21 +46,21 @@ class MicroConverterSdiHdmi3G(WValueProtoConverter):
     NAME_FIELD = 0x00C0
 
     FIELDS = [
-        ValueField("DeviceName", 0x00c0, 64, str, "Device", "Name"),
-        ValueField("HdmiClampEnable", 0x0100, 1, int, "HDMI Output", "Clip signal to", mapping={
+        Field((0x00c0, 64), str, "Device", "Name"),
+        Field((0x0100, 1), int, "HDMI Output", "Clip signal to", mapping={
             0x01: 'Normal levels (16 - 235)',
             0x00: 'Illegal levels (0 - 255)',
         }),
-        ValueField('HdmiTxCh34Swap', 0x0102, 1, int, 'HDMI Audio', 'For 5.1 surround use', mapping={
+        Field((0x0102, 1), int, 'HDMI Audio', 'For 5.1 surround use', mapping={
             0x00: 'SMPTE standard',
             0x01: 'Consumer standard',
         }),
-        ValueField('LutName', 0x0310, 64, str, 'LUTs', 'LUT name', ro=True),
-        ValueField('LutEnable', 0x0300, 1, int, 'LUTs', 'Enable 3D LUT', mapping={
+        Field((0x0310, 64), str, 'LUTs', 'LUT name', ro=True),
+        Field((0x0300, 1), int, 'LUTs', 'Enable 3D LUT', mapping={
             0x00: 'Enable',
             0xff: 'Disable',
         }),
-        ValueField('LutLoop', 0x0301, 1, int, 'LUTs', 'LUT on loop output', mapping={
+        Field((0x0301, 1), int, 'LUTs', 'LUT on loop output', mapping={
             0x01: 'Enable',
             0x00: 'Disable',
         }),
@@ -68,19 +68,19 @@ class MicroConverterSdiHdmi3G(WValueProtoConverter):
 
 
 class MicroConverterHdmiSdi3G(WValueProtoConverter):
-    PRODUCT = 0xBE90
+    PRODUCT = 0xBE91
     NAME = "Blackmagic design Micro Converter HDMI to SDI 3G"
     PROTOCOL = "wValue"
     NAME_FIELD = 0x00C0
 
     FIELDS = [
-        ValueField("DeviceName", 0x00c0, 64, str, "Device", "Name"),
-        ValueField("SdiLevelAEnable", 0x0200, 1, int, "SDI Output", "3G SDI Output", mapping={
+        Field((0x00c0, 64), str, "Device", "Name"),
+        Field((0x0200, 1), int, "SDI Output", "3G SDI Output", mapping={
             0x01: 'Level A',
             0x00: 'Level B',
         }),
-        ValueField('LutName', 0x0310, 64, str, 'LUTs', 'LUT name', ro=True),
-        ValueField('LutEnable', 0x0300, 1, int, 'LUTs', 'Enable 3D LUT', mapping={
+        Field((0x0310, 64), str, 'LUTs', 'LUT name', ro=True),
+        Field((0x0300, 1), int, 'LUTs', 'Enable 3D LUT', mapping={
             0x00: 'Enable',
             0xff: 'Disable',
         }),
