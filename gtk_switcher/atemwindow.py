@@ -53,7 +53,13 @@ class AtemConnection(threading.Thread):
         if self.ip is None or self.ip == '0.0.0.0':
             if AtemProtocol.usb_exists():
                 self.log.info(f'Connect to USB device')
-                self.mixer = AtemProtocol(usb="auto")
+                try:
+                    self.mixer = AtemProtocol(usb="auto")
+                except PermissionError:
+                    self.log.error("Could not connect to USB device: permission denied")
+                    self.log.error("The udev rules for this ATEM device might be missing on your system")
+                    self.do_permission_error()
+                    return
             else:
                 self.log.error(f'Invalid connection parameter')
                 return
@@ -85,7 +91,11 @@ class AtemConnection(threading.Thread):
 
     def do_disconnected(self):
         self.connected = False
-        GLib.idle_add(self.disconnected)
+        GLib.idle_add(self.disconnected, "disconnected")
+
+    def do_permission_error(self):
+        self.connected = False
+        GLib.idle_add(self.disconnected, "permission")
 
     def do_connected(self):
         self.connected = True
@@ -292,6 +302,10 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.connection.ip = self.settings.get_string('switcher-ip')
         self.connection.start()
 
+    def on_reconnect_clicked(self, widget, *args):
+        self.log_aw.info("Reconnect clicked")
+        self.on_switcher_ip_changed()
+
     def on_connection_settings_changed(self, *args):
         self.log_aw.info("Connection stored config changed")
 
@@ -307,8 +321,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
     def on_preferences_button_clicked(self, widget):
         ConnectionWindow(self.window, self.connection, self.application)
 
-    def on_disconnect(self):
-        self.connectionstack.set_visible_child_name("disconnected")
+    def on_disconnect(self, reason):
+        self.connectionstack.set_visible_child_name(reason)
         for tid in self.hardware_threads:
             self.hardware_threads[tid].die()
         self.log_aw.warning("Disconnected from mixer")

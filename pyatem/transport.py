@@ -206,8 +206,15 @@ class UdpProtocol(BaseProtocol):
                     if packet is not None:
                         self.thread_recv_queue.put(packet)
                 elif queue is self.thread_queue:
-                    self._send_packet_low(queue.get())
+                    try:
+                        self._send_packet_low(queue.get())
+                    except OSError as e:
+                        self.log.error(e)
+                        # Queue a None to signal the socket died
+                        self.thread_recv_queue.put(None)
+                        return
                 else:
+                    self.thread_recv_queue.put(None)
                     RuntimeError("Unexpected result from select()")
 
     def get_link_quality(self):
@@ -352,8 +359,10 @@ class UdpProtocol(BaseProtocol):
                 self.had_traffic = False
                 self.connect()
                 return None
+
             if packet is None:
-                continue
+                # When None is in the receive queue the socket has disconnected
+                return None
 
             if self.mark_next_connected:
                 self.mark_next_connected = False
@@ -425,14 +434,19 @@ class UsbProtocol(BaseProtocol):
         return None
 
     def _detach_kernel(self):
-        for config in self.handle:
-            for i in range(config.bNumInterfaces):
-                if self.handle.is_kernel_driver_active(i):
-                    try:
-                        self.handle.detach_kernel_driver(i)
-                        self.log.debug('kernel driver detached')
-                    except usb.core.USBError as e:
-                        self.log.error('Could not detach kernel driver: ' + str(e))
+        try:
+            for config in self.handle:
+                for i in range(config.bNumInterfaces):
+                    if self.handle.is_kernel_driver_active(i):
+                        try:
+                            self.handle.detach_kernel_driver(i)
+                            self.log.debug('kernel driver detached')
+                        except usb.core.USBError as e:
+                            self.log.error('Could not detach kernel driver: ' + str(e))
+        except usb.core.USBError as e:
+            if e.errno == 13:
+                raise PermissionError(e)
+
 
     def _send_packet(self, packet):
         raw = packet.to_usb()
