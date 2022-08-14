@@ -3072,7 +3072,7 @@
               </object>
               <packing>
                 <property name="name">disconnected</property>
-                <property name="title" translatable="yes">Disconnected</property>
+                <property name="title">Disconnected</property>
                 <property name="position">1</property>
               </packing>
             </child>
@@ -3097,7 +3097,7 @@ OpenSwitcher requires at least firmware 8.0+ to correctly function with most har
               </object>
               <packing>
                 <property name="name">firmware</property>
-                <property name="title" translatable="yes">firmware</property>
+                <property name="title">firmware</property>
                 <property name="position">2</property>
               </packing>
             </child>
@@ -3126,7 +3126,7 @@ A different connection can be made in the preferences window</property>
               </object>
               <packing>
                 <property name="name">permission</property>
-                <property name="title" translatable="yes">permission</property>
+                <property name="title">permission</property>
                 <property name="position">3</property>
               </packing>
             </child>
