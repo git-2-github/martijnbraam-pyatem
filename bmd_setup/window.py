@@ -291,7 +291,7 @@ class SetupWindow:
         field = widget.field
         device = widget.device
         if field.dtype == bool:
-            device.set_field(field.name, 0xff if widget.get_active else 0x00, sys=field.sys)
+            device.set_value(field, 0xff if widget.get_active else 0x00)
         elif field.mapping is not None:
             display = widget.get_active_text()
             for value, d in field.mapping.items():
@@ -300,15 +300,15 @@ class SetupWindow:
             else:
                 ValueError("Unknown mapping value")
 
-            device.set_field(field.name, self.encode_value(field, value), sys=field.sys)
+            device.set_value(field, self.encode_value(field, value))
         elif field.dtype == str:
             value = widget.get_text()
             value = self.encode_value(field, value)
-            device.set_field(field.name, value, sys=field.sys)
+            device.set_value(field, value)
         elif field.dtype == int:
             value = widget.get_value()
             value = self.encode_value(field, value)
-            device.set_field(field.name, value, sys=field.sys)
+            device.set_value(field, value)
 
     def on_select_page(self, widget, row):
         if self.listbox.get_selection_mode() == Gtk.SelectionMode.NONE:
