@@ -76,8 +76,9 @@ def main(version):
     else:
         logging.basicConfig(handlers=[ch])
 
+    log = logging.getLogger('Launcher')
     if os.path.isfile('atem.gresource'):
-        sys.stderr.write("Using resources from cwd\n")
+        log.info('using resources from cwd')
         resource = Gio.resource_load("atem.gresource")
         Gio.Resource._register(resource)
 
