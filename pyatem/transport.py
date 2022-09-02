@@ -421,6 +421,8 @@ class UsbProtocol(BaseProtocol):
         self._detach_kernel()
         self.handle.set_configuration()
 
+        self.rev = None
+
     @classmethod
     def device_exists(cls):
         return cls.find_device() is not None
@@ -447,17 +449,20 @@ class UsbProtocol(BaseProtocol):
             if e.errno == 13:
                 raise PermissionError(e)
 
-
     def _send_packet(self, packet):
         raw = packet.to_usb()
+        if self.rev == 8.6:
+            self.queue.put(b'\x00\x04\x00\x01\x00\x00' + struct.pack('<I', len(raw)))
         self.queue.put(raw)
 
     def _receive_packet(self):
         try:
             # Lower the timeout when doing an bulk upload to not wait a second between packets
             t = 1 if self.queue_enabled else 1100
-            data = self.handle.read(0x82, 8192 * 4, timeout=t)
-        except:
+            data = self.handle.read(0x82, 8192, timeout=t)
+        except usb.USBError as e:
+            if e.errno == 32:
+                raise
             if self.queue_trigger():
                 return TransferQueueFlushed()
             return None
@@ -483,7 +488,21 @@ class UsbProtocol(BaseProtocol):
         return packet
 
     def connect(self):
-        self.handle.ctrl_transfer(0x21, 0, 0x0000, 2, [])
+        try:
+            # Try the initial control transfer for firmware 8.5 and older
+            self.handle.ctrl_transfer(0x21, 0, 0x0000, 2, [])
+            self.rev = 8.5
+        except usb.core.USBError:
+            # 8.6+ firmware raises a pipe error on the previous URB, try the newer handshake
+            self.handle.reset()
+            self.handle.clear_halt(0x02)
+            self.handle.clear_halt(0x82)
+            self.handle.write(0x02, b'\00\01\00\01\00\01\x10\x92')
+            self.handle.write(0x02, b'\x00\x03\x00\x01\x00\x00\x00\x00\x00\x00\x10\x00\x00\x00')
+            data1 = self.handle.read(0x82, 100)
+            data2 = self.handle.read(0x82, 100)
+            data3 = self.handle.read(0x82, 100)
+            self.rev = 8.6
 
     def receive_packet(self):
         while True:
