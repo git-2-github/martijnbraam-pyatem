@@ -32,6 +32,18 @@
   <content_rating type="oars-1.1"/>
   <releases>
 
+    <release version="0.8.0" date="2022-09-16">
+      <description>
+        <ul>
+          <li>Implement the advanced chroma keyer</li>
+          <li>Add a setup utility for BMD converters</li>
+          <li>Improve error messages for connectivity issues</li>
+          <li>Rework logging output</li>
+        </ul>
+      </description>
+    </release>
+
+
     <release version="0.7.0" date="2022-06-12">
       <description>
         <ul>
