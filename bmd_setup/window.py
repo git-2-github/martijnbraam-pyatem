@@ -276,6 +276,13 @@ class SetupWindow:
                     widget.set_text(value)
                     widget.connect('activate', self.on_widget_changed)
                     wbox.pack_start(widget, False, False, 0)
+                elif field.dtype == open:
+                    widget = Gtk.FileChooserButton(title="Select LUT")
+                    field.widget = widget
+                    widget.field = field
+                    widget.device = device
+                    widget.connect('file-set', self.on_widget_changed)
+                    wbox.pack_start(widget, False, False, 0)
 
         self.main.show_all()
 
@@ -292,6 +299,9 @@ class SetupWindow:
         device = widget.device
         if field.dtype == bool:
             device.set_value(field, 0xff if widget.get_active else 0x00)
+        elif field.dtype == open:
+            device.set_lut(widget.get_filename())
+            self.make_page(device)
         elif field.mapping is not None:
             display = widget.get_active_text()
             for value, d in field.mapping.items():
