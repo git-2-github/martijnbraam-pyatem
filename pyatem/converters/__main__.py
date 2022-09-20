@@ -13,6 +13,7 @@ def enumerate_hardware():
 def main():
     parser = argparse.ArgumentParser(description="Blackmagic Design Converter Setup")
     parser.add_argument('--factory-reset', action='store_true', help='Run the factory reset operation', dest='reset')
+    parser.add_argument('--lut', help='Set new lut from a .cube file')
     args = parser.parse_args()
 
     existing = []
@@ -46,6 +47,8 @@ def main():
             value = int.from_bytes(field.value, byteorder='little')
         elif field.dtype == bool:
             value = int.from_bytes(field.value, byteorder='little') > 0
+        elif field.dtype == open:
+            continue
         else:
             raise ValueError("Unknown type")
 
@@ -63,6 +66,11 @@ def main():
         input()
         print("Executing factory reset")
         device.factory_reset()
+
+    if args.lut is not None:
+        print("Uploading new LUT to the converter...")
+        device.set_lut(args.lut)
+        print("done")
 
 
 if __name__ == '__main__':
