@@ -1,6 +1,10 @@
+import time
+
 import usb.core
 import usb.util
 import struct
+
+from pyatem.converters.lut import lut_to_bmd17, load_cube
 
 
 class Field:
@@ -31,12 +35,19 @@ class Converter:
         self.handle = None
 
     @classmethod
-    def is_plugged_in(cls):
-        result = usb.core.find(idVendor=cls.VENDOR, idProduct=cls.PRODUCT)
+    def is_plugged_in(cls, serial=None):
+        if serial is not None:
+            result = usb.core.find(idVendor=cls.VENDOR, idProduct=cls.PRODUCT, iSerialNumber=serial)
+        else:
+            result = usb.core.find(idVendor=cls.VENDOR, idProduct=cls.PRODUCT)
         return result is not None
 
-    def connect(self):
-        self.handle = usb.core.find(idVendor=self.VENDOR, idProduct=self.PRODUCT)
+    def connect(self, serial=None):
+        if serial is not None:
+            self.handle = usb.core.find(idVendor=self.VENDOR, idProduct=self.PRODUCT, iSerialNumber=serial)
+        else:
+            self.handle = usb.core.find(idVendor=self.VENDOR, idProduct=self.PRODUCT)
+
         self.handle.set_configuration(1)
 
     def get_name(self):
@@ -128,6 +139,7 @@ class WValueProtoConverter(Converter):
     PROTOCOL = 'wValue'
     NAME_FIELD = 0x00C0
     VERSION_FIELD = 0x00B0
+    LUTFIELD = False
 
     def get_name(self):
         raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
@@ -148,6 +160,8 @@ class WValueProtoConverter(Converter):
         return raw.split(b'\0')[0].decode()
 
     def get_value(self, field):
+        if field.dtype == open:
+            return
         return bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
                                                bRequest=83,
                                                wValue=field.key[0],
@@ -159,3 +173,63 @@ class WValueProtoConverter(Converter):
                                   bRequest=82,
                                   wValue=field.key[0],
                                   data_or_wLength=value)
+
+    def _read(self, bRequest, length):
+        return bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
+                                               bRequest=bRequest,
+                                               wValue=0,
+                                               wIndex=0,
+                                               data_or_wLength=length))
+
+    def _write(self, bRequest, data):
+        self.handle.ctrl_transfer(bmRequestType=0x41,
+                                  bRequest=bRequest,
+                                  wValue=0,
+                                  wIndex=0,
+                                  data_or_wLength=data)
+
+    def set_lut(self, path):
+        lut = load_cube(path)
+        stream = lut_to_bmd17(lut)
+
+        # Wait for the LUT engine to be ready
+        for i in range(0, 20):
+            status = self._read(48, 6)
+            data = struct.unpack('>6B', status)
+            if data[4] == 255 and data[5] == 255:
+                break
+            time.sleep(0.5)
+        else:
+            raise TimeoutError("Status did not update")
+
+        # The function of this is completely unknown
+        self._write(49, b'')
+        self._write(52, b'')
+        data_53 = self._read(53, 16)
+        self._write(55, b'\x3f\0\0\0\x01\0\0\0')
+        data_56 = self._read(56, 15)
+        data_16 = self._read(16, 1)
+        data_83 = self._read(83, 4)
+        data_56b = self._read(56, 15)
+        data_53b = self._read(53, 16)
+        self._write(57, b'\x00\x3f\x00\x00')
+
+        # Write the new LUT
+        self.handle.write(1, stream)
+        self.handle.write(1, b'')
+
+        # Wait for the LUT to be processed on the converter
+        for i in range(0, 10):
+            status = self._read(48, 6)
+            data = struct.unpack('>6B', status)
+            if data[1] == 0 and data[2] == 0:
+                break
+            time.sleep(0.5)
+        else:
+            raise TimeoutError("Status did not update")
+
+        self._write(50, b'')
+
+        # Write the new LUT name and finalize the upload
+        self.set_value(Field((0x0410, 64), str, '', 'LUT name'), struct.pack('>64s', lut.title.encode()))
+        self.set_value(Field((0x0400, 1), int, '', 'Unknown'), struct.pack('>B', 3))

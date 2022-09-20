@@ -61,6 +61,7 @@ class MicroConverterSdiHdmi3G(WValueProtoConverter):
             0x01: 'Enable',
             0x00: 'Disable',
         }),
+        Field('LUT', open, 'LUTs', 'LUT'),
     ]
 
 
@@ -79,4 +80,5 @@ class MicroConverterHdmiSdi3G(WValueProtoConverter):
             0x00: 'Enable',
             0xff: 'Disable',
         }),
+        Field('LUT', open, 'LUTs', 'LUT'),
     ]
