@@ -2,13 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the openswitcher package.
 # TheJes <mail@jesko-stolp.de>, 2022.
+# Ettore Atalan <atalanttore@googlemail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-14 21:06+0200\n"
-"PO-Revision-Date: 2022-06-11 21:20+0000\n"
-"Last-Translator: TheJes <mail@jesko-stolp.de>\n"
+"PO-Revision-Date: 2022-10-12 18:28+0000\n"
+"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openswitcher/"
 "openswitcher/de/>\n"
 "Language: de\n"
@@ -16,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #. Window title
 #: gtk_switcher/ui/mixer.glade:176 gtk_switcher/ui/mixer.glade:189
@@ -305,9 +306,8 @@ msgid "Open preferences"
 msgstr "Einstellungen Öffnen"
 
 #: gtk_switcher/ui/mixer.glade:3057
-#, fuzzy
 msgid "Reconnect"
-msgstr "Verbinden"
+msgstr "Neu verbinden"
 
 #: gtk_switcher/ui/mixer.glade:3084
 msgid "Firmware outdated"
@@ -330,7 +330,7 @@ msgstr "Trotzdem Fortsetzen"
 
 #: gtk_switcher/ui/mixer.glade:3109
 msgid "Permission denied"
-msgstr ""
+msgstr "Berechtigung verweigert"
 
 #: gtk_switcher/ui/mixer.glade:3110
 msgid ""
@@ -560,11 +560,11 @@ msgstr "Luma"
 
 #: gtk_switcher/ui/upstream-keyer.glade:494
 msgid "Foreground"
-msgstr ""
+msgstr "Vordergrund"
 
 #: gtk_switcher/ui/upstream-keyer.glade:509
 msgid "Background"
-msgstr ""
+msgstr "Hintergrund"
 
 #. Chroma keyer
 #: gtk_switcher/ui/upstream-keyer.glade:524
@@ -584,35 +584,32 @@ msgstr ""
 #: gtk_switcher/ui/upstream-keyer.glade:591
 msgctxt "colorcorrector"
 msgid "Brightness"
-msgstr ""
+msgstr "Helligkeit"
 
 #: gtk_switcher/ui/upstream-keyer.glade:606
-#, fuzzy
 msgctxt "colorcorrector"
 msgid "Contrast"
-msgstr "Steuer-App"
+msgstr "Kontrast"
 
 #: gtk_switcher/ui/upstream-keyer.glade:621
-#, fuzzy
 msgctxt "colorcorrector"
 msgid "Saturation"
-msgstr "Übergang"
+msgstr "Sättigung"
 
 #: gtk_switcher/ui/upstream-keyer.glade:636
-#, fuzzy
 msgctxt "colorcorrector"
 msgid "Red"
-msgstr "Aufzeichnen"
+msgstr "Rot"
 
 #: gtk_switcher/ui/upstream-keyer.glade:651
 msgctxt "colorcorrector"
 msgid "Green"
-msgstr ""
+msgstr "Grün"
 
 #: gtk_switcher/ui/upstream-keyer.glade:666
 msgctxt "colorcorrector"
 msgid "Blue"
-msgstr ""
+msgstr "Blau"
 
 #: gtk_switcher/ui/upstream-keyer.glade:681
 #, fuzzy
@@ -641,7 +638,7 @@ msgstr "Position"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1014
 msgid "Size"
-msgstr ""
+msgstr "Größe"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1122
 #: gtk_switcher/ui/upstream-keyer.glade:1134
@@ -654,7 +651,7 @@ msgstr "Winkel"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1170
 msgid "Altitude"
-msgstr ""
+msgstr "Höhe"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1225
 #: gtk_switcher/ui/upstream-keyer.glade:1237
@@ -687,11 +684,11 @@ msgstr ""
 
 #: gtk_switcher/ui/upstream-keyer.glade:1378
 msgid "Inner width"
-msgstr ""
+msgstr "Breite innen"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1393
 msgid "Outer width"
-msgstr ""
+msgstr "Breite außen"
 
 #: gtk_switcher/ui/upstream-keyer.glade:1492
 msgid "Border opacity"
@@ -841,23 +838,20 @@ msgid "M/E Control"
 msgstr "Kamerasteuerung"
 
 #: gtk_switcher/ui/shortcuts.ui:18
-#, fuzzy
 msgid "Auto transition"
-msgstr "Nächster Übergang"
+msgstr "Automatischer Übergang"
 
 #: gtk_switcher/ui/shortcuts.ui:25
-#, fuzzy
 msgid "Cut transition"
-msgstr "Nächster Übergang"
+msgstr "Schnittübergang"
 
 #: gtk_switcher/ui/shortcuts.ui:33
 msgid "Source selection"
-msgstr ""
+msgstr "Quellenauswahl"
 
 #: gtk_switcher/ui/shortcuts.ui:39
-#, fuzzy
 msgid "Preview input 1"
-msgstr "Vorschau"
+msgstr "Vorschau Eingang 1"
 
 #: gtk_switcher/ui/shortcuts.ui:46
 msgid "Cut input 1 to program"
@@ -880,9 +874,8 @@ msgid "Downstream keyer {}"
 msgstr "Downstream keyer {}"
 
 #: gtk_switcher/switcher.py:525
-#, fuzzy
 msgid "Media Player {}"
-msgstr "Medien Player"
+msgstr "Medienspieler {}"
 
 #: gtk_switcher/switcher.py:623
 msgid "Upstream keyer {}"
