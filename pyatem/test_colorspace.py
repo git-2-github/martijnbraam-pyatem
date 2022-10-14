@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase
 import gzip
 
@@ -8,10 +9,11 @@ from PIL import Image
 class Test(TestCase):
 
     def setUp(self):
-        fixture = self._encode_test('fixtures/ramps.png')
+        fixtures_dir = os.environ.get('TEST_FIXTURES', os.path.join(os.path.dirname(__file__), 'fixtures'))
+        fixture = self._encode_test(os.path.join(fixtures_dir, 'ramps.png'))
         self.encoded = pyatem.media.rgb_to_atem(fixture, 1920, 1080)
 
-        with gzip.open('fixtures/ramps-atemsc.data.gz', 'rb') as handle:
+        with gzip.open(os.path.join(fixtures_dir, 'ramps-atemsc.data.gz'), 'rb') as handle:
             self.reference = handle.read()
 
     def _encode_test(self, path):
