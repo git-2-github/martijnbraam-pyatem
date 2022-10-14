@@ -7,4 +7,5 @@ Exec=switcher-control
 GenericName=Video switcher
 Icon=nl.brixit.Switcher
 Categories=GTK;GNOME;Utility
+Keywords=atem;blackmagic design;bmd;openswitcher;openatem
 X-DBUS-ServiceName=nl.brixit.Switcher
