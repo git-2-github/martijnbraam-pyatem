@@ -1,7 +1,5 @@
 import struct
 
-import hexdump
-
 
 class Cube:
     def __init__(self):
