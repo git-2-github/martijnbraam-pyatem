@@ -7,4 +7,5 @@ Exec=bmd-setup
 GenericName=Converter config
 Icon=nl.brixit.Setup
 Categories=GTK;GNOME;Utility
+Keywords=blackmagic design;bmd
 X-DBUS-ServiceName=nl.brixit.Setup
