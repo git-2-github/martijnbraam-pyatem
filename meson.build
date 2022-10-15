@@ -1,3 +1,5 @@
+# Copyright 2021 - 2022, Martijn Braam and the OpenAtem contributors
+# SPDX-License-Identifier: GPL-3.0-only
 project('switcher',
     version: '0.8.0',
     meson_version: '>= 0.50.0',

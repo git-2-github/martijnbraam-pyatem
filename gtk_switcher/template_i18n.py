@@ -1,3 +1,5 @@
+# Copyright 2021 - 2022, Martijn Braam and the OpenAtem contributors
+# SPDX-License-Identifier: GPL-3.0-only
 import logging
 import platform
 from gi.repository import Gtk, GObject, Gio, GLib

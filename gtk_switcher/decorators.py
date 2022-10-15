@@ -1,3 +1,6 @@
+# Copyright 2021 - 2022, Martijn Braam and the OpenAtem contributors
+# SPDX-License-Identifier: GPL-3.0-only
+
 # Needs to be a global for decorators
 _callbacks = {}
 
