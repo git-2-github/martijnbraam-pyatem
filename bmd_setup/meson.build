@@ -1,3 +1,5 @@
+# Copyright 2021 - 2022, Martijn Braam and the OpenAtem contributors
+# SPDX-License-Identifier: GPL-3.0-only
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
 moduledir = join_paths(pkgdatadir, 'bmd_setup')
 gnome = import('gnome')
