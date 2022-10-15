@@ -29,6 +29,14 @@
   <url type="bugtracker">https://todo.sr.ht/~martijnbraam/OpenAtem</url>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="0.8.1" date="2022-10-15">
+      <description>
+        <ul>
+          <li>Update desktop file metadata</li>
+          <li>Update license metadata</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.0" date="2022-07-21">
       <description>
         <p>
