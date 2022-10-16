@@ -1,6 +1,6 @@
 /*
 Copyright 2021 - 2022, Martijn Braam and the OpenAtem contributors
-SPDX-License-Identifier: LGPL-3.0
+SPDX-License-Identifier: LGPL-3.0-only
 */
 #define PY_SSIZE_T_CLEAN
 #define RLE_HEADER 0xFEFEFEFEFEFEFEFE
