@@ -46,6 +46,7 @@ if scdoc.found()
   mandir = get_option('mandir')
   man_files = [
             'openswitcher-proxy.1.scd',
+            'atemswitch.1.scd',
   ]
   foreach filename : man_files
     topic = filename.split('.')[-3].split('/')[-1]
