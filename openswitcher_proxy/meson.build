@@ -42,7 +42,6 @@ install_data(
 scdoc = dependency('scdoc', native: true, required: get_option('man-pages'))
 if scdoc.found()
   scdoc_prog = find_program(scdoc.get_pkgconfig_variable('scdoc'), native: true)
-  sh = find_program('sh', native: true)
   mandir = get_option('mandir')
   man_files = [
             'openswitcher-proxy.1.scd',
@@ -57,9 +56,9 @@ if scdoc.found()
       output,
       input: filename,
       output: output,
-      command: [
-        sh, '-c', '@0@ < @INPUT@ > @1@'.format(scdoc_prog.path(), output)
-      ],
+      feed: true,
+      capture: true,
+      command: scdoc_prog.path(),
       install: true,
       install_dir: '@0@/man@1@'.format(mandir, section)
     )
