@@ -334,14 +334,17 @@ class MediaPage:
     def media_slot_upload_file(self, index, path):
         mode = self.connection.mixer.mixerstate['video-mode']
         width, height = mode.get_resolution()
-
+        fname, ext = os.path.splitext(path)
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, width, height, preserve_aspect_ratio=True)
 
         name = Path(path).stem
+        premultiply = False
+        if ext.lower() == '.png':
+            premultiply = True
+            
+        self.media_slot_upload_pixbuf(index, pixbuf, name=name, premultiply=premultiply)
 
-        self.media_slot_upload_pixbuf(index, pixbuf, name=name)
-
-    def media_slot_upload_pixbuf(self, index, pixbuf, name=None):
+    def media_slot_upload_pixbuf(self, index, pixbuf, name=None, premultiply=False):
         self.log_mp.info(f"Uploading pixbuf to media slot {index}")
         mode = self.connection.mixer.mixerstate['video-mode']
         width, height = mode.get_resolution()
@@ -368,7 +371,7 @@ class MediaPage:
         self.media_pixbuf[index] = pixbuf
 
         pixels = dest.get_pixels()
-        frame = pyatem.media.rgb_to_atem(pixels, width, height)
+        frame = pyatem.media.rgb_to_atem(pixels, width, height, premultiply)
         self.media_slot_progress[index].show()
         self.media_slot[index].get_style_context().add_class('uploading')
         self.connection.mixer.upload(0, index, frame, name=name)
