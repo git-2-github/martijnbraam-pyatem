@@ -107,11 +107,11 @@ method_rgb_to_atem(PyObject *self, PyObject *args)
 {
     Py_buffer input_buffer;
     Py_ssize_t data_length;
-    unsigned int width, height;
+    unsigned int width, height, premultiply;
     PyObject *res;
 
     /* Parse arguments */
-    if (!PyArg_ParseTuple(args, "y*II", &input_buffer, &width, &height)) {
+    if (!PyArg_ParseTuple(args, "y*IIp", &input_buffer, &width, &height, &premultiply)) {
         return NULL;
     }
 
@@ -135,6 +135,18 @@ method_rgb_to_atem(PyObject *self, PyObject *args)
         float r2 = (float)buffer[4] / 255;
         float g2 = (float)buffer[5] / 255;
         float b2 = (float)buffer[6] / 255;
+
+        if (premultiply) {
+            // PNG files have straight alpha, for BMD switchers premultipled alpha is easier
+            float a1 = (float)buffer[3] / 255;
+            float a2 = (float)buffer[7] / 255;
+            r1 = r1 * a1;
+            g1 = g1 * a1;
+            b1 = b1 * a1;
+            r2 = r2 * a2;
+            g2 = g2 * a2;
+            b2 = b2 * a2;
+        }
 
         float y1 = (0.2126 * r1) + (0.7152 * g1) + (0.0722 * b1);
         float y2 = (0.2126 * r2) + (0.7152 * g2) + (0.0722 * b2);

@@ -22,9 +22,9 @@ def atem_to_rgb(data, width, height):
     return mc.atem_to_rgb(data, width, height)
 
 
-def rgb_to_atem(data, width, height):
+def rgb_to_atem(data, width, height, premultiply=False):
     """Wrapper for the native function"""
-    return mc.rgb_to_atem(data, width, height)
+    return mc.rgb_to_atem(data, width, height, premultiply)
 
 
 def rle_encode_slow(data):
