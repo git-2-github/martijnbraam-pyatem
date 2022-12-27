@@ -1918,7 +1918,8 @@ class KeyPropertiesAdvancedChromaCommand(Command):
         green = 0 if self.green is None else self.green
         blue = 0 if self.blue is None else self.blue
 
-        data = struct.pack('>HBB HHH HH hhHhhh xx', mask, self.index, self.keyer, foreground, background, key_edge, spill,
+        data = struct.pack('>HBB HHH HH hhHhhh xx', mask, self.index, self.keyer, foreground, background, key_edge,
+                           spill,
                            flare, brightness, contrast, saturation, red, green, blue)
 
         return self._make_command('CACK', data)
@@ -2196,6 +2197,32 @@ class StreamingServiceSetCommand(Command):
         data = struct.pack('>B 64s 512s 512s 3x II', mask, name, url, key,
                            self.bitrate_min or 0, self.bitrate_max or 0)
         return self._make_command('CRSS', data)
+
+
+class StreamingAudioBitrateCommand(Command):
+    """
+    Implementation of the `STAB` command. This sets the audio bitrate parameters for the stream and recording.
+    In practice this is always set to 128k min/max bitrate.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      4    u32    Minimum bitrate (Bps)
+    4      4    u32    Maximum bitrate (Bps)
+    ====== ==== ====== ===========
+    """
+
+    def __init__(self, bitrate_min, bitrate_max):
+        """
+        :param bitrate_min: Minimum bitrate
+        :param bitrate_max: Maximum bitrate
+        """
+        self.bitrate_min = bitrate_min
+        self.bitrate_max = bitrate_max
+
+    def get_command(self):
+        data = struct.pack('II', self.bitrate_min, self.bitrate_max)
+        return self._make_command('STAB', data)
 
 
 class StreamingStatusSetCommand(Command):
