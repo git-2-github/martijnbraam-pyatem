@@ -1202,3 +1202,11 @@ class SwitcherPage:
             rate_max = rate_min
         cmd = StreamingAudioBitrateCommand(rate_min, rate_max)
         self.connection.mixer.send_commands([cmd])
+
+    def on_video_bitrate_activate(self, widget, *args):
+        rate_min = int(self.video_rate_min.get_text()) * 1000
+        rate_max = int(self.video_rate_max.get_text()) * 1000
+        if rate_max < rate_min:
+            rate_max = rate_min
+        cmd = StreamingServiceSetCommand(bitrate_min=rate_min, bitrate_max=rate_max)
+        self.connection.mixer.send_commands([cmd])
