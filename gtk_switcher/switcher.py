@@ -11,7 +11,7 @@ from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, Transiti
     DkeyAutoCommand, DkeyTieCommand, \
     DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand, \
     FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand, StreamingServiceSetCommand, \
-    RecordingSettingsSetCommand, StreamingStatusSetCommand, MediaplayerSelectCommand
+    RecordingSettingsSetCommand, StreamingStatusSetCommand, MediaplayerSelectCommand, StreamingAudioBitrateCommand
 from pyatem.field import TransitionSettingsField, InputPropertiesField, TopologyField
 import gtk_switcher.stream_data
 
@@ -1193,4 +1193,12 @@ class SwitcherPage:
 
     def on_stream_recorder_filename_activate(self, widget, *args):
         cmd = RecordingSettingsSetCommand(filename=widget.get_text())
+        self.connection.mixer.send_commands([cmd])
+
+    def on_audio_bitrate_activate(self, widget, *args):
+        rate_min = int(self.audio_rate_min.get_text()) * 1000
+        rate_max = int(self.audio_rate_max.get_text()) * 1000
+        if rate_max < rate_min:
+            rate_max = rate_min
+        cmd = StreamingAudioBitrateCommand(rate_min, rate_max)
         self.connection.mixer.send_commands([cmd])

@@ -2221,7 +2221,7 @@ class StreamingAudioBitrateCommand(Command):
         self.bitrate_max = bitrate_max
 
     def get_command(self):
-        data = struct.pack('II', self.bitrate_min, self.bitrate_max)
+        data = struct.pack('>II', self.bitrate_min, self.bitrate_max)
         return self._make_command('STAB', data)
 
 
