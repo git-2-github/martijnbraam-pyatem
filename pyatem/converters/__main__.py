@@ -1,6 +1,8 @@
 # Copyright 2022 - 2022, Martijn Braam and the OpenAtem contributors
 # SPDX-License-Identifier: LGPL-3.0-only
 import argparse
+import ipaddress
+
 import pyatem.converters.converter as conv
 
 
@@ -51,6 +53,8 @@ def main():
             value = int.from_bytes(field.value, byteorder='little') > 0
         elif field.dtype == open:
             continue
+        elif field.dtype == ipaddress.IPv4Address:
+            value = ipaddress.IPv4Address(field.value)
         else:
             raise ValueError("Unknown type")
 

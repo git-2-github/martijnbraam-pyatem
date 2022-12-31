@@ -235,3 +235,41 @@ class WValueProtoConverter(Converter):
         # Write the new LUT name and finalize the upload
         self.set_value(Field((0x0410, 64), str, '', 'LUT name'), struct.pack('>64s', lut.title.encode()))
         self.set_value(Field((0x0400, 1), int, '', 'Unknown'), struct.pack('>B', 3))
+
+
+class AtemLegacyProtocol(Converter):
+    PROTOCOL = 'AtemLegacy'
+    NAME_FIELD = 0x0048
+
+    def get_name(self):
+        return self.get_value(Field((self.NAME_FIELD, 32), str, "Device", "Name")).decode()
+
+    def get_version(self):
+        return 'Unsupported'
+
+    def get_value(self, field):
+        if field.dtype == open:
+            return
+
+        result = b''
+        for i in range(0, field.key[1]):
+            char = bytes(self.handle.ctrl_transfer(bmRequestType=0xc0,
+                                                   bRequest=214,
+                                                   wValue=0,
+                                                   wIndex=field.key[0] + i,
+                                                   data_or_wLength=1))
+            if char == '\0':
+                break
+            result += char
+        return result
+
+    def set_value(self, field, value):
+        if field.dtype == str:
+            if len(value) > field.key[1] - 1:
+                value = value[0:field.key[1] - 2]
+            value += b'\0'
+        for i in range(0, len(value)):
+            self.handle.ctrl_transfer(bmRequestType=0x40,
+                                      bRequest=215,
+                                      wIndex=field.key[0] + i,
+                                      wValue=value[i])

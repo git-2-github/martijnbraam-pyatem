@@ -1,6 +1,8 @@
 # Copyright 2022 - 2022, Martijn Braam and the OpenAtem contributors
 # SPDX-License-Identifier: LGPL-3.0-only
-from pyatem.converters.protocol import LabelProtoConverter, Field, WValueProtoConverter
+import ipaddress
+
+from pyatem.converters.protocol import LabelProtoConverter, Field, WValueProtoConverter, AtemLegacyProtocol
 
 
 class MicroConverterBiDirectional12G(LabelProtoConverter):
@@ -83,4 +85,16 @@ class MicroConverterHdmiSdi3G(WValueProtoConverter):
             0xff: 'Disable',
         }),
         Field('LUT', open, 'LUTs', 'LUT'),
+    ]
+
+
+class AtemProductionStudio4k(AtemLegacyProtocol):
+    PRODUCT = 0xBD6E
+    NAME = "Blackmagic design ATEM Production Studio 4K"
+
+    FIELDS = [
+        Field((0x0048, 32), str, "Device", "Name"),
+        Field((0x0020, 4), ipaddress.IPv4Address, "Network", "Address"),
+        Field((0x0024, 4), ipaddress.IPv4Address, "Network", "Netmask"),
+        Field((0x0028, 4), ipaddress.IPv4Address, "Network", "Gateway"),
     ]

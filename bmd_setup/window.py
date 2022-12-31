@@ -1,5 +1,6 @@
 # Copyright 2021 - 2022, Martijn Braam and the OpenAtem contributors
 # SPDX-License-Identifier: GPL-3.0-only
+import ipaddress
 import os
 
 import gi
@@ -224,7 +225,8 @@ class SetupWindow:
                     value = value.decode()
                 elif field.dtype == int:
                     value = int.from_bytes(field.value, 'little')
-
+                elif field.dtype == ipaddress.IPv4Address:
+                    value = str(ipaddress.IPv4Address(value))
                 if field.dtype == bool:
                     widget = Gtk.Switch()
                     widget.set_active(field.value)
@@ -270,7 +272,7 @@ class SetupWindow:
                     widget.set_value(value)
                     widget.connect('value-changed', self.on_widget_changed)
                     wbox.pack_start(widget, False, False, 0)
-                elif field.dtype == str:
+                elif field.dtype == str or field.dtype == ipaddress.IPv4Address:
                     widget = Gtk.Entry()
                     field.widget = widget
                     widget.field = field
@@ -321,6 +323,10 @@ class SetupWindow:
             value = widget.get_value()
             value = self.encode_value(field, value)
             device.set_value(field, value)
+        elif field.dtype == ipaddress.IPv4Address:
+            value = widget.get_text()
+            addr = ipaddress.IPv4Address(value)
+            device.set_value(field, addr.packed)
 
     def on_select_page(self, widget, row):
         if self.listbox.get_selection_mode() == Gtk.SelectionMode.NONE:
