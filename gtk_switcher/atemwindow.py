@@ -80,7 +80,6 @@ class AtemConnection(threading.Thread):
         except ConnectionError as e:
             self.log.error(f"Could not connect to {self.ip}: {e}")
             return
-        self.connected = True
         while not self.stop:
             try:
                 self.mixer.loop()

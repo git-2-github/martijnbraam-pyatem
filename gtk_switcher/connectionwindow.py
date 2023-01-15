@@ -54,10 +54,13 @@ class Handler:
         self.password = builder.get_object('password')
         self.device = builder.get_object('device')
         self.avahi_list = builder.get_object('avahi_list')
+        self.preferences_button = builder.get_object('preferences')
 
         self.connection_udp = builder.get_object('connection_udp')
         self.connection_usb = builder.get_object('connection_usb')
         self.connection_tcp = builder.get_object('connection_tcp')
+
+        self.preferences_button.set_sensitive(self.connection.connected)
 
         self.settings = Gio.Settings.new('nl.brixit.Switcher')
         self.settings.connect('changed::switcher-ip', self.on_switcher_ip_changed)
