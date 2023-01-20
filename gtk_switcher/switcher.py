@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 import gettext
 import logging
+import re
 from datetime import datetime, timedelta
 
 from gtk_switcher.layout import LayoutView
@@ -1088,11 +1089,21 @@ class SwitcherPage:
         self.macro_edit = True
         self.connection.mixer.download(0xffff, widget.index)
 
+    def bps_to_human(self, bps):
+        if bps < 1000:
+            return str(bps) + 'b'
+        elif bps < 1000 * 1000:
+            val = bps / 1000
+            return f'{val:g}k'
+        else:
+            val = bps / 1000 / 1000
+            return f'{val:g}M'
+
     def on_streaming_service_change(self, data):
         self.expander_livestream.show()
         self.expander_encoder.show()
-        self.video_rate_min.set_text(str(int(data.min / 1000)))
-        self.video_rate_max.set_text(str(int(data.max / 1000)))
+        self.video_rate_min.set_text(self.bps_to_human(data.min))
+        self.video_rate_max.set_text(self.bps_to_human(data.max))
 
         self.stream_live_platform.set_text(data.name)
         self.stream_live_server.set_text(data.url)
@@ -1100,8 +1111,8 @@ class SwitcherPage:
 
     def on_streaming_audio_bitrate_change(self, data):
         self.expander_encoder.show()
-        self.audio_rate_min.set_text(str(int(data.min / 1000)))
-        self.audio_rate_max.set_text(str(int(data.max / 1000)))
+        self.audio_rate_min.set_text(self.bps_to_human(data.min))
+        self.audio_rate_max.set_text(self.bps_to_human(data.max))
 
     def on_streaming_status_change(self, data):
         starting = data.status == 2
@@ -1195,17 +1206,36 @@ class SwitcherPage:
         cmd = RecordingSettingsSetCommand(filename=widget.get_text())
         self.connection.mixer.send_commands([cmd])
 
+    def human_to_bps(self, human):
+        human = human.lower()
+        human = human.replace('ps', '')
+
+        if human.isnumeric():
+            num = human
+            unit = ''
+        else:
+            if not ' ' in human:
+                human = re.sub(r'([a-z]+)', r' \1', human)
+            num, unit = [string.strip() for string in human.split()]
+
+        mult = 1
+        if unit.startswith('k'):
+            mult = 1000
+        elif unit.startswith('m'):
+            mult = 1000 * 1000
+        return int(float(num) * mult)
+
     def on_audio_bitrate_activate(self, widget, *args):
-        rate_min = int(self.audio_rate_min.get_text()) * 1000
-        rate_max = int(self.audio_rate_max.get_text()) * 1000
+        rate_min = self.human_to_bps(self.audio_rate_min.get_text())
+        rate_max = self.human_to_bps(self.audio_rate_max.get_text())
         if rate_max < rate_min:
             rate_max = rate_min
         cmd = StreamingAudioBitrateCommand(rate_min, rate_max)
         self.connection.mixer.send_commands([cmd])
 
     def on_video_bitrate_activate(self, widget, *args):
-        rate_min = int(self.video_rate_min.get_text()) * 1000
-        rate_max = int(self.video_rate_max.get_text()) * 1000
+        rate_min = self.human_to_bps(self.video_rate_min.get_text())
+        rate_max = self.human_to_bps(self.video_rate_max.get_text())
         if rate_max < rate_min:
             rate_max = rate_min
         cmd = StreamingServiceSetCommand(bitrate_min=rate_min, bitrate_max=rate_max)
