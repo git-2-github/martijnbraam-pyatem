@@ -433,7 +433,6 @@
                                                   <object class="GtkLabel">
                                                     <property name="visible">True</property>
                                                     <property name="can-focus">False</property>
-                                                    <property name="margin-bottom">5</property>
                                                     <property name="label" translatable="yes">Color Generators</property>
                                                     <style>
                                                       <class name="heading"/>
@@ -1333,7 +1332,6 @@
                                                   <object class="GtkLabel">
                                                     <property name="visible">True</property>
                                                     <property name="can-focus">False</property>
-                                                    <property name="margin-bottom">5</property>
                                                     <property name="label" translatable="yes">Transitions</property>
                                                     <style>
                                                       <class name="heading"/>
@@ -1448,7 +1446,6 @@
                                                   <object class="GtkLabel">
                                                     <property name="visible">True</property>
                                                     <property name="can-focus">False</property>
-                                                    <property name="margin-bottom">5</property>
                                                     <property name="label" translatable="yes">Fade to black</property>
                                                     <style>
                                                       <class name="heading"/>
@@ -1520,7 +1517,6 @@
                                                   <object class="GtkLabel">
                                                     <property name="visible">True</property>
                                                     <property name="can-focus">False</property>
-                                                    <property name="margin-bottom">5</property>
                                                     <property name="label" translatable="yes">Macros</property>
                                                     <style>
                                                       <class name="heading"/>
