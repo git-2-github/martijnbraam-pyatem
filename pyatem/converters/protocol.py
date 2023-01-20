@@ -51,6 +51,10 @@ class Converter:
             self.handle = usb.core.find(idVendor=self.VENDOR, idProduct=self.PRODUCT)
 
         self.handle.set_configuration(1)
+        self.init()
+
+    def init(self):
+        pass
 
     def get_name(self):
         # Fallback for devices that might not support renaming
@@ -240,6 +244,24 @@ class WValueProtoConverter(Converter):
 class AtemLegacyProtocol(Converter):
     PROTOCOL = 'AtemLegacy'
     NAME_FIELD = 0x0048
+
+    def init(self):
+        self.handle.set_configuration()
+        self.handle.reset()
+        self.handle.clear_halt(0x02)
+        self.handle.set_configuration()
+        self.handle.reset()
+        self.handle.clear_halt(0x02)
+        res = b''
+        for addr in [8, 9, 10, 11, 16, 8, 9, 10, 11, 12, 13]:
+            char = bytes(self.handle.ctrl_transfer(bmRequestType=0xc0,
+                                                   bRequest=214,
+                                                   wValue=0,
+                                                   wIndex=addr,
+                                                   data_or_wLength=1, timeout=1000))
+            print('retr', char)
+            res += char
+        print(res)
 
     def get_name(self):
         return self.get_value(Field((self.NAME_FIELD, 32), str, "Device", "Name")).decode()
