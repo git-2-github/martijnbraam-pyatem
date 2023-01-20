@@ -1789,6 +1789,8 @@ class FairlightHeadphonesField(FieldBase):
 
     """
 
+    CODE = "FMHP"
+
     def __init__(self, raw):
         self.raw = raw
         self.volume, self.unmuted = struct.unpack('> i 4x ? 23x', raw)
@@ -1813,6 +1815,8 @@ class FairlightSoloField(FieldBase):
     23     1    u8     Soloed channel (subchannel)
 
     """
+
+    CODE = "FAMS"
 
     def __init__(self, raw):
         self.raw = raw
