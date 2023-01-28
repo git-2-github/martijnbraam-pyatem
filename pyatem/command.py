@@ -1344,7 +1344,7 @@ class FairlightStripPropertiesCommand(Command):
         split = 0xff if self.channel > -1 else 0x01
         self.channel = 0x00 if self.channel == -1 else self.channel
         pad = b'\xff\xff\xff\xff\xff\xff\xff'
-        data = struct.pack('>H H4x6sBb B 3x i ? 5x h 2x Hh 2x iB 3x', mask, self.source, pad, split, self.channel,
+        data = struct.pack('>H H4x6sBb B 3x i xx? 1x h 2x H 2x h 2x iB 3x', mask, self.source, pad, split, self.channel,
                            delay,
                            gain, eq_enable, eq_gain,
                            dynamics_gain, balance, volume, state)
