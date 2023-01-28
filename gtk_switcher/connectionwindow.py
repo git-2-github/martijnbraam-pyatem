@@ -72,6 +72,9 @@ class Handler:
         GLib.idle_add(self.on_discovered_ui, name, subtitle, proto, address)
 
     def on_discovered_ui(self, name, subtitle, proto, address):
+        # Drop placeholder since it messes with libhandy css
+        self.avahi_list.set_placeholder(None)
+
         label = Gtk.Label(address[0])
         label.address = address
         label.proto = proto
