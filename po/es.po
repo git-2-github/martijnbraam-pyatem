@@ -2,77 +2,81 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the openswitcher package.
 # Martijn Braam <martijn@brixit.nl>, 2023.
+# Guillermo Sevillano <willsc123@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-14 21:06+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-01-29 00:06+0000\n"
+"Last-Translator: Guillermo Sevillano <willsc123@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/openswitcher/"
+"openswitcher/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #. Window title
 #: gtk_switcher/ui/mixer.glade:176 gtk_switcher/ui/mixer.glade:189
 #: gtk_switcher/ui/mixer.glade:197
 msgid "Switcher control"
-msgstr ""
+msgstr "Control del mezclador"
 
 #: gtk_switcher/ui/mixer.glade:395
 msgid "Color 1"
-msgstr ""
+msgstr "Color 1"
 
 #: gtk_switcher/ui/mixer.glade:410
 msgid "Color 2"
-msgstr ""
+msgstr "Color 2"
 
 #: gtk_switcher/ui/mixer.glade:437
 msgid "Color Generators"
-msgstr ""
+msgstr "Generadores de color"
 
 #: gtk_switcher/ui/mixer.glade:526 gtk_switcher/ui/mixer.glade:566
 #: gtk_switcher/ui/mixer.glade:642 gtk_switcher/ui/mixer.glade:1274
 msgid "Rate"
-msgstr ""
+msgstr "Tasa"
 
 #: gtk_switcher/ui/mixer.glade:551
 msgid "Mix"
-msgstr ""
+msgstr "Disolver"
 
 #: gtk_switcher/ui/mixer.glade:581
 msgid "Dip source"
-msgstr ""
+msgstr "Intermedio"
 
 #: gtk_switcher/ui/mixer.glade:626
 msgid "Dip"
-msgstr ""
+msgstr "Fundido"
 
 #: gtk_switcher/ui/mixer.glade:953
 msgctxt "wipe_transition"
 msgid "Symmetry"
-msgstr ""
+msgstr "Simetría"
 
 #: gtk_switcher/ui/mixer.glade:983
 msgctxt "wipe_transition"
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: gtk_switcher/ui/mixer.glade:998
 msgctxt "wipe_transition"
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: gtk_switcher/ui/mixer.glade:1054
 msgctxt "wipe_transition"
 msgid "Softness"
-msgstr ""
+msgstr "Suavizado"
 
 #: gtk_switcher/ui/mixer.glade:1069
 msgid "Width"
-msgstr ""
+msgstr "Ancho"
 
 #. Fill video source
 #: gtk_switcher/ui/mixer.glade:1114
