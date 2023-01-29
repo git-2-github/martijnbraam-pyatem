@@ -63,7 +63,7 @@ Or if the software installed it can be started using the launcher script::
 
     openswitcher-proxy --config /etc/myconfigfile.toml
 
-The default config location is /etc/openswitcher/proxy.conf if not specified. Here's an example config:
+The default config location is /etc/openswitcher/proxy.toml if not specified. Here's an example config:
 
     [[hardware]]
     id = "mini"
