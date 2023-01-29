@@ -319,6 +319,8 @@ class VideoModeField(FieldBase):
             self.interlaced = modes[self.mode][1]
             self.rate = modes[self.mode][2]
             self.widescreen = modes[self.mode][3]
+        else:
+            raise ValueError(f"Unknown resolution code {self.mode}, cannot continue")
 
     def get_label(self):
         if self.resolution is None:
