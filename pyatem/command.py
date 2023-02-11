@@ -1,6 +1,7 @@
 # Copyright 2021 - 2022, Martijn Braam and the OpenAtem contributors
 # SPDX-License-Identifier: LGPL-3.0-only
 import colorsys
+import datetime
 import struct
 
 
@@ -2782,6 +2783,22 @@ class TimeRequestCommand(Command):
 
     def get_command(self):
         return self._make_command('TiRq', b'')
+
+
+class SetTimeOfDayCommand(Command):
+    """
+    Set the time of day on the hardware. Used my ATEMSC at startup to set the atem to the system clock of the computer.
+    """
+
+    def __init__(self, time):
+        if not isinstance(time, datetime.datetime):
+            raise ValueError()
+        self.time = time
+
+    def get_command(self):
+        timestamp = self.time.timestamp()
+        data = struct.pack('>I4x', timestamp)
+        return self._make_command('SToD', data)
 
 
 class TransferCompleteCommand(Command):
