@@ -409,6 +409,7 @@ class UsbProtocol(BaseProtocol):
     PRODUCTS = {
         0xbe49: "Atem Mini",
         0xbe55: "Atem Mini Pro",
+        0xbe7c: "Atem Mini Extreme",
     }
 
     def __init__(self, port=None):
