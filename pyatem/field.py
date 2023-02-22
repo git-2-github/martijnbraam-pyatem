@@ -266,6 +266,8 @@ class VideoModeField(FieldBase):
     25  8k59.94
     26  1080p30
     27  1080p60
+    28  720p60
+    29  1080i60
     === ==========
 
     After parsing:
@@ -312,6 +314,8 @@ class VideoModeField(FieldBase):
             25: (4320, False, 59.94, True),
             26: (1080, False, 30, True),
             27: (1080, False, 60, True),
+            28: (720, False, 60, True),
+            29: (1080, True, 60, True),
         }
 
         if self.mode in modes:
@@ -409,6 +413,8 @@ class VideoModeCapabilityField(FieldBase):
     25  8k59.94
     26  1080p30
     27  1080p60
+    28  720p60
+    29  1080i60
     === ==========
 
     The multiview and downconvert bitfields are the same values as the resultion numbers but the
