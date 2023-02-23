@@ -71,6 +71,9 @@ class MixEffectBlock(Gtk.Grid):
         self.last_preview = None
         self.last_preview_in_program = False
 
+    def __repr__(self):
+        return '<MixEffectBlock index={}>'.format(self.index)
+
     def set_mode(self, mode):
         self.mode = mode
 
@@ -129,8 +132,6 @@ class MixEffectBlock(Gtk.Grid):
             child.destroy()
         for child in self.preview_bus:
             child.destroy()
-
-
 
         for top, row in enumerate(buttons):
             for left, button in enumerate(row):

@@ -888,6 +888,13 @@ class SwitcherPage:
         mp = []
         black = None
         bars = None
+        extra1 = []
+        extra2 = []
+
+        extra1_me1 = []
+        extra2_me1 = []
+        extra1_me2 = []
+        extra2_me2 = []
 
         # Clear the combobox models
         self.model_changing = True
@@ -908,6 +915,13 @@ class SwitcherPage:
                 black = i
             if i.port_type == InputPropertiesField.PORT_BARS:
                 bars = i
+            if i.port_type == InputPropertiesField.PORT_SUPERSOURCE:
+                extra2.append(i)
+            if i.port_type == InputPropertiesField.PORT_ME_OUTPUT:
+                if i.available_me1:
+                    extra1_me1.append(i)
+                if i.available_me2:
+                    extra1_me2.append(i)
 
             if i.available_me1:
                 self.model_me1_fill.append([str(i.index), i.name])
@@ -967,13 +981,20 @@ class SwitcherPage:
             row1_ext = external[0:num]
             row2_ext = external[num:] + [None] * ((2 * num) - len(external))
 
-        row1 = row1_ext + [None, black, None] + colors
-        row2 = row2_ext + [None, bars, None] + mp
+        row1 = row1_ext + [None, black, None] + colors + extra1
+        row2 = row2_ext + [None, bars, None] + mp + extra2
 
         buttons = [row1, row2]
 
         for me in self.me:
-            me.set_inputs(buttons)
+            me_btns = [buttons[0][:], buttons[1][:]]
+            if me.index == 0:
+                me_btns[0] += extra1_me1
+                me_btns[1] += extra2_me1
+            elif me.index == 1:
+                me_btns[0] += extra1_me2
+                me_btns[1] += extra2_me2
+            me.set_inputs(me_btns)
             self.apply_css(me, self.provider)
 
         self.model_changing = False
