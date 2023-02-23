@@ -81,6 +81,9 @@ class UpstreamKeyer(Gtk.Frame):
         super(Gtk.Frame, self).__init__()
         self.init_template()
 
+    def __repr__(self):
+        return '<UpstreamKeyer me={} keyer={}>'.format(self.index, self.keyer)
+
     def set_class(self, widget, classname, state):
         if state:
             widget.get_style_context().add_class(classname)
@@ -439,7 +442,6 @@ class UpstreamKeyer(Gtk.Frame):
         state = widget.get_style_context().has_class('active')
         cmd = KeyPropertiesAdvancedChromaColorpickerCommand(index=self.index, keyer=self.keyer, preview=not state)
         self.connection.mixer.send_commands([cmd])
-
 
     @Gtk.Template.Callback()
     def on_chroma_foreground_adj_value_changed(self, widget):

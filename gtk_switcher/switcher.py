@@ -52,7 +52,6 @@ class SwitcherPage:
 
         self.keyer_stack = builder.get_object('keyer_stack')
 
-        self.usk_count = 0
         self.usks = {}
         self.dsks = {}
         self.has_models = []
@@ -612,23 +611,29 @@ class SwitcherPage:
             self.log_sw.warning("Got _MeC for non-existing M/E {}".format(data.index + 1))
             return
 
+        if data.index not in self.usks:
+            self.usks[data.index] = {}
+
         self.me[data.index].set_config(data)
 
         from gtk_switcher.upstreamkey import UpstreamKeyer
 
-        if data.keyers > self.usk_count:
-            add = data.keyers - self.usk_count
+        usk_count = len(self.usks[data.index])
+        if data.keyers > usk_count:
+            add = data.keyers - usk_count
 
             for i in range(0, add):
-                self.usk_count += 1
                 exp = Gtk.Expander()
                 exp.get_style_context().add_class('bmdgroup')
-                frame_label = Gtk.Label(_("Upstream keyer {}").format(self.usk_count))
+                label_text = _("Upstream keyer {}").format(len(self.usks[data.index]) + 1)
+                if data.index != 0:
+                    label_text += ' [M/E {}]'.format(data.index + 1)
+                frame_label = Gtk.Label(label_text)
                 frame_label.get_style_context().add_class("heading")
                 exp.set_label_widget(frame_label)
                 exp.set_expanded(True)
-                usk = UpstreamKeyer(index=0, keyer=self.usk_count - 1, connection=self.connection)
-                self.usks[usk.index] = usk
+                usk = UpstreamKeyer(index=data.index, keyer=len(self.usks[data.index]), connection=self.connection)
+                self.usks[data.index][usk.keyer] = usk
                 self.has_models.append(usk)
                 exp.add(usk)
                 self.apply_css(usk, self.provider)
@@ -688,25 +693,38 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_key_properties_base_change(self, data):
-        if data.keyer not in self.usks:
+        if data.index not in self.usks:
+            self.log_sw.warning(
+                "Got key-properties-base for non-existant M/E {}".format(data.index + 1))
+            return
+        if data.keyer not in self.usks[data.index]:
             self.log_sw.warning(
                 "Got key-properties-base for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
             return
-        self.usks[data.index].on_key_properties_base_change(data)
+        self.usks[data.index][data.keyer].on_key_properties_base_change(data)
 
     def on_key_properties_luma_change(self, data):
-        if data.keyer not in self.usks:
+        if data.index not in self.usks:
+            self.log_sw.warning(
+                "Got key-properties-luma for non-existant M/E {}".format(data.index + 1))
+            return
+        if data.keyer not in self.usks[data.index]:
             self.log_sw.warning(
                 "Got key-properties-luma for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
             return
-        self.usks[data.index].on_key_properties_luma_change(data)
+        self.usks[data.index][data.keyer].on_key_properties_luma_change(data)
 
     def on_key_properties_dve_change(self, data):
-        if data.keyer not in self.usks:
+        if data.index not in self.usks:
+            self.log_sw.warning(
+                "Got key-properties-dve for non-existant M/E {}".format(data.index + 1))
+            return
+        if data.keyer not in self.usks[data.index]:
             self.log_sw.warning(
                 "Got key-properties-dve for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
             return
-        self.usks[data.keyer].on_key_properties_dve_change(data)
+
+        self.usks[data.index][data.keyer].on_key_properties_dve_change(data)
         width = 16.0 * data.size_x / 1000
         height = 9.0 * data.size_y / 1000
 
@@ -715,16 +733,27 @@ class SwitcherPage:
         region.set_mask(data.mask_top, data.mask_bottom, data.mask_left, data.mask_right)
 
     def on_key_properties_advanced_chroma_change(self, data):
-        if data.keyer not in self.usks:
-            self.log_sw.warning("Got KACk for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+        if data.index not in self.usks:
+            self.log_sw.warning(
+                "Got KACk for non-existant M/E {}".format(data.index + 1))
             return
-        self.usks[data.keyer].on_advanced_chroma_change(data)
+        if data.keyer not in self.usks[data.index]:
+            self.log_sw.warning(
+                "Got KACk for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            return
+        self.usks[data.index][data.keyer].on_advanced_chroma_change(data)
 
     def on_key_properties_advanced_chroma_colorpicker_change(self, data):
-        if data.keyer not in self.usks:
-            self.log_sw.warning("Got KACC for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+        if data.index not in self.usks:
+            self.log_sw.warning(
+                "Got KACC for non-existant M/E {}".format(data.index + 1))
             return
-        self.usks[data.keyer].on_chroma_picker_change(data)
+        if data.keyer not in self.usks[data.index]:
+            self.log_sw.warning(
+                "Got KACC for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
+            return
+
+        self.usks[data.index][data.keyer].on_chroma_picker_change(data)
 
         size = data.size / 1000
 
