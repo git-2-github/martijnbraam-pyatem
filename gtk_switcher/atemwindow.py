@@ -185,6 +185,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
 
         self.hardware_threads = {}
         self.connection_settings = {}
+        self.inpr_latch = 0
 
         self.apply_css(self.window, self.provider)
 
@@ -329,6 +330,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.log_aw.warning("Disconnected from mixer")
 
     def on_connect(self):
+        self.inpr_latch = 0
+        self.audio_latch = 0
         # Load stored connection-specific settings if available
         settings = self.settings.get_string('connections')
         settings = json.loads(settings)
@@ -435,6 +438,12 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         call_fields(field, self, data)
 
         try:
+            if self.inpr_latch == 1 and field != 'input-properties':
+                # Run the input change event after the events on start have run
+                self.inpr_latch = 2
+                self.on_input_layout_change(None)
+                self.on_camera_layout_change(None)
+
             if field == 'firmware-version':
                 self.firmware_version = data
                 if data.major < 2:
@@ -449,8 +458,14 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             elif field == 'time-config':
                 self.on_timecode_config_change(data)
             elif field == 'input-properties':
-                self.on_input_layout_change(data)
-                self.on_camera_layout_change(data)
+                # Ignore input-properties fields in the initial connection
+                if self.inpr_latch == 0:
+                    self.inpr_latch = 1
+                elif self.inpr_latch == 1:
+                    return
+                else:
+                    self.on_input_layout_change(data)
+                    self.on_camera_layout_change(data)
             elif field == 'program-bus-input':
                 self.on_program_input_change(data)
             elif field == 'preview-bus-input':
