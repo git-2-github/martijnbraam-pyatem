@@ -1430,6 +1430,62 @@ class TransitionDveField(FieldBase):
         return '<transition-dve: me={}, rate={} style={}>'.format(self.index, self.rate, self.style)
 
 
+class TransitionStingerField(FieldBase):
+    """
+    Data from the `TStP`. Settings for the Stinger transition.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Descriptions
+    ====== ==== ====== ===========
+    0      1    u8     M/E index
+    1      1    u8     Stinger mediaplayer index
+    2      1    bool   Source key is premultiplied
+    3      1    ?      padding
+    4      2    u16    Key clip [0-1000]
+    6      2    u16    Key gain [0-1000]
+    8      1    bool   Key invert
+    9      1    ?      padding
+    10     2    u16    Preroll frames
+    12     2    u16    Clip duration frames
+    14     2    u16    Trigger point frame
+    16     2    u16    Mix Rate
+    18     2    ?      unknown
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: M/E index in the mixer
+    :ivar mediaplayer: Mediaplayer number for the stinger source
+    :ivar key_premultiplied: Key is premultiplied alpha
+    :ivar key_clip: Key clipping point
+    :ivar key_gain: Key Gain
+    :ivar key_invert: Invert key source
+    :ivar preroll: Number of preroll frames
+    :ivar triggerpoint: Triggerpoint frame offset
+    :ivar duration: Clip duration in frames
+    :ivar rate: Clip rate
+    """
+
+    CODE = "TStP"
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>BB?x HH?x 4H2x', raw)
+        self.index = field[0]
+        self.mediaplayer = field[1]
+        self.key_premultiplied = field[2]
+        self.key_clip = field[3]
+        self.key_gain = field[4]
+        self.key_invert = field[5]
+        self.preroll = field[6]
+        self.duration = field[7]
+        self.triggerpoint = field[8]
+        self.rate = field[9]
+
+    def __repr__(self):
+        return '<transition-stinger: me={}, mediaplayer={}>'.format(self.index, self.mediaplayer)
+
+
 class AudioMixerMasterPropertiesField(FieldBase):
     """
     Data from the `AMMO`. Settings for the master bus on legacy audio units.
