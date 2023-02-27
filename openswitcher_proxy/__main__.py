@@ -9,6 +9,7 @@ from openswitcher_proxy.frontend_httpapi import HttpApiFrontendThread
 from openswitcher_proxy.frontend_status import StatusFrontendThread
 from openswitcher_proxy.frontend_tcp import TcpFrontendThread
 from openswitcher_proxy.frontend_mqtt import MqttFrontendThread
+from openswitcher_proxy.frontend_dmx import DmxFrontendThread
 from openswitcher_proxy.hardware import HardwareThread
 
 logging.basicConfig(
@@ -54,6 +55,8 @@ def run(config_path):
                     t = TcpFrontendThread(frontend, nthreads)
                 elif frontend['type'] == 'mqtt':
                     t = MqttFrontendThread(frontend, nthreads)
+                elif frontend['type'] == 'dmx':
+                    t = DmxFrontendThread(frontend, nthreads)
                 else:
                     logging.error(f'  Unknown frontend type "{frontend["type"]}"')
                     continue

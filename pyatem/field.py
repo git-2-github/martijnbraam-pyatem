@@ -2981,7 +2981,7 @@ class FairlightMasterLevelsField(FieldBase):
         return '<fairlight-master-levels>'
 
 
-class CameraControlDataPacketFieldDisabled(FieldBase):
+class CameraControlDataPacketField(FieldBase):
     """
 
     !! This parser is not production ready !!
