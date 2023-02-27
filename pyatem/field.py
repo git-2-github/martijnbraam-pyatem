@@ -1035,38 +1035,38 @@ class TopologyField(FieldBase):
     rs485               0         1       1
     =================== ========= ======= ======
 
-    ====== ==== ====== ========= ========= ======= ======= ====== ===========
-    Offset Size Type   Atem Mini Mini Pro  1M/E 4k Prod 4k TVS HD Description
-    ====== ==== ====== ========= ========= ======= ======= ====== ===========
-    0      1    u8     1         1         1       1       1      Number of M/E units
-    1      1    u8     14        15        31      24      24     Sources
-    2      1    u8     1         1         2       2       2      Downstream keyers
-    3      1    u8     1         1         3       1       1      AUX busses
-    4      1    u8     0         0         0       0       4      MixMinus Outputs
-    5      1    u8     1         1         2       2       2      Media players
-    6      1    u8     0         1         1       1       1      Multiviewers
-    7      1    u8     0         0         1       0       1      rs485
-    8      1    u8     4         4         4       4       4      Hyperdecks
-    9      1    u8     1         1         1       0       1      DVE
-    10     1    u8     0         0         1       0       0      Stingers
-    11     1    u8     0         0         0       0       0      supersources
-    12     1    u8     0         0         1       1       1      ? Multiview routable?
-    13     1    u8     0         0         0       0       1      Talkback channels
-    14     1    u8     0         0         0       0       4      ?
-    15     1    u8     1         1         0       0       0      ?
-    16     1    u8     0         0         0       0       0      ?
-    17     1    u8     0         0         1       1       0      ?
-    18     1    u8     1         1         1       1       1      Camera Control
-    19     1    u8     0         0         1       0       1      ?
-    20     1    u8     0         0         1       0       1      ?
-    21     1    u8     0         0         1       1       1      ? Multiview routable?
-    22     1    u8     1         1         0       0       0      Advanced chroma keyers
-    23     1    u8     1         1         0       0       0      Only configurable outputs
-    24     1    u8     1         1         0       0       0      ?
-    25     1    u8     0x20      0x2f      0x20    0       0x10   ?
-    26     1    u8     3         108       0       0       0      ?
-    27     1    u8     0xe8      0x69      0x00    0       0x0    ?
-    ====== ==== ====== ========= ========= ======= ======= ====== ===========
+    ====== ==== ====== ========= ========= ======= ======= ====== ======= ===========
+    Offset Size Type   Atem Mini Mini Pro  1M/E 4k Prod 4k TVS HD CHD 2ME Description
+    ====== ==== ====== ========= ========= ======= ======= ====== ======= ===========
+    0      1    u8     1         1         1       1       1      2       Number of M/E units
+    1      1    u8     14        15        31      24      24     57      Sources
+    2      1    u8     1         1         2       2       2      2       Downstream keyers
+    3      1    u8     1         1         3       1       1      12      AUX busses
+    4      1    u8     0         0         0       0       4      12      MixMinus Outputs
+    5      1    u8     1         1         2       2       2      2       Media players
+    6      1    u8     0         1         1       1       1      2       Multiviewers
+    7      1    u8     0         0         1       0       1      0       rs485
+    8      1    u8     4         4         4       4       4      4       Hyperdecks
+    9      1    u8     1         1         1       0       1      1       DVE
+    10     1    u8     0         0         1       0       0      1       Stingers
+    11     1    u8     0         0         0       0       0      1       supersources
+    12     1    u8     0         0         1       1       1      0       ?
+    13     1    u8     0         0         0       0       1      2       Talkback channels
+    14     1    u8     0         0         0       0       4      20      SDI inputs ?
+    15     1    u8     1         1         0       0       0      1       Scalers on input?
+    16     1    u8     0         0         0       0       0      0       ?
+    17     1    u8     0         0         1       1       0      0       ?
+    18     1    u8     1         1         1       1       1      1       Camera Control
+    19     1    u8     0         0         1       0       1      0       ?
+    20     1    u8     0         0         1       0       1      0       ?
+    21     1    u8     0         0         1       1       1      1       Multiview routable
+    22     1    u8     1         1         0       0       0      1       Advanced chroma keyers
+    23     1    u8     1         1         0       0       0      1       Only configurable outputs
+    24     1    u8     1         1         0       0       0      0       ?
+    25     1    u8     0x20      0x2f      0x20    0       0x10   0       ?
+    26     1    u8     3         108       0       0       0      0       ?
+    27     1    u8     0xe8      0x69      0x00    0       0x0    0       ?
+    ====== ==== ====== ========= ========= ======= ======= ====== ======= ===========
 
 
     After parsing:
