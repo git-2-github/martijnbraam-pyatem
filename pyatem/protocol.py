@@ -124,6 +124,7 @@ class AtemProtocol:
         'SSrc': 'supersource-properties',
         'SSBP': 'supersource-box-properties',
         'V3sl': 'sdi-3g-level',
+        'RXMS': 'hyperdeck-settings',
         'RXCP': 'hyperdeck-status',
         'RXSS': 'hyperdeck-storage',
         'RXCC': 'hyperdeck-clip-count',
