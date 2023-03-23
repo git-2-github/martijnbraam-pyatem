@@ -1229,7 +1229,11 @@ class FairlightMasterPropertiesCommand(Command):
 
     def __init__(self, eq_gain=None, dynamics_gain=None, volume=None, afv=None, eq_enable=None):
         """
-        :param index: 0-indexed M/E number to control the preview bus of
+        :param eq_gain: Make-up gain for the master EQ dialog
+        :param eq_enable: Enable the EQ on the master bus
+        :param dynamics_gain: Make-up gain for the master Dynamics dialog
+        :param volume: Master volume fader value
+        :param afv: Make the master volume follow the fade-to-black function
         """
 
         self.eq_gain = eq_gain
