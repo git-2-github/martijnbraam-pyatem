@@ -6,7 +6,10 @@ packages:
   - sphinx
   - py3-sphinx
   - py3-sphinx_rtd_theme
+  - py3-pip
 tasks:
+  - deps: |
+      pip3 install sphinxcontrib.jquery
   - build: |
       cd pyatem/docs
       make html
