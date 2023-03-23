@@ -1265,6 +1265,11 @@ class FairlightStripPropertiesCommand(Command):
     """
     Implementation of the `CFSP` command. This sets the settings of a channel strip in fairlight audio.
 
+    The source index is the same as the video source index from the InputProperties fields.
+
+    For normal channel strips the channel index should be -1. If the channel is split (two mono channels instead of a
+    stereo input) the channel numbers are 0 and 1.
+
     ====== ==== ====== ===========
     Offset Size Type   Description
     ====== ==== ====== ===========
@@ -1301,7 +1306,16 @@ class FairlightStripPropertiesCommand(Command):
     def __init__(self, source, channel, delay=None, gain=None, eq_gain=None, eq_enable=None, dynamics_gain=None,
                  balance=None, volume=None, state=None):
         """
-        :param index: 0-indexed M/E number to control the preview bus of
+        :param source: The source index
+        :param channel: The channel index inside the source, -1 for the normal stereo channels and 0 and 1 for split
+        :param delay: Delay in frames
+        :param gain: Input gain
+        :param eq_gain: Make-up gain from the EQ dialog
+        :param eq_enable: Enable the EQ block
+        :param dynamics_gain: Make-up gain from the dynamics dialog
+        :param balance: Channel balance or pan
+        :param volume: The volume fader level
+        :param state: Bitfield for the mute and AFV state. 1=off, 2=on, 4=afv
         """
         self.source = source
         self.channel = channel
