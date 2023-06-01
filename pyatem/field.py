@@ -115,7 +115,9 @@ class ProductNameField(FieldBase):
     ====== ==== ====== ===========
     Offset Size Type   Description
     ====== ==== ====== ===========
-    0      44   char[] Product name
+    0      40   char[] Product name
+    40     1    u8     Model number
+    41     3    ?      unknown
     ====== ==== ====== ===========
 
     After parsing:
@@ -127,10 +129,11 @@ class ProductNameField(FieldBase):
 
     def __init__(self, raw):
         self.raw = raw
-        self.name = self._get_string(raw)
+        name, self.model = struct.unpack('>40s B 3x', raw)
+        self.name = self._get_string(name)
 
     def __repr__(self):
-        return '<product-name {}>'.format(self.name)
+        return '<product-name {} (model 0x{:02X})>'.format(self.name, self.model)
 
 
 class MixerEffectConfigField(FieldBase):
