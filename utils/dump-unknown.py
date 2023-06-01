@@ -17,8 +17,15 @@ def on_change(key, contents):
         if key not in result:
             result[key] = set()
         result[key].add(contents)
-        print(key)
+
+    if key == 'multiviewer-input' or key == 'time':
+        return
+    
+    print(key)
+    if isinstance(contents, bytes):
         print('    ' + hexdump(contents, 'return').replace('\n', '\n    '))
+    else:
+        print('    ' + repr(contents))
 
 
 def sigint_handler(signal, frame):
