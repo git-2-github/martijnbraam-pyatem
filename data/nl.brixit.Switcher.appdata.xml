@@ -32,6 +32,23 @@
   <content_rating type="oars-1.1"/>
   <releases>
 
+    <release version="0.9.0" date="2023-06-01">
+      <description>
+        <ul>
+          <li>Don't crash on python installations without locale support</li>
+          <li>Convert alpha to premultiplied when uploading .png stills</li>
+          <li>Support changing the audio bitrate for ATEMs with streaming support</li>
+          <li>Disable opening the hardware settings panel when not connected</li>
+          <li>Fixed consistency issues on the palette headings</li>
+          <li>Add units to the streaming bitrate settings</li>
+          <li>Make the connection window side-by-side</li>
+          <li>Add support for the new constellation hardware</li>
+          <li>Add the supersource and M/E source buttons for the hardware that supports it</li>
+          <li>Fix performance issue on connecting to hardware with many inputs</li>
+        </ul>
+      </description>
+    </release>
+
     <release version="0.8.2" date="2022-10-18">
       <description>
         <ul>
