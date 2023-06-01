@@ -229,10 +229,51 @@ method_rle_encode(PyObject *self, PyObject *args)
     return res;
 }
 
+static PyObject *
+method_rgb_to_regions(PyObject *self, PyObject *args)
+{
+    Py_buffer input_buffer;
+    Py_ssize_t data_length;
+    unsigned int width, height;
+    PyObject *res;
+
+    /* Parse arguments */
+    if (!PyArg_ParseTuple(args, "y*II", &input_buffer, &width, &height)) {
+        return NULL;
+    }
+
+    data_length = input_buffer.len;
+    unsigned char *buffer;
+    buffer = input_buffer.buf;
+
+    char *maskbuffer = (char *) malloc(data_length/4);
+    if (maskbuffer == NULL) {
+        return PyErr_NoMemory();
+    }
+    char *mask = maskbuffer;
+
+
+    int pixel_size = 4;
+    bool last = false;
+    for (int i = 0; i < data_length; i += pixel_size) {
+        bool pixel = buffer[3] < 255;
+        if(pixel != last) {
+            if(pixel) {
+
+            }
+        }
+        last = pixel;
+        mask++;
+    }
+
+    return res;
+}
+
 static PyMethodDef MediaConvertMethods[] = {
     {"atem_to_rgb", method_atem_to_rgb, METH_VARARGS, "Convert an Atem YCbCrA frame to RGB8888"},
     {"rgb_to_atem", method_rgb_to_atem, METH_VARARGS, "Convert an RGB8888 frame to Atem YCbCrA"},
     {"rle_encode",  method_rle_encode,  METH_VARARGS, "Compress data using the custom Atem RLE encoding"},
+    {"rgb_to_regions", method_rgb_to_regions, METH_VARARGS, "Find holes in the image"},
     {NULL,          NULL,               0,            NULL},
 };
 
