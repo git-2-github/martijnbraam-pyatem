@@ -1,0 +1,9 @@
+> PLCK 00 01 00 00   00 01 00 00
+< LKOB 00 01 00 00
+< LKST 00 01 01 1b
+> CMPC 00 1b b9 76
+> FTSD 77 f0 00 01
+< MPfM 1408 bytes
+< MPfM 1408 bytes
+< MPfM 432 bytes
+< FTCD
