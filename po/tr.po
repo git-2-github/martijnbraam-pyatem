@@ -3,19 +3,22 @@
 # This file is distributed under the same license as the openswitcher package.
 # Automatically generated, 2022.
 #
+# Gokhan <tvgozde@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: openswitcher\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-14 21:06+0200\n"
-"PO-Revision-Date: 2022-03-25 23:50+0300\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-06-20 20:52+0000\n"
+"Last-Translator: Gokhan <tvgozde@gmail.com>\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/openswitcher/"
+"openswitcher/tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #. Window title
 #: gtk_switcher/ui/mixer.glade:176 gtk_switcher/ui/mixer.glade:189
@@ -79,7 +82,7 @@ msgstr "Genişlik"
 #. Fill video source
 #: gtk_switcher/ui/mixer.glade:1114
 msgid "Fill"
-msgstr "Fill Kaynağı"
+msgstr "Fill"
 
 #: gtk_switcher/ui/mixer.glade:1163
 msgid "Reverse"
@@ -129,7 +132,7 @@ msgstr "Paletler"
 
 #: gtk_switcher/ui/mixer.glade:1579
 msgid "Media Player"
-msgstr "Media Player"
+msgstr "Medya Player"
 
 #. Hardware model
 #: gtk_switcher/ui/mixer.glade:1635
@@ -212,7 +215,7 @@ msgstr "KAYDET"
 
 #: gtk_switcher/ui/mixer.glade:2280
 msgid "Stream recorder"
-msgstr "Stream recorder"
+msgstr "Kaydedici"
 
 #: gtk_switcher/ui/mixer.glade:2366
 msgid "OFF"
@@ -298,8 +301,8 @@ msgid ""
 "There is no connection to the hardware. The connection might be interrupted "
 "or a new connection needs to be made in the Preferences window"
 msgstr ""
-"Donanım bağlantısı yok. Tercihler penceresinde bağlantı kesilebilir veya "
-"yeni bir bağlantı yapılması gerekebilir."
+"Donanım bağlantısı yok. Bağlantı kesilebilir veya Tercihler penceresinde "
+"yeni bir bağlantı yapılması gerekebilir"
 
 #: gtk_switcher/ui/mixer.glade:3039 gtk_switcher/ui/mixer.glade:3115
 #: gtk_switcher/ui/mixer.glade:3033
@@ -307,9 +310,8 @@ msgid "Open preferences"
 msgstr "Ayarlar"
 
 #: gtk_switcher/ui/mixer.glade:3057
-#, fuzzy
 msgid "Reconnect"
-msgstr "Bağlan"
+msgstr "Tekrar Bağlan"
 
 #: gtk_switcher/ui/mixer.glade:3084 gtk_switcher/ui/mixer.glade:3056
 msgid "Firmware outdated"
@@ -332,7 +334,7 @@ msgstr "Yoksay devam et"
 
 #: gtk_switcher/ui/mixer.glade:3109
 msgid "Permission denied"
-msgstr ""
+msgstr "İzin reddedildi"
 
 #: gtk_switcher/ui/mixer.glade:3110
 msgid ""
@@ -341,6 +343,11 @@ msgid ""
 "\n"
 "A different connection can be made in the preferences window"
 msgstr ""
+"Seçilen USB cihazına bağlanılamadı. Kurulumunuzda udev kuralları eksik "
+"olabilir veya mevcut cihaz henüz desteklenmiyor olabilir.\n"
+"\n"
+"\n"
+"Tercihler penceresinde farklı bir bağlantı yapılabilir"
 
 #: gtk_switcher/ui/mixeffect.glade:34
 msgid "Program"
@@ -546,7 +553,7 @@ msgstr "Maske kullan"
 #: gtk_switcher/ui/upstream-keyer.glade:1577
 #: gtk_switcher/ui/upstream-keyer.glade:1058
 msgid "Mask"
-msgstr "Mask"
+msgstr "Maske"
 
 #: gtk_switcher/ui/downstream-keyer.glade:300
 #: gtk_switcher/ui/upstream-keyer.glade:1597
@@ -579,68 +586,64 @@ msgstr "Luma"
 
 #: gtk_switcher/ui/upstream-keyer.glade:494
 msgid "Foreground"
-msgstr ""
+msgstr "Ön Plan"
 
 #: gtk_switcher/ui/upstream-keyer.glade:509
 msgid "Background"
-msgstr ""
+msgstr "Arka Plan"
 
 #. Chroma keyer
 #: gtk_switcher/ui/upstream-keyer.glade:524
 msgid "Key edge"
-msgstr ""
+msgstr "Key Kenarı"
 
 #. Chroma key
 #: gtk_switcher/ui/upstream-keyer.glade:550
 msgid "Spill"
-msgstr ""
+msgstr "Taşma"
 
 #. Chromakey
 #: gtk_switcher/ui/upstream-keyer.glade:565
 msgid "Flare supression"
-msgstr ""
+msgstr "Yansıma Önleme"
 
 #: gtk_switcher/ui/upstream-keyer.glade:591
 msgctxt "colorcorrector"
 msgid "Brightness"
-msgstr ""
+msgstr "Parlaklık"
 
 #: gtk_switcher/ui/upstream-keyer.glade:606
-#, fuzzy
 msgctxt "colorcorrector"
 msgid "Contrast"
-msgstr "Kontrol uygulaması"
+msgstr "Kontrast"
 
 #: gtk_switcher/ui/upstream-keyer.glade:621
-#, fuzzy
 msgctxt "colorcorrector"
 msgid "Saturation"
-msgstr "Geçiş"
+msgstr "Doygunluk"
 
 #: gtk_switcher/ui/upstream-keyer.glade:636
-#, fuzzy
 msgctxt "colorcorrector"
 msgid "Red"
-msgstr "KAYDET"
+msgstr "Kırmızı"
 
 #: gtk_switcher/ui/upstream-keyer.glade:651
 msgctxt "colorcorrector"
 msgid "Green"
-msgstr ""
+msgstr "Yeşil"
 
 #: gtk_switcher/ui/upstream-keyer.glade:666
 msgctxt "colorcorrector"
 msgid "Blue"
-msgstr ""
+msgstr "Mavi"
 
 #: gtk_switcher/ui/upstream-keyer.glade:681
-#, fuzzy
 msgid "Chroma sample"
-msgstr "Chroma"
+msgstr "Chroma Örneği"
 
 #: gtk_switcher/ui/upstream-keyer.glade:869
 msgid "Pick"
-msgstr ""
+msgstr "Seç"
 
 #: gtk_switcher/ui/upstream-keyer.glade:910
 #: gtk_switcher/ui/upstream-keyer.glade:391
@@ -796,9 +799,8 @@ msgid "SDI output standard"
 msgstr "SDI çıkış ayarı"
 
 #: gtk_switcher/ui/preferences.glade:280
-#, fuzzy
 msgid "Set modes"
-msgstr "Video modu"
+msgstr "Modları ayarla"
 
 #: gtk_switcher/ui/preferences.glade:354
 msgid "Media pool"
@@ -924,9 +926,8 @@ msgid "Downstream keyer {}"
 msgstr "Downstream Key {}"
 
 #: gtk_switcher/switcher.py:525 gtk_switcher/switcher.py:520
-#, fuzzy
 msgid "Media Player {}"
-msgstr "Media Player {}"
+msgstr "Medya Player {}"
 
 #: gtk_switcher/switcher.py:623 gtk_switcher/switcher.py:618
 msgid "Upstream keyer {}"
@@ -959,7 +960,7 @@ msgstr "Upstream Key {}"
 
 #: gtk_switcher/layout.py:135
 msgid "Chroma picker {}"
-msgstr ""
+msgstr "Renk seçici"
 
 #: gtk_switcher/videohub.py:82
 msgid "Connecting..."
