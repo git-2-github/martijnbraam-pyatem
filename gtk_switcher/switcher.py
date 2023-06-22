@@ -102,6 +102,11 @@ class SwitcherPage:
         self.stream_live_active = False
         self.stream_live_start_time = None
 
+        self.flap = builder.get_object('flap')
+        self.flaptoggle = builder.get_object('flaptoggle')
+
+        self.flap.bind_property("reveal-flap", self.flaptoggle, "active", GObject.BindingFlags.BIDIRECTIONAL)
+
         self.switcher_mediaplayers = builder.get_object('switcher_mediaplayers')
         self.mediaplayer_dropdowns = {}
 
@@ -1290,3 +1295,7 @@ class SwitcherPage:
             rate_max = rate_min
         cmd = StreamingServiceSetCommand(bitrate_min=rate_min, bitrate_max=rate_max)
         self.connection.mixer.send_commands([cmd])
+
+    def on_fold_folded(self, widget, *args):
+        print("FOLDED", widget, "folded", self.flap.get_folded(), "reveal-flap", self.flap.get_reveal_flap())
+        self.flaptoggle.set_visible(self.flap.get_folded())

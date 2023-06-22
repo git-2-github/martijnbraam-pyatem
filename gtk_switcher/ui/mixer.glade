@@ -208,6 +208,24 @@
               </object>
             </child>
             <child>
+              <object class="GtkToggleButton" id="flaptoggle">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="icon-name">document-properties-symbolic</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="pack-type">end</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkLabel" id="live_stats">
                 <property name="can-focus">False</property>
                 <property name="no-show-all">True</property>
@@ -218,7 +236,7 @@
               </object>
               <packing>
                 <property name="pack-type">end</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -239,14 +257,16 @@
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
                 <child>
-                  <object class="HdyFlap">
+                  <object class="HdyFlap" id="flap">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="hexpand">True</property>
-                    <property name="flap-position">end</property>
                     <property name="vexpand">True</property>
-                    <property name="modal">False</property>
+                    <property name="flap-position">end</property>
                     <property name="transition-type">slide</property>
+                    <property name="modal">False</property>
+                    <signal name="notify::folded" handler="on_fold_folded" swapped="no"/>
+                    <signal name="notify::reveal-flap" handler="on_fold_folded" swapped="no"/>
                     <child type="content">
                       <object class="GtkScrolledWindow">
                         <property name="visible">True</property>
@@ -2844,12 +2864,6 @@
                           </object>
                         </child>
                       </object>
-                    </child>
-                    <child type="separator">
-                      <placeholder/>
-                    </child>
-                    <child type="flap">
-                      <placeholder/>
                     </child>
                   </object>
                   <packing>
