@@ -228,7 +228,31 @@ class LayoutView(Gtk.Frame):
             self.regions[rid] = region
         return self.regions[rid]
 
+    def on_context(self):
+        menu = Gtk.Menu()
+        for rid in self.regions:
+            region = self.regions[rid]
+            mi = Gtk.CheckMenuItem(region.get_label())
+            mi.set_active(region.visible)
+            menu.append(mi)
+            mi.show()
+            mi.rid = rid
+            mi.connect('toggled', self.on_context_toggled)
+        menu.popup(None, None, None, None, 0, Gtk.get_current_event_time())
+
+    def on_context_toggled(self, widget, *args):
+        self.regions[widget.rid].visible = widget.get_active()
+        self.da.queue_draw()
+
     def on_mouse_down(self, widget, event):
+
+        if event.button == 3:
+            self.on_context()
+            return
+
+        if event.button != 1:
+            return
+
         # grr cairo coordinates
         event.y = self.area_height - event.y - self.area_top
         event.x = event.x - self.area_left
@@ -238,6 +262,8 @@ class LayoutView(Gtk.Frame):
             hits = []
             for rid in self.regions:
                 region = self.regions[rid]
+                if not region.visible:
+                    continue
                 x, y, w, h = region.get_region_cairo(self.area_width, self.area_height)
 
                 if x < event.x < (x + w):
