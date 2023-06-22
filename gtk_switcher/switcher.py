@@ -1297,5 +1297,4 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_fold_folded(self, widget, *args):
-        print("FOLDED", widget, "folded", self.flap.get_folded(), "reveal-flap", self.flap.get_reveal_flap())
         self.flaptoggle.set_visible(self.flap.get_folded())
