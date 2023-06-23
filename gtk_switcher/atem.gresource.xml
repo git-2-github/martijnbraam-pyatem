@@ -43,6 +43,24 @@
     <file>icons/multiview-safearea.svg</file>
     <file>icons/multiview-vu.svg</file>
 
+    <file>icons/dve-squeeze-bottom-left.svg</file>
+    <file>icons/dve-squeeze-bottom-right.svg</file>
+    <file>icons/dve-squeeze-down.svg</file>
+    <file>icons/dve-squeeze-left.svg</file>
+    <file>icons/dve-squeeze-right.svg</file>
+    <file>icons/dve-squeeze-top-left.svg</file>
+    <file>icons/dve-squeeze-top-right.svg</file>
+    <file>icons/dve-squeeze-up.svg</file>
+
+    <file>icons/dve-push-up.svg</file>
+    <file>icons/dve-push-down.svg</file>
+    <file>icons/dve-push-left.svg</file>
+    <file>icons/dve-push-right.svg</file>
+    <file>icons/dve-push-bottom-left.svg</file>
+    <file>icons/dve-push-bottom-right.svg</file>
+    <file>icons/dve-push-top-left.svg</file>
+    <file>icons/dve-push-top-right.svg</file>
+
     <file>icons/openswitcher.svg</file>
 
     <file>asset/rainbow.png</file>
