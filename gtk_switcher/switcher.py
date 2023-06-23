@@ -48,6 +48,9 @@ class SwitcherPage:
         self.wipe_reverse = builder.get_object('wipe_reverse')
         self.wipe_flipflop = builder.get_object('wipe_flipflop')
 
+        self.dve_reverse = builder.get_object('dve_reverse')
+        self.dve_flipflop = builder.get_object('dve_flipflop')
+
         self.ftb_afv = builder.get_object('ftb_afv')
 
         self.keyer_stack = builder.get_object('keyer_stack')
@@ -145,6 +148,24 @@ class SwitcherPage:
         for style, button in enumerate(self.wipe_style):
             button.pattern = style
             button.connect('pressed', self.on_wipe_pattern_clicked)
+
+        directions = ['tl', 't', 'tr', 'l', 'r', 'bl', 'b', 'br']
+        self.dve_style_push = []
+        self.dve_style_squeeze = []
+        for stylecode, direction in enumerate(directions):
+            btn = builder.get_object(f'dt_push_{direction}')
+            btn.style = 'push'
+            btn.direction = direction
+            btn.styleindex = stylecode + 24
+            btn.connect('pressed', self.on_dve_transition_style_clicked)
+            self.dve_style_push.append(btn)
+
+            btn = builder.get_object(f'dt_squeeze_{direction}')
+            btn.style = 'squeeze'
+            btn.direction = direction
+            btn.styleindex = stylecode + 16
+            btn.connect('pressed', self.on_dve_transition_style_clicked)
+            self.dve_style_squeeze.append(btn)
 
         self.color1 = builder.get_object('color1')
         self.color2 = builder.get_object('color2')
@@ -244,6 +265,27 @@ class SwitcherPage:
         if self.model_changing:
             return
         cmd = WipeSettingsCommand(index=0, pattern=widget.pattern)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_dve_transition_style_clicked(self, widget):
+        if self.model_changing:
+            return
+
+        cmd = DveSettingsCommand(index=0, style=widget.styleindex)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_dve_reverse_clicked(self, widget):
+        if self.model_changing:
+            return
+        state = widget.get_style_context().has_class('active')
+        cmd = DveSettingsCommand(index=0, reverse=not state)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_dve_flipflop_clicked(self, widget):
+        if self.model_changing:
+            return
+        state = widget.get_style_context().has_class('active')
+        cmd = DveSettingsCommand(index=0, flipflop=not state)
         self.connection.mixer.send_commands([cmd])
 
     def on_tbar_position_changed(self, widget, index, position):
@@ -465,6 +507,13 @@ class SwitcherPage:
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got transition dve change for non-existing M/E {}".format(data.index + 1))
             return
+
+        for button in self.dve_style_push + self.dve_style_squeeze:
+            self.set_class(button, 'stylebtn', True)
+            self.set_class(button, 'active', data.style == button.styleindex)
+
+        self.set_class(self.dve_reverse, 'active', data.reverse)
+        self.set_class(self.dve_flipflop, 'active', data.flipflop)
 
         label = self.frames_to_time(data.rate)
         self.dve_rate.set_text(label)

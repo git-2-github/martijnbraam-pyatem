@@ -53,15 +53,100 @@
     <property name="can-focus">False</property>
     <property name="resource">/nl/brixit/switcher/icons/wipe-diag2.svg</property>
   </object>
+  <object class="GtkImage" id="image19">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-push-up.svg</property>
+  </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="resource">/nl/brixit/switcher/icons/wipe-v.svg</property>
   </object>
+  <object class="GtkImage" id="image20">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-push-top-left.svg</property>
+  </object>
+  <object class="GtkImage" id="image21">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-push-top-right.svg</property>
+  </object>
+  <object class="GtkImage" id="image22">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-push-left.svg</property>
+  </object>
+  <object class="GtkImage" id="image23">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">nl/brixit/switcher/icons/wipe-v.svg</property>
+  </object>
+  <object class="GtkImage" id="image24">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-push-right.svg</property>
+  </object>
+  <object class="GtkImage" id="image25">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-push-bottom-right.svg</property>
+  </object>
+  <object class="GtkImage" id="image26">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-push-down.svg</property>
+  </object>
+  <object class="GtkImage" id="image27">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-push-bottom-left.svg</property>
+  </object>
+  <object class="GtkImage" id="image28">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-squeeze-top-left.svg</property>
+  </object>
+  <object class="GtkImage" id="image29">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-squeeze-up.svg</property>
+  </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="resource">/nl/brixit/switcher/icons/wipe-mh.svg</property>
+  </object>
+  <object class="GtkImage" id="image30">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-squeeze-top-right.svg</property>
+  </object>
+  <object class="GtkImage" id="image31">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-squeeze-right.svg</property>
+  </object>
+  <object class="GtkImage" id="image32">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-squeeze-bottom-right.svg</property>
+  </object>
+  <object class="GtkImage" id="image33">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-squeeze-down.svg</property>
+  </object>
+  <object class="GtkImage" id="image35">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-squeeze-left.svg</property>
+  </object>
+  <object class="GtkImage" id="image36">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="resource">/nl/brixit/switcher/icons/dve-squeeze-bottom-left.svg</property>
   </object>
   <object class="GtkImage" id="image4">
     <property name="visible">True</property>
@@ -1429,7 +1514,7 @@
                                                             </packing>
                                                             </child>
                                                             <child>
-                                                            <!-- n-columns=2 n-rows=3 -->
+                                                            <!-- n-columns=2 n-rows=7 -->
                                                             <object class="GtkGrid">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
@@ -1459,6 +1544,382 @@
                                                             <property name="left-attach">1</property>
                                                             <property name="top-attach">0</property>
                                                             </packing>
+                                                            </child>
+                                                            <child>
+                                                            <!-- n-columns=7 n-rows=4 -->
+                                                            <object class="GtkGrid">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="row-spacing">4</property>
+                                                            <property name="column-spacing">4</property>
+                                                            <property name="row-homogeneous">True</property>
+                                                            <property name="column-homogeneous">True</property>
+                                                            <child>
+                                                            <object class="GtkLabel">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">3</property>
+                                                            <property name="top-attach">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_push_bl">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image27</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">3</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_push_l">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image22</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">2</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_push_tl">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image20</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_push_b">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image26</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">3</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_push_t">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image19</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_push_br">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image25</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">2</property>
+                                                            <property name="top-attach">3</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_push_r">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image24</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">2</property>
+                                                            <property name="top-attach">2</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_push_tr">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image21</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">2</property>
+                                                            <property name="top-attach">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_squeeze_bl">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image36</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">4</property>
+                                                            <property name="top-attach">3</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_squeeze_l">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image35</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">4</property>
+                                                            <property name="top-attach">2</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_squeeze_tl">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image28</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">4</property>
+                                                            <property name="top-attach">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_squeeze_b">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image33</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">5</property>
+                                                            <property name="top-attach">3</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_squeeze_t">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image29</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">5</property>
+                                                            <property name="top-attach">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_squeeze_br">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image32</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">6</property>
+                                                            <property name="top-attach">3</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_squeeze_r">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image31</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">6</property>
+                                                            <property name="top-attach">2</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dt_squeeze_tr">
+                                                            <property name="width-request">28</property>
+                                                            <property name="height-request">28</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <property name="image">image30</property>
+                                                            <property name="always-show-image">True</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">6</property>
+                                                            <property name="top-attach">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkLabel">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="label" translatable="yes">Push</property>
+                                                            <style>
+                                                            <class name="dim-label"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">0</property>
+                                                            <property name="width">3</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkLabel">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="label" translatable="yes">Squeeze</property>
+                                                            <style>
+                                                            <class name="dim-label"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">4</property>
+                                                            <property name="top-attach">0</property>
+                                                            <property name="width">3</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">0</property>
+                                                            <property name="top-attach">1</property>
+                                                            <property name="width">2</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="spacing">32</property>
+                                                            <property name="homogeneous">True</property>
+                                                            <child>
+                                                            <object class="GtkButton" id="dve_reverse">
+                                                            <property name="label" translatable="yes">Reverse</property>
+                                                            <property name="width-request">48</property>
+                                                            <property name="height-request">48</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <signal name="clicked" handler="on_dve_reverse_clicked" swapped="no"/>
+                                                            <style>
+                                                            <class name="bmdbtn"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">0</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkButton" id="dve_flipflop">
+                                                            <property name="label" translatable="yes">Flip flop</property>
+                                                            <property name="width-request">48</property>
+                                                            <property name="height-request">48</property>
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">True</property>
+                                                            <property name="receives-default">True</property>
+                                                            <signal name="clicked" handler="on_dve_flipflop_clicked" swapped="no"/>
+                                                            <style>
+                                                            <class name="bmdbtn"/>
+                                                            </style>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="expand">False</property>
+                                                            <property name="fill">True</property>
+                                                            <property name="position">1</property>
+                                                            </packing>
+                                                            </child>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">1</property>
+                                                            <property name="top-attach">2</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
                                                             </child>
                                                             <child>
                                                             <placeholder/>
