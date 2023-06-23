@@ -445,27 +445,31 @@
                                             <property name="orientation">vertical</property>
                                             <property name="spacing">12</property>
                                             <child>
-                                              <object class="GtkExpander" id="expander_colors">
+                                              <object class="GtkOverlay" id="overlay_colors">
                                                 <property name="visible">True</property>
-                                                <property name="can-focus">True</property>
-                                                <property name="expanded">True</property>
+                                                <property name="can-focus">False</property>
                                                 <child>
-                                                  <object class="GtkFrame">
+                                                  <object class="GtkExpander" id="expander_colors">
                                                     <property name="visible">True</property>
-                                                    <property name="can-focus">False</property>
-                                                    <property name="label-xalign">0</property>
-                                                    <property name="shadow-type">in</property>
+                                                    <property name="can-focus">True</property>
+                                                    <property name="expanded">True</property>
                                                     <child>
-                                                      <object class="GtkAlignment">
+                                                      <object class="GtkFrame">
                                                         <property name="visible">True</property>
                                                         <property name="can-focus">False</property>
-                                                        <property name="top-padding">12</property>
-                                                        <property name="bottom-padding">12</property>
-                                                        <property name="left-padding">12</property>
-                                                        <property name="right-padding">12</property>
+                                                        <property name="label-xalign">0</property>
+                                                        <property name="shadow-type">in</property>
                                                         <child>
-                                                          <!-- n-columns=2 n-rows=2 -->
-                                                          <object class="GtkGrid">
+                                                          <object class="GtkAlignment">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="top-padding">12</property>
+                                                            <property name="bottom-padding">12</property>
+                                                            <property name="left-padding">12</property>
+                                                            <property name="right-padding">12</property>
+                                                            <child>
+                                                            <!-- n-columns=2 n-rows=2 -->
+                                                            <object class="GtkGrid">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="row-spacing">12</property>
@@ -524,31 +528,64 @@
                                                             <property name="top-attach">1</property>
                                                             </packing>
                                                             </child>
+                                                            </object>
+                                                            </child>
                                                           </object>
                                                         </child>
+                                                        <child type="label_item">
+                                                          <placeholder/>
+                                                        </child>
+                                                        <style>
+                                                          <class name="view"/>
+                                                        </style>
                                                       </object>
                                                     </child>
-                                                    <child type="label_item">
-                                                      <placeholder/>
+                                                    <child type="label">
+                                                      <object class="GtkLabel">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="label" translatable="yes">Color Generators</property>
+                                                        <style>
+                                                          <class name="heading"/>
+                                                        </style>
+                                                      </object>
                                                     </child>
                                                     <style>
-                                                      <class name="view"/>
+                                                      <class name="bmdgroup"/>
                                                     </style>
                                                   </object>
+                                                  <packing>
+                                                    <property name="index">-1</property>
+                                                  </packing>
                                                 </child>
-                                                <child type="label">
-                                                  <object class="GtkLabel">
+                                                <child type="overlay">
+                                                  <object class="GtkMenuButton" id="presets_colors">
+                                                    <property name="name">colors</property>
+                                                    <property name="width-request">28</property>
+                                                    <property name="height-request">28</property>
                                                     <property name="visible">True</property>
-                                                    <property name="can-focus">False</property>
-                                                    <property name="label" translatable="yes">Color Generators</property>
+                                                    <property name="can-focus">True</property>
+                                                    <property name="receives-default">True</property>
+                                                    <property name="halign">end</property>
+                                                    <property name="valign">start</property>
+                                                    <property name="always-show-image">True</property>
+                                                    <signal name="clicked" handler="on_presets_clicked" swapped="no"/>
+                                                    <child>
+                                                      <object class="GtkImage">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="icon-name">open-menu-symbolic</property>
+                                                      </object>
+                                                    </child>
                                                     <style>
-                                                      <class name="heading"/>
+                                                      <class name="flat"/>
+                                                      <class name="preset"/>
                                                     </style>
                                                   </object>
+                                                  <packing>
+                                                    <property name="pass-through">True</property>
+                                                  </packing>
                                                 </child>
-                                                <style>
-                                                  <class name="bmdgroup"/>
-                                                </style>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>

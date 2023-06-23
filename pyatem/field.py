@@ -4,6 +4,7 @@ import colorsys
 import struct
 import math
 
+from pyatem.command import ColorGeneratorCommand
 from pyatem.hexdump import hexdump
 
 
@@ -14,6 +15,13 @@ class FieldBase:
     def make_packet(self):
         header = struct.pack('!H2x 4s', len(self.raw) + 8, self.__class__.CODE.encode())
         return header + self.raw
+
+    def serialize(self):
+        return None
+
+    @classmethod
+    def restore(cls, data, instance_override=None):
+        return
 
 
 class FirmwareVersionField(FieldBase):
@@ -919,6 +927,21 @@ class ColorGeneratorField(FieldBase):
     def __repr__(self):
         return '<color-generator: index={}, hue={} saturation={} luma={}>'.format(self.index, self.hue, self.saturation,
                                                                                   self.luma)
+
+    def serialize(self):
+        return {
+            "index": self.index,
+            "hue": self.hue,
+            "saturation": self.saturation,
+            "luma": self.luma,
+        }
+
+    @classmethod
+    def restore(cls, data, instance_override=None):
+        if instance_override is not None:
+            data['index'] = instance_override[0]
+        return [ColorGeneratorCommand(index=data['index'], hue=data['hue'], saturation=data['saturation'],
+                                      luma=data['luma'])]
 
 
 class AuxOutputSourceField(FieldBase):

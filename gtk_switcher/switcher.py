@@ -1347,3 +1347,6 @@ class SwitcherPage:
 
     def on_fold_folded(self, widget, *args):
         self.flaptoggle.set_visible(self.flap.get_folded())
+
+    def on_presets_clicked(self, widget, *args):
+        self.preset_context = widget.get_name()

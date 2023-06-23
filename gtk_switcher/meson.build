@@ -57,6 +57,7 @@ switcher_sources = [
     'videohubbus.py',
     'videohubconnection.py',
     'debugger.py',
+    'presetwindow.py',
 ]
 
 install_data(switcher_sources, install_dir: moduledir)
