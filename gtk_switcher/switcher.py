@@ -540,6 +540,35 @@ class SwitcherPage:
         region = self.layout[0].get(LayoutView.LAYER_DSK, data.index)
         region.set_tally(data.on_air)
 
+    def make_preset_expander(self, label, context, widget):
+        overlay = Gtk.Overlay()
+        expander = Gtk.Expander()
+        expander.get_style_context().add_class('bmdgroup')
+        frame_label = Gtk.Label(label)
+        frame_label.get_style_context().add_class("heading")
+        expander.set_label_widget(frame_label)
+        expander.set_expanded(True)
+        expander.add(widget)
+        overlay.add(expander)
+
+        button = Gtk.MenuButton()
+        button.set_valign(Gtk.Align.START)
+        button.set_halign(Gtk.Align.END)
+        self.set_class(button, 'flat', True)
+        self.set_class(button, 'preset', True)
+        self.apply_css(button, self.provider)
+        overlay.add_overlay(button)
+
+        hamburger = Gtk.Image.new_from_icon_name('open-menu-symbolic', Gtk.IconSize.BUTTON)
+        button.set_image(hamburger)
+        button.set_name(context)
+
+        context = context.split(':')
+        button.set_menu_model(self.preset_models[context[0]])
+
+        button.connect("clicked", self.on_presets_clicked)
+        return overlay
+
     def on_topology_change(self, data: TopologyField):
         # Create the M/E units
         for i in range(0, data.me_units - len(self.me)):
@@ -554,14 +583,10 @@ class SwitcherPage:
             self.downstream_keyers.remove(widget)
 
         for i in range(0, data.downstream_keyers):
-            exp = Gtk.Expander()
-            exp.get_style_context().add_class('bmdgroup')
             label = _("Downstream keyer {}").format(i + 1)
-            frame_label = Gtk.Label(label)
-            frame_label.get_style_context().add_class("heading")
-            exp.set_label_widget(frame_label)
-            exp.set_expanded(True)
             dsk = DownstreamKeyer(index=i, connection=self.connection)
+            exp = self.make_preset_expander(label, f"dsk:{dsk.index}", dsk)
+
             self.dsks[dsk.index] = dsk
             self.has_models.append(dsk)
             exp.add(dsk)

@@ -234,9 +234,9 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.window.add_accel_group(accel)
 
         self.preset_models = {
-            "colors": Gio.Menu()
+            "colors": Gio.Menu(),
+            "dsk": Gio.Menu(),
         }
-        self.test_counter = 0
         self.preset_submenu = {}
         self.preset_context = None
         self.presets = {}
@@ -281,7 +281,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
     def on_save_preset(self, *args):
         context = self.preset_context.split(':')
         presets_fields = {
-            "colors": ['color-generator']
+            "colors": ['color-generator'],
+            "dsk": ['dkey-properties-base', 'dkey-properties'],
         }
         preset_fields = presets_fields[context[0]]
         contents = []
@@ -289,6 +290,9 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
             ms = self.connection.mixer.mixerstate[field]
             if isinstance(ms, dict):
                 for key in ms:
+                    if len(context) == 2:
+                        if key != int(context[1]):
+                            continue
                     sf = ms[key]
                     s = sf.serialize()
                     if s is not None:

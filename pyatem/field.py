@@ -4,7 +4,8 @@ import colorsys
 import struct
 import math
 
-from pyatem.command import ColorGeneratorCommand
+from pyatem.command import ColorGeneratorCommand, DkeyTieCommand, DkeyRateCommand, DkeySetFillCommand, \
+    DkeySetKeyCommand, DkeyGainCommand, DkeyMaskCommand
 from pyatem.hexdump import hexdump
 
 
@@ -1165,6 +1166,23 @@ class DkeyPropertiesBaseField(FieldBase):
     def __repr__(self):
         return '<downstream-keyer-base: dsk={}, fill={}, key={}>'.format(self.index, self.fill_source, self.key_source)
 
+    def serialize(self):
+        return {
+            'index': self.index,
+            'fillSource': self.fill_source,
+            'keySource': self.key_source,
+        }
+
+    @classmethod
+    def restore(cls, data, instance_override=None):
+        if instance_override is not None:
+            data['index'] = instance_override[0]
+
+        return [
+            DkeySetFillCommand(data['index'], data['fillSource']),
+            DkeySetKeyCommand(data['index'], data['keySource']),
+        ]
+
 
 class DkeyPropertiesField(FieldBase):
     """
@@ -1217,6 +1235,36 @@ class DkeyPropertiesField(FieldBase):
     def __repr__(self):
         return '<downstream-keyer-mask: dsk={}, tie={}, rate={}, masked={}>'.format(self.index, self.tie, self.rate,
                                                                                     self.masked)
+
+    def serialize(self):
+        return {
+            'index': self.index,
+            'rate': self.rate,
+            'maskEnabled': self.masked,
+            'maskTop': self.top,
+            'maskBottom': self.bottom,
+            'maskLeft': self.left,
+            'maskRight': self.right,
+            'preMultipliedKey': self.premultiplied,
+            'clip': self.clip,
+            'gain': self.gain,
+            'invert': self.invert_key,
+            'tie': self.tie,
+        }
+
+    @classmethod
+    def restore(cls, data, instance_override=None):
+        if instance_override is not None:
+            data['index'] = instance_override[0]
+        cmds = [
+            DkeyTieCommand(data['index'], data['tie']),
+            DkeyRateCommand(data['index'], data['rate']),
+            DkeyGainCommand(data['index'], premultiplied=data['preMultipliedKey'], clip=data['clip'], gain=data['gain'],
+                            invert=data['invert']),
+            DkeyMaskCommand(data['index'], enabled=data['maskEnabled'], top=data['maskTop'], bottom=data['maskBottom'],
+                            left=data['maskLeft'], right=data['maskRight']),
+        ]
+        return cmds
 
 
 class DkeyStateField(FieldBase):
