@@ -1555,16 +1555,6 @@
                                                             <property name="row-homogeneous">True</property>
                                                             <property name="column-homogeneous">True</property>
                                                             <child>
-                                                            <object class="GtkLabel">
-                                                            <property name="visible">True</property>
-                                                            <property name="can-focus">False</property>
-                                                            </object>
-                                                            <packing>
-                                                            <property name="left-attach">3</property>
-                                                            <property name="top-attach">1</property>
-                                                            </packing>
-                                                            </child>
-                                                            <child>
                                                             <object class="GtkButton" id="dt_push_bl">
                                                             <property name="width-request">28</property>
                                                             <property name="height-request">28</property>
@@ -1832,6 +1822,16 @@
                                                             <property name="left-attach">4</property>
                                                             <property name="top-attach">0</property>
                                                             <property name="width">3</property>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkDrawingArea">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            </object>
+                                                            <packing>
+                                                            <property name="left-attach">3</property>
+                                                            <property name="top-attach">1</property>
                                                             </packing>
                                                             </child>
                                                             <child>
