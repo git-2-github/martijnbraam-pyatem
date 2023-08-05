@@ -5,6 +5,38 @@ import ipaddress
 from pyatem.converters.protocol import LabelProtoConverter, Field, WValueProtoConverter, AtemLegacyProtocol
 
 
+class MicroConverterSdiHdmi12G(LabelProtoConverter):
+    PRODUCT = 0xbe77
+    NAME = "Blackmagic design Micro Converter SDI to HDMI 12G"
+
+    FIELDS = [
+        Field('DeviceName', str, 'Device', 'Name', sys=True),
+        Field('BuildId', str, 'Device', 'Build ID', sys=True, ro=True),
+        Field('ReleaseVersion', str, 'Device', 'Software', sys=True, ro=True),
+        Field('SdiLevelAEnable', int, 'SDI Output', '3G SDI Output', mapping={
+            0xff: 'Level A',
+            0x00: 'Level B',
+        }),
+        Field('HdmiClampEnable', int, 'HDMI Output', 'Clip signal to', mapping={
+            0x00: 'Normal levels (16 - 235)',
+            0xff: 'Illegal levels (0 - 255)',
+        }),
+        Field('HdmiTxCh34Swap', int, 'HDMI Audio', 'For 5.1 surround use', mapping={
+            0x00: 'SMPTE standard',
+            0xff: 'Consumer standard',
+        }),
+        Field('LutSelection', int, 'LUTs', 'Lut Selection', mapping={
+            0x00: 'False',
+            0xff: 'True',
+        }),
+        Field('LutLoopEnable', int, 'LUTs', 'HDMI Out', mapping={
+            0x00: 'False',
+            0xff: 'True',
+        }),
+        Field('LutName', str, 'LUTs', 'LUT name', ro=True),
+    ]
+
+
 class MicroConverterBiDirectional12G(LabelProtoConverter):
     PRODUCT = 0xbe89
     NAME = "Blackmagic design Micro Converter BiDirectional SDI/HDMI 12G"
