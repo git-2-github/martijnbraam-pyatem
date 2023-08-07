@@ -118,6 +118,8 @@ class LabelProtoConverter(Converter):
                                   data_or_wLength=0)
 
     def get_value_raw(self, field):
+        if field.dtype == open:
+            return None
         return self._communicate(field.key, field.sys)
 
     def get_value(self, field):
@@ -180,17 +182,31 @@ class LabelProtoConverter(Converter):
                                   data_or_wLength=name.encode())
 
         if write is not None:
-            self.handle.ctrl_transfer(bmRequestType=ep_write,
-                                      bRequest=req_write,
-                                      wValue=ticket,
-                                      wIndex=0,
-                                      data_or_wLength=write)
+            large = len(write) > 4096
+            while len(write) > 0:
+                chunk = write[0:4096]
+                write = write[4096:]
+                self.handle.ctrl_transfer(bmRequestType=ep_write,
+                                          bRequest=req_write,
+                                          wValue=ticket,
+                                          wIndex=0,
+                                          data_or_wLength=chunk,
+                                          timeout=10000 if large else None)
         else:
             return bytes(self.handle.ctrl_transfer(bmRequestType=ep_read,
                                                    bRequest=req_read,
                                                    wValue=ticket,
                                                    wIndex=0,
                                                    data_or_wLength=255))
+
+    def set_lut(self, key, path):
+        lut = load_cube(path)
+        title = os.path.basename(path)
+        title = '.'.join(title.split('.')[0:-1])
+        stream = lut_to_bmd17(lut)
+
+        self._communicate("LutData", False, stream)
+        self._communicate("LutName", False, title)
 
 
 class WValueProtoConverter(Converter):

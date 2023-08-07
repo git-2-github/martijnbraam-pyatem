@@ -34,6 +34,7 @@ class MicroConverterSdiHdmi12G(LabelProtoConverter):
             0xff: ('yes', 'Enabled'),
         }),
         Field(None, 'LutName', str, 'LUTs', 'LUT name', ro=True),
+        Field(None, 'LutData', open, 'LUTs', 'LUT'),
     ]
 
 
@@ -71,6 +72,7 @@ class MicroConverterBiDirectional12G(LabelProtoConverter):
             0xff: ('no', 'True'),
         }),
         Field(None, 'LutName', str, 'LUTs', 'LUT name', ro=True),
+        Field(None, 'LutData', open, 'LUTs', 'LUT'),
     ]
 
 
