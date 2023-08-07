@@ -1,16 +1,18 @@
 # Copyright 2022 - 2022, Martijn Braam and the OpenAtem contributors
 # SPDX-License-Identifier: LGPL-3.0-only
+import os.path
 import time
 
 import usb.core
 import usb.util
 import struct
 
-from pyatem.converters.lut import lut_to_bmd17, load_cube
+from pyatem.converters.lut import lut_to_bmd17, load_cube, lut_to_bmd33
 
 
 class Field:
-    def __init__(self, key, dtype, section, label, mapping=None, sys=False, ro=False):
+    def __init__(self, code, key, dtype, section, label, mapping=None, sys=False, ro=False):
+        self.code = code
         self.key = key
         self.section = section
         self.dtype = dtype
@@ -32,6 +34,9 @@ class Converter:
     NAME = "Unknown"
     FIELDS = []
     PROTOCOL = "label"
+
+    STATUS_OK = 1
+    STATUS_NEED_POWER = 2
 
     def __init__(self):
         self.handle = None
@@ -55,6 +60,9 @@ class Converter:
     def get_name(self):
         # Fallback for devices that might not support renaming
         return self.NAME
+
+    def get_status(self):
+        return self.STATUS_OK
 
     def get_version(self):
         return None
@@ -142,8 +150,26 @@ class WValueProtoConverter(Converter):
     NAME_FIELD = 0x00C0
     VERSION_FIELD = 0x00B0
     LUTFIELD = False
+    HAS_NAME = True
+    NEEDS_POWER = False
+    LUT_SIZE = 17
+
+    REG_STATUS = 48
+    CMD_CLEAR = 55
+    REG_CLEARSTATUS = 56
+    CMD_WRITE = 57
+
+    """
+    bRequest:
+      82: setting write
+      83: setting read
+      160: is powered?
+    """
 
     def get_name(self):
+        if not self.HAS_NAME:
+            return None
+
         raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
                                               bRequest=83,
                                               wValue=self.NAME_FIELD,
@@ -151,6 +177,18 @@ class WValueProtoConverter(Converter):
                                               data_or_wLength=64))
 
         return raw.split(b'\0')[0].decode()
+
+    def get_status(self):
+        if not self.NEEDS_POWER:
+            return Converter.STATUS_OK
+        raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
+                                              bRequest=160,
+                                              wValue=0x00,
+                                              wIndex=0,
+                                              data_or_wLength=1))
+        if raw == b'\0':
+            return Converter.STATUS_NEED_POWER
+        return Converter.STATUS_OK
 
     def get_version(self):
         raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
@@ -171,6 +209,10 @@ class WValueProtoConverter(Converter):
                                                data_or_wLength=field.key[1]))
 
     def set_value(self, field, value):
+
+        if not isinstance(value, bytes):
+            if field.dtype == int:
+                value = value.to_bytes(field.key[1], byteorder='little')
         self.handle.ctrl_transfer(bmRequestType=0x41,
                                   bRequest=82,
                                   wValue=field.key[0],
@@ -190,51 +232,90 @@ class WValueProtoConverter(Converter):
                                   wIndex=0,
                                   data_or_wLength=data)
 
-    def set_lut(self, path):
+    def _wait_on_status(self, status0=None, status1=None, status2=None, status3=None, status4=None, status5=None):
+        # Wait for the LUT engine to be ready
+        wanted = [status0, status1, status2, status3, status4, status5]
+        for i in range(0, 20):
+            status = self._read(self.REG_STATUS, 6)
+            data = struct.unpack('>6B', status)
+
+            fail = False
+            for idx, s in enumerate(wanted):
+                if s is not None and data[idx] != s:
+                    fail = True
+            if not fail:
+                break
+
+            time.sleep(0.5)
+        else:
+            raise TimeoutError("Status did not update")
+
+    def _clear_region(self, address, length):
+        self._write(self.CMD_CLEAR, struct.pack('>II', address, length))
+        while True:
+            status = self._read(self.REG_CLEARSTATUS, 15)
+            part = struct.unpack('>II I BBB', status)
+            # 0 address
+            # 1 length
+            # 2 clear ptr
+            # 3 ?
+            # 4 ?
+            # 5 ?
+
+            progress = ((part[2] - part[0]) / part[1]) * 100
+            if part[3] == 0 and part[4] == 0 and part[5] == 0:
+                break
+
+            time.sleep(0.3)
+
+    def _bulk_write(self, address, data):
+        # position in blocks maybe?
+        block = address >> 8
+        self._write(self.CMD_WRITE, struct.pack('>I', block))
+
+        self.handle.write(1, data)
+        self.handle.write(1, b'')
+
+    def _set_lut_33(self, key, path):
+        address, length = key
+        lut = load_cube(path)
+        title = os.path.basename(path)
+        title = '.'.join(title.split('.')[0:-1])
+        stream = lut_to_bmd33(lut, title)
+
+        self._wait_on_status(status4=0xFF, status5=0xFF)
+        self._write(49, b'')
+        self._write(52, b'')
+
+        self._clear_region(address, length)
+        self._bulk_write(address, stream)
+        self._wait_on_status(status1=0x00, status2=0x00)
+        self._write(50, b'')
+
+    def _set_lut_17(self, key, path):
+        address, length = key
         lut = load_cube(path)
         stream = lut_to_bmd17(lut)
 
-        # Wait for the LUT engine to be ready
-        for i in range(0, 20):
-            status = self._read(48, 6)
-            data = struct.unpack('>6B', status)
-            if data[4] == 255 and data[5] == 255:
-                break
-            time.sleep(0.5)
-        else:
-            raise TimeoutError("Status did not update")
-
-        # The function of this is completely unknown
+        self._wait_on_status(status4=0xFF, status5=0xFF)
         self._write(49, b'')
         self._write(52, b'')
-        data_53 = self._read(53, 16)
-        self._write(55, b'\x3f\0\0\0\x01\0\0\0')
-        data_56 = self._read(56, 15)
-        data_16 = self._read(16, 1)
-        data_83 = self._read(83, 4)
-        data_56b = self._read(56, 15)
-        data_53b = self._read(53, 16)
-        self._write(57, b'\x00\x3f\x00\x00')
-
-        # Write the new LUT
-        self.handle.write(1, stream)
-        self.handle.write(1, b'')
-
-        # Wait for the LUT to be processed on the converter
-        for i in range(0, 10):
-            status = self._read(48, 6)
-            data = struct.unpack('>6B', status)
-            if data[1] == 0 and data[2] == 0:
-                break
-            time.sleep(0.5)
-        else:
-            raise TimeoutError("Status did not update")
-
+        self._clear_region(address, length)
+        self._bulk_write(address, stream)
+        self._wait_on_status(status1=0x00, status2=0x00)
         self._write(50, b'')
 
         # Write the new LUT name and finalize the upload
-        self.set_value(Field((0x0410, 64), str, '', 'LUT name'), struct.pack('>64s', lut.title.encode()))
-        self.set_value(Field((0x0400, 1), int, '', 'Unknown'), struct.pack('>B', 3))
+        self.set_value(Field(None, (0x0410, 64), str, '', 'LUT name'), struct.pack('>64s', lut.title.encode()))
+        self.set_value(Field(None, (0x0400, 1), int, '', 'Unknown'), struct.pack('>B', 3))
+
+    def set_lut(self, key, path):
+        if self.LUT_SIZE == 17:
+            self._set_lut_17(key, path)
+        elif self.LUT_SIZE == 33:
+            self._set_lut_33(key, path)
+        else:
+            raise ValueError("Unsupported LUT size")
 
 
 class AtemLegacyProtocol(Converter):

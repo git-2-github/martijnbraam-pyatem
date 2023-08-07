@@ -64,3 +64,15 @@ def lut_to_bmd17(lut):
         drow = struct.pack('<I', value)
         data += drow
     return data
+
+
+def lut_to_bmd33(lut, title):
+    data = struct.pack('<40s', title.encode())
+    for i, row in enumerate(lut.table):
+        value = 0
+        for c in range(3):
+            v = int(row[2 - c] * 1023)
+            value = (value << 10) | (v & 0x3ff)
+        drow = struct.pack('<I', value)
+        data += drow
+    return data
