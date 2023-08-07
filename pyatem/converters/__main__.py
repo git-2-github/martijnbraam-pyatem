@@ -147,16 +147,23 @@ def main():
             print(f"\n===[ {field.section} ]===")
             last_section = field.section
         value = field.value
+        if field.dtype == open:
+            continue
         if field.mapping is None:
             print_option(field, value)
         elif isinstance(field.mapping, dict):
             print(field.label + ':')
+            got_check = False
             for key, display in field.mapping.items():
                 x = 'x' if key == value else ' '
+                if key == value:
+                    got_check = True
                 if annotate:
                     print(f'    [{x}] {display[1]} (--{field.code} {display[0]})')
                 else:
                     print(f'    [{x}] {display[1]}')
+            if not got_check:
+                print(f"    Unknown value: {value}")
         elif isinstance(field.mapping, str):
             if field.mapping == 'dB':
                 if value > float('-inf'):
