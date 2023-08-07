@@ -14,24 +14,24 @@ class MicroConverterSdiHdmi12G(LabelProtoConverter):
         Field(None, 'BuildId', str, 'Device', 'Build ID', sys=True, ro=True),
         Field(None, 'ReleaseVersion', str, 'Device', 'Software', sys=True, ro=True),
         Field('sdi-level', 'SdiLevelAEnable', int, 'SDI Output', '3G SDI Output', mapping={
-            0xff: 'Level A',
-            0x00: 'Level B',
+            0xff: ('a', 'Level A'),
+            0x00: ('b', 'Level B'),
         }),
         Field('hdmi-clamp', 'HdmiClampEnable', int, 'HDMI Output', 'Clip signal to', mapping={
-            0x00: 'Normal levels (16 - 235)',
-            0xff: 'Illegal levels (0 - 255)',
+            0x00: ('yes', 'Normal levels (16 - 235)'),
+            0xff: ('no', 'Illegal levels (0 - 255)'),
         }),
         Field('hdmi-ch34-swap', 'HdmiTxCh34Swap', int, 'HDMI Audio', 'For 5.1 surround use', mapping={
-            0x00: 'SMPTE standard',
-            0xff: 'Consumer standard',
+            0x00: ('smpte', 'SMPTE standard'),
+            0xff: ('consumer', 'Consumer standard'),
         }),
         Field('lut-enable', 'LutSelection', int, 'LUTs', 'Lut Selection', mapping={
-            0x00: 'Enabled',
-            0xff: 'Disabled',
+            0x00: ('yes', 'Enabled'),
+            0xff: ('no', 'Disabled'),
         }),
         Field('lut-loop', 'LutLoopEnable', int, 'LUTs', 'LUT on SDI loop', mapping={
-            0x00: 'Disabled',
-            0xff: 'Enabled',
+            0x00: ('no', 'Disabled'),
+            0xff: ('yes', 'Enabled'),
         }),
         Field(None, 'LutName', str, 'LUTs', 'LUT name', ro=True),
     ]
@@ -47,28 +47,28 @@ class MicroConverterBiDirectional12G(LabelProtoConverter):
         Field(None, 'ReleaseVersion', str, 'Device', 'Software', sys=True, ro=True),
         Field('camera-id', 'AtemId', int, 'SDI Camera Control', 'ATEM Camera ID'),
         Field('sdi-level', 'SdiLevelAEnable', int, 'SDI Output', '3G SDI Output', mapping={
-            0xff: 'Level A',
-            0x00: 'Level B',
+            0xff: ('a', 'Level A'),
+            0x00: ('b', 'Level B'),
         }),
         Field('hdmi-clamp', 'HdmiClampEnable', int, 'HDMI Output', 'Clip signal to', mapping={
-            0x00: 'Normal levels (16 - 235)',
-            0xff: 'Illegal levels (0 - 255)',
+            0x00: ('yes', 'Normal levels (16 - 235)'),
+            0xff: ('no', 'Illegal levels (0 - 255)'),
         }),
         Field('hdmi-ch34-swap', 'HdmiTxCh34Swap', int, 'HDMI Audio', 'For 5.1 surround use', mapping={
-            0x00: 'SMPTE standard',
-            0xff: 'Consumer standard',
+            0x00: ('smpte', 'SMPTE standard'),
+            0xff: ('consumer', 'Consumer standard'),
         }),
         Field('lut-enable', 'LutSelection', int, 'LUTs', 'Lut Selection', mapping={
-            0x00: 'False',
-            0xff: 'True',
+            0x00: ('yes', 'False'),
+            0xff: ('no', 'True'),
         }),
         Field('lut-sdi', 'LutSdiOutEnable', int, 'LUTs', 'SDI Out', mapping={
-            0x00: 'False',
-            0xff: 'True',
+            0x00: ('yes', 'False'),
+            0xff: ('no', 'True'),
         }),
         Field('lut-hdmi', 'LutHdmiOutEnable', int, 'LUTs', 'HDMI Out', mapping={
-            0x00: 'False',
-            0xff: 'True',
+            0x00: ('yes', 'False'),
+            0xff: ('no', 'True'),
         }),
         Field(None, 'LutName', str, 'LUTs', 'LUT name', ro=True),
     ]
@@ -81,21 +81,21 @@ class MicroConverterSdiHdmi3G(WValueProtoConverter):
     FIELDS = [
         Field('name', (0x00c0, 64), str, "Device", "Name"),
         Field('hdmi-clip', (0x0100, 1), int, "HDMI Output", "Clip signal to", mapping={
-            0x01: 'Normal levels (16 - 235)',
-            0x00: 'Illegal levels (0 - 255)',
+            0x01: ('yes', 'Normal levels (16 - 235)'),
+            0x00: ('no', 'Illegal levels (0 - 255)'),
         }),
         Field('hdmi-ch34-swap', (0x0102, 1), int, 'HDMI Audio', 'For 5.1 surround use', mapping={
-            0x00: 'SMPTE standard',
-            0x01: 'Consumer standard',
+            0x00: ('smpte', 'SMPTE standard'),
+            0x01: ('consumer', 'Consumer standard'),
         }),
         Field(None, (0x0310, 64), str, 'LUTs', 'LUT name', ro=True),
         Field('lut-enable', (0x0300, 1), int, 'LUTs', 'Enable 3D LUT', mapping={
-            0x00: 'Enable',
-            0xff: 'Disable',
+            0x00: ('yes', 'Enable'),
+            0xff: ('no', 'Disable'),
         }),
         Field('lut-loop', (0x0301, 1), int, 'LUTs', 'LUT on loop output', mapping={
-            0x01: 'Enable',
-            0x00: 'Disable',
+            0x01: ('yes', 'Enable'),
+            0x00: ('no', 'Disable'),
         }),
         Field('lut', 'LUT', open, 'LUTs', 'LUT'),
     ]
@@ -108,13 +108,13 @@ class MicroConverterHdmiSdi3G(WValueProtoConverter):
     FIELDS = [
         Field('name', (0x00c0, 64), str, "Device", "Name"),
         Field('sdi-level', (0x0200, 1), int, "SDI Output", "3G SDI Output", mapping={
-            0x01: 'Level A',
-            0x00: 'Level B',
+            0x01: ('a', 'Level A'),
+            0x00: ('b', 'Level B'),
         }),
         Field(None, (0x0310, 64), str, 'LUTs', 'LUT name', ro=True),
         Field('lut-enable', (0x0300, 1), int, 'LUTs', 'Enable 3D LUT', mapping={
-            0x00: 'Enable',
-            0xff: 'Disable',
+            0x00: ('yes', 'Enabled'),
+            0xff: ('no', 'Disabled'),
         }),
         Field('lut', (0x3f000000, 0x01000000), open, 'LUTs', 'LUT'),
     ]
@@ -127,20 +127,10 @@ class MicroConverterSdiHdmi6G(WValueProtoConverter):
     NEEDS_POWER = True
     LUT_SIZE = 33
 
-    """
-    0x0000
-    0x0038 CLIP
-    0x0200 LUT1 name
-    0x0300 LUT2 name
-    0x0014 40
-    0x0018 40
-    0x0024 40
-    """
-
     FIELDS = [
         Field('hdmi-clip', (0x0038, 4), int, "HDMI Output", "Clip signal to", mapping={
-            0x00: 'Normal levels (16 - 235)',
-            0x01: 'Illegal levels (0 - 255)',
+            0x00: ('yes', 'Normal levels (16 - 235)'),
+            0x01: ('no', 'Illegal levels (0 - 255)'),
         }),
         Field(None, (0x0200, 40), str, 'Processing', 'LUT 1 name', ro=True),
         Field('lut1', (0x38000000, 0x03000000), open, 'Processing', 'LUT 1'),

@@ -1,7 +1,6 @@
 # Copyright 2022 - 2022, Martijn Braam and the OpenAtem contributors
 # SPDX-License-Identifier: LGPL-3.0-only
 import argparse
-import ipaddress
 import math
 import os.path
 
@@ -66,12 +65,16 @@ def main():
 
     for item in sorted(codes):
         arg_type = None
+        arg_choices = None
         field = codelut[item]
         if isinstance(field.mapping, dict):
-            arg_type = int
+            arg_type = str
+            arg_choices = []
+            for option in field.mapping.values():
+                arg_choices.append(option[0])
         elif field.mapping == 'dB':
             arg_type = float
-        opt.add_argument('--' + item, type=arg_type)
+        opt.add_argument('--' + item, type=arg_type, choices=arg_choices)
 
     args = parser.parse_args()
 
@@ -129,10 +132,11 @@ def main():
         if field.dtype == open:
             lut_writes.append((field, value))
             continue
-        if isinstance(field.mapping, str):
-            if field.mapping == 'dB':
-                value = float(value)
-                value = int(round(math.pow(10, value / 20) * 64))
+        elif isinstance(field.mapping, dict):
+            for raw_val in field.mapping:
+                if field.mapping[raw_val][0] == value:
+                    value = raw_val
+                    break
 
         print_option(field, value)
         device.set_value(field, value)
@@ -142,19 +146,7 @@ def main():
         if field.section != last_section:
             print(f"\n===[ {field.section} ]===")
             last_section = field.section
-        if field.dtype == str:
-            value = field.value.split(b'\0')[0].decode()
-        elif field.dtype == int:
-            value = int.from_bytes(field.value, byteorder='little')
-        elif field.dtype == bool:
-            value = int.from_bytes(field.value, byteorder='little') > 0
-        elif field.dtype == open:
-            continue
-        elif field.dtype == ipaddress.IPv4Address:
-            value = ipaddress.IPv4Address(field.value)
-        else:
-            raise ValueError("Unknown type")
-
+        value = field.value
         if field.mapping is None:
             print_option(field, value)
         elif isinstance(field.mapping, dict):
@@ -162,13 +154,12 @@ def main():
             for key, display in field.mapping.items():
                 x = 'x' if key == value else ' '
                 if annotate:
-                    print(f'    [{x}] {display} (--{field.code} {key})')
+                    print(f'    [{x}] {display[1]} (--{field.code} {display[0]})')
                 else:
-                    print(f'    [{x}] {display}')
+                    print(f'    [{x}] {display[1]}')
         elif isinstance(field.mapping, str):
             if field.mapping == 'dB':
-                if value > 0:
-                    value = 20 * math.log10(value / 64)
+                if value > float('-inf'):
                     print_option(field, f' {value:.2f} dB')
                 else:
                     print_option(field, 'off')

@@ -1,5 +1,7 @@
 # Copyright 2022 - 2022, Martijn Braam and the OpenAtem contributors
 # SPDX-License-Identifier: LGPL-3.0-only
+import ipaddress
+import math
 import os.path
 import time
 
@@ -26,6 +28,12 @@ class Field:
 
     def __repr__(self):
         return f'<Field {self.key} ({self.label})>'
+
+
+class Option:
+    def __init__(self, code, label):
+        self.code = code
+        self.label = label
 
 
 class Converter:
@@ -67,6 +75,12 @@ class Converter:
     def get_version(self):
         return None
 
+    def get_value_raw(self, field):
+        raise NotImplementedError()
+
+    def set_value_raw(self, field, value):
+        raise NotImplementedError()
+
     def get_value(self, field):
         raise NotImplementedError()
 
@@ -103,11 +117,45 @@ class LabelProtoConverter(Converter):
                                   wIndex=0,
                                   data_or_wLength=0)
 
-    def get_value(self, field):
+    def get_value_raw(self, field):
         return self._communicate(field.key, field.sys)
 
-    def set_value(self, field, value):
+    def get_value(self, field):
+        raw = self.get_value_raw(field)
+        if field.dtype == str:
+            value = raw.split(b'\0')[0].decode()
+        elif field.dtype == int:
+            value = int.from_bytes(raw, byteorder='little')
+        elif field.dtype == bool:
+            value = int.from_bytes(raw, byteorder='little') > 0
+        elif field.dtype == open:
+            value = None
+        else:
+            raise ValueError("Unknown type")
+
+        if field.mapping == 'dB':
+            if value > 0:
+                value = 20 * math.log10(value / 64)
+            else:
+                value = float('-inf')
+        return value
+
+    def set_value_raw(self, field, value):
         self._communicate(field.key, field.sys, write=value)
+
+    def set_value(self, field, value):
+        if isinstance(value, bytes):
+            self.set_value_raw(field, value)
+
+        if field.dtype == int:
+            value = value.to_bytes(length=(8 + (value + (value < 0)).bit_length()), byteorder='little')
+        elif field.dtype == str:
+            value = value.encode()
+        elif field.dtype == bool:
+            value = 255 if value else 0
+            value = value.to_bytes(field.key[1], byteorder='little')
+
+        self.set_value_raw(field, value)
 
     def _communicate(self, name, sys=False, write=None):
         ep_read = 0xa1 if sys else 0xc0
@@ -168,7 +216,9 @@ class WValueProtoConverter(Converter):
 
     def get_name(self):
         if not self.HAS_NAME:
-            return None
+            name = self.NAME.replace('Blackmagic design ', '')
+            name = name.replace('Mini', '').replace('Micro', '').replace('Converter', '')
+            return name.strip()
 
         raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
                                               bRequest=83,
@@ -199,7 +249,7 @@ class WValueProtoConverter(Converter):
 
         return raw.split(b'\0')[0].decode()
 
-    def get_value(self, field):
+    def get_value_raw(self, field):
         if field.dtype == open:
             return
         return bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
@@ -208,15 +258,50 @@ class WValueProtoConverter(Converter):
                                                wIndex=0,
                                                data_or_wLength=field.key[1]))
 
-    def set_value(self, field, value):
+    def get_value(self, field):
+        raw = self.get_value_raw(field)
+        if field.dtype == str:
+            value = raw.split(b'\0')[0].decode()
+        elif field.dtype == int:
+            value = int.from_bytes(raw, byteorder='little')
+        elif field.dtype == bool:
+            value = int.from_bytes(raw, byteorder='little') > 0
+        elif field.dtype == open:
+            value = None
+        else:
+            raise ValueError("Unknown type")
 
-        if not isinstance(value, bytes):
-            if field.dtype == int:
-                value = value.to_bytes(field.key[1], byteorder='little')
+        if field.mapping == 'dB':
+            if value > 0:
+                value = 20 * math.log10(value / 64)
+            else:
+                value = float('-inf')
+        return value
+
+    def set_value_raw(self, field, value):
         self.handle.ctrl_transfer(bmRequestType=0x41,
                                   bRequest=82,
                                   wValue=field.key[0],
                                   data_or_wLength=value)
+
+    def set_value(self, field, value):
+        if isinstance(value, bytes):
+            self.set_value_raw(field, value)
+
+        if field.mapping == "dB":
+            print(f"set {value} dB")
+            value = float(value)
+            value = int(round(math.pow(10, value / 20) * 64))
+
+        if field.dtype == int:
+            value = value.to_bytes(field.key[1], byteorder='little')
+        elif field.dtype == str:
+            value = value.encode()
+        elif field.dtype == bool:
+            value = 255 if value else 0
+            value = value.to_bytes(field.key[1], byteorder='little')
+
+        self.set_value_raw(field, value)
 
     def _read(self, bRequest, length):
         return bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
