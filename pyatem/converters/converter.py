@@ -26,12 +26,12 @@ class MicroConverterSdiHdmi12G(LabelProtoConverter):
             0xff: 'Consumer standard',
         }),
         Field('lut-enable', 'LutSelection', int, 'LUTs', 'Lut Selection', mapping={
-            0x00: 'False',
-            0xff: 'True',
+            0x00: 'Enabled',
+            0xff: 'Disabled',
         }),
-        Field('lut-loop', 'LutLoopEnable', int, 'LUTs', 'HDMI Out', mapping={
-            0x00: 'False',
-            0xff: 'True',
+        Field('lut-loop', 'LutLoopEnable', int, 'LUTs', 'LUT on SDI loop', mapping={
+            0x00: 'Disabled',
+            0xff: 'Enabled',
         }),
         Field(None, 'LutName', str, 'LUTs', 'LUT name', ro=True),
     ]
