@@ -5,6 +5,8 @@ import os
 
 import gi
 
+from pyatem.converters.protocol import Converter
+
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, GObject, Gio, Gdk, GLib, Pango
 
@@ -150,14 +152,23 @@ class SetupWindow:
             if device.is_plugged_in():
                 instance = device()
                 instance.connect()
+                status = instance.get_status()
+
                 name = instance.get_name()
+                if name is None:
+                    name = device.NAME.replace('Blackmagic design ', '')
+                    name = name.replace('Mini', '').replace('Micro', '').replace('Converter', '')
+                    name = name.strip()
                 label = Gtk.Label(label=name, xalign=0.0)
                 label.set_margin_top(8)
                 label.set_margin_left(10)
                 label.set_margin_right(10)
                 label.set_name('row')
 
-                model = Gtk.Label(label=device.NAME.replace('Blackmagic design ', ''), xalign=0.0)
+                model = device.NAME.replace('Blackmagic design ', '')
+                if status == Converter.STATUS_NEED_POWER:
+                    model = 'Needs power'
+                model = Gtk.Label(label=model, xalign=0.0)
                 model.get_style_context().add_class('dim-label')
                 model.set_margin_bottom(8)
                 model.set_margin_left(10)
@@ -168,6 +179,7 @@ class SetupWindow:
                 box.add(model)
 
                 row = Gtk.ListBoxRow()
+                row.set_activatable(status == Converter.STATUS_OK)
                 row.add(box)
                 row.device = instance
                 self.listbox.add(row)
@@ -222,7 +234,7 @@ class SetupWindow:
 
                 value = field.value
                 if field.dtype == str:
-                    value = value.decode()
+                    value = value.split(b'\0')[0].decode()
                 elif field.dtype == int:
                     value = int.from_bytes(field.value, 'little')
                 elif field.dtype == ipaddress.IPv4Address:
@@ -245,7 +257,7 @@ class SetupWindow:
                     widget.get_style_context().add_class('dim-label')
                     widget.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
                     wbox.pack_start(widget, False, False, 0)
-                elif field.mapping is not None:
+                elif isinstance(field.mapping, dict):
                     widget = Gtk.ComboBoxText()
                     field.widget = widget
                     widget.device = device
@@ -304,9 +316,9 @@ class SetupWindow:
         if field.dtype == bool:
             device.set_value(field, 0xff if widget.get_active else 0x00)
         elif field.dtype == open:
-            device.set_lut(widget.get_filename())
+            device.set_lut(field.key, widget.get_filename())
             self.make_page(device)
-        elif field.mapping is not None:
+        elif isinstance(field.mapping, dict):
             display = widget.get_active_text()
             for value, d in field.mapping.items():
                 if d == display:
