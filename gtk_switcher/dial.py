@@ -60,7 +60,10 @@ class Dial(Gtk.Range):
         value = self.get_value()
         range_min = self.get_adjustment().get_lower()
         range_max = self.get_adjustment().get_upper()
-        value = ((value - range_min) / (range_max - range_min))
+        if range_max - range_min == 0:
+            value = 0
+        else:
+            value = ((value - range_min) / (range_max - range_min))
         inner = self._polar(diameter * 0.2, (value * 270) + 45 + 90)
         outer = self._polar(diameter * 0.4, (value * 270) + 45 + 90)
         cr.set_line_width(2)
