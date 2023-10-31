@@ -144,6 +144,18 @@ class MicroConverterSdiHdmi6G(WValueProtoConverter):
     ]
 
 
+class MicroConverterSdiHdmi(WValueProtoConverter):
+    PRODUCT = 0xBDC5
+    NAME = "Blackmagic design Micro Converter SDI to HDMI"
+
+    FIELDS = [
+        Field((0x0038, 1), int, "Processing", "Clip video output to", mapping={
+            0x00: 'Legal levels (16 - 235)',
+            0x01: 'Illegal levels (0 - 255)',
+        }),
+    ]
+
+
 class MicroConverterBiDirectionalSdiHdmi(WValueProtoConverter):
     PRODUCT = 0xBE0C
     NAME = "Blackmagic design Micro Converter BiDirectional SDI/HDMI"
