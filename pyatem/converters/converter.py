@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 import ipaddress
 
-from pyatem.converters.protocol import LabelProtoConverter, Field, WValueProtoConverter, AtemLegacyProtocol
+from pyatem.converters.protocol import LabelProtoConverter, Field, WValueProtoConverter, WIndexProtoConverter, AtemLegacyProtocol
 
 
 class MicroConverterSdiHdmi12G(LabelProtoConverter):
@@ -169,6 +169,22 @@ class MicroConverterBiDirectionalSdiHdmi(WValueProtoConverter):
             0x01: ('a', 'Level A'),
             0x00: ('b', 'Level B'),
         }),
+    ]
+
+
+class MiniConverterSdiAudio(WIndexProtoConverter):
+    PRODUCT = 0xBD28
+    NAME = "Blackmagic design Mini Converter SDI to Audio"
+    HAS_NAME = False
+    NEEDS_POWER = True
+
+
+    FIELDS = [
+        Field('audio1', (0x0500, 1), int, 'Audio Output Levels', 'Ch 1', mapping='dB'),
+        Field('audio2', (0x0600, 1), int, 'Audio Output Levels', 'Ch 2', mapping='dB'),
+        Field('audio3', (0x0700, 1), int, 'Audio Output Levels', 'Ch 3', mapping='dB'),
+        Field('audio4', (0x0800, 1), int, 'Audio Output Levels', 'Ch 4', mapping='dB'),
+        Field('aes', (0x0900, 1), int, 'Audio Output Levels', 'AES/EBU', mapping='dB'),
     ]
 
 

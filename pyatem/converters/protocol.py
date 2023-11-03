@@ -419,6 +419,224 @@ class WValueProtoConverter(Converter):
             raise ValueError("Unsupported LUT size")
 
 
+class WIndexProtoConverter(Converter):
+    PROTOCOL = 'wIndex'
+#    NAME_FIELD = 0x00C0
+#    VERSION_FIELD = 0x00B0
+#    LUTFIELD = False
+    HAS_NAME = True
+    NEEDS_POWER = False
+#    LUT_SIZE = 17
+
+    REG_STATUS = 48
+    CMD_CLEAR = 55
+    REG_CLEARSTATUS = 56
+    CMD_WRITE = 57
+
+    """
+    bRequest:
+      214: setting write
+      215: setting read
+      225: is powered?
+    """
+
+    def get_name(self):
+        if not self.HAS_NAME:
+            name = self.NAME.replace('Blackmagic design ', '')
+            name = name.replace('Mini', '').replace('Micro', '').replace('Converter', '')
+            return name.strip()
+
+        raise NotImplementedError()
+#        raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
+#                                              bRequest=83,
+#                                              wValue=self.NAME_FIELD,
+#                                              wIndex=0,
+#                                              data_or_wLength=64))
+#
+#        return raw.split(b'\0')[0].decode()
+
+    def get_status(self):
+        if not self.NEEDS_POWER:
+            return Converter.STATUS_OK
+        raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc0,
+                                              bRequest=225,
+                                              wValue=0x0000,
+                                              wIndex=0,
+                                              data_or_wLength=1))
+        if raw == b'\0':
+            return Converter.STATUS_NEED_POWER
+        return Converter.STATUS_OK
+
+    def get_version(self):
+        raise NotImplementedError()
+        print("TODO: fixme!")
+#        raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
+#                                              bRequest=83,
+#                                              wValue=self.VERSION_FIELD,
+#                                              wIndex=0,
+#                                              data_or_wLength=7))
+#
+#        return raw.split(b'\0')[0].decode()
+
+    def get_value_raw(self, field):
+        if field.dtype == open:
+            return
+        return bytes(self.handle.ctrl_transfer(bmRequestType=0xc0,
+                                               bRequest=214,
+                                               wValue=0,
+                                               wIndex=field.key[0],
+                                               data_or_wLength=field.key[1]))
+
+    def get_value(self, field):
+        raw = self.get_value_raw(field)
+        if field.dtype == str:
+            value = raw.split(b'\0')[0].decode()
+        elif field.dtype == int:
+            value = int.from_bytes(raw, byteorder='little')
+        elif field.dtype == bool:
+            value = int.from_bytes(raw, byteorder='little') > 0
+        elif field.dtype == open:
+            value = None
+        else:
+            raise ValueError("Unknown type")
+
+        if field.mapping == 'dB':
+            if value > 0:
+                value = 20 * math.log10(value / 64)
+            else:
+                value = float('-inf')
+        return value
+
+    def set_value_raw(self, field, value):
+#Set seems to be URB Control wIndex of field ID ORed with the desired field value
+#with bmRequestType of 0x40
+        self.handle.ctrl_transfer(bmRequestType=0x40,
+                                  bRequest=215,
+                                  wValue=0,
+                                  wIndex=field.key[0] | value,
+                                  data_or_wLength=0),
+
+    def set_value(self, field, value):
+        if isinstance(value, bytes):
+            self.set_value_raw(field, value)
+
+        if field.mapping == "dB":
+            print(f"set {value} dB")
+            value = float(value)
+            value = int(round(math.pow(10, value / 20) * 64))
+
+        if field.dtype == int:
+            value = value.to_bytes(field.key[1], byteorder='little')
+        elif field.dtype == str:
+            value = value.encode()
+        elif field.dtype == bool:
+            value = 255 if value else 0
+            value = value.to_bytes(field.key[1], byteorder='little')
+
+        self.set_value_raw(field, value)
+
+    def _read(self, bRequest, length):
+        raise NotImplementedError()
+#        return bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
+#                                               bRequest=bRequest,
+#                                               wValue=0,
+#                                               wIndex=0,
+#                                               data_or_wLength=length))
+
+    def _write(self, bRequest, data):
+        raise NotImplementedError()
+#        self.handle.ctrl_transfer(bmRequestType=0x41,
+#                                  bRequest=bRequest,
+#                                  wValue=0,
+#                                  wIndex=0,
+#                                  data_or_wLength=data)
+
+    def _wait_on_status(self, status0=None, status1=None, status2=None, status3=None, status4=None, status5=None):
+        # Wait for the LUT engine to be ready
+        wanted = [status0, status1, status2, status3, status4, status5]
+        for i in range(0, 20):
+            status = self._read(self.REG_STATUS, 6)
+            data = struct.unpack('>6B', status)
+
+            fail = False
+            for idx, s in enumerate(wanted):
+                if s is not None and data[idx] != s:
+                    fail = True
+            if not fail:
+                break
+
+            time.sleep(0.5)
+        else:
+            raise TimeoutError("Status did not update")
+
+    def _clear_region(self, address, length):
+        self._write(self.CMD_CLEAR, struct.pack('>II', address, length))
+        while True:
+            status = self._read(self.REG_CLEARSTATUS, 15)
+            part = struct.unpack('>II I BBB', status)
+            # 0 address
+            # 1 length
+            # 2 clear ptr
+            # 3 ?
+            # 4 ?
+            # 5 ?
+
+            progress = ((part[2] - part[0]) / part[1]) * 100
+            if part[3] == 0 and part[4] == 0 and part[5] == 0:
+                break
+
+            time.sleep(0.3)
+
+    def _bulk_write(self, address, data):
+        # position in blocks maybe?
+        block = address >> 8
+        self._write(self.CMD_WRITE, struct.pack('>I', block))
+
+        self.handle.write(1, data)
+        self.handle.write(1, b'')
+
+    def _set_lut_33(self, key, path):
+        address, length = key
+        lut = load_cube(path)
+        title = os.path.basename(path)
+        title = '.'.join(title.split('.')[0:-1])
+        stream = lut_to_bmd33(lut, title)
+
+        self._wait_on_status(status4=0xFF, status5=0xFF)
+        self._write(49, b'')
+        self._write(52, b'')
+
+        self._clear_region(address, length)
+        self._bulk_write(address, stream)
+        self._wait_on_status(status1=0x00, status2=0x00)
+        self._write(50, b'')
+
+    def _set_lut_17(self, key, path):
+        address, length = key
+        lut = load_cube(path)
+        stream = lut_to_bmd17(lut)
+
+        self._wait_on_status(status4=0xFF, status5=0xFF)
+        self._write(49, b'')
+        self._write(52, b'')
+        self._clear_region(address, length)
+        self._bulk_write(address, stream)
+        self._wait_on_status(status1=0x00, status2=0x00)
+        self._write(50, b'')
+
+        # Write the new LUT name and finalize the upload
+        self.set_value(Field(None, (0x0410, 64), str, '', 'LUT name'), struct.pack('>64s', lut.title.encode()))
+        self.set_value(Field(None, (0x0400, 1), int, '', 'Unknown'), struct.pack('>B', 3))
+
+    def set_lut(self, key, path):
+        if self.LUT_SIZE == 17:
+            self._set_lut_17(key, path)
+        elif self.LUT_SIZE == 33:
+            self._set_lut_33(key, path)
+        else:
+            raise ValueError("Unsupported LUT size")
+
+
 class AtemLegacyProtocol(Converter):
     PROTOCOL = 'AtemLegacy'
     NAME_FIELD = 0x0048
