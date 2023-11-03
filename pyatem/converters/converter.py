@@ -149,9 +149,9 @@ class MicroConverterSdiHdmi(WValueProtoConverter):
     NAME = "Blackmagic design Micro Converter SDI to HDMI"
 
     FIELDS = [
-        Field((0x0038, 1), int, "Processing", "Clip video output to", mapping={
-            0x00: 'Legal levels (16 - 235)',
-            0x01: 'Illegal levels (0 - 255)',
+        Field('hdmi-clip', (0x0038, 1), int, "Processing", "Clip video output to", mapping={
+            0x00: ('yes', 'Legal levels (16 - 235)'),
+            0x01: ('no', 'Illegal levels (0 - 255)'),
         }),
     ]
 
@@ -161,13 +161,13 @@ class MicroConverterBiDirectionalSdiHdmi(WValueProtoConverter):
     NAME = "Blackmagic design Micro Converter BiDirectional SDI/HDMI"
 
     FIELDS = [
-        Field((0x0038, 1), int, "Processing", "Clip HDMI video output to", mapping={
-            0x00: 'Legal levels (16 - 235)',
-            0x01: 'Illegal levels (0 - 255)',
+        Field('hdmi-clip', (0x0038, 1), int, "Processing", "Clip HDMI video output to", mapping={
+            0x00: ('yes', 'Legal levels (16 - 235)'),
+            0x01: ('no', 'Illegal levels (0 - 255)'),
         }),
-        Field((0x003c, 1), int, "Processing", "3G SDI Output", mapping={
-            0x01: 'Level A',
-            0x00: 'Level B',
+        Field('sdi-level', (0x003c, 1), int, "Processing", "3G SDI Output", mapping={
+            0x01: ('a', 'Level A'),
+            0x00: ('b', 'Level B'),
         }),
     ]
 
