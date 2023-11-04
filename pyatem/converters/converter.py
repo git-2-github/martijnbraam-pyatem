@@ -188,6 +188,16 @@ class MiniConverterSdiAudio(WIndexProtoConverter):
     ]
 
 
+class TeranexAV(WIndexProtoConverter):
+    PRODUCT = 0xBDD8
+    NAME = "Blackmagic design Teranex AV"
+    HAS_NAME = False
+
+#    # This doesn't actually have anything to configure
+    FIELDS = [
+    ]
+
+
 class AtemProductionStudio4k(AtemLegacyProtocol):
     PRODUCT = 0xBD6E
     NAME = "Blackmagic design ATEM Production Studio 4K"
