@@ -435,8 +435,8 @@ class WIndexProtoConverter(Converter):
 
     """
     bRequest:
-      214: setting write
-      215: setting read
+      215: setting write
+      214: setting read
       225: is powered?
     """
 
@@ -508,12 +508,14 @@ class WIndexProtoConverter(Converter):
         return value
 
     def set_value_raw(self, field, value):
-#Set seems to be URB Control wIndex of field ID ORed with the desired field value
-#with bmRequestType of 0x40
+# Set seems to be URB Control wIndex of field ID ORed with the desired field
+# value with bmRequestType of 0x40
         self.handle.ctrl_transfer(bmRequestType=0x40,
                                   bRequest=215,
                                   wValue=0,
-                                  wIndex=field.key[0] | value,
+                                  # Or the field ID with the first byte of the
+                                  # value in case there is more than one byte
+                                  wIndex=field.key[0] | value[0],
                                   data_or_wLength=0),
 
     def set_value(self, field, value):
