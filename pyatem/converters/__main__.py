@@ -142,7 +142,11 @@ def main():
         device.set_value(field, value)
 
     last_section = None
-    for field in device.get_state().values():
+    device_state = device.get_state()
+    for field_config in device.FIELDS:
+        field = device_state[field_config.key]
+        if field is None:
+            continue
         if field.section != last_section:
             print(f"\n===[ {field.section} ]===")
             last_section = field.section
