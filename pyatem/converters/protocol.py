@@ -316,10 +316,19 @@ class WValueProtoConverter(Converter):
         if field.dtype == int:
             value = value.to_bytes(field.key[1], byteorder='little')
         elif field.dtype == str:
-            value = value.encode()
+            # TODO(Peter): Fix me! This has some "fun" edge cases if unicode is
+            # allowed...
+            if len(value.encode()) > field.key[1] - 1:
+                value = value[0:field.key[1] - 2].encode()
+            else:
+                value = value.encode()
+            value += b'\0'
         elif field.dtype == bool:
             value = 255 if value else 0
             value = value.to_bytes(field.key[1], byteorder='little')
+        elif field.dtype == ipaddress.IPv4Address:
+            addr = ipaddress.IPv4Address(value)
+            value = addr.packed
 
         self.set_value_raw(field, value)
 
@@ -534,10 +543,24 @@ class WIndexProtoConverter(Converter):
         if field.dtype == int:
             value = value.to_bytes(field.key[1], byteorder='little')
         elif field.dtype == str:
+            # TODO(Peter): Test me, this is probably more correct than what's
+            # currently used, but untested and given it's a set...
+            # TODO(Peter): Fix me! This has some "fun" edge cases if unicode is
+            # allowed...
+            # if len(value.encode()) > field.key[1] - 1:
+            #     value = value[0:field.key[1] - 2].encode()
+            # else:
+            #     value = value.encode()
+            # value += b'\0'
             value = value.encode()
         elif field.dtype == bool:
             value = 255 if value else 0
             value = value.to_bytes(field.key[1], byteorder='little')
+        # TODO(Peter): Test me, this is probably correct, but untested and
+        # given it's a set...
+        # elif field.dtype == ipaddress.IPv4Address:
+        #     addr = ipaddress.IPv4Address(value)
+        #     value = addr.packed
 
         self.set_value_raw(field, value)
 
