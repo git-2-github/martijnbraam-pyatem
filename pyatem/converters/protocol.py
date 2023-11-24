@@ -130,6 +130,8 @@ class LabelProtoConverter(Converter):
             value = int.from_bytes(raw, byteorder='little')
         elif field.dtype == bool:
             value = int.from_bytes(raw, byteorder='little') > 0
+        elif field.dtype == ipaddress.IPv4Address:
+            value = ipaddress.IPv4Address(raw)
         elif field.dtype == open:
             value = None
         else:
@@ -282,6 +284,8 @@ class WValueProtoConverter(Converter):
             value = int.from_bytes(raw, byteorder='little')
         elif field.dtype == bool:
             value = int.from_bytes(raw, byteorder='little') > 0
+        elif field.dtype == ipaddress.IPv4Address:
+            value = ipaddress.IPv4Address(raw)
         elif field.dtype == open:
             value = None
         else:
