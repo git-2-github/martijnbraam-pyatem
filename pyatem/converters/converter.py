@@ -193,8 +193,76 @@ class TeranexAV(WIndexProtoConverter):
     NAME = "Blackmagic design Teranex AV"
     HAS_NAME = False
 
-#    # This doesn't actually have anything to configure
+    # Check/add fields
     FIELDS = [
+    ]
+
+
+class TeranexMiniConverterOpticalToHdmi12G(WValueProtoConverter):
+    PRODUCT = 0xBDB4
+    NAME = "Blackmagic design Teranex Mini Converter Optical to HDMI 12G"
+    NAME_FIELD = 0x48
+
+    # Add more fields!
+    FIELDS = [
+        # Length of name may technically be a byte or two longer than 61...
+        Field('name', (0x0048, 61), str, "Device", "Name"),
+        # Some fields seem to be embedded within a wValue of 0x00a8 or 0x00aa with different data fragments
+        #Field('identify', (0x00, 1), bool, "Device", "Identify Device"),
+        Field('video-input', (0x00ba, 1), int, "Video", "Video Input", mapping={
+            0x00: ('sdi', 'SDI'),
+            0x01: ('auto', 'Auto'),
+        }),
+        Field('hdmi-clip', (0x00b7, 1), int, "Video", "Clip HDMI video output to", mapping={
+            0x10: ('yes', 'Legal levels (16 - 235)'),
+            0x00: ('no', 'Illegal levels (0 - 255)'),
+        }),
+        Field('instant-lock', (0x00b9, 1), int, "Video", "HDMI instant lock", mapping={
+            0x01: ('yes', 'Enable'),
+            0x00: ('no', 'Disable'),
+        }),
+        Field('xlr-output', (0x00be, 1), int, "Audio", "XLR Output", mapping={
+            0x0a: ('analog', 'Analog'),
+            0x08: ('aesebu', 'AES/EBU'),
+            0x0b: ('timecode', 'Timecode (Right)'),
+        }),
+        # Maybe also 0xc0, or does one actually do left and one right?
+        Field('analog-de-embedding', (0x00d0, 1), int, "Audio", "Analog De-embedding", mapping={
+            0x08: ('12', '1 & 2'),
+            0x09: ('34', '3 & 4'),
+            0x0a: ('56', '5 & 6'),
+            0x0b: ('78', '7 & 8'),
+            0x0c: ('910', '9 & 10'),
+            0x0d: ('1112', '11 & 12'),
+            0x0e: ('1314', '13 & 14'),
+            0x0f: ('1516', '15 & 16'),
+        }),
+        # Maybe also 0xc1, or does one actually do out 1 and one out 2?
+        Field('aesebu-de-embedding', (0x00d1, 1), int, "Audio", "AES/EBU De-embedding", mapping={
+            0x03: ('14', '1 - 4'),
+            0x04: ('58', '5 - 8'),
+            0x05: ('912', '9 - 12'),
+            0x06: ('1316', '13 - 16'),
+        }),
+        Field('audio1', (0x00e0, 1), int, "Audio", "Analog Out 1", mapping='dB'),
+        Field('audio2', (0x00e1, 1), int, "Audio", "Analog Out 2", mapping='dB'),
+        Field('aes12', (0x00e2, 1), int, "Audio", "AES/EBU Out 1 & 2", mapping='dB'),
+        Field('aes34', (0x00e3, 1), int, "Audio", "AES/EBU Out 3 & 4", mapping='dB'),
+        #Field('surround-use', (0x00, 1), int, "Audio", "5.1 surround use", mapping={
+        #    0x0: ('smpte', 'SMPTE standard (L, R, C, LFE, Ls, Rs)'),
+        #    0x0: ('consumer', 'Consumer standard (L, R, LFE, C, Ls, Rs)'),
+        #}),
+        Field('dhcp', (0x0087, 1), int, "Network", "IP Setting", mapping={
+            0x01: ('dhcp', 'DHCP'),
+            0x00: ('static', 'Static IP'),
+        }),
+        Field('address', (0x0088, 4), ipaddress.IPv4Address, "Network", "Address"),
+        Field('netmask', (0x008c, 4), ipaddress.IPv4Address, "Network", "Netmask"),
+        Field('gateway', (0x0090, 4), ipaddress.IPv4Address, "Network", "Gateway"),
+        # Read only
+        Field('dhcpaddress', (0x0094, 4), ipaddress.IPv4Address, "Network", "DHCP Address", ro=True),
+        Field('dhcpnetmask', (0x0098, 4), ipaddress.IPv4Address, "Network", "DHCP Netmask", ro=True),
+        Field('dhcpgateway', (0x009c, 4), ipaddress.IPv4Address, "Network", "DHCP Gateway", ro=True),
     ]
 
 
