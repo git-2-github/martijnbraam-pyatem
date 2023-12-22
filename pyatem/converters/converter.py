@@ -198,6 +198,35 @@ class TeranexAV(WIndexProtoConverter):
     ]
 
 
+class TeranexMiniConverterHdmiToSdi12G(WValueProtoConverter):
+    PRODUCT = 0xBDAF
+    NAME = "Blackmagic design Teranex Mini Converter HDMI to SDI 12G"
+    NAME_FIELD = 0x48
+
+    # Add more fields!
+    FIELDS = [
+        # Length of name may technically be a byte or two longer than 61...
+        Field('name', (0x0048, 61), str, "Device", "Name"),
+        # Some fields seem to be embedded within a wValue of 0x00a8 or 0x00aa with different data fragments
+        # This works, in that identify triggers, but it doesn't seem to clear when identify times out
+        Field('identify', (0x00aa, 1), int, "Device", "Identify Device", mapping={
+            0x02: ('on', 'On'),
+            0x00: ('off', 'Off'),
+        }),
+        Field('dhcp', (0x0087, 1), int, "Network", "IP Setting", mapping={
+            0x01: ('dhcp', 'DHCP'),
+            0x00: ('static', 'Static IP'),
+        }),
+        Field('address', (0x0088, 4), ipaddress.IPv4Address, "Network", "Address"),
+        Field('netmask', (0x008c, 4), ipaddress.IPv4Address, "Network", "Netmask"),
+        Field('gateway', (0x0090, 4), ipaddress.IPv4Address, "Network", "Gateway"),
+        # Read only
+        Field('dhcpaddress', (0x0094, 4), ipaddress.IPv4Address, "Network", "DHCP Address", ro=True),
+        Field('dhcpnetmask', (0x0098, 4), ipaddress.IPv4Address, "Network", "DHCP Netmask", ro=True),
+        Field('dhcpgateway', (0x009c, 4), ipaddress.IPv4Address, "Network", "DHCP Gateway", ro=True),
+    ]
+
+
 class TeranexMiniConverterOpticalToHdmi12G(WValueProtoConverter):
     PRODUCT = 0xBDB4
     NAME = "Blackmagic design Teranex Mini Converter Optical to HDMI 12G"
@@ -221,10 +250,19 @@ class TeranexMiniConverterOpticalToHdmi12G(WValueProtoConverter):
             0x01: ('yes', 'Enable'),
             0x00: ('no', 'Disable'),
         }),
+        # In the config tool, XLR output format and 5.1 surround format are separate settings
+        # I suspect it's really a bit mask, probably as follows:
+        # Bit 0 (LSB) - Analog/Digital
+        # Bit 1       - Timecode/Audio
+        # Bit 2       - Unknown/N/A?
+        # Bit 3       - Consumer/SMPTE 5.1
         Field('xlr-output', (0x00be, 1), int, "Audio", "XLR Output", mapping={
-            0x0a: ('analog', 'Analog'),
-            0x08: ('aesebu', 'AES/EBU'),
-            0x0b: ('timecode', 'Timecode (Right)'),
+            0x02: ('smpteanalog', 'Analog - SMPTE 5.1 (L, R, C, LFE, Ls, Rs)'),
+            0x00: ('smpteaesebu', 'AES/EBU - SMPTE 5.1 (L, R, C, LFE, Ls, Rs)'),
+            0x03: ('smptetimecode', 'Timecode (Right) - SMPTE 5.1 (L, R, C, LFE, Ls, Rs)'),
+            0x0a: ('consumeranalog', 'Analog - Consumer 5.1 (L, R, LFE, C, Ls, Rs)'),
+            0x08: ('consumeraesebu', 'AES/EBU - Analog - Consumer 5.1 (L, R, LFE, C, Ls, Rs)'),
+            0x0b: ('consumertimecode', 'Timecode (Right) - Analog - Consumer 5.1 (L, R, LFE, C, Ls, Rs)'),
         }),
         # Maybe also 0xc0, or does one actually do left and one right?
         Field('analog-de-embedding', (0x00d0, 1), int, "Audio", "Analog De-embedding", mapping={
@@ -248,10 +286,74 @@ class TeranexMiniConverterOpticalToHdmi12G(WValueProtoConverter):
         Field('audio2', (0x00e1, 1), int, "Audio", "Analog Out 2", mapping='dB'),
         Field('aes12', (0x00e2, 1), int, "Audio", "AES/EBU Out 1 & 2", mapping='dB'),
         Field('aes34', (0x00e3, 1), int, "Audio", "AES/EBU Out 3 & 4", mapping='dB'),
-        #Field('surround-use', (0x00, 1), int, "Audio", "5.1 surround use", mapping={
-        #    0x0: ('smpte', 'SMPTE standard (L, R, C, LFE, Ls, Rs)'),
-        #    0x0: ('consumer', 'Consumer standard (L, R, LFE, C, Ls, Rs)'),
-        #}),
+        Field('dhcp', (0x0087, 1), int, "Network", "IP Setting", mapping={
+            0x01: ('dhcp', 'DHCP'),
+            0x00: ('static', 'Static IP'),
+        }),
+        Field('address', (0x0088, 4), ipaddress.IPv4Address, "Network", "Address"),
+        Field('netmask', (0x008c, 4), ipaddress.IPv4Address, "Network", "Netmask"),
+        Field('gateway', (0x0090, 4), ipaddress.IPv4Address, "Network", "Gateway"),
+        # Read only
+        Field('dhcpaddress', (0x0094, 4), ipaddress.IPv4Address, "Network", "DHCP Address", ro=True),
+        Field('dhcpnetmask', (0x0098, 4), ipaddress.IPv4Address, "Network", "DHCP Netmask", ro=True),
+        Field('dhcpgateway', (0x009c, 4), ipaddress.IPv4Address, "Network", "DHCP Gateway", ro=True),
+    ]
+
+
+class TeranexMiniConverter12GSdiToQuadSdi(WValueProtoConverter):
+    PRODUCT = 0xBDC0
+    NAME = "Blackmagic design Teranex Mini Converter 12G-SDI to Quad SDI"
+    NAME_FIELD = 0x48
+
+    FIELDS = [
+        # Length of name may technically be a byte or two longer than 61...
+        Field('name', (0x0048, 61), str, "Device", "Name"),
+        # This works, in that identify triggers, but it doesn't seem to clear when identify times out
+        Field('identify', (0x00aa, 1), int, "Device", "Identify Device", mapping={
+            0x02: ('on', 'On'),
+            0x00: ('off', 'Off'),
+        }),
+        Field('sdi-level', (0x00b8, 1), int, "Processing", "SDI Output", mapping={
+            0x00: ('sl3gb', 'Single Link - 3G Level B'),
+            0x01: ('dl3gb', 'Dual Link - 3G Level B'),
+            0x02: ('ql3gb', 'Quad Link - 3G Level A'),
+            0x03: ('qhds3gb', 'Quad HD Split - 3G Level B'),
+            0x04: ('sl3ga', 'Single Link - 3G Level A'),
+            0x05: ('dl3ga', 'Dual Link - 3G Level A'),
+            0x06: ('ql3ga', 'Quad Link - 3G Level A'),
+            0x07: ('qhds3ga', 'Quad HD Split - 3G Level A'),
+        }),
+        Field('dhcp', (0x0087, 1), int, "Network", "IP Setting", mapping={
+            0x01: ('dhcp', 'DHCP'),
+            0x00: ('static', 'Static IP'),
+        }),
+        Field('address', (0x0088, 4), ipaddress.IPv4Address, "Network", "Address"),
+        Field('netmask', (0x008c, 4), ipaddress.IPv4Address, "Network", "Netmask"),
+        Field('gateway', (0x0090, 4), ipaddress.IPv4Address, "Network", "Gateway"),
+        # Read only
+        Field('dhcpaddress', (0x0094, 4), ipaddress.IPv4Address, "Network", "DHCP Address", ro=True),
+        Field('dhcpnetmask', (0x0098, 4), ipaddress.IPv4Address, "Network", "DHCP Netmask", ro=True),
+        Field('dhcpgateway', (0x009c, 4), ipaddress.IPv4Address, "Network", "DHCP Gateway", ro=True),
+    ]
+
+
+class TeranexMiniConverterQuadSdiTo12GSdi(WValueProtoConverter):
+    PRODUCT = 0xBDC1
+    NAME = "Blackmagic design Teranex Mini Converter Quad SDI to 12G-SDI"
+    NAME_FIELD = 0x48
+
+    FIELDS = [
+        # Length of name may technically be a byte or two longer than 61...
+        Field('name', (0x0048, 61), str, "Device", "Name"),
+        Field('sdi-level', (0x00b8, 1), int, "Processing", "3G SDI Output", mapping={
+            0x04: ('a', 'Level A'),
+            0x00: ('b', 'Level B'),
+        }),
+        # This works, in that identify triggers, but it doesn't seem to clear when identify times out
+        Field('identify', (0x00aa, 1), int, "Device", "Identify Device", mapping={
+            0x02: ('on', 'On'),
+            0x00: ('off', 'Off'),
+        }),
         Field('dhcp', (0x0087, 1), int, "Network", "IP Setting", mapping={
             0x01: ('dhcp', 'DHCP'),
             0x00: ('static', 'Static IP'),
