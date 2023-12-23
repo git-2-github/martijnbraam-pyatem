@@ -22,6 +22,9 @@ class LogAdjustment(Gtk.Adjustment):
         self.coeff = 10 ** (range / 20)
         self.exp = exp
 
+        self.lower = lower
+        self.upper = upper
+
     def to_normalized(self, value):
         upper = self.get_upper() - self.get_page_size()
         adj_range = upper - self.get_lower()
