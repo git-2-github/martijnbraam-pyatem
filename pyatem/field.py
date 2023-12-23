@@ -3473,3 +3473,32 @@ class TransferCompleteField(FieldBase):
 
     def __repr__(self):
         return '<*transfer-complete: store={} slot={} upload={}>'.format(self.store, self.slot, self.upload)
+
+
+class SupersourceBoxPropertiesField(FieldBase):
+    """
+    Data from the `SSBP`. The data for a SuperSource box.
+    """
+
+    CODE = "SSBP"
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack('>BB?xH hhH ?x HHHH 2x', raw)
+        self.index = field[0]
+        self.box = field[1]
+        self.enabled = field[2]
+        self.source = field[3]
+
+        self.x = field[4]
+        self.y = field[5]
+        self.size = field[6]
+
+        self.masked = field[7]
+        self.mask_top = field[8]
+        self.mask_bottom = field[9]
+        self.mask_left = field[10]
+        self.mask_right = field[11]
+
+    def __repr__(self):
+        return '<supersource-box-properties index={}, box={}, source={}, x={}, y={}, size={}>'.format(self.index, self.box, self.source, self.x, self.y, self.size)

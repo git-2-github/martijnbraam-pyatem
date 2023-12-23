@@ -152,11 +152,47 @@ class ColorPickerRegion(Region):
         return [cmd]
 
 
+class SuperSourceBoxRegion(Region):
+    def get_label(self):
+        return _("SuperSource Box {}").format(self.rid[1] + 1)
+
+    def _update_region(self, index, pos_x=None, pos_y=None, size_x=None, size_y=None):
+        if pos_x is not None:
+            x = int((pos_x * 32 - 16) * 1000)
+        if pos_y is not None:
+            y = int((pos_y * 18 - 9) * 1000)
+
+        w = None
+        h = None
+        if size_x is not None and size_y is not None:
+            w = int(size_x * 1000)
+            h = int(size_y * 1000)
+        cmd = KeyPropertiesDveCommand(index=index, keyer=self.rid[1], pos_x=x, pos_y=y,
+                                      size_x=w, size_y=h)
+        return [cmd]
+
+    def _update_mask(self, index, left=None, right=None, top=None, bottom=None):
+        ml, mr, mt, mb = None, None, None, None
+        if left is not None:
+            ml = int(left * 32000)
+        if right is not None:
+            mr = int(right * 32000)
+        if top is not None:
+            mt = int(top * 18000)
+        if bottom is not None:
+            mb = int(bottom * 18000)
+
+        cmd = KeyPropertiesDveCommand(index=index, keyer=self.rid[1], mask_top=mt, mask_bottom=mb, mask_left=ml,
+                                      mask_right=mr)
+        return [cmd]
+
+
 class LayoutView(Gtk.Frame):
     __gtype_name__ = 'LayoutView'
     LAYER_USK = 1
     LAYER_DSK = 2
     LAYER_ACK = 3
+    LAYER_SSB = 4
 
     def __init__(self, index, connection):
         super(Gtk.Frame, self).__init__()
@@ -225,6 +261,8 @@ class LayoutView(Gtk.Frame):
                 region = DownstreamKeyRegion(rid, self)
             elif type == LayoutView.LAYER_ACK:
                 region = ColorPickerRegion(rid, self)
+            elif type == LayoutView.LAYER_SSB:
+                region = SuperSourceBoxRegion(rid, self)
             self.regions[rid] = region
         return self.regions[rid]
 

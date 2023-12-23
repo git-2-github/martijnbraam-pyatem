@@ -1375,3 +1375,13 @@ class SwitcherPage:
 
     def on_presets_clicked(self, widget, *args):
         self.preset_context = widget.get_name()
+
+    def on_supersource_box_change(self, data):
+        x = data.x / 100
+        y = data.y / 100
+        width = data.size / 110 * 16 / 9
+        height = data.size / 110
+
+        region = self.layout[0].get(LayoutView.LAYER_SSB, data.box)
+        region.set_region(x, y, width, height)
+        region.set_mask(data.mask_top, data.mask_bottom, data.mask_left, data.mask_right)

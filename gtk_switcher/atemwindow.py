@@ -616,6 +616,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
                 self.status_mode.set_text(data.get_label())
             elif field == 'dkey-properties':
                 self.on_dsk_change(data)
+            elif field == 'supersource-box-properties':
+                self.on_supersource_box_change(data)
             elif field == 'dkey-state':
                 self.on_dsk_state_change(data)
             elif field == 'mediaplayer-slots':
