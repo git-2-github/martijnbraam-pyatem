@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-only
 from gi.repository import Gtk, GObject, Gdk
 
-from pyatem.command import KeyPropertiesDveCommand, DkeyMaskCommand, KeyPropertiesAdvancedChromaColorpickerCommand
+from pyatem.command import KeyPropertiesDveCommand, DkeyMaskCommand, KeyPropertiesAdvancedChromaColorpickerCommand, \
+    SupersourceBoxPropertiesCommand
 
 
 class Region:
@@ -158,17 +159,15 @@ class SuperSourceBoxRegion(Region):
 
     def _update_region(self, index, pos_x=None, pos_y=None, size_x=None, size_y=None):
         if pos_x is not None:
-            x = int((pos_x * 32 - 16) * 1000)
+            x = int((pos_x * 2 - 1) * 1600)
         if pos_y is not None:
-            y = int((pos_y * 18 - 9) * 1000)
+            y = int((pos_y * 2 - 1) * 900)
 
-        w = None
-        h = None
+        size = None
         if size_x is not None and size_y is not None:
-            w = int(size_x * 1000)
-            h = int(size_y * 1000)
-        cmd = KeyPropertiesDveCommand(index=index, keyer=self.rid[1], pos_x=x, pos_y=y,
-                                      size_x=w, size_y=h)
+            size = int(size_x * 1000)
+        cmd = SupersourceBoxPropertiesCommand(index=0, box=self.rid[1], x=x, y=y,
+                                              size=size)
         return [cmd]
 
     def _update_mask(self, index, left=None, right=None, top=None, bottom=None):
@@ -182,8 +181,7 @@ class SuperSourceBoxRegion(Region):
         if bottom is not None:
             mb = int(bottom * 18000)
 
-        cmd = KeyPropertiesDveCommand(index=index, keyer=self.rid[1], mask_top=mt, mask_bottom=mb, mask_left=ml,
-                                      mask_right=mr)
+        cmd = SupersourceBoxPropertiesCommand(index=0, box=self.rid[1], top=mt, bottom=mb, left=ml, right=mr)
         return [cmd]
 
 

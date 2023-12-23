@@ -2848,3 +2848,101 @@ class TransferCompleteCommand(Command):
     def get_command(self):
         data = struct.pack('>HH ?xxx', self.store, self.slot, self.upload)
         return self._make_command('*XFC', data)
+
+
+class SupersourceBoxPropertiesCommand(Command):
+    """
+    Implementation of the `CSBP` command. This sets the state of the colorpicker for the advanced chroma keyer
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask
+    1      1    u8     M/E index, 0-indexed
+    2      1    u8     Keyer index
+    3      1    bool   Enable cursor
+    4      1    bool   Enable preview
+    5      1    ?      padding
+    6      2    i16    Cursor X [-16000 - 16000]
+    8      2    i16    Cursor Y [-9000 - 9000]
+    10     2    u16    Cursor size [620 - 9925]
+    12     2    u16    Color Y
+    14     2    i16    Color Cb
+    16     2    i16    Color Cr
+    18     2    ?      padding
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Enabled
+    1   Source
+    2   X
+    3   Y
+    4   Size
+    5   Mask enable
+    6   Mask top
+    7   Mask bottom
+    8   Mask left
+    9   Mask right
+    === ==========
+
+    """
+
+    def __init__(self, index, box, enabled=None, source=None, x=None, y=None, size=None, masked=None, top=None,
+                 bottom=None,
+                 left=None, right=None):
+        """
+        :param index: 0-indexed M/E number to control the preview bus of
+        """
+        self.index = index
+        self.box = box
+        self.enabled = enabled
+        self.source = source
+        self.x = x
+        self.y = y
+        self.size = size
+        self.masked = masked
+        self.top = top
+        self.bottom = bottom
+        self.left = left
+        self.right = right
+
+    def get_command(self):
+        mask = 0
+        if self.enabled is not None:
+            mask |= 1 << 0
+        if self.source is not None:
+            mask |= 1 << 1
+        if self.x is not None:
+            mask |= 1 << 2
+        if self.y is not None:
+            mask |= 1 << 3
+        if self.size is not None:
+            mask |= 1 << 4
+        if self.masked is not None:
+            mask |= 1 << 5
+        if self.top is not None:
+            mask |= 1 << 6
+        if self.bottom is not None:
+            mask |= 1 << 7
+        if self.left is not None:
+            mask |= 1 << 8
+        if self.right is not None:
+            mask |= 1 << 9
+
+        enabled = False if self.enabled is None else self.enabled
+        source = 0 if self.source is None else self.source
+        x = 0 if self.x is None else self.x
+        y = 0 if self.y is None else self.y
+        size = 0 if self.size is None else self.size
+        masked = False if self.masked is None else self.masked
+        top = 0 if self.top is None else self.top
+        bottom = 0 if self.bottom is None else self.bottom
+        left = 0 if self.left is None else self.left
+        right = 0 if self.right is None else self.right
+
+        data = struct.pack('>HBB ?xH hh H?x HHHH', mask, self.index, self.box, enabled, source, x, y, size, masked, top,
+                           bottom, left, right)
+
+        return self._make_command('CSBP', data)
