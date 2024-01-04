@@ -6,6 +6,6 @@ Terminal=false
 Exec=switcher-control
 GenericName=Video switcher
 Icon=nl.brixit.Switcher
-Categories=GTK;GNOME;Utility
+Categories=GTK;GNOME;AudioVideo;Video;Mixer
 Keywords=atem;blackmagic design;bmd;openswitcher;openatem
 X-DBUS-ServiceName=nl.brixit.Switcher

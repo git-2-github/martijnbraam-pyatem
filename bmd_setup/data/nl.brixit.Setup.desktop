@@ -1,11 +1,11 @@
 [Desktop Entry]
-Name=Setup
+Name=Converter Setup
 Version=1.0
 Type=Application
 Terminal=false
 Exec=bmd-setup
 GenericName=Converter config
 Icon=nl.brixit.Setup
-Categories=GTK;GNOME;Utility
+Categories=GTK;GNOME;Utility;HardwareSettings
 Keywords=blackmagic design;bmd
 X-DBUS-ServiceName=nl.brixit.Setup
