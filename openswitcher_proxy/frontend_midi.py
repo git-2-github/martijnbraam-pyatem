@@ -1,6 +1,11 @@
+import struct
 import threading
 import logging
 import json
+from functools import partial
+from time import sleep
+
+from rtmidi.midiconstants import NOTE_ON, NOTE_OFF, PITCH_BEND
 
 from .error import DependencyError
 from .frontend_httpapi import FieldEncoder
@@ -27,15 +32,19 @@ class MidiFrontendThread(threading.Thread):
 
         self.port = None
         self.output = None
+        self.input = None
         self.map = {}
         self.reverse = {}
+        self.dump = config['dump'] if 'dump' in config else False
 
-        eventname = {
+        self.eventname = {
             'CC': 11,
             'NOTE-ON': 9,
             'NOTE-OFF': 8,
+            'PITCH-BEND': 14,
         }
 
+        # Parse the configured midi events and create the midi->switcher mapping
         for ckey in config:
             if '/' not in ckey:
                 continue
@@ -48,8 +57,10 @@ class MidiFrontendThread(threading.Thread):
             if event.isnumeric():
                 event = int(part[1])
             else:
-                event = eventname[event]
-            key = int(part[2])
+                event = self.eventname[event]
+            key = None
+            if len(part) > 2:
+                key = int(part[2])
             if len(part) > 3:
                 value = int(part[3])
             else:
@@ -74,6 +85,45 @@ class MidiFrontendThread(threading.Thread):
             if mkey not in self.map:
                 self.map[mkey] = []
             self.map[mkey].append(action)
+
+        # Parse the switcher events and create the switcher->midi mapping
+        for ckey in config:
+            if ':' not in ckey:
+                continue
+
+            name, field, raw = ckey.split(':', maxsplit=2)
+            filters = {}
+            raw = raw.split(':')
+            for i, f in enumerate(raw):
+                if '=' in f:
+                    k, v = f.split('=', maxsplit=1)
+                    v = int(v)
+                else:
+                    k = f
+                    v = None
+                filters[k] = v
+                if i == len(raw) - 1:
+                    filters['_val'] = k
+
+            if name not in self.reverse:
+                self.reverse[name] = {}
+
+            if field not in self.reverse[name]:
+                self.reverse[name][field] = []
+            filters['_action'] = config[ckey]
+            self.reverse[name][field].append(filters)
+
+        # Subscribe to all requested switchers
+        hw_names = set()
+        for ckey in config:
+            if ':' not in ckey:
+                continue
+            name, _ = ckey.split(':', maxsplit=1)
+            hw_names.add(name)
+        sleep(0.1)
+        for hw in hw_names:
+            sw = self.threadlist['hardware'][hw].switcher
+            sw.on('change', partial(self.on_switcher_changed, hw))
 
     def run(self):
         logging.info('MIDI frontend run')
@@ -105,6 +155,7 @@ class MidiFrontendThread(threading.Thread):
         midiout, port_name = open_midioutput(self.port, client_name="OpenSwitcher Proxy")
 
         self.output = midiout
+        self.input = midiin
         midiin.set_callback(self.on_midi_in)
         self.status = 'running'
 
@@ -128,71 +179,81 @@ class MidiFrontendThread(threading.Thread):
         event_raw, key, value = raw[0]
         event = event_raw >> 4
         channel = event_raw & 0b00001111
-        print(channel, event, key, value)
+
+        if event == 14:
+            value = (value << 7) | key
+            key = None
+
+        if self.dump:
+            ename = f'EVENT-{event}'
+            for e in self.eventname:
+                if event == self.eventname[e]:
+                    ename = e
+            if ename == 'PITCH-BEND':
+                print(f'{channel}/{ename} = {value}')
+            else:
+                print(f'{channel}/{ename}/{key} = {value}')
         for action in self.get_events(channel, event, key, value):
-            print(action)
-            self.threadlist['hardware'][action[0]].switcher.send_commands([action[1]])
+            command = action[1]
+            if event == 14:
+                command.position = int(value / (2 ** 14) * 10000)
+            self.threadlist['hardware'][action[0]].switcher.send_commands([command])
 
     def on_switcher_changed(self, hw, field, value):
-        raw = json.dumps(value, cls=FieldEncoder)
-        topic = self.topic.format(hardware=hw, field=field)
-        self.client.publish(topic, raw)
+        if hw not in self.reverse:
+            return
+        if field not in self.reverse[hw]:
+            return
+        for f in self.reverse[hw][field]:
+            match = True
+            state = False
+            for filter_field in f:
+                if filter_field in ["_action", "_val"]:
+                    continue
+                filter_value = f[filter_field]
+                real_value = getattr(value, filter_field)
+
+                if filter_field == f['_val'] and filter_value is not None:
+                    state = real_value == filter_value
+                    continue
+                elif filter_field == f['_val'] and filter_value is None:
+                    state = real_value
+                elif real_value != filter_value:
+                    match = False
+                    break
+            if match:
+                action = f['_action']
+                channel, event, _ = action.split("/", maxsplit=2)
+                message = []
+                if event == "NOTE-ON":
+                    channel, event, key, midivalue = action.split("/")
+                    message = [
+                        NOTE_ON | int(channel),
+                        int(key),
+                        int(midivalue) if state else 0
+                    ]
+                elif event == "PITCH-BEND":
+                    channel, event, key = action.split("/")
+
+                    midivalue = state / 10000
+                    midivalue = int(midivalue * (2 ** 14))
+                    lsb = midivalue & 0b01111111
+                    msb = (midivalue >> 7) & 0b01111111
+                    message = [
+                        PITCH_BEND | int(channel),
+                        lsb,
+                        msb
+                    ]
+                self.output.send_message(message)
 
     def on_switcher_connected(self, hw):
         return
-        self.on_switcher_changed(hw, 'status', {'upstream': True})
-        sw = self.threadlist['hardware'][hw].switcher
-        items = list(sw.mixerstate.items())
-        for field, value in items:
-            self.on_switcher_changed(hw, field, value)
 
     def on_switcher_disconnected(self, hw):
         return
-        self.on_switcher_changed(hw, 'status', {'upstream': False})
-
-    def on_mqtt_message(self, msg):
-        return
-
-        match = self.topic_re.match(msg.topic)
-        if not match:
-            logging.error(f'MQTT: malformed command topic: {msg.topic}')
-
-        hw = match.group('hardware')
-        fieldname = match.group('field')
-
-        if hw not in self.hw_name:
-            logging.error(f'MQTT: not handling writes for "{hw}"')
-            return
-
-        classname = fieldname.title().replace('-', '') + "Command"
-        if not hasattr(commandmodule, classname):
-            logging.error(f'MQTT: unrecognized command {fieldname}')
-            return
-        try:
-            arguments = json.loads(msg.payload)
-        except JSONDecodeError as e:
-            logging.error('received malformed payload, need a JSON dict')
-            return
-        if not isinstance(arguments, dict):
-            logging.error(f'MQTT: mailformed payload, needs a JSON dict')
-            return
-        for key in arguments:
-            try:
-                arguments[key] = int(arguments[key])
-            except:
-                pass
-        if 'source' in arguments:
-            inputs = self.threadlist['hardware'][hw].switcher.inputs
-            if arguments['source'] in inputs:
-                arguments['source'] = inputs[arguments['source']]
-        try:
-            cmd = getattr(commandmodule, classname)(**arguments)
-            self.threadlist['hardware'][hw].switcher.send_commands([cmd])
-        except Exception as e:
-            logging.error(f'MQTT: cannot write {fieldname}: {str(e)}')
 
     def get_status(self):
         if self.status == 'error':
             return f'{self.status}, {self.error}'
         else:
-            return self.status
+            return f'{self.status} ({self.port})'
