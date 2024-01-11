@@ -148,17 +148,17 @@ method_rgb_to_atem(PyObject *self, PyObject *args)
             b2 = b2 * a2;
         }
 
-        float y1 = (0.2126 * r1) + (0.7152 * g1) + (0.0722 * b1);
-        float y2 = (0.2126 * r2) + (0.7152 * g2) + (0.0722 * b2);
-        float cb = (b2 - y2) / 1.8556;
-        float cr = (r2 - y2) /  1.5748;
+        float y1 = (0.2126f * r1) + (0.7152f * g1) + (0.0722f * b1);
+        float y2 = (0.2126f * r2) + (0.7152f * g2) + (0.0722f * b2);
+        float cb = (b2 - y2) / 1.8556f;
+        float cr = (r2 - y2) /  1.5748f;
 
         unsigned short a10a = ((buffer[3] << 2) * 219 / 255) + (15 << 2) + 1;
         unsigned short a10b = ((buffer[7] << 2) * 219 / 255) + (15 << 2) + 1;
-        unsigned short y10a = clamp((unsigned short)(y1 * 876) + 64, 64, 940);
-        unsigned short y10b = clamp((unsigned short)(y2 * 876) + 64, 64, 940);
-        unsigned short cb10 = clamp((unsigned short)(cb * 896) + 512, 44, 960);
-        unsigned short cr10 = clamp((unsigned short)(cr * 896) + 512, 44, 960);
+		unsigned short y10a = clamp((unsigned short) ((y1 * 876) + 64), 64, 940);
+		unsigned short y10b = clamp((unsigned short) ((y2 * 876) + 64), 64, 940);
+		unsigned short cb10 = clamp((unsigned short) ((cb * 896) + 512), 44, 960);
+		unsigned short cr10 = clamp((unsigned short) ((cr * 896) + 512), 44, 960);
 
         writepointer[0] = (unsigned char) (a10a >> 4);
         writepointer[1] = (unsigned char) (((a10a & 0x0f) << 4) | (cb10 >> 6));
