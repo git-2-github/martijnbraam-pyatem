@@ -124,6 +124,7 @@ class MidiFrontendThread(threading.Thread):
         for hw in hw_names:
             sw = self.threadlist['hardware'][hw].switcher
             sw.on('change', partial(self.on_switcher_changed, hw))
+            sw.on('connected', partial(self.on_switcher_connected, hw))
 
     def run(self):
         logging.info('MIDI frontend run')
@@ -157,6 +158,23 @@ class MidiFrontendThread(threading.Thread):
         self.output = midiout
         self.input = midiin
         midiin.set_callback(self.on_midi_in)
+
+        hw_names = set()
+        for ckey in self.config:
+            if ':' not in ckey:
+                continue
+            name, _ = ckey.split(':', maxsplit=1)
+            hw_names.add(name)
+
+        for hw in hw_names:
+            sw = self.threadlist['hardware'][hw].switcher
+            sw.on('change', partial(self.on_switcher_changed, hw))
+            sw.on('connected', partial(self.on_switcher_connected, hw))
+
+            if self.threadlist['hardware'][hw].status == 'connected':
+                # Hardware is already connected at this point, re-generate the initial data
+                self.on_switcher_connected(hw)
+
         self.status = 'running'
 
     def get_events(self, channel, event, key, value):
@@ -221,33 +239,42 @@ class MidiFrontendThread(threading.Thread):
                 elif real_value != filter_value:
                     match = False
                     break
+
             if match:
                 action = f['_action']
-                channel, event, _ = action.split("/", maxsplit=2)
-                message = []
-                if event == "NOTE-ON":
-                    channel, event, key, midivalue = action.split("/")
-                    message = [
-                        NOTE_ON | int(channel),
-                        int(key),
-                        int(midivalue) if state else 0
-                    ]
-                elif event == "PITCH-BEND":
-                    channel, event, key = action.split("/")
 
-                    midivalue = state / 10000
+                if action['event'] == 'note-on':
+                    channel = (action['channel'] if 'channel' in action else 1) - 1
+                    message = [
+                        NOTE_ON | channel,
+                        action['key'],
+                        action['on'] if state else action['off']
+                    ]
+                elif action['event'] == 'pitch-bend':
+                    channel = (action['channel'] if 'channel' in action else 1) - 1
+                    midivalue = (state - action['min']) / (action['max'] - action['min'])
                     midivalue = int(midivalue * (2 ** 14))
                     lsb = midivalue & 0b01111111
                     msb = (midivalue >> 7) & 0b01111111
                     message = [
-                        PITCH_BEND | int(channel),
+                        PITCH_BEND | channel,
                         lsb,
                         msb
                     ]
+                else:
+                    raise ValueError(f"Unknown action '{action['event']}'")
                 self.output.send_message(message)
 
     def on_switcher_connected(self, hw):
-        return
+        sw = self.threadlist['hardware'][hw].switcher
+        items = list(sw.mixerstate.items())
+        for field, value in items:
+            if isinstance(value, dict):
+                for k in value:
+                    v = value[k]
+                    self.on_switcher_changed(hw, field, v)
+            else:
+                self.on_switcher_changed(hw, field, value)
 
     def on_switcher_disconnected(self, hw):
         return

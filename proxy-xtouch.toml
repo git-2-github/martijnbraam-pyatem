@@ -14,8 +14,12 @@ bind = "any"
 auth = false
 dump = true
 
-"*/NOTE-ON/50/127" = { hardware = "mini", field = "auto", index = 0 }
 
+# The master fader controls map to the M/E 1 T-bar and auto button
+"*/NOTE-ON/50/127" = { hardware = "mini", field = "auto", index = 0 }
+"8/PITCH-BEND" = { hardware = "mini", field = "transition-position", index = 0, position = "$value"}
+
+# Channel select buttons map to preview bus
 "*/NOTE-ON/24/127" = { hardware = "mini", field = "preview-input", index = 0, source = 1 }
 "*/NOTE-ON/25/127" = { hardware = "mini", field = "preview-input", index = 0, source = 2 }
 "*/NOTE-ON/26/127" = { hardware = "mini", field = "preview-input", index = 0, source = 3 }
@@ -25,6 +29,7 @@ dump = true
 "*/NOTE-ON/30/127" = { hardware = "mini", field = "preview-input", index = 0, source = 7 }
 "*/NOTE-ON/31/127" = { hardware = "mini", field = "preview-input", index = 0, source = 8 }
 
+# Record select buttons map to program bus
 "*/NOTE-ON/0/127" = { hardware = "mini", field = "program-input", index = 0, source = 1 }
 "*/NOTE-ON/1/127" = { hardware = "mini", field = "program-input", index = 0, source = 2 }
 "*/NOTE-ON/2/127" = { hardware = "mini", field = "program-input", index = 0, source = 3 }
@@ -34,25 +39,26 @@ dump = true
 "*/NOTE-ON/6/127" = { hardware = "mini", field = "program-input", index = 0, source = 7 }
 "*/NOTE-ON/7/127" = { hardware = "mini", field = "program-input", index = 0, source = 8 }
 
-"8/PITCH-BEND" = { hardware = "mini", field = "transition-position", index = 0, position = "$value"}
+# Map preview bus selection to the channel select leds
+"mini:preview-bus-input:index=0:source=1" = { event = "note-on", channel = 1, key = 24, on = 127, off = 0}
+"mini:preview-bus-input:index=0:source=2" = { event = "note-on", channel = 1, key = 25, on = 127, off = 0}
+"mini:preview-bus-input:index=0:source=3" = { event = "note-on", channel = 1, key = 26, on = 127, off = 0}
+"mini:preview-bus-input:index=0:source=4" = { event = "note-on", channel = 1, key = 27, on = 127, off = 0}
+"mini:preview-bus-input:index=0:source=5" = { event = "note-on", channel = 1, key = 28, on = 127, off = 0}
+"mini:preview-bus-input:index=0:source=6" = { event = "note-on", channel = 1, key = 29, on = 127, off = 0}
+"mini:preview-bus-input:index=0:source=7" = { event = "note-on", channel = 1, key = 30, on = 127, off = 0}
+"mini:preview-bus-input:index=0:source=8" = { event = "note-on", channel = 1, key = 31, on = 127, off = 0}
 
-"mini:preview-bus-input:index=0:source=1" = "0/NOTE-ON/24/127"
-"mini:preview-bus-input:index=0:source=2" = "0/NOTE-ON/25/127"
-"mini:preview-bus-input:index=0:source=3" = "0/NOTE-ON/26/127"
-"mini:preview-bus-input:index=0:source=4" = "0/NOTE-ON/27/127"
-"mini:preview-bus-input:index=0:source=5" = "0/NOTE-ON/28/127"
-"mini:preview-bus-input:index=0:source=6" = "0/NOTE-ON/29/127"
-"mini:preview-bus-input:index=0:source=7" = "0/NOTE-ON/30/127"
-"mini:preview-bus-input:index=0:source=8" = "0/NOTE-ON/31/127"
+# Map program bus selection to the recording button leds
+"mini:program-bus-input:index=0:source=1" = { event = "note-on", channel = 1, key = 0, on = 127, off = 0}
+"mini:program-bus-input:index=0:source=2" = { event = "note-on", channel = 1, key = 1, on = 127, off = 0}
+"mini:program-bus-input:index=0:source=3" = { event = "note-on", channel = 1, key = 2, on = 127, off = 0}
+"mini:program-bus-input:index=0:source=4" = { event = "note-on", channel = 1, key = 3, on = 127, off = 0}
+"mini:program-bus-input:index=0:source=5" = { event = "note-on", channel = 1, key = 4, on = 127, off = 0}
+"mini:program-bus-input:index=0:source=6" = { event = "note-on", channel = 1, key = 5, on = 127, off = 0}
+"mini:program-bus-input:index=0:source=7" = { event = "note-on", channel = 1, key = 6, on = 127, off = 0}
+"mini:program-bus-input:index=0:source=8" = { event = "note-on", channel = 1, key = 7, on = 127, off = 0}
 
-"mini:program-bus-input:index=0:source=1" = "0/NOTE-ON/0/127"
-"mini:program-bus-input:index=0:source=2" = "0/NOTE-ON/1/127"
-"mini:program-bus-input:index=0:source=3" = "0/NOTE-ON/2/127"
-"mini:program-bus-input:index=0:source=4" = "0/NOTE-ON/3/127"
-"mini:program-bus-input:index=0:source=5" = "0/NOTE-ON/4/127"
-"mini:program-bus-input:index=0:source=6" = "0/NOTE-ON/5/127"
-"mini:program-bus-input:index=0:source=7" = "0/NOTE-ON/6/127"
-"mini:program-bus-input:index=0:source=8" = "0/NOTE-ON/7/127"
-
-"mini:transition-position:index=0:position" = "8/PITCH-BEND/9"
-"mini:transition-position:index=0:in_transition=1" = "0/NOTE-ON/50/127"
+# Map the M/E 1 T-bar to the master fader
+"mini:transition-position:index=0:position" = { event = "pitch-bend", channel = 9, min=0, max=10000}
+"mini:transition-position:index=0:in_transition=1" = { event = "note-on", channel = 1, key = 50, on = 127, off = 0}
