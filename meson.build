@@ -1,7 +1,7 @@
 # Copyright 2021 - 2022, Martijn Braam and the OpenAtem contributors
 # SPDX-License-Identifier: GPL-3.0-only
 project('switcher',
-    version: '0.9.0',
+    version: '0.10.0',
     meson_version: '>= 0.50.0',
     default_options: ['warning_level=2'])
 

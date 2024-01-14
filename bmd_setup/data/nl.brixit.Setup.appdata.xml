@@ -29,6 +29,20 @@
   <url type="bugtracker">https://todo.sr.ht/~martijnbraam/OpenAtem</url>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="0.10.0" date="2024-01-14">
+      <description>
+        <ul>
+          <li>Add the BMD Micro Converter BiDirectional SDI/HDMI</li>
+          <li>Add the BMD Micro Converter SDI to HDMI</li>
+          <li>Add the BMD Mini Converter SDI to Audio</li>
+          <li>Add the BMD Teranex AV (no configurable settings)</li>
+          <li>Add the BMD Teranex Mini Converter HDMi to SDI 12G</li>
+          <li>Add the BMD Teranex Mini Converter 12G-SDI to Quad SDI</li>
+          <li>Add the BMD Teranex Mini Converter Quad SDI to 12G-SDI</li>
+        </ul>
+      </description>
+    </release>
+
     <release version="0.8.2" date="2022-10-18">
       <description>
         <ul>
