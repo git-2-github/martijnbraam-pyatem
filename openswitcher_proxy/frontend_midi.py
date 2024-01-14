@@ -1,19 +1,15 @@
-import struct
 import threading
 import logging
-import json
 from functools import partial
 from time import sleep
 
-from rtmidi.midiconstants import NOTE_ON, NOTE_OFF, PITCH_BEND
-
 from .error import DependencyError
-from .frontend_httpapi import FieldEncoder
 import pyatem.command as commandmodule
 
 try:
     import rtmidi
     from rtmidi.midiutil import open_midiinput, open_midioutput, list_available_ports
+    from rtmidi.midiconstants import NOTE_ON, NOTE_OFF, PITCH_BEND
 except ModuleNotFoundError:
     rtmidi = None
 
@@ -275,9 +271,6 @@ class MidiFrontendThread(threading.Thread):
                     self.on_switcher_changed(hw, field, v)
             else:
                 self.on_switcher_changed(hw, field, value)
-
-    def on_switcher_disconnected(self, hw):
-        return
 
     def get_status(self):
         if self.status == 'error':
