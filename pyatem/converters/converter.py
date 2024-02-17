@@ -257,12 +257,12 @@ class TeranexMiniConverterOpticalToHdmi12G(WValueProtoConverter):
         # Bit 2       - Unknown/N/A?
         # Bit 3       - Consumer/SMPTE 5.1
         Field('xlr-output', (0x00be, 1), int, "Audio", "XLR Output", mapping={
-            0x02: ('smpteanalog', 'Analog - SMPTE 5.1 (L, R, C, LFE, Ls, Rs)'),
-            0x00: ('smpteaesebu', 'AES/EBU - SMPTE 5.1 (L, R, C, LFE, Ls, Rs)'),
-            0x03: ('smptetimecode', 'Timecode (Right) - SMPTE 5.1 (L, R, C, LFE, Ls, Rs)'),
-            0x0a: ('consumeranalog', 'Analog - Consumer 5.1 (L, R, LFE, C, Ls, Rs)'),
-            0x08: ('consumeraesebu', 'AES/EBU - Analog - Consumer 5.1 (L, R, LFE, C, Ls, Rs)'),
-            0x0b: ('consumertimecode', 'Timecode (Right) - Analog - Consumer 5.1 (L, R, LFE, C, Ls, Rs)'),
+            0x02: ('smpteanalog', 'Analog & SMPTE 5.1 (L, R, C, LFE, Ls, Rs)'),
+            0x00: ('smpteaesebu', 'AES/EBU & SMPTE 5.1 (L, R, C, LFE, Ls, Rs)'),
+            0x03: ('smptetimecode', 'Timecode (Right) & SMPTE 5.1 (L, R, C, LFE, Ls, Rs)'),
+            0x0a: ('consumeranalog', 'Analog & Consumer 5.1 (L, R, LFE, C, Ls, Rs)'),
+            0x08: ('consumeraesebu', 'AES/EBU & Consumer 5.1 (L, R, LFE, C, Ls, Rs)'),
+            0x0b: ('consumertimecode', 'Timecode (Right) & Consumer 5.1 (L, R, LFE, C, Ls, Rs)'),
         }),
         # Maybe also 0xc0, or does one actually do left and one right?
         Field('analog-de-embedding', (0x00d0, 1), int, "Audio", "Analog De-embedding", mapping={
