@@ -213,6 +213,59 @@ class TeranexMiniConverterHdmiToSdi12G(WValueProtoConverter):
             0x02: ('on', 'On'),
             0x00: ('off', 'Off'),
         }),
+        # Maybe also 0xd0, or does one actually do left and one right?
+        Field('analog-embedding', (0x00c0, 1), int, "Audio", "Analog Embedding", mapping={
+            0x08: ('12', '1 & 2'),
+            0x09: ('34', '3 & 4'),
+            0x0a: ('56', '5 & 6'),
+            0x0b: ('78', '7 & 8'),
+            0x0c: ('910', '9 & 10'),
+            0x0d: ('1112', '11 & 12'),
+            0x0e: ('1314', '13 & 14'),
+            0x0f: ('1516', '15 & 16'),
+        }),
+        # Maybe also 0xd1, or does one actually do out 1 and one out 2?
+        Field('aesebu-embedding', (0x00c1, 1), int, "Audio", "AES/EBU Embedding", mapping={
+            0x03: ('14', '1 - 4'),
+            0x04: ('58', '5 - 8'),
+            0x05: ('912', '9 - 12'),
+            0x06: ('1316', '13 - 16'),
+        }),
+        Field('conversion', (0x00b3, 1), int, "Video Processing", "Conversion", mapping={
+            0x00: ('auto', 'Auto'),
+            0x01: ('hd', 'Force to HD'),
+            0x02: ('uhd', 'Force to Ultra HD'),
+        }),
+        Field('sdi-level', (0x00b8, 1), int, "Video Processing", "3G Output", mapping={
+            0x04: ('a', 'Level A'),
+            0x00: ('b', 'Level B'),
+        }),
+        Field('convert-60p-5994i', (0x00b7, 1), int, "Video Processing", "Convert 60p to 59.95i", mapping={
+            0x30: ('yes', 'Enabled'),
+            0x10: ('no', 'Disabled'),
+        }),
+        # In the config tool, XLR input format and sample rate converter are separate settings
+        # I suspect it's really a bit mask, probably a bit like as follows:
+        # Bit 0 (LSB) - Audio/Timecode
+        # Bit 1       - Analog/Digital?
+        # Bit 2       - SRC (enabled for analog too)
+        # There is unfortunately some complicated interaction with this and 0x00dc  when setting these
+        Field('xlr-input', (0x00be, 1), int, "Audio", "XLR Input", mapping={
+            0x06: ('analog', 'Analog'),
+            0x00: ('aesebu', 'AES/EBU (No Sample Rate Converter)'),
+            0x04: ('aesebusrc', 'AES/EBU (Sample Rate Converter)'),
+            0x02: ('hdmi', 'HDMI'),
+            0x03: ('timecodehdmi', 'Timecode (Right) with HDMI'),
+            0x07: ('timecodexlr', 'Timecode (Right) with XLR'),
+        }),
+        Field('audio-input', (0x00dc, 1), int, "Audio", "Audio Input", mapping={
+            0x00: ('xlr', 'XLR'),
+            0x02: ('hdmi', 'HDMI'),
+        }),
+        Field('audio1', (0x00e0, 1), int, "Audio", "Analog In 1", mapping='dB'),
+        Field('audio2', (0x00e1, 1), int, "Audio", "Analog In 2", mapping='dB'),
+        Field('aes12', (0x00e2, 1), int, "Audio", "AES/EBU In 1 & 2", mapping='dB'),
+        Field('aes34', (0x00e3, 1), int, "Audio", "AES/EBU In 3 & 4", mapping='dB'),
         Field('dhcp', (0x0087, 1), int, "Network", "IP Setting", mapping={
             0x01: ('dhcp', 'DHCP'),
             0x00: ('static', 'Static IP'),
