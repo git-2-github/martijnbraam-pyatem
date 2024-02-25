@@ -368,6 +368,55 @@ class TeranexMiniConverterQuadSdiTo12GSdi(WValueProtoConverter):
     ]
 
 
+class MultiView4(WValueProtoConverter):
+    PRODUCT = 0xBDD2
+    NAME = "Blackmagic design MultiView 4"
+    NAME_FIELD = 0x50
+
+    # Add more fields!
+    FIELDS = [
+        # Confirm name length
+        # Length of name may technically be a byte or two longer than 61...
+        Field('name', (0x0050, 61), str, "Device", "Name"),
+        # No identify on this unit
+        # No DHCP or current address on this unit
+        Field('address', (0x0094, 4), ipaddress.IPv4Address, "Network", "Address"),
+        Field('netmask', (0x0098, 4), ipaddress.IPv4Address, "Network", "Netmask"),
+        Field('gateway', (0x009c, 4), ipaddress.IPv4Address, "Network", "Gateway"),
+        Field('video-format', (0x00d2, 1), int, "Video Output", "Video Format", mapping={
+            0x04: ('1080i50', '1080i50'),
+            0x0c: ('1080i5994', '1080i59.94'),
+            0x14: ('2160p25', '2160p25'),
+            0x1c: ('2160p2997', '2160p29.97'),
+        }),
+        # SDI Level not available via USB!
+        Field('sd-aspect', (0x00d6, 1), int, "Video Output", "SD aspect ratio", mapping={
+            0x01: ('169', 'Output as 16:9'),
+            0x00: ('43', 'Output as 4:3'),
+        }),
+        Field('screen-layout', (0x00da, 1), int, "Screen Layout", "Views", mapping={
+            0x01: ('solo', 'Solo'),
+            0x00: ('2x2', '2 x 2'),
+        }),
+        Field('borders', (0x00d7, 1), int, 'Overlay Displays', 'Turn on borders', mapping={
+            0x01: ('yes', 'Enable'),
+            0x00: ('no', 'Disable'),
+        }),
+        Field('labels', (0x00d8, 1), int, 'Overlay Displays', 'Turn on labels', mapping={
+            0x01: ('yes', 'Enable'),
+            0x00: ('no', 'Disable'),
+        }),
+        Field('audio-meters', (0x00d5, 1), int, 'Overlay Displays', 'Turn on audio meters', mapping={
+            0x01: ('yes', 'Enable'),
+            0x00: ('no', 'Disable'),
+        }),
+        Field('sdi-tally', (0x00d9, 1), int, 'Overlay Displays', 'Turn on SDI tally', mapping={
+            0x01: ('yes', 'Enable'),
+            0x00: ('no', 'Disable'),
+        }),
+    ]
+
+
 class AtemProductionStudio4k(AtemLegacyProtocol):
     PRODUCT = 0xBD6E
     NAME = "Blackmagic design ATEM Production Studio 4K"
