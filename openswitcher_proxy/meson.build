@@ -24,6 +24,7 @@ proxy_sources = [
     'frontend_status.py',
     'frontend_tcp.py',
     'frontend_httpapi.py',
+    'frontend_midi.py',
     'frontend_mqtt.py',
     'hardware.py',
     'error.py',
