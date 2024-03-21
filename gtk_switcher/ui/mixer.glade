@@ -2514,6 +2514,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="width-chars">7</property>
+                                                            <property name="tooltip-text" translatable="yes">Minimum audio bitrate, accepts the k and M suffix.</property>
                                                             <signal name="activate" handler="on_audio_bitrate_activate" swapped="no"/>
                                                             <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
                                                             <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
@@ -2531,6 +2532,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="width-chars">7</property>
+                                                            <property name="tooltip-text" translatable="yes">Maximum audio bitrate, accepts the k and M suffix.</property>
                                                             <signal name="activate" handler="on_audio_bitrate_activate" swapped="no"/>
                                                             <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
                                                             <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
@@ -2562,6 +2564,7 @@
                                                             <object class="GtkEntry" id="video_rate_min">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
+                                                            <property name="tooltip-text" translatable="yes">Minimum video bitrate, accepts the k and M suffix.</property>
                                                             <property name="width-chars">7</property>
                                                             <signal name="activate" handler="on_video_bitrate_activate" swapped="no"/>
                                                             <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
@@ -2580,6 +2583,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="width-chars">7</property>
+                                                            <property name="tooltip-text" translatable="yes">Maximum video bitrate, accepts the k and M suffix.</property>
                                                             <signal name="activate" handler="on_video_bitrate_activate" swapped="no"/>
                                                             <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
                                                             <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
@@ -3247,7 +3251,7 @@
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
-                                                            <property name="active" bind-source="stream_live_key" bind-property="visibility" bind-flags="bidirectional" />
+                                                            <property name="active" bind-source="stream_live_key" bind-property="visibility" bind-flags="bidirectional">False</property>
                                                             <child>
                                                             <object class="GtkImage">
                                                             <property name="visible">True</property>
