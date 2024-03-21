@@ -3243,10 +3243,11 @@
                                                             </packing>
                                                             </child>
                                                             <child>
-                                                            <object class="GtkToggleButton">
+                                                            <object class="GtkToggleButton" id="stream_live_key_visible">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
                                                             <property name="receives-default">True</property>
+                                                            <property name="active" bind-source="stream_live_key" bind-property="visibility" bind-flags="bidirectional" />
                                                             <child>
                                                             <object class="GtkImage">
                                                             <property name="visible">True</property>
