@@ -9,7 +9,7 @@ packages:
   - py3-pip
 tasks:
   - deps: |
-      pip3 install sphinxcontrib.jquery
+      pip3 install --break-system-packages sphinxcontrib.jquery
   - build: |
       cd pyatem/docs
       make html
