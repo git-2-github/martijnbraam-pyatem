@@ -1,0 +1,51 @@
+With the introduction of the Mini Extreme the USB protocol for all the ATEM Mini devices has been changed to include
+a header
+
+MIXED ENDIANNESS!
+
+Header guess
+
+1 byte PC destination
+    02 = init
+1 byte ATEM destination
+    01 = init
+    03 = management
+    04 = ATEM protocol
+1 byte PC destination port
+1 byte ATEM destination port
+
+Packet types:
+    Packet 0x01 PC->ATEM
+        contains 4 bytes of unknown data
+    Packet 0x02 ATEM->PC
+        empty packet as ack?
+    Packet 0x03 PC->ATEM
+        some internal state?
+    Packet 0x03 ATEM->PC
+        also some internal protocol state?
+    Packet 0x04 PC->ATEM
+        This packet encapsulates the ATEM USB protocol the previous minis used
+        6 bytes unknown
+        2 bytes data length for following raw ATEM data
+    Packet 0x04 ATEM->PC
+        This packet encapsulates the ATEM USB protocol the previous minis used
+        2 bytes data length for the following raw ATEM data
+        6 bytes unknown
+
+Connection:
+    > 00 01 00 01   00 01 10 92
+    < 02 00 01 00
+    > 00 03 00 01   00 00 00 00   00 00 10 00
+    < 03 00 01 00   00 01 00 00   00 00 00 00
+    > (empty bulk write)
+    < 03 00 01 00   00 01 00 00   00 00 00 00
+    < 04 00 01 00   48 1f 00 00   00 00 00 00
+    < [8008 byte long packet of ATEM commands] 8008 = 0x481f
+    > 00 03 00 01   00 00 00 00   00 00 00 07
+
+    > 00 04 00 01   00 00 00 00   00 00 00 10 [0x0010 = 16]
+    > [16 byte long ATEM command]
+    > 00 04 00 01   00 00 00 00   00 00 00 14 [0x0014 = 20]
+    > [20 byte long ATEM command]
+    < 04 00 01 00   10 00 00 00   00 00 00 00
+    < [16 byte long ATEM command]
