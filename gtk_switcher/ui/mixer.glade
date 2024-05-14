@@ -180,6 +180,65 @@
     <property name="can-focus">False</property>
     <property name="resource">/nl/brixit/switcher/icons/wipe-box-tl.svg</property>
   </object>
+  <object class="GtkPopoverMenu" id="menu_macros">
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="margin-start">8</property>
+        <property name="margin-end">8</property>
+        <property name="margin-top">8</property>
+        <property name="margin-bottom">8</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">8</property>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="spacing">8</property>
+            <child>
+              <object class="GtkEntry" id="macro_name">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <signal name="activate" handler="on_macro_create_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="macro_create">
+                <property name="label" translatable="yes">Create</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <signal name="clicked" handler="on_macro_create_clicked" swapped="no"/>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="submenu">main</property>
+      </packing>
+    </child>
+  </object>
   <object class="GtkListStore" id="model_aux">
     <columns>
       <!-- column-name source -->
@@ -311,13 +370,87 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="live_stats">
+              <object class="GtkStack" id="header_context_stack">
+                <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="no-show-all">True</property>
-                <property name="label">n/a</property>
-                <style>
-                  <class name="heading"/>
-                </style>
+                <property name="hhomogeneous">False</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="homogeneous">True</property>
+                    <child>
+                      <object class="GtkLabel" id="live_stats">
+                        <property name="can-focus">False</property>
+                        <property name="no-show-all">True</property>
+                        <property name="label">n/a</property>
+                        <style>
+                          <class name="heading"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="name">live</property>
+                    <property name="title" translatable="yes">live</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="spacing">8</property>
+                    <child>
+                      <object class="GtkButton" id="macro_status_pause">
+                        <property name="label" translatable="yes">Pause</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="macro_status_index">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Recording macro</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="macro_status_stop">
+                        <property name="label" translatable="yes">Stop</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <signal name="clicked" handler="on_macro_status_stop_clicked" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="name">macro</property>
+                    <property name="title" translatable="yes">macro</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="pack-type">end</property>
@@ -2131,69 +2264,106 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkExpander" id="expander_macros">
+                                              <object class="GtkOverlay" id="overlay_macros">
                                                 <property name="visible">True</property>
-                                                <property name="can-focus">True</property>
-                                                <property name="expanded">True</property>
+                                                <property name="can-focus">False</property>
                                                 <child>
-                                                  <object class="GtkFrame">
+                                                  <object class="GtkExpander" id="expander_macros">
                                                     <property name="visible">True</property>
-                                                    <property name="can-focus">False</property>
-                                                    <property name="margin-bottom">64</property>
-                                                    <property name="label-xalign">0</property>
-                                                    <property name="shadow-type">in</property>
+                                                    <property name="can-focus">True</property>
+                                                    <property name="expanded">True</property>
                                                     <child>
-                                                      <object class="GtkBox">
+                                                      <object class="GtkFrame">
                                                         <property name="visible">True</property>
                                                         <property name="can-focus">False</property>
-                                                        <property name="margin-start">12</property>
-                                                        <property name="margin-end">12</property>
-                                                        <property name="margin-top">12</property>
-                                                        <property name="margin-bottom">12</property>
-                                                        <property name="orientation">vertical</property>
+                                                        <property name="margin-bottom">64</property>
+                                                        <property name="label-xalign">0</property>
+                                                        <property name="shadow-type">in</property>
                                                         <child>
-                                                          <placeholder/>
-                                                        </child>
-                                                        <child>
-                                                          <object class="GtkFlowBox" id="macro_flow">
+                                                          <object class="GtkBox">
+                                                            <property name="visible">True</property>
+                                                            <property name="can-focus">False</property>
+                                                            <property name="margin-left">12</property>
+                                                            <property name="margin-right">12</property>
+                                                            <property name="margin-start">12</property>
+                                                            <property name="margin-end">12</property>
+                                                            <property name="margin-top">12</property>
+                                                            <property name="margin-bottom">12</property>
+                                                            <property name="orientation">vertical</property>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                            <child>
+                                                            <object class="GtkFlowBox" id="macro_flow">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="homogeneous">True</property>
                                                             <property name="column-spacing">4</property>
                                                             <property name="row-spacing">4</property>
-                                                          </object>
-                                                          <packing>
+                                                            </object>
+                                                            <packing>
                                                             <property name="expand">False</property>
                                                             <property name="fill">True</property>
                                                             <property name="position">1</property>
-                                                          </packing>
+                                                            </packing>
+                                                            </child>
+                                                            <child>
+                                                            <placeholder/>
+                                                            </child>
+                                                          </object>
                                                         </child>
-                                                        <child>
+                                                        <child type="label_item">
                                                           <placeholder/>
                                                         </child>
+                                                        <style>
+                                                          <class name="view"/>
+                                                        </style>
                                                       </object>
                                                     </child>
-                                                    <child type="label_item">
-                                                      <placeholder/>
+                                                    <child type="label">
+                                                      <object class="GtkLabel">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="label" translatable="yes">Macros</property>
+                                                        <style>
+                                                          <class name="heading"/>
+                                                        </style>
+                                                      </object>
                                                     </child>
                                                     <style>
-                                                      <class name="view"/>
+                                                      <class name="bmdgroup"/>
                                                     </style>
                                                   </object>
+                                                  <packing>
+                                                    <property name="index">-1</property>
+                                                  </packing>
                                                 </child>
-                                                <child type="label">
-                                                  <object class="GtkLabel">
+                                                <child type="overlay">
+                                                  <object class="GtkMenuButton" id="macro_dropdown">
+                                                    <property name="name">colors</property>
+                                                    <property name="width-request">28</property>
+                                                    <property name="height-request">28</property>
                                                     <property name="visible">True</property>
-                                                    <property name="can-focus">False</property>
-                                                    <property name="label" translatable="yes">Macros</property>
+                                                    <property name="can-focus">True</property>
+                                                    <property name="receives-default">True</property>
+                                                    <property name="halign">end</property>
+                                                    <property name="valign">start</property>
+                                                    <property name="relief">none</property>
+                                                    <property name="always-show-image">True</property>
+                                                    <property name="popover">menu_macros</property>
+                                                    <child>
+                                                      <object class="GtkImage">
+                                                        <property name="visible">True</property>
+                                                        <property name="can-focus">False</property>
+                                                        <property name="icon-name">open-menu-symbolic</property>
+                                                      </object>
+                                                    </child>
                                                     <style>
-                                                      <class name="heading"/>
+                                                      <class name="flat"/>
+                                                      <class name="preset"/>
                                                     </style>
                                                   </object>
                                                 </child>
-                                                <style>
-                                                  <class name="bmdgroup"/>
-                                                </style>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -2513,8 +2683,8 @@
                                                             <object class="GtkEntry" id="audio_rate_min">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
-                                                            <property name="width-chars">7</property>
                                                             <property name="tooltip-text" translatable="yes">Minimum audio bitrate, accepts the k and M suffix.</property>
+                                                            <property name="width-chars">7</property>
                                                             <signal name="activate" handler="on_audio_bitrate_activate" swapped="no"/>
                                                             <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
                                                             <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
@@ -2531,8 +2701,8 @@
                                                             <object class="GtkEntry" id="audio_rate_max">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
-                                                            <property name="width-chars">7</property>
                                                             <property name="tooltip-text" translatable="yes">Maximum audio bitrate, accepts the k and M suffix.</property>
+                                                            <property name="width-chars">7</property>
                                                             <signal name="activate" handler="on_audio_bitrate_activate" swapped="no"/>
                                                             <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
                                                             <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>
@@ -2582,8 +2752,8 @@
                                                             <object class="GtkEntry" id="video_rate_max">
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">True</property>
-                                                            <property name="width-chars">7</property>
                                                             <property name="tooltip-text" translatable="yes">Maximum video bitrate, accepts the k and M suffix.</property>
+                                                            <property name="width-chars">7</property>
                                                             <signal name="activate" handler="on_video_bitrate_activate" swapped="no"/>
                                                             <signal name="focus-in-event" handler="on_rate_focus" swapped="no"/>
                                                             <signal name="focus-out-event" handler="on_rate_unfocus" swapped="no"/>

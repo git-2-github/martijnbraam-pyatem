@@ -2946,3 +2946,71 @@ class SupersourceBoxPropertiesCommand(Command):
                            bottom, left, right)
 
         return self._make_command('CSBP', data)
+
+
+class MacroRecordCommand(Command):
+    """
+    Implementation of the `MSRc` command. This triggers recording of a macro.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Macro index
+    2      2    u16    Name length
+    4      2    u16    Description length
+    6      ?    char[] Name
+    ?      ?    char[] Description
+    ====== ==== ====== ===========
+
+    """
+
+    def __init__(self, index, name, description):
+        """
+        :param mode: The new video mode ID
+        """
+        self.index = index
+        self.name = name
+        self.description = description
+
+    def get_command(self):
+        data = struct.pack('>HHH', self.index, len(self.name), len(self.description))
+        data += self.name.encode('ascii')
+        data += self.description.encode('ascii')
+
+        alignment = len(data) % 4
+        if alignment != 0:
+            padding = 4 - alignment
+            data += b'\0' * padding
+        return self._make_command('MSRc', data)
+
+
+class MacroActionCommand(Command):
+    """
+    Implementation of the `MAct` command. This performs special actions while recording a macro.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      2    u16    Macro index
+    2      1    u8     Action
+    3      1    ?      padding
+    ====== ==== ====== ===========
+
+    """
+    ACTION_RUN = 0
+    ACTION_STOP = 1
+    ACTION_STOP_RECORD = 2
+    ACTION_INSERT_USER_WAIT = 3
+    ACTION_CONTINUE = 4
+    ACTION_DELETE = 5
+
+    def __init__(self, action, index=None):
+        """
+        :param mode: The new video mode ID
+        """
+        self.index = index if index is not None else 0xFFFF
+        self.action = action
+
+    def get_command(self):
+        data = struct.pack('>HBx', self.index, self.action)
+        return self._make_command('MAct', data)

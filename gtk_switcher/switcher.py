@@ -12,7 +12,8 @@ from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, Transiti
     DkeyAutoCommand, DkeyTieCommand, \
     DkeyOnairCommand, ProgramInputCommand, PreviewInputCommand, KeyOnAirCommand, KeyFillCommand, \
     FadeToBlackConfigCommand, RecorderStatusCommand, AuxSourceCommand, StreamingServiceSetCommand, \
-    RecordingSettingsSetCommand, StreamingStatusSetCommand, MediaplayerSelectCommand, StreamingAudioBitrateCommand
+    RecordingSettingsSetCommand, StreamingStatusSetCommand, MediaplayerSelectCommand, StreamingAudioBitrateCommand, \
+    MacroRecordCommand, MacroActionCommand
 from pyatem.field import TransitionSettingsField, InputPropertiesField, TopologyField
 import gtk_switcher.stream_data
 
@@ -104,6 +105,8 @@ class SwitcherPage:
         self.live_stats = builder.get_object('live_stats')
         self.stream_live_active = False
         self.stream_live_start_time = None
+
+        self.macro_name = builder.get_object('macro_name')
 
         self.flap = builder.get_object('flap')
         self.flaptoggle = builder.get_object('flaptoggle')
@@ -1200,23 +1203,71 @@ class SwitcherPage:
                 self.macro_flow.add(button)
         self.macro_flow.show_all()
 
+    def on_macro_run(self, widget):
+        index = widget.index
+        cmd = MacroActionCommand(MacroActionCommand.ACTION_RUN, index=index)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_macro_delete(self, widget):
+        index = widget.index
+        cmd = MacroActionCommand(MacroActionCommand.ACTION_DELETE, index=index)
+        self.connection.mixer.send_commands([cmd])
+
     def on_macro_context(self, widget, event, *args):
+        if event.button == 1:
+            self.on_macro_run(widget)
+
         if event.button != 3:
             return
 
         self.menu = Gtk.Menu()
+
         run_item = Gtk.MenuItem(_("Run macro"))
+        run_item.index = widget.index
+        run_item.connect('activate', self.on_macro_run)
         self.menu.append(run_item)
+
         edit_item = Gtk.MenuItem(_("Edit macro"))
         edit_item.index = widget.index
         edit_item.connect('activate', self.on_macro_edit)
         self.menu.append(edit_item)
+
+        edit_item = Gtk.MenuItem(_("Delete macro"))
+        edit_item.index = widget.index
+        edit_item.connect('activate', self.on_macro_delete)
+        self.menu.append(edit_item)
+
         self.menu.show_all()
         self.menu.popup(None, None, None, None, 0, Gtk.get_current_event_time())
 
     def on_macro_edit(self, widget):
         self.macro_edit = True
         self.connection.mixer.download(0xffff, widget.index)
+
+    def on_macro_create_clicked(self, widget):
+        name = self.macro_name.get_text()
+        if name.strip() == '':
+            return
+
+        # Find a free macro slot for recording
+        slot_index = 0
+        for slot in self.connection.mixer.mixerstate['macro-properties']:
+            mp = self.connection.mixer.mixerstate['macro-properties'][slot]
+            if not mp.is_used:
+                slot_index = slot
+                break
+        else:
+            self.log_sw.error("Could not find a free macro slot to record in")
+            return
+
+        self.log_sw.info(f'Creating macro "{name}" in slot {slot_index}')
+
+        cmd = MacroRecordCommand(slot_index, name, '')
+        self.connection.mixer.send_commands([cmd])
+
+    def on_macro_status_stop_clicked(self, widget):
+        cmd = MacroActionCommand(MacroActionCommand.ACTION_STOP_RECORD)
+        self.connection.mixer.send_commands([cmd])
 
     def bps_to_human(self, bps):
         if bps < 1000:

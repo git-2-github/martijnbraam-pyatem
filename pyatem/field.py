@@ -2865,6 +2865,36 @@ class MacroPropertiesField(FieldBase):
                                                                      self.name)
 
 
+class MacroRecordStatusField(FieldBase):
+    """
+    Data from the `MRcS` field. This is the data for the red border displayed while recoding a macro.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    bool   is recording (show border)
+    2      2    u16    Macro index
+    2      2    ?      padding
+    ====== ==== ====== ===========
+
+    After parsing:
+
+    :ivar index: Macro slot index
+    :ivar is_recording: Macro is currently being recorded
+    """
+
+    CODE = "MRcS"
+
+    def __init__(self, raw):
+        self.raw = raw
+        field = struct.unpack_from('>?xH', raw, 0)
+        self.is_recording = field[0]
+        self.index = field[1]
+
+    def __repr__(self):
+        return '<macro-status: recording={} index={}>'.format(self.is_recording, self.index)
+
+
 class AudioMeterLevelsField(FieldBase):
     """
     Data from the `AMLv`. This contains the realtime audio levels for the audio mixer
@@ -3501,4 +3531,8 @@ class SupersourceBoxPropertiesField(FieldBase):
         self.mask_right = field[11]
 
     def __repr__(self):
-        return '<supersource-box-properties index={}, box={}, source={}, x={}, y={}, size={}>'.format(self.index, self.box, self.source, self.x, self.y, self.size)
+        return '<supersource-box-properties index={}, box={}, source={}, x={}, y={}, size={}>'.format(self.index,
+                                                                                                      self.box,
+                                                                                                      self.source,
+                                                                                                      self.x, self.y,
+                                                                                                      self.size)

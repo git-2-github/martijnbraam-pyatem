@@ -163,6 +163,8 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.window = builder.get_object("main_window")
         self.window.set_application(self.application)
         self.headerbar = builder.get_object("headerbar")
+        self.header_context_stack = builder.get_object("header_context_stack")
+        self.macro_status_index = builder.get_object("macro_status_index")
 
         # Load requested view
         self.mainstack = builder.get_object("mainstack")
@@ -760,6 +762,11 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         else:
             self.disable_levels()
 
-#    @field('input-properties')
-#    def on_input_properties_changed(self, data):
-#        print(data)
+    @field('macro-record-status')
+    def on_macro_record_status_changed(self, data):
+        self.set_class(self.headerbar, 'recording', data.is_recording)
+        if data.is_recording:
+            self.macro_status_index.set_label(f"Recording macro {data.index}")
+            self.header_context_stack.set_visible_child_name('macro')
+        else:
+            self.header_context_stack.set_visible_child_name('live')
