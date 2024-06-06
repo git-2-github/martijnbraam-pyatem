@@ -31,6 +31,16 @@
   <url type="bugtracker">https://todo.sr.ht/~martijnbraam/OpenAtem</url>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="0.11.0" date="2024-06-06">
+      <description>
+        <ul>
+          <li>Added support for the ATEM USB protocol on 8.6+ firmware releases</li>
+          <li>Fixed the visibility button for the stream key password</li>
+          <li>Add basic macro creation support</li>
+        </ul>
+      </description>
+    </release>
+
     <release version="0.10.0" date="2024-01-14">
       <description>
         <ul>
