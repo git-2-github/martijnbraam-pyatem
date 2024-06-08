@@ -30,12 +30,20 @@ class AtemListener:
         info = zeroconf.get_service_info(type, name)
         if info is None:
             return
-        if info.properties[b'class'] != b'AtemSwitcher':
+
+        fwtype = 'a'
+        if type.endswith('_switcher_ctrl._udp.local.'):
+            fwtype = 'b'
+
+        if b'class' in info.properties and info.properties[b'class'] != b'AtemSwitcher':
             return
 
         address = ipaddress.ip_address(info.addresses[0])
         port = info.port
-        name = info.properties[b'name'].decode()
+        if fwtype == 'a':
+            name = info.properties[b'name'].decode()
+        elif fwtype == 'b':
+            name = info.name.replace('._switcher_ctrl._udp.local.', '')
         logging.info('Dicovered "{}" at {} port {}'.format(name, address, port))
         subtitle = 'Atem protocol'
         if b'release version' in info.properties:
@@ -59,7 +67,7 @@ def listen(on_add, on_remove=None):
         return
     zeroconf = Zeroconf()
     listener = AtemListener(on_add, on_remove)
-    browser = ServiceBrowser(zeroconf, "_blackmagic._tcp.local.", listener)
+    browser = ServiceBrowser(zeroconf, ["_blackmagic._tcp.local.", "_switcher_ctrl._udp.local."], listener)
 
 
 def stop():
