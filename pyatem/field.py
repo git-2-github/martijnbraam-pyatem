@@ -583,6 +583,7 @@ class InputPropertiesField(FieldBase):
         self.available_key_source = fields[11] & (1 << 4) != 0
         self.available_aux1 = fields[11] & (1 << 5) != 0
         self.available_aux2 = fields[11] & (1 << 6) != 0
+        self.available_usb = fields[11] & (1 << 7) != 0
 
         self.available_me1 = fields[12] & (1 << 0) != 0
         self.available_me2 = fields[12] & (1 << 1) != 0
