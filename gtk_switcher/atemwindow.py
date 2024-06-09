@@ -15,6 +15,7 @@ import gi
 
 from gtk_switcher.debugger import DebuggerWindow
 from gtk_switcher.presetwindow import PresetWindow
+from gtk_switcher.routing import Routing
 from gtk_switcher.videohubconnection import VideoHubConnection
 from pyatem.hexdump import hexdump
 
@@ -204,6 +205,7 @@ class AtemWindow(SwitcherPage, MediaPage, AudioPage, CameraPage):
         self.connection = AtemConnection(self.on_change, self.on_disconnect, self.on_transfer_progress,
                                          self.on_download_done, self.on_connect, self.on_upload_done,
                                          self.on_upload_progress)
+        self.routing = Routing(self.connection)
 
         if args.ip:
             self.connection.ip = args.ip

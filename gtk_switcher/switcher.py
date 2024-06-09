@@ -339,8 +339,8 @@ class SwitcherPage:
     def on_aux_source_changed(self, widget):
         if hasattr(widget, 'ignore_change') and widget.ignore_change or self.model_changing:
             return
-        cmd = AuxSourceCommand(widget.index, source=int(widget.get_active_id()))
-        self.connection.mixer.send_commands([cmd])
+
+        self.routing.change(widget.index, int(widget.get_active_id()))
 
     def on_wipe_symmetry_adj_value_changed(self, widget, *args):
         if self.model_changing:
@@ -979,17 +979,19 @@ class SwitcherPage:
         self.connection.mixer.send_commands([cmd])
 
     def on_aux_output_source_change(self, source):
-        if source.index not in self.aux:
+        self.routing.aux_changed(source)
+        aux = self.routing.aux_index_to_port_index(source.index)
+        if aux not in self.aux:
             return
 
-        self.aux[source.index].ignore_change = True
-        self.aux[source.index].set_active_id(str(source.source))
-        self.aux[source.index].ignore_change = False
+        self.aux[aux].ignore_change = True
+        self.aux[aux].set_active_id(str(source.source))
+        self.aux[aux].ignore_change = False
 
         for me in self.me:
             if not hasattr(me, 'category'):
                 continue
-            if me.index == source.index:
+            if me.index == aux:
                 me.source_change(source.source)
 
     def on_input_layout_change(self, changed_input):
@@ -1043,8 +1045,10 @@ class SwitcherPage:
                 self.model_aux.append([str(i.index), i.name])
 
             if i.port_type == InputPropertiesField.PORT_AUX_OUTPUT:
-                aux_id = i.index - 8001
+                self.routing.add_output(i)
+                aux_id = i.index
                 if aux_id not in self.aux:
+                    # Create AUX combobox in palette
                     self.aux[aux_id] = Gtk.ComboBox.new_with_model(self.model_aux)
                     self.aux[aux_id].set_entry_text_column(1)
                     self.aux[aux_id].set_id_column(0)
@@ -1055,6 +1059,7 @@ class SwitcherPage:
                     self.aux[aux_id].add_attribute(renderer, "text", 1)
                     self.grid_aux.attach(self.aux[aux_id], 1, aux_id, 1, 1)
 
+                    # Create options dropdown after the combobox
                     aux_me = Gtk.CheckButton.new_with_label(_("Show as bus"))
                     aux_me.index = i.index
                     aux_me.connect('toggled', self.on_aux_me_enable_toggled)
@@ -1124,7 +1129,9 @@ class SwitcherPage:
         if widget.get_active():
             inputs = self.connection.mixer.mixerstate['input-properties']
             auxsrcs = self.connection.mixer.mixerstate['aux-output-source']
-            auxsrc = auxsrcs[widget.index - 8001]
+            webcam = widget.index == 8200
+            aux = self.routing.port_index_to_aux_index(widget.index)
+            auxsrc = auxsrcs[aux]
             external = []
             output = []
             passthrough = []
@@ -1132,7 +1139,7 @@ class SwitcherPage:
             black = []
             bars = []
             for i in inputs.values():
-                if i.available_aux:
+                if i.available_aux and not webcam or webcam and i.available_usb:
                     if i.port_type == InputPropertiesField.PORT_EXTERNAL:
                         external.append(i)
                     elif i.port_type == InputPropertiesField.PORT_ME_OUTPUT:
@@ -1166,7 +1173,7 @@ class SwitcherPage:
             aux_me.set_inputs([row1, row2])
             aux_me.source_change(auxsrc.source)
             aux_me.connect('source-changed', self.on_aux_me_source_changed)
-            aux_me.index = widget.index - 8001
+            aux_me.index = widget.index
             aux_me.category = 'aux'
             self.apply_css(aux_me, self.provider)
             self.me.append(aux_me)
@@ -1177,13 +1184,12 @@ class SwitcherPage:
                     continue
                 if me.category != 'aux':
                     continue
-                if me.index == widget.index - 8001:
+                if me.index == widget.index:
                     self.me.remove(me)
                     me.destroy()
 
     def on_aux_me_source_changed(self, widget, aux, source):
-        cmd = AuxSourceCommand(aux, source=source)
-        self.connection.mixer.send_commands([cmd])
+        self.routing.change(aux, source)
 
     def on_macro_properties_change(self, data):
         # Clear the macro flow container
