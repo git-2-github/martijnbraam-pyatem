@@ -1370,6 +1370,90 @@ class FairlightStripPropertiesCommand(Command):
         return self._make_command('CFSP', data)
 
 
+class FairlightEqBandPropertiesCommand(Command):
+    """
+    Implementation of the `CEBP` command. This sets the settings of a single EQ band in the fairlight audio mixer.
+
+    ====== ==== ====== ===========
+    Offset Size Type   Description
+    ====== ==== ====== ===========
+    0      1    u8     Mask, see table below
+    1      1    ?      padding
+    2      2    u16    Source index
+    15     1    u8     Channel number
+    16     1    u8     EQ band index [0-5]
+    17     1    bool   Band enabled
+    18     1    u8     Band filter type
+    19     1    u8     Band frequency range
+    20     4    u32    Band frequency [30-21700]
+    24     4    i32    Band gain [-2000-2000]
+    28     2    i16    Band Q [30-1030]
+    30     2    ?      padding
+    ====== ==== ====== ===========
+
+    === ==========
+    Bit Mask value
+    === ==========
+    0   Delay
+    1   Gain
+    2   ?
+    3   EQ Enable
+    4   EQ Gain
+    5   Dynamics gain
+    6   Balance
+    7   Volume
+    8   State
+    === ==========
+
+    """
+
+    def __init__(self, source, channel, band, enabled=None, band_filter=None, band_range=None, frequency=None,
+                 gain=None, q=None):
+        """
+        :param source: The source index
+        :param channel: The channel index inside the source, -1 for the normal stereo channels and 0 and 1 for split
+        """
+        self.source = source
+        self.channel = channel
+        self.band = band
+        self.enabled = enabled
+        self.filter = band_filter
+        self.range = band_range
+        self.frequency = frequency
+        self.gain = gain
+        self.q = q
+
+    def get_command(self):
+        mask = 0
+        if self.enabled is not None:
+            mask |= 1 << 0
+        if self.filter is not None:
+            mask |= 1 << 1
+        if self.range is not None:
+            mask |= 1 << 2
+        if self.frequency is not None:
+            mask |= 1 << 3
+        if self.gain is not None:
+            mask |= 1 << 4
+        if self.q is not None:
+            mask |= 1 << 5
+
+        enabled = 0 if self.enabled is None else self.enabled
+        filter = 0 if self.filter is None else self.filter
+        range = 0 if self.range is None else self.range
+        frequency = 0 if self.frequency is None else self.frequency
+        gain = 0 if self.gain is None else self.gain
+        q = 0 if self.q is None else self.q
+
+        split = 0xff if self.channel > -1 else 0x01
+        self.channel = 0x00 if self.channel == -1 else self.channel
+        pad = b'\xff\xff\xff\xff\xff\xff\xff'
+        data = struct.pack('>Bx H4x6sBb B?BB I i h2x', mask, self.source, pad, split,
+                           self.channel, self.band,
+                           enabled, filter, range, frequency, gain, q)
+        return self._make_command('CEBP', data)
+
+
 class KeyOnAirCommand(Command):
     """
     Implementation of the `CKOn` command. This enables an upstream keyer without having a transition.

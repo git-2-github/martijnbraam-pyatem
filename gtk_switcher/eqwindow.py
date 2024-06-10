@@ -11,7 +11,7 @@ from gtk_switcher.eqcurve import EqCurve
 from gtk_switcher.gtklogadjustment import LogAdjustment
 from gtk_switcher.preferences import PreferencesWindow
 from pyatem import locate
-from pyatem.command import FairlightStripPropertiesCommand
+from pyatem.command import FairlightStripPropertiesCommand, FairlightEqBandPropertiesCommand
 from pyatem.field import FairlightStripPropertiesField
 
 gi.require_version('Gtk', '3.0')
@@ -58,6 +58,7 @@ class EqWindow:
         self.adj_frequency = []
         self.adj_gain = []
         self.adj_q = []
+        self.range = {}
 
         for i in range(0, 6):
             blocks = self.create_band(i, i == 0, i == 5)
@@ -118,10 +119,12 @@ class EqWindow:
 
         adj_gain = Gtk.Adjustment(0, -2000, 2000, 10, 10, 0)
         adj_gain.index = index
+        adj_gain.connect('value-changed', self.on_gain_change)
         self.adj_gain.append(adj_gain)
 
         adj_q = Gtk.Adjustment(0, 30, 1030, 10, 10, 0)
         adj_q.index = index
+        adj_q.connect('value-changed', self.on_q_change)
         self.adj_q.append(adj_q)
 
         blocks = []
@@ -146,6 +149,7 @@ class EqWindow:
         self.adj_frequency[band.band_index].set_value(band.band_frequency)
         self.adj_gain[band.band_index].set_value(band.band_gain)
         self.adj_q[band.band_index].set_value(band.band_q)
+        self.range[band.band_index] = band.band_freq_range
         self.model_changing = False
 
     def on_strip_change(self, strip):
@@ -163,6 +167,41 @@ class EqWindow:
     def on_frequency_change(self, widget):
         if self.model_changing:
             return
+        band = widget.index
+        f = int(widget.get_value())
+        range = self.range[band]
+        old_range = range
+        ranges = {
+            1: [30, 395],
+            2: [100, 1480],
+            4: [450, 7910],
+            8: [1400, 21700],
+        }
+        while True:
+            if f < ranges[range][0]:
+                range = int(range / 2)
+                continue
+            if f > ranges[range][1]:
+                range = int(range * 2)
+                continue
+            break
 
-        cmd = FairlightStripPropertiesCommand(source=self.source, channel=self.channel, eq_enable=enabled)
-        print("WHA!")
+        if range == old_range:
+            range = None
+        cmd = FairlightEqBandPropertiesCommand(source=self.source, channel=self.channel, band=band,
+                                               frequency=f, band_range=range)
+        self.connection.mixer.send_commands([cmd])
+
+    def on_gain_change(self, widget):
+        if self.model_changing:
+            return
+        cmd = FairlightEqBandPropertiesCommand(source=self.source, channel=self.channel, band=widget.index,
+                                               gain=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
+
+    def on_q_change(self, widget):
+        if self.model_changing:
+            return
+        cmd = FairlightEqBandPropertiesCommand(source=self.source, channel=self.channel, band=widget.index,
+                                               q=int(widget.get_value()))
+        self.connection.mixer.send_commands([cmd])
