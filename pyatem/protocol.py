@@ -109,6 +109,7 @@ class AtemProtocol:
         'VuMC': 'multiviewer-vu',
         'VuMo': 'multiviewer-vu-opacity',
         'SaMw': 'multiviewer-safe-area',
+        'StMv': 'multiviewer-safe-area-type',
         'LKOB': 'lock-obtained',
         'FTDa': 'file-transfer-data',
         'LKST': 'lock-state',
@@ -130,6 +131,7 @@ class AtemProtocol:
         'RXCC': 'hyperdeck-clip-count',
         'DCPV': 'displayclock-properties',
         'DSTV': 'displayclock-set-time',
+        'FEna': 'fade-to-black-enabled',
     }
 
     FIELDNAME_UNIQUE = {
