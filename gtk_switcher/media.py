@@ -10,6 +10,7 @@ import gi
 import pyatem
 
 from gtk_switcher.colorwheel import ColorWheelWidget
+from gtk_switcher.decorators import field
 from pyatem.command import MediaplayerSelectCommand
 from pyatem.field import InputPropertiesField
 from pyatem.media import atem_to_rgb
@@ -40,6 +41,7 @@ class MediaPage:
 
         self.log_mp = logging.getLogger('MediaPage')
 
+    @field('mediaplayer-slots')
     def on_mediaplayer_slots_change(self, data):
         for child in self.media_flow:
             child.destroy()
@@ -132,6 +134,7 @@ class MediaPage:
 
         self.media_players.show_all()
 
+    @field('mediaplayer-selected')
     def on_mediaplayer_media_source_change(self, data):
         if data.slot not in self.media_pixbuf:
             return
@@ -148,6 +151,7 @@ class MediaPage:
         name = self.media_slot_name[data.slot].get_text()
         self.media_player_desc[data.index].set_text(f'Still {data.slot + 1}: {name}')
 
+    @field('mediaplayer-file-info')
     def on_mediaplayer_file_info_change(self, data):
         if data.index not in self.media_slot_name:
             return

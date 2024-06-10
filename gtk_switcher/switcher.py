@@ -5,6 +5,7 @@ import logging
 import re
 from datetime import datetime, timedelta
 
+from gtk_switcher.decorators import field
 from gtk_switcher.layout import LayoutView
 from pyatem.command import CutCommand, AutoCommand, FadeToBlackCommand, TransitionSettingsCommand, WipeSettingsCommand, \
     TransitionPositionCommand, TransitionPreviewCommand, ColorGeneratorCommand, MixSettingsCommand, DipSettingsCommand, \
@@ -449,12 +450,14 @@ class SwitcherPage:
         elif len(part) == 2:
             return (int(part[0]) * transition_rate) + int(part[1])
 
+    @field('fade-to-black')
     def on_ftb_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got FTB change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].set_ftb_rate(data.rate)
 
+    @field('transition-mix')
     def on_transition_mix_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got transition mix change for non-existing M/E {}".format(data.index + 1))
@@ -464,6 +467,7 @@ class SwitcherPage:
         self.mix_rate.set_text(label)
         self.me[data.index].set_auto_rate('mix', data.rate)
 
+    @field('transition-dip')
     def on_transition_dip_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got transition dip change for non-existing M/E {}".format(data.index + 1))
@@ -476,6 +480,7 @@ class SwitcherPage:
         self.dip_source.ignore_change = False
         self.me[data.index].set_auto_rate('dip', data.rate)
 
+    @field('transition-wipe')
     def on_transition_wipe_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got transition wipe change for non-existing M/E {}".format(data.index + 1))
@@ -506,6 +511,7 @@ class SwitcherPage:
         self.set_class(self.wipe_reverse, 'active', data.reverse)
         self.set_class(self.wipe_flipflop, 'active', data.flipflop)
 
+    @field('transition-dve')
     def on_transition_dve_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got transition dve change for non-existing M/E {}".format(data.index + 1))
@@ -525,6 +531,7 @@ class SwitcherPage:
     def _remap(self, value, old_min, old_max, new_min, new_max):
         return ((value - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min
 
+    @field('dkey-properties')
     def on_dsk_change(self, data):
         self.me[0].set_dsk(data)
         if data.index in self.dsks:
@@ -538,6 +545,7 @@ class SwitcherPage:
             region = self.layout[0].get(LayoutView.LAYER_DSK, data.index)
             region.set_mask(top, bottom, left, right)
 
+    @field('dkey-state')
     def on_dsk_state_change(self, data):
         self.me[0].set_dsk_state(data)
         region = self.layout[0].get(LayoutView.LAYER_DSK, data.index)
@@ -572,6 +580,7 @@ class SwitcherPage:
         button.connect("clicked", self.on_presets_clicked)
         return overlay
 
+    @field('topology')
     def on_topology_change(self, data: TopologyField):
         # Create the M/E units
         for i in range(0, data.me_units - len(self.me)):
@@ -652,6 +661,7 @@ class SwitcherPage:
         self.media_create_mediaplayers(data.mediaplayers)
         self.switcher_mediaplayers.show_all()
 
+    @field('mediaplayer-selected')
     def on_mediaplayer_switcher_source_change(self, data):
         if data.index not in self.mediaplayer_dropdowns:
             return
@@ -688,6 +698,7 @@ class SwitcherPage:
         cmd = DkeyAutoCommand(index=dsk)
         self.connection.mixer.send_commands([cmd])
 
+    @field('mixer-effect-config')
     def on_mixer_effect_config_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got _MeC for non-existing M/E {}".format(data.index + 1))
@@ -725,6 +736,7 @@ class SwitcherPage:
 
             self.upstream_keyers.show_all()
 
+    @field('fade-to-black-state')
     def on_ftb_state_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got FTB state change for non-existing M/E {}".format(data.index + 1))
@@ -732,6 +744,7 @@ class SwitcherPage:
 
         self.me[data.index].set_ftb_state(data.done, data.transitioning)
 
+    @field('color-generator')
     def on_color_change(self, data):
         r, g, b = data.get_rgb()
         color = Gdk.RGBA()
@@ -745,6 +758,7 @@ class SwitcherPage:
         else:
             self.color2.set_rgba(color)
 
+    @field('key-on-air')
     def on_key_on_air_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got key-on-air for non-existant keyer {} M/E {}".format(data.keyer, data.index + 1))
@@ -752,18 +766,21 @@ class SwitcherPage:
         self.me[data.index].set_key_on_air(data)
         self.layout[data.index].get(LayoutView.LAYER_USK, data.keyer).set_tally(data.enabled)
 
+    @field('transition-preview')
     def on_transition_preview_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got transition preview change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].set_preview_transition(data.enabled)
 
+    @field('transition-settings')
     def on_transition_settings_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got transition settings change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].set_transition_settings(data)
 
+    @field('transition-position')
     def on_transition_position_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got transition position change for non-existing M/E {}".format(data.index + 1))
@@ -774,6 +791,7 @@ class SwitcherPage:
         cmd = KeyOnAirCommand(index=index, keyer=keyer, enabled=enabled)
         self.connection.mixer.send_commands([cmd])
 
+    @field('key-properties-base')
     def on_key_properties_base_change(self, data):
         if data.index not in self.usks:
             self.log_sw.warning(
@@ -785,6 +803,7 @@ class SwitcherPage:
             return
         self.usks[data.index][data.keyer].on_key_properties_base_change(data)
 
+    @field('key-properties-luma')
     def on_key_properties_luma_change(self, data):
         if data.index not in self.usks:
             self.log_sw.warning(
@@ -796,6 +815,7 @@ class SwitcherPage:
             return
         self.usks[data.index][data.keyer].on_key_properties_luma_change(data)
 
+    @field('key-properties-dve')
     def on_key_properties_dve_change(self, data):
         if data.index not in self.usks:
             self.log_sw.warning(
@@ -814,6 +834,7 @@ class SwitcherPage:
         region.set_region(data.pos_x / 1000, data.pos_y / 1000, width, height)
         region.set_mask(data.mask_top, data.mask_bottom, data.mask_left, data.mask_right)
 
+    @field('key-properties-advanced-chroma')
     def on_key_properties_advanced_chroma_change(self, data):
         if data.index not in self.usks:
             self.log_sw.warning(
@@ -825,6 +846,7 @@ class SwitcherPage:
             return
         self.usks[data.index][data.keyer].on_advanced_chroma_change(data)
 
+    @field('key-properties-advanced-chroma-colorpicker')
     def on_key_properties_advanced_chroma_colorpicker_change(self, data):
         if data.index not in self.usks:
             self.log_sw.warning(
@@ -844,18 +866,21 @@ class SwitcherPage:
         region.set_tally(data.preview)
         region.set_visible(data.cursor)
 
+    @field('program-bus-input')
     def on_program_input_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got program input change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].program_input_change(data)
 
+    @field('preview-bus-input')
     def on_preview_input_change(self, data):
         if data.index > len(self.me) - 1:
             self.log_sw.warning("Got preview input change for non-existing M/E {}".format(data.index + 1))
             return
         self.me[data.index].preview_input_change(data)
 
+    @field('dkey-properties-base')
     def on_dkey_properties_base_change(self, data):
         if data.index not in self.dsks:
             self.log_sw.warning("Got dkey-properties-base for non-existant keyer {}".format(data.index))
@@ -870,6 +895,7 @@ class SwitcherPage:
         cmd = PreviewInputCommand(index=index, source=source)
         self.connection.mixer.send_commands([cmd])
 
+    @field('recording-settings')
     def on_stream_recording_setting_change(self, data):
         self.expander_stream_recorder.show()
         self.model_changing = True
@@ -881,6 +907,7 @@ class SwitcherPage:
         self.on_update_recording_buttons()
         self.model_changing = False
 
+    @field('recording-disk')
     def on_stream_recording_disks_change(self, data):
         self.model_changing = True
         if data.is_deleted:
@@ -901,6 +928,7 @@ class SwitcherPage:
         self.on_update_recording_buttons()
         self.model_changing = False
 
+    @field('recording-status')
     def on_stream_recording_status_change(self, data):
         self.on_update_recording_buttons()
 
@@ -928,6 +956,7 @@ class SwitcherPage:
         self.set_class(self.stream_recorder_status, 'program', active)
         self.set_class(self.stream_recorder_clock, 'program', active)
 
+    @field('recording-duration')
     def on_stream_recording_duration_change(self, data):
         # This does not get called nearly often enough
         self.stream_recorder_clock.set_text(f'{data.hours}:{data.minutes}:{data.seconds}')
@@ -1191,6 +1220,7 @@ class SwitcherPage:
     def on_aux_me_source_changed(self, widget, aux, source):
         self.routing.change(aux, source)
 
+    @field('macro-properties')
     def on_macro_properties_change(self, data):
         # Clear the macro flow container
         for widget in self.macro_flow:
@@ -1285,6 +1315,7 @@ class SwitcherPage:
             val = bps / 1000 / 1000
             return f'{val:g}M'
 
+    @field('streaming-service')
     def on_streaming_service_change(self, data):
         self.expander_livestream.show()
         self.expander_encoder.show()
@@ -1295,11 +1326,13 @@ class SwitcherPage:
         self.stream_live_server.set_text(data.url)
         self.stream_live_key.set_text(data.key)
 
+    @field('streaming-audio-bitrate')
     def on_streaming_audio_bitrate_change(self, data):
         self.expander_encoder.show()
         self.audio_rate_min.set_text(self.bps_to_human(data.min))
         self.audio_rate_max.set_text(self.bps_to_human(data.max))
 
+    @field('streaming-status')
     def on_streaming_status_change(self, data):
         starting = data.status == 2
         active = data.status == 4
@@ -1330,6 +1363,7 @@ class SwitcherPage:
 
         self.stream_live_active = active
 
+    @field('streaming-stats')
     def on_streaming_stats_change(self, data):
         self.live_stats.set_text('{:.2f} Mbps'.format(data.bitrate / 1000 / 1000))
 
@@ -1433,6 +1467,7 @@ class SwitcherPage:
     def on_presets_clicked(self, widget, *args):
         self.preset_context = widget.get_name()
 
+    @field('supersource-box-properties')
     def on_supersource_box_change(self, data):
         x = data.x / 100
         y = data.y / 100
