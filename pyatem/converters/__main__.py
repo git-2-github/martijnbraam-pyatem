@@ -20,6 +20,11 @@ def enumerate_hardware():
     return classes
 
 
+def enumerate_serials():
+    for model in enumerate_hardware():
+        pass
+
+
 def dump_memory(device, target):
     if not isinstance(device, WValueProtoConverter):
         print("Operation not supported for this hardware")
@@ -52,6 +57,7 @@ def main():
     generic.add_argument('--factory-reset', action='store_true', help='Run the factory reset operation', dest='reset')
     generic.add_argument('--dump', help='Dump internal memory to file')
     generic.add_argument('--annotate', help='Show argument names', action='store_true')
+    generic.add_argument('--serial', help='Select one specific converter')
 
     opt = parser.add_argument_group('Write converter setting')
 
@@ -84,19 +90,29 @@ def main():
 
     existing = []
     for device in enumerate_hardware():
-        if device.is_plugged_in():
-            existing.append(device)
+        for serial in device.enumerate(device):
+            existing.append((device, serial))
 
     if len(existing) == 0:
         print("No supported hardware detected")
         exit(1)
     elif len(existing) > 1:
-        print("Multiple converters found, not handled yet")
-        for dev in existing:
-            print(f" - {dev.NAME}")
-        exit(1)
+        if args.serial is None:
+            print("Multiple converters found")
+            for dev, serial in existing:
+                print(f" - [{serial}] {dev.NAME}")
+            print("Select one by specifying the --serial argument")
+            exit(1)
+        for dev, serial in existing:
+            if serial == args.serial:
+                deviceclass = dev
+                break
+        else:
+            print("Device not found")
+            exit(1)
+    else:
+        deviceclass = existing[0][0]
 
-    deviceclass = existing[0]
     possible_codes = set()
     for item in deviceclass.FIELDS:
         if item.code is not None:
@@ -116,7 +132,7 @@ def main():
                     to_write.append((item, getattr(args, key)))
 
     device = deviceclass()
-    device.connect()
+    device.connect(serial=args.serial)
     if device.get_status() == Converter.STATUS_NEED_POWER:
         print("Converter needs power plugged in to be configured")
         exit(1)

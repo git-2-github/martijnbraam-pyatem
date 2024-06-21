@@ -48,6 +48,7 @@ class Converter:
 
     def __init__(self):
         self.handle = None
+        self.serial = None
 
     @classmethod
     def is_plugged_in(cls, serial=None):
@@ -57,9 +58,25 @@ class Converter:
             result = usb.core.find(idVendor=cls.VENDOR, idProduct=cls.PRODUCT)
         return result is not None
 
+    def enumerate(cls):
+        result = []
+        for dev in usb.core.find(idVendor=cls.VENDOR, idProduct=cls.PRODUCT, find_all=True):
+            if dev.serial_number:
+                result.append(dev.serial_number)
+            else:
+                result.append(f'{dev.bus}-{dev.address}')
+        return result
+
     def connect(self, serial=None):
         if serial is not None:
-            self.handle = usb.core.find(idVendor=self.VENDOR, idProduct=self.PRODUCT, iSerialNumber=serial)
+            if '-' in serial:
+                bus, address = serial.split('-')
+                bus = int(bus)
+                address = int(address)
+                self.handle = usb.core.find(idVendor=self.VENDOR, idProduct=self.PRODUCT, bus=bus, address=address)
+            else:
+                self.handle = usb.core.find(idVendor=self.VENDOR, idProduct=self.PRODUCT, serial_number=serial)
+
         else:
             self.handle = usb.core.find(idVendor=self.VENDOR, idProduct=self.PRODUCT)
 
@@ -434,12 +451,12 @@ class WValueProtoConverter(Converter):
 
 class WIndexProtoConverter(Converter):
     PROTOCOL = 'wIndex'
-#    NAME_FIELD = 0x00C0
-#    VERSION_FIELD = 0x00B0
-#    LUTFIELD = False
+    #    NAME_FIELD = 0x00C0
+    #    VERSION_FIELD = 0x00B0
+    #    LUTFIELD = False
     HAS_NAME = True
     NEEDS_POWER = False
-#    LUT_SIZE = 17
+    #    LUT_SIZE = 17
 
     REG_STATUS = 48
     CMD_CLEAR = 55
@@ -460,13 +477,14 @@ class WIndexProtoConverter(Converter):
             return name.strip()
 
         raise NotImplementedError()
-#        raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
-#                                              bRequest=83,
-#                                              wValue=self.NAME_FIELD,
-#                                              wIndex=0,
-#                                              data_or_wLength=64))
-#
-#        return raw.split(b'\0')[0].decode()
+
+    #        raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
+    #                                              bRequest=83,
+    #                                              wValue=self.NAME_FIELD,
+    #                                              wIndex=0,
+    #                                              data_or_wLength=64))
+    #
+    #        return raw.split(b'\0')[0].decode()
 
     def get_status(self):
         if not self.NEEDS_POWER:
@@ -483,13 +501,14 @@ class WIndexProtoConverter(Converter):
     def get_version(self):
         raise NotImplementedError()
         print("TODO: fixme!")
-#        raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
-#                                              bRequest=83,
-#                                              wValue=self.VERSION_FIELD,
-#                                              wIndex=0,
-#                                              data_or_wLength=7))
-#
-#        return raw.split(b'\0')[0].decode()
+
+    #        raw = bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
+    #                                              bRequest=83,
+    #                                              wValue=self.VERSION_FIELD,
+    #                                              wIndex=0,
+    #                                              data_or_wLength=7))
+    #
+    #        return raw.split(b'\0')[0].decode()
 
     def get_value_raw(self, field):
         if field.dtype == open:
@@ -521,8 +540,8 @@ class WIndexProtoConverter(Converter):
         return value
 
     def set_value_raw(self, field, value):
-# Set seems to be URB Control wIndex of field ID ORed with the desired field
-# value with bmRequestType of 0x40
+        # Set seems to be URB Control wIndex of field ID ORed with the desired field
+        # value with bmRequestType of 0x40
         self.handle.ctrl_transfer(bmRequestType=0x40,
                                   bRequest=215,
                                   wValue=0,
@@ -566,19 +585,21 @@ class WIndexProtoConverter(Converter):
 
     def _read(self, bRequest, length):
         raise NotImplementedError()
-#        return bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
-#                                               bRequest=bRequest,
-#                                               wValue=0,
-#                                               wIndex=0,
-#                                               data_or_wLength=length))
+
+    #        return bytes(self.handle.ctrl_transfer(bmRequestType=0xc1,
+    #                                               bRequest=bRequest,
+    #                                               wValue=0,
+    #                                               wIndex=0,
+    #                                               data_or_wLength=length))
 
     def _write(self, bRequest, data):
         raise NotImplementedError()
-#        self.handle.ctrl_transfer(bmRequestType=0x41,
-#                                  bRequest=bRequest,
-#                                  wValue=0,
-#                                  wIndex=0,
-#                                  data_or_wLength=data)
+
+    #        self.handle.ctrl_transfer(bmRequestType=0x41,
+    #                                  bRequest=bRequest,
+    #                                  wValue=0,
+    #                                  wIndex=0,
+    #                                  data_or_wLength=data)
 
     def _wait_on_status(self, status0=None, status1=None, status2=None, status3=None, status4=None, status5=None):
         # Wait for the LUT engine to be ready
