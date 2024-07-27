@@ -79,6 +79,7 @@ def main(version):
         logging.basicConfig(handlers=[ch])
 
     log = logging.getLogger('Launcher')
+    log.info(f'OpenSwitcher version {version}')
     if os.path.isfile('atem.gresource'):
         log.info('using resources from cwd')
         resource = Gio.resource_load("atem.gresource")
