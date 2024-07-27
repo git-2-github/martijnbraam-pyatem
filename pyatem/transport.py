@@ -410,6 +410,7 @@ class UsbProtocol(BaseProtocol):
     PRODUCTS = {
         0xbe49: "Atem Mini",
         0xbe55: "Atem Mini Pro",
+        0xbe56: "Atem Mini Pro ISO",
         0xbe7c: "Atem Mini Extreme",
     }
 

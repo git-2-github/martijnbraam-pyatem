@@ -6,6 +6,9 @@ SUBSYSTEM=="usb", ATTR{idVendor}=="1edb", ATTR{idProduct}=="be49", MODE="0666"
 # Atem Mini Pro
 SUBSYSTEM=="usb", ATTR{idVendor}=="1edb", ATTR{idProduct}=="be55", MODE="0666"
 
+# Atem Mini Pro ISO
+SUBSYSTEM=="usb", ATTR{idVendor}=="1edb", ATTR{idProduct}=="be56", MODE="0666"
+
 # Atem Production Studio 4K
 SUBSYSTEM=="usb", ATTR{idVendor}=="1edb", ATTR{idProduct}=="bd6e", MODE="0666"
 
